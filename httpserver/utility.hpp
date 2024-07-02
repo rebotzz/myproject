@@ -1,15 +1,9 @@
+#pragma once
 #include <iostream>
 #include <string>
 #include <ctime>
 
-enum LOG_LEVEL
-{
-    DEBUG,
-    INFO,
-    WARING,
-    ERROR,
-    FATAL
-};
+
 
 #define LOG(logLevel, message) Log(#logLevel, message, __FILE__, __LINE__)  // 宏函数
 
@@ -27,6 +21,14 @@ void Log(std::string loglevel, std::string msg, std::string file, int line)
     timestr += std::to_string(caltime->tm_sec);
     std::cout<<"["<<loglevel<<"]["<<timestr<<"]["<<msg<<"]["<<file<<"]["<<line<<"]"<<std::endl;
 }
+enum LOG_LEVEL
+{
+    DEBUG,
+    INFO,
+    WARING,
+    ERROR,
+    FATAL
+};
 
 // 工具类
 class Utility

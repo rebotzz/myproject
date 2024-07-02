@@ -3,10 +3,7 @@
 #include <string>
 #include <ctime>
 
-
-
 #define LOG(logLevel, message) Log(#logLevel, message, __FILE__, __LINE__)  // 宏函数
-
 void Log(std::string loglevel, std::string msg, std::string file, int line)
 {
     // [日志级别][时间][日志描述][文件][行号]
@@ -34,6 +31,15 @@ enum LOG_LEVEL
 class Utility
 {
 public:
-
+    static bool cutString(const std::string& target, const std::string& separator, std::string& out1, std::string& out2)
+    {   
+        auto pos = target.find(separator);
+        if(pos != std::string::npos){
+            out1 = target.substr(0, pos);
+            out2 = target.substr(pos + separator.size());
+            return true;
+        }
+        return false;
+    }
 };
 

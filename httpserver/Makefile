@@ -1,7 +1,7 @@
 bin=httpserver
 
 $(bin):httpserver.cc
-	g++ -o $@ $^ -std=c++11 -lpthread
+	g++ -o $@ $^ -std=c++17 -lpthread
 
 .PHONY:clean
 clean:

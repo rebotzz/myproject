@@ -31,6 +31,40 @@ enum LOG_LEVEL
 class Utility
 {
 public:
+    static bool readline(int sockfd, std::string& line)
+    {
+        line.clear();
+        char ch = 0;
+        while(ch != '\n')
+        {
+            if(recv(sockfd, &ch, sizeof(ch), 0) <= 0){
+                return false;
+            } 
+            
+            // 不同平台换行符不同: "\n" "\r\n" "\r"  -> 统一处理为"\n"
+            if(ch == '\r'){
+                // 探测下一个字符是不是'\n'
+                char next = 0;
+                recv(sockfd, &next, sizeof(next), MSG_PEEK); // MSG_PEEK 缓冲区队列不移除读取的
+                if(next == '\n'){
+                    recv(sockfd, &ch, sizeof(ch), 0);//read(_sockfd, &ch, sizeof(ch));
+                }
+                else{
+                    ch = '\n';
+                }
+            }
+
+            line.push_back(ch);
+        }
+
+        std::cout<< "read line: "<< line;
+        if(line.find("..") != std::string::npos){
+            LOG(WARING, "url request have '..'");
+            return false;
+        }
+        return true;
+    }
+
     static bool cutString(const std::string& target, const std::string& separator, std::string& out1, std::string& out2)
     {   
         auto pos = target.find(separator);

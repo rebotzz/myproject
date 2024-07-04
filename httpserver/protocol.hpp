@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <sstream>
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
@@ -21,6 +22,9 @@
 
 #define LINE_END "\n"
 #define WEB_ROOT "webroot"
+#define HTTP_VERSION "HTTP/1.0"
+#define HOME_PAGE "index.html"
+
 
 // http请求
 class HttpRequest
@@ -32,112 +36,98 @@ public:
     std::vector<std::string> _requestHead;
     std::string _blank;
     std::string _requestBody;
-    std::unordered_map<std::string, std::string> _requestHeadMap;
+    std::unordered_map<std::string, std::string> _headKV;
 
     std::string _method;
     std::string _url;
-    int _content_length;
+    std::string _version;
+    std::string _query;
+    int _contentLength;
 private:
-    std::string& readline(std::string& line)
-    {
-        char ch = 0;
-        while(read(_sockfd, &ch, sizeof(ch)) > 0)
-        {
-            // 不同平台换行符不同: "\n" "\r\n" "\r"  -> 统一处理为"\n"
-            if(ch == '\r'){
-                // 探测下一个字符是不是'\n'
-                char next = 0;
-                recv(_sockfd, &next, sizeof(next), MSG_PEEK); // MSG_PEEK 缓冲区队列不移除读取的
-                if(next == '\n'){
-                    read(_sockfd, &ch, sizeof(ch));
-                }
-                else{
-                    ch = '\n';
-                }
 
-                line.push_back(ch);
-                break;
-            }
-            else if(ch == '\n'){
-                line.push_back(ch);
-                break;
-            }
-            line.push_back(ch);
-        }
-
-        std::cout<< "read line: "<< line;
-        return line;
-    }
 
 public:
-    HttpRequest(int sockfd):_sockfd(sockfd),_content_length(0)
+    HttpRequest(int sockfd):_sockfd(sockfd),_contentLength(0)
     {}
-    void readRequest()
+    bool readRequest()
     {   // http/1.0 短链接, 超时处理    todo:http/1.1 长链接
 
         // 读取请求行
-        readline(_requestLine);
+        if(Utility::readline(_sockfd, _requestLine) == false){
+            return false;
+        }
+        _requestLine.resize(_requestLine.size() - 1);   // 去掉"\n"
         // 读取请求报头
         std::string line;
-        while(readline(line) != "\n"){
+        while(Utility::readline(_sockfd, line) && line != LINE_END){
+            line.resize(line.size() - 1);
             _requestHead.push_back(line);
             line.clear();
         }
         // 读取空行
+        if(line != LINE_END) return false;
         _blank = line;
+        return true;
     }
     void parseRequest()
     {   
         // 请求行 "GET /a/b/c.html HTTP/1.0"
-        auto endblank = _requestLine.rfind(" ");    //"GET /a/b/c.html"
-        Utility::cutString(_requestLine.substr(0, endblank), " ", _method, _url);
+        // auto endblank = _requestLine.rfind(" ");    //"GET /a/b/c.html"
+        // Utility::cutString(_requestLine.substr(0, endblank), " ", _method, _url);
+        std::stringstream ss(_requestLine);  
+        ss >> _method >> _url >> _version;  // 默认空格分割
         for(char& ch : _method){
             ch = toupper(ch);
         }
         if(_method == "GET"){
             // 可能需要分离参数和url
-            std::string uri, args;
-            if(Utility::cutString(_url, "?", uri, args)){
-                _url.swap(uri);
-                _requestBody = std::move(args);  // 参数统一放在正文处理 ->todo:如果有别的正文,需要分隔
-                _content_length = _requestBody.size();
+            std::string path, args;
+            if(Utility::cutString(_url, "?", path, args)){
+                _url.swap(path);
+                _query.swap(args);
             }
         }
         // 如果访问的是目录,默认访问该目录下的index.html
         if(_url.back() == '/'){
-            _url += "index.html";
+            _url += HOME_PAGE;
         }
 
         // 报头 "Content-Length: 123"
         for(auto& line : _requestHead){
             std::string key, value;
-            Utility::cutString(line, ": ", key, value);
-            value.pop_back();    // 去掉"\n"
-            _requestHeadMap.insert({key, value});
+            Utility::cutString(line, ": ", key, value); //line已经去掉"\n"
+            _headKV.insert({key, value});
         }
-        if(_requestHeadMap.count("Content-Length")){
-            _content_length += atoi(_requestHeadMap["Content-Length"].c_str()); 
+        if(_headKV.count("Content-Length")){
+            _contentLength += atoi(_headKV["Content-Length"].c_str()); 
         }
-
 
         // for debug
         std::cout<<"method: "<<_method<<std::endl;
         std::cout<<"url: "<<_url<<std::endl;
-        std::cout<<"content-length: "<<_content_length<<std::endl;
-        for(auto &[k, v] : _requestHeadMap){
+        std::cout<<"content-length: "<<_contentLength<<std::endl;
+        for(auto &[k, v] : _headKV){
             std::cout<<k<<": "<<v<<std::endl;
         }
     }
 
-    void readBody()
+    bool isNeedReadBody()
+    {
+        if(_method == "POST" && _contentLength != 0) return true;
+        else return false;
+    }
+
+    bool readBody()
     {
         // 分析请求,判断是否需要读取正文
         char ch = 0;
         int total = 0;
-        while(total < _content_length && read(_sockfd, &ch, sizeof(ch)) > 0){
+        while(total < _contentLength && read(_sockfd, &ch, sizeof(ch)) > 0){
             total++;
             _requestBody.push_back(ch);
         }
+
+        return total == _contentLength ? true : false;
     }
 };
 
@@ -152,8 +142,8 @@ public:
     std::string _blank;
     std::string _responseBody;
 
-    int _status_code;
-    int _content_length;
+    int _statusCode;
+    int _contentLength;
     std::string _url;
     bool _cgiFlag;
 private:
@@ -177,7 +167,7 @@ private:
     {
         std::string line;
         line += "Content-Length: ";
-        line += std::to_string(_content_length);
+        line += std::to_string(_contentLength);
         line += LINE_END;
         _responseHead.push_back(line);
 
@@ -207,7 +197,7 @@ private:
     {   // 这里似乎不需要正文,如果有正文数据,那么最好应该交给cgi处理
         
         // 构建响应报头 Content-Length: 123\nContent-Type: text/html\n
-        if(_status_code == 404){
+        if(_statusCode == 404){
             _url = WEB_ROOT;
             _url += "/404.html";
             struct stat fileStatus;
@@ -216,7 +206,7 @@ private:
                 LOG(ERROR, "stat file error, file: " + _url);
                 return false;
             }
-            _content_length = fileStatus.st_size;
+            _contentLength = fileStatus.st_size;
         }
         buildResponseHead(_url);
         // 构建空行
@@ -233,7 +223,7 @@ private:
         auto& requestBody = httpRequest->_requestBody;
 
         // 进程替换 + fd重定向 
-        _content_length = 0;
+        _contentLength = 0;
 
         // 将request body参数传递给子进程
         // get -> 环境变量, post -> 匿名管道
@@ -251,7 +241,7 @@ private:
     bool handlerError()
     {}
 public:
-    HttpResponse(int sockfd):_sockfd(sockfd),_status_code(0),_content_length(0), _cgiFlag(false)
+    HttpResponse(int sockfd):_sockfd(sockfd),_statusCode(0),_contentLength(0), _cgiFlag(false)
     {}
 
     void buildResponse(HttpRequest* httpRequest)
@@ -266,21 +256,21 @@ public:
         stat(_url.c_str(), &fileStatus);
         if(fileStatus.st_nlink == 0){
             LOG(ERROR, "url request resource not exists: " + _url); // 404
-            _status_code = 404;
+            _statusCode = 404;
         }
         else{
-            _status_code = 200; // 200 OK
-            _content_length = fileStatus.st_size;
+            _statusCode = 200; // 200 OK
+            _contentLength = fileStatus.st_size;
         }
 
         // 构建状态行 http/1.0 200 OK
         _statusLine += "HTTP/1.0 ";
-        _statusLine += std::to_string(_status_code) + " ";
-        _statusLine += stcode2desc(_status_code);
+        _statusLine += std::to_string(_statusCode) + " ";
+        _statusLine += stcode2desc(_statusCode);
         _statusLine += LINE_END;
 
         // 构建响应, cgi Noncgi
-        if(_url.find("cgi") != std::string::npos && _status_code != 404){
+        if(_url.find("cgi") != std::string::npos && _statusCode != 404){
             processcgi(httpRequest);
         }
         else{
@@ -316,7 +306,7 @@ public:
                 return;
             }
             ssize_t size = 0;
-            if((size = sendfile(_sockfd, urlfd, nullptr, _content_length)) < _content_length){
+            if((size = sendfile(_sockfd, urlfd, nullptr, _contentLength)) < _contentLength){
                 LOG(ERROR, "sendfile() error.");
             }
 
@@ -326,6 +316,64 @@ public:
         }
     }
 };
+
+class EndPoint
+{
+
+private:
+    int _sockfd;
+    HttpRequest* _httpRequest;
+    HttpResponse* _httpResponse;
+    bool _stop;
+private: 
+
+
+public:
+    EndPoint(int sockfd):_sockfd(sockfd)
+    {
+        _httpRequest = new HttpRequest(_sockfd);
+        _httpResponse = new HttpResponse(_sockfd);
+    }
+    bool handleRequest()
+    {
+        _httpRequest->readRequest();
+        _httpRequest->parseRequest();
+        _httpRequest->readBody();
+
+        // for debug
+        LOG(DEBUG, "receive request: ");
+        std::cout<<_httpRequest->_requestLine;
+        for(auto& headline : _httpRequest->_requestHead){
+            std::cout<<headline;
+        }
+        std::cout<<_httpRequest->_blank;
+        std::cout<<_httpRequest->_requestBody<<std::endl;
+
+        return true;
+    }
+    bool buildResponse()
+    {
+        _httpResponse->buildResponse(_httpRequest);
+        return true;
+    }
+    bool sendResponse()
+    {
+        _httpResponse->sendResponse();
+        return true;
+    }
+
+    bool isStop()
+    {
+        return _stop;
+    }
+
+    ~EndPoint()
+    {
+        delete _httpRequest;
+        delete _httpResponse;
+    }
+};
+
 
 // http协议
 class HttpProtocol
@@ -437,10 +485,12 @@ private:
         delete (int*)args;
 
         // 处理http请求
-        std::unique_ptr<HttpProtocol> _httpHandler(new HttpProtocol(sockfd));
+        std::unique_ptr<EndPoint> _httpHandler(new EndPoint(sockfd));
         _httpHandler->handleRequest();
-        _httpHandler->buildResponse();
-        _httpHandler->sendResponse();
+        if(!_httpHandler->isStop()){
+            _httpHandler->buildResponse();
+            _httpHandler->sendResponse();
+        }
 
         LOG(DEBUG, "handle http finish, close link.");
         // 关闭链接

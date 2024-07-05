@@ -1,0 +1,3 @@
+ls -al
+whoami
+pwd

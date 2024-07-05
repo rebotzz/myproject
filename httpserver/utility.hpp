@@ -57,7 +57,7 @@ public:
             line.push_back(ch);
         }
 
-        std::cout<< "read line: "<< line;
+        // std::cout<< "read line: "<< line;
         if(line.find("..") != std::string::npos){
             LOG(WARING, "url request have '..'");
             return false;

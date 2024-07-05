@@ -1,8 +1,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include "protocol.hpp" // .hpp类的声明的定义可以放在一起
-#include "utility.hpp"
+#include "httpserver.hpp"// .hpp类的声明的定义可以放在一起
 
 // http服务端程序
 
@@ -16,7 +15,8 @@ int main(int argc, char* argv[])
     int port = atoi(argv[1]);
 
     LOG(INFO, "start httpserver.");
-    std::unique_ptr<HttpServer> httpserver(HttpServer::getInstance(port));
+    signal(SIGPIPE, SIG_IGN);
+    std::unique_ptr<HttpServer> httpserver(new HttpServer(port));
     httpserver->loop();
 
     return 0;

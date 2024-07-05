@@ -9,16 +9,21 @@
 using namespace std;
 
 
-bool processcgi(string bin, string _method, string _contentLength)
+bool processcgi(string bin, string _method, string _contentLength, string _query)
 {
     // 0.将参数传递给子进程: get -> 环境变量, post -> 匿名管道
     std::string method = "REQUEST_METHOD=";
     method += _method;
     std::string contentLength = "CONTENT_LENGTH=";
     contentLength += _contentLength;
-    if(putenv((char*)method.c_str()) != 0 || putenv((char*)contentLength.c_str()) != 0){
+    std::string query = "QUERY_STRING=";
+    query += _query;
+    if(putenv((char*)method.c_str()) != 0 
+    || putenv((char*)contentLength.c_str()) != 0
+    || putenv((char*)query.c_str()) != 0){
         perror("putenv error");
     }
+    cout<<"导入环境变量成功"<<endl;
 
     // 1.建立管道
     int input[2] = {0}, output[2] = {0};    // 父进程视角
@@ -126,7 +131,7 @@ int main(int argc, char* argv[])
     // string a = "123abc";
     // cout<<a.back()<<endl;
 
-    processcgi(argv[1], "GET", "1256");
+    processcgi(argv[1], "GET", "1256", "name=1234546sfs");
     cout<<"run over."<<endl;
     
     return 0;

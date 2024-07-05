@@ -21,6 +21,10 @@ int main() {
         cout<< "CONTENT_LENGTH getenv: "<< contentLength<<endl;
     if(!query.empty())
         cout<< "QUERY_STRING getenv: "<< query<<endl;
+    else{
+        cerr<<"not find QUERY_STRING"<<endl;
+        cout<<"not find QUERY_STRING"<<endl;
+    }
         
     cerr<<"bye cgi." <<endl;
 

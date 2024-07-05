@@ -252,18 +252,13 @@ private:
         method += _httpRequest._method;
         std::string contentLength = "CONTENT_LENGTH=";
         contentLength += std::to_string(_httpRequest._contentLength); // 请求正文的长度
-        if(putenv((char*)method.c_str()) != 0 || putenv((char*)contentLength.c_str()) != 0){
+        std::string query = "QUERY_STRING=";
+        query += _httpRequest._query.size() != 0 ? _httpRequest._query : "NULL";
+        if(putenv((char*)method.c_str()) != 0 
+        || putenv((char*)contentLength.c_str()) != 0
+        || putenv((char*)query.c_str()) != 0){
             LOG(ERROR, "putenv failed");
             return false;
-        }
-        if(_httpRequest._method == "GET"){
-            std::string query = "QUERY_STRING=";
-            query += _httpRequest._query;
-            if(putenv((char*)query.c_str()) != 0){
-                LOG(ERROR, "putenv failed");
-                return false;
-            }
-            LOG(DEBUG, "putenv query_string: " + query);
         }
 
         // 1.建立管道

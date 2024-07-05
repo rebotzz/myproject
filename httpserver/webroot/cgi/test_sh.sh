@@ -1,3 +1,0 @@
-ls -al
-whoami
-pwd

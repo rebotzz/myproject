@@ -1,27 +1,29 @@
 bin=httpserver
 source=main.cc
+cgiPath=cgicode
 
 .PHONY:all
-all:$(bin) cgi
+all:$(bin) bin_cgi
 
 $(bin):$(source)
 	g++ -o $@ $^ -std=c++17 -lpthread
 
-cgi:
-	cd ./cgi;\
-	make clean;\
+bin_cgi:
+	cd $(cgiPath);\
 	make;\
 	cd -
 
 out:
-	rm -rf output;\
 	mkdir -p output;\
 	cp -r webroot output;\
-	cp -r cgi output/webroot;\
+	cp -r cgicode/cgi/* output/webroot/cgi;\
 	cp $(bin) output;
 
 .PHONY:clean
 clean:
 	rm $(bin);\
-	rm -rf output
+	rm -rf output;\
+	cd $(cgiPath);\
+	make clean;\
+	cd -;
 

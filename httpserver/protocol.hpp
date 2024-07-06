@@ -132,8 +132,6 @@ public:
         //     std::cout<<k<<": "<<v<<std::endl;
         // }
     }
-
-
 };
 
 // http响应
@@ -206,8 +204,18 @@ private:
     bool _cgi;
 
 private: 
+    void buildResponseStatusLine()
+    {
+        // 构建状态行 http/1.0 200 OK
+        _httpResponse._statusLine += HTTP_VERSION;
+        _httpResponse._statusLine += " ";
+        _httpResponse._statusLine += std::to_string(_httpResponse._statusCode);
+        _httpResponse._statusLine += " ";
+        _httpResponse._statusLine += _httpResponse.stcode2desc();
+        _httpResponse._statusLine += LINE_END;
+    }
 
-    bool buildResponseHead()
+    void buildResponseHead()
     {
         std::string line;
         line += "Content-Length: ";
@@ -220,8 +228,6 @@ private:
         line += _httpResponse.suffix2desc(_httpResponse._suffix);
         line += LINE_END;
         _httpResponse._responseHead.push_back(line);
-
-        return true;
     }
 
     bool processNoncgi()
@@ -229,6 +235,7 @@ private:
         // 构建响应报头 Content-Length: 123\nContent-Type: text/html\n
         if(_httpResponse._statusCode == 404){
             handlerError();
+            return false;
         }
         buildResponseHead();
         // 构建空行
@@ -258,6 +265,8 @@ private:
         || putenv((char*)contentLength.c_str()) != 0
         || putenv((char*)query.c_str()) != 0){
             LOG(ERROR, "putenv failed");
+            _httpResponse._statusCode = HttpResponse::Internal_Server_Error;
+            handlerError();
             return false;
         }
 
@@ -265,12 +274,16 @@ private:
         int input[2] = {0}, output[2] = {0};    // 父进程视角
         if(pipe(input) != 0 || pipe(output) != 0){
             LOG(ERROR, "pipe create failed");
+            _httpResponse._statusCode = HttpResponse::Internal_Server_Error;
+            handlerError();
             return false;
         }
         // 2.创建子进程
         pid_t id = fork();
         if(id < 0){
             LOG(ERROR, "fork failed");
+            _httpResponse._statusCode = HttpResponse::Internal_Server_Error;
+            handlerError();
             return false;
         }
         else if(id == 0){ // child
@@ -282,8 +295,7 @@ private:
             dup2(input[1], STDOUT_FILENO);
             dup2(output[0], STDIN_FILENO);
             execl(bin.c_str(), bin.c_str(), nullptr);  //cgi程序处理数据
-            printf("\n-----------------execl failed---------------------\n");
-            LOG(ERROR, "execl failed");
+            std::cerr<<"\nexecl failed\n"<<std::endl;
             exit(4);
         }
         else{ // father
@@ -301,6 +313,8 @@ private:
                 }
                 if(total != requestBody.size()){
                     LOG(ERROR, "write to child process failed");
+                    _httpResponse._statusCode = HttpResponse::Internal_Server_Error;
+                    handlerError();
                     return false;
                 }
             }
@@ -316,25 +330,23 @@ private:
                 responseBody += buff;
                 memset(buff, 0, s);
             }
-            responseBody += "</body>\n";
+            responseBody += "\n</body>\n";
             responseBody += "</html>";
             _httpResponse._contentLength = responseBody.size();
             // 判断子进程运行状况
             int status = 0;
-            if(waitpid(id, &status, 0) != id){
-                LOG(ERROR, "wait child process failed");
-                return false;
-            }
-            if(WIFEXITED(status)){
+            pid_t ret = waitpid(id, &status, 0);
+            if(ret == id && WIFEXITED(status)){
                 LOG(INFO, "child process exit normally.");
             }
             else {
-                if(WIFSIGNALED(status)) LOG(ERROR, "child process was killed by signal.");
-                else LOG(ERROR, "some thing error for child process.");
+                if(ret != id) LOG(ERROR, "wait child process failed");
+                else if(WIFSIGNALED(status)) LOG(ERROR, "child process was killed by signal.");
+                else LOG(ERROR, "other error for child process.");
                 responseBody = "<!DOCTYPE html>\n <head> <meta charset=\"utf-8\"> </head>\n";
                 responseBody += "<body>\n";
-                responseBody += "Server Error";
-                responseBody += "</body>\n";
+                responseBody += "<h1>Internal Server Error!</h1>";
+                responseBody += "\n</body>\n";
                 responseBody += "</html>";
                 _httpResponse._contentLength = responseBody.size();
                 _httpResponse._statusCode = HttpResponse::Internal_Server_Error;
@@ -342,6 +354,7 @@ private:
         }
         _httpResponse._suffix = "html";
         buildResponseHead();
+        _httpResponse._blank = LINE_END;
         return true;
     }
 
@@ -349,18 +362,42 @@ private:
     {
         return true;
     }
+
     bool handlerError()
     {
-        _httpResponse._path = WEB_ROOT;
-        _httpResponse._path += "/404.html";
-        struct stat fileStatus;
-        memset(&fileStatus, 0, sizeof(fileStatus));
-        stat(_httpResponse._path.c_str(), &fileStatus);
-        _httpResponse._contentLength = fileStatus.st_size;
-        _httpResponse._suffix = ".html";
+        if(404 == _httpResponse._statusCode)    // 404,返回404.html send file
+        {
+            _httpResponse._path = WEB_ROOT;
+            _httpResponse._path += "/404.html";
+            struct stat fileStatus;
+            memset(&fileStatus, 0, sizeof(fileStatus));
+            stat(_httpResponse._path.c_str(), &fileStatus);
+            _httpResponse._contentLength = fileStatus.st_size;
+            // 构建正文 避免来回拷贝,直接sendfile
+            _httpResponse._fd = open(_httpResponse._path.c_str(), O_RDONLY);
+            if(_httpResponse._fd < 0){
+                LOG(ERROR, "open file error, file: " + _httpResponse._path);
+                return false;
+            }
+        }
+        else   // 其他错误,返回错误码描述   send body
+        {
+            auto& responseBody = _httpResponse._responseBody;
+            responseBody = "<!DOCTYPE html>\n <head> <meta charset=\"utf-8\"> </head>\n";
+            responseBody += "<body>\n";
+            responseBody += "<h1>";
+            responseBody += _httpResponse.stcode2desc();
+            responseBody += "!</h1>";
+            responseBody += "\n</body>\n";
+            responseBody += "</html>";
+            _httpResponse._contentLength = responseBody.size();
+        }
+
+        _httpResponse._suffix = "html";
+        buildResponseHead();
+        _httpResponse._blank = LINE_END;
         return true;
     }
-
 public:
     EndPoint(int sockfd)
     :_sockfd(sockfd),_httpRequest(sockfd),_httpResponse(sockfd),_stop(false),_cgi(false)
@@ -390,6 +427,13 @@ public:
         _httpResponse._path = WEB_ROOT;
         _httpResponse._path += _httpRequest._url;
         LOG(INFO, "path: " + _httpResponse._path);
+        if(_httpRequest._url.find("..") != std::string::npos){
+            // 非法请求
+            _httpResponse._statusCode = HttpResponse::Forbidden;
+            buildResponseStatusLine();
+            handlerError();
+            return false;
+        }
 
         // 查看url文件属性
         struct stat fileStatus;
@@ -407,6 +451,7 @@ public:
                     _httpResponse._statusCode = 404;
                 } 
                 else{
+                    _httpResponse._statusCode = HttpResponse::Moved_Permanently;
                     _httpResponse._contentLength = fileStatus.st_size;
                 }
             }
@@ -420,14 +465,9 @@ public:
         }
 
         // 构建状态行 http/1.0 200 OK
-        _httpResponse._statusLine += HTTP_VERSION;
-        _httpResponse._statusLine += " ";
-        _httpResponse._statusLine += std::to_string(_httpResponse._statusCode);
-        _httpResponse._statusLine += " ";
-        _httpResponse._statusLine += _httpResponse.stcode2desc();
-        _httpResponse._statusLine += LINE_END;
+        buildResponseStatusLine();
 
-        // 构建响应, cgi Noncgi
+        // 构建报头+空行+正文, cgi / Noncgi
         if(_cgi && _httpResponse._statusCode != 404){
             processcgi();
         }
@@ -465,16 +505,16 @@ public:
                 LOG(ERROR, "send _responseBody error");
                 return false;
             }
-            LOG(DEBUG, "send by body, cgi");
+            LOG(DEBUG, "send body by cgi");
         }
         else{
             ssize_t size = 0;
             if((size = sendfile(_sockfd, _httpResponse._fd, nullptr, _httpResponse._contentLength)) < _httpResponse._contentLength){
-                LOG(ERROR, "sendfile() error.");
+                LOG(ERROR, "sendfile error.");
                 return false;
             }
             close(_httpResponse._fd);
-            LOG(DEBUG, "send by sendfile, noncgi");
+            LOG(DEBUG, "sendfile by noncgi");
             LOG(INFO, "sendfile : " + _httpResponse._path);
             LOG(INFO, "sendfile size: " + std::to_string(size));
         }

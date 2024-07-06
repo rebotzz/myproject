@@ -1,12 +1,14 @@
 documet=cgi
 
 .PHONY:all
-all:$(documet) test_cgi
+all:$(documet) test_cgi cal_cgi
 
 $(documet):
 	mkdir $@;
-
 test_cgi:test_cgi.cc
+	g++ -o $@ $^;
+	mv $@ $(documet);
+cal_cgi:cal_cgi.cc
 	g++ -o $@ $^;
 	mv $@ $(documet);
 

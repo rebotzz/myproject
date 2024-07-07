@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #define LOG(logLevel, message) Log(#logLevel, message, __FILE__, __LINE__)  // 宏函数
 void Log(std::string loglevel, std::string msg, std::string file, int line)
@@ -53,15 +55,10 @@ public:
                     ch = '\n';
                 }
             }
-
             line.push_back(ch);
         }
 
         // std::cout<< "read line: "<< line;
-        if(line.find("..") != std::string::npos){
-            LOG(WARING, "url request have '..'");
-            return false;
-        }
         return true;
     }
 

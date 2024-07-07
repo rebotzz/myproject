@@ -20,7 +20,7 @@ private:
     std::string _ip;
 
     static pthread_mutex_t _singleInstanceMutex;
-    static Self* _selfPtr;
+    static Self* _instance;
 private:
     // 网络通讯准备工作
     Tcpserver(int port, const std::string& ip):_listensock(-1),_port(port),_ip(ip)
@@ -55,16 +55,16 @@ private:
 public:
     static Self* getInstance(int port = PORT, const std::string& ip = "0.0.0.0")   // 单例
     {
-        if(_selfPtr == nullptr)
+        if(_instance == nullptr)
         {
             pthread_mutex_lock(&_singleInstanceMutex);
-            if(_selfPtr == nullptr)
+            if(_instance == nullptr)
             {
-                _selfPtr = new Self(port, ip);
+                _instance = new Self(port, ip);
             }
             pthread_mutex_unlock(&_singleInstanceMutex);
         }
-        return _selfPtr;
+        return _instance;
     }
 
     int listensockfd()
@@ -81,4 +81,4 @@ public:
 
 };
 pthread_mutex_t Tcpserver::_singleInstanceMutex = PTHREAD_MUTEX_INITIALIZER;
-Tcpserver* Tcpserver::_selfPtr = nullptr;
+Tcpserver* Tcpserver::_instance = nullptr;

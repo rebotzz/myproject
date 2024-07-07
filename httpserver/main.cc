@@ -15,7 +15,8 @@ int main(int argc, char* argv[])
     int port = atoi(argv[1]);
 
     LOG(INFO, "start httpserver.");
-    signal(SIGPIPE, SIG_IGN);
+    // daemon(1, 1);   // 守护进程
+    signal(SIGPIPE, SIG_IGN); // 忽略管道信号,防止程序退出
     std::unique_ptr<HttpServer> httpserver(new HttpServer(port));
     httpserver->loop();
 

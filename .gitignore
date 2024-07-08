@@ -1,6 +1,7 @@
 # Document
 /.vscode
 .vscode/*
+httpserver/mysql
 
 # Prerequisites
 *.d

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include "httpserver.hpp"// .hpp类的声明的定义可以放在一起
+#include "./include/httpserver.hpp"// .hpp类的声明的定义可以放在一起
 
 // http服务端程序
 
@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
 
     LOG(INFO, "start httpserver.");
     // daemon(1, 1);   // 守护进程
+
     signal(SIGPIPE, SIG_IGN); // 忽略管道信号,防止程序退出
     std::unique_ptr<HttpServer> httpserver(new HttpServer(port));
     httpserver->loop();

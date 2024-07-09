@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <unistd.h>
 
 #define REQUEST_METHOD "REQUEST_METHOD"
 #define CONTENT_LENGTH "CONTENT_LENGTH"
@@ -42,10 +43,44 @@ bool cutString(const std::string& target, const std::string& separator, std::str
     return false;
 }
 
-void readEnv(std::string& method_out, std::string& contentLength_out, std::string& queryString_out)
+class CgiArgument
 {
-    char * envPtr = nullptr;
-    method_out = (envPtr = getenv(REQUEST_METHOD)) == nullptr ? "" : envPtr;
-    contentLength_out = (envPtr = getenv(CONTENT_LENGTH)) == nullptr ? "" : envPtr;
-    queryString_out = (envPtr = getenv(QUERY_STRING)) == nullptr ? "" : envPtr;
-}
+private:
+    std::string _method, _contentLength, _queryString;
+private:
+    // 读取环境变量
+    void readEnv()
+    {
+        char * envPtr = nullptr;
+        _method = (envPtr = getenv(REQUEST_METHOD)) == nullptr ? "" : envPtr;
+        _contentLength = (envPtr = getenv(CONTENT_LENGTH)) == nullptr ? "" : envPtr;
+        _queryString = (envPtr = getenv(QUERY_STRING)) == nullptr ? "" : envPtr;
+    }
+public:
+    // 读取参数
+    bool readArgument(std::string& argument_out)
+    {
+        readEnv();
+        if(_method == "POST"){
+            int length = atoi(_contentLength.c_str());
+            argument_out.resize(length);
+            int total = 0, size = 0;
+            while(total < length && (size = read(0, &argument_out[0], length - total)) > 0){
+                total += size;
+            }
+            if(total != length) {
+                LOG(ERROR, "CGI Read Argument Error");
+                return false;
+            } 
+        }
+        else if(_method == "GET"){
+            argument_out = _queryString;
+        }
+        else{
+            // ...
+        }
+        return true;
+    }
+
+};
+

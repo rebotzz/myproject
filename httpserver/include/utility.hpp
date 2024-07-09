@@ -4,7 +4,11 @@
 #include <ctime>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
+#define __LOG_FILE_NAME__ "./log.txt"
 #define LOG(logLevel, message) Log(#logLevel, message, __FILE__, __LINE__)  // 宏函数
 void Log(std::string loglevel, std::string msg, std::string file, int line)
 {
@@ -18,7 +22,17 @@ void Log(std::string loglevel, std::string msg, std::string file, int line)
     timestr += std::to_string(caltime->tm_hour) + ":";
     timestr += std::to_string(caltime->tm_min) + ":";
     timestr += std::to_string(caltime->tm_sec);
-    std::cout<<"["<<loglevel<<"]["<<timestr<<"]["<<msg<<"]["<<file<<"]["<<line<<"]"<<std::endl;
+    std::string out = "["+loglevel+"]["+timestr+"]["+msg+"]["+file+"]["+std::to_string(line)+"]\n";
+
+#ifdef __LOG_FILE__
+    int fd = open(__LOG_FILE_NAME__, O_CREAT | O_APPEND);
+    if(fd > 0){
+        write(fd, out.c_str(), out.size());
+        close(fd);
+    }
+#else
+    std::cout<<out;
+#endif
 }
 enum LOG_LEVEL
 {

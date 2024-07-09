@@ -1,7 +1,8 @@
 # Document
-/.vscode
-.vscode/*
-httpserver/mysql
+.vscode
+mysql
+!httpserver/cgicode/mysql/lib/libmysqlclient.so
+!httpserver/cgicode/mysql/lib/libmysqlclient.so.24.0.1
 
 # Prerequisites
 *.d

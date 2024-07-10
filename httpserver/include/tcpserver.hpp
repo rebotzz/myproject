@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>

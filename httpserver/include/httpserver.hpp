@@ -106,7 +106,7 @@ private:
             routine(&_sockfd);
         }
     };
-    // 线程
+    // 线程例程
     static void* routine(void* args)
     {
         int sockfd = *(int*)args;

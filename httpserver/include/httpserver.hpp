@@ -135,20 +135,16 @@ public:
     {
         std::unique_ptr<Tcpserver> tcp(Tcpserver::getInstance(_port, _ip));
         std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance());
-        int listensock = tcp->listensockfd();
         while(!_stop)
         {
             // 1.监听并建立链接
-            struct sockaddr_in peer;
-            socklen_t len = sizeof(peer);
-            memset(&peer, 0, sizeof(peer));
-            int sockfd = accept(listensock, (struct sockaddr*)&peer, &len);
+            std::string peerIP;
+            int sockfd = tcp->Accepter(peerIP);
             if(sockfd < 0){
-                LOG(ERROR, "accept socket error!");
                 continue;
             }
             std::cout<<"\n\n---------begin-------------"<<std::endl;
-            LOG(INFO, "accept a new link, sockfd: " + std::to_string(sockfd));
+            LOG(INFO, "accept a new link, ip: " + peerIP + ", sockfd: " + std::to_string(sockfd));
 
             // 2.派发任务给线程
             threadPool->pushTask(Task(sockfd));

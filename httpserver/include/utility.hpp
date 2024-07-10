@@ -13,6 +13,9 @@
 void Log(std::string loglevel, std::string msg, std::string file, int line)
 {
     // [日志级别][时间][日志描述][文件][行号]
+#ifndef __DEBUG__
+    if(loglevel == "DEBUG") return;
+#endif
 
     time_t timestamp = time(nullptr);
     struct tm* caltime = localtime(&timestamp);

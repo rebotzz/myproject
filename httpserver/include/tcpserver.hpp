@@ -72,6 +72,22 @@ public:
         return _listensock;
     }
 
+    int Accepter(std::string& ip)
+    {
+        struct sockaddr_in peer;
+        socklen_t len = sizeof(peer);
+        memset(&peer, 0, sizeof(peer));
+        int sockfd = accept(_listensock, (struct sockaddr*)&peer, &len);
+        if(sockfd < 0){
+            LOG(ERROR, "accept socket error!");
+            return -1;
+        }
+        char buff[32] = {0}; 
+        inet_ntop(AF_INET, reinterpret_cast<void *>(&peer.sin_addr.s_addr), buff, sizeof(buff));
+        ip = buff;
+        return sockfd;
+    }
+
     ~Tcpserver()
     {
         if(_listensock > 0){

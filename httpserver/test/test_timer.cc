@@ -13,6 +13,12 @@ typedef struct ThreadData {
     std::atomic<bool> should_exit;
 } ThreadData;
 
+void sig_handler(int signum, siginfo_t *info, void *context) {
+    printf("Timer expired, thread ID: %lu\n", (unsigned long)pthread_self());
+    // 设置标志以指示线程应退出
+    shouldExit.store(true, std::memory_order_release);
+}
+
 void *thread_func(void *arg) {
     ThreadData *data = (ThreadData *)arg;
 
@@ -45,7 +51,7 @@ void *thread_func(void *arg) {
 
     // 注册信号处理函数
     memset(&sa, 0, sizeof(sa));
-    sa.sa_sigaction = [](int signum, siginfo_t *info, void *context) {
+    sa.sa_sigaction = [data](int signum, siginfo_t *info, void *context) {
         printf("Timer expired in thread %lu\n", (unsigned long)pthread_self());
         data->should_exit.store(true, std::memory_order_release);
     };
@@ -67,7 +73,7 @@ void *thread_func(void *arg) {
         exit(EXIT_FAILURE);
     }
 
-    free(data); // 释放线程数据结构
+    delete data; // 释放线程数据结构
     return NULL;
 }
 

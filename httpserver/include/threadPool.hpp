@@ -130,3 +130,4 @@ template<class Task>
 pthread_mutex_t ThreadPool<Task>::_singleInstanceMutex = PTHREAD_MUTEX_INITIALIZER;
 template<class Task>
 ThreadPool<Task>* ThreadPool<Task>::_instance = nullptr;
+

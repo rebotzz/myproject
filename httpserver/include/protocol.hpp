@@ -19,7 +19,8 @@
 
 #define LINE_END "\n"
 #define WEB_ROOT "webroot"
-#define HTTP_VERSION "HTTP/1.0"
+#define HTTP_VERSION_1_0 "HTTP/1.0"
+#define HTTP_VERSION_1_1 "HTTP/1.1"
 #define HOME_PAGE "index.html"
 
 
@@ -196,6 +197,7 @@ private:
     int _sockfd;
     HttpRequest _httpRequest;
     HttpResponse _httpResponse;
+    std::string _http_version;
     bool _stop;
     bool _cgi;
 
@@ -203,7 +205,7 @@ private:
     void buildResponseStatusLine()
     {
         // 构建状态行 http/1.0 200 OK
-        _httpResponse._statusLine += HTTP_VERSION;
+        _httpResponse._statusLine += _http_version;
         _httpResponse._statusLine += " ";
         _httpResponse._statusLine += std::to_string(_httpResponse._statusCode);
         _httpResponse._statusLine += " ";
@@ -395,8 +397,9 @@ private:
         return true;
     }
 public:
-    EndPoint(int sockfd)
-    :_sockfd(sockfd),_httpRequest(sockfd),_httpResponse(sockfd),_stop(false),_cgi(false)
+    EndPoint(int sockfd, std::string http_version = HTTP_VERSION_1_0)
+    :_sockfd(sockfd),_httpRequest(sockfd),_httpResponse(sockfd)
+    ,_stop(false),_cgi(false),_http_version(http_version)
     {}
 
     bool handleRequest()

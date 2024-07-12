@@ -250,8 +250,8 @@ private:
     bool processcgi()
     {
         auto& bin = _httpResponse._path;
-        LOG(DEBUG, "processcgi begin.");
-        LOG(DEBUG, "bin: " + bin);
+        // LOG(DEBUG, "processcgi begin.");
+        // LOG(DEBUG, "bin: " + bin);
         // 0.将参数传递给子进程: get -> 环境变量, post -> 匿名管道
         std::string method = "REQUEST_METHOD=";
         method += _httpRequest._method;
@@ -268,7 +268,7 @@ private:
             return false;
         }
 
-        // 1.建立管道
+        // 1.建立管道,在fork之前
         int input[2] = {0}, output[2] = {0};    // 父进程视角
         if(pipe(input) != 0 || pipe(output) != 0){
             LOG(ERROR, "pipe create failed");
@@ -290,11 +290,11 @@ private:
             close(output[1]);
 
             // 3.fd重定向 + 进程替换 
-            dup2(input[1], STDOUT_FILENO);
             dup2(output[0], STDIN_FILENO);
+            dup2(input[1], STDOUT_FILENO);
             execl(bin.c_str(), bin.c_str(), nullptr);  //cgi程序处理数据
             std::cerr<<"\nexecl failed\n"<<std::endl;
-            exit(4);
+            exit(4);    // 子进程退出,fd自动回收
         }
         else{ // father
             // input[0] 读, output[1] 写
@@ -353,6 +353,10 @@ private:
         _httpResponse._suffix = "html";
         buildResponseHead();
         _httpResponse._blank = LINE_END;
+
+        // 回收资源,关闭fd
+        close(input[0]);
+        close(output[1]);
         return true;
     }
 
@@ -504,7 +508,7 @@ public:
                 LOG(ERROR, "send _responseBody error");
                 return false;
             }
-            LOG(DEBUG, "send body by cgi");
+            // LOG(DEBUG, "send body by cgi");
         }
         else{
             ssize_t size = 0;
@@ -513,9 +517,8 @@ public:
                 return false;
             }
             close(_httpResponse._fd);
-            LOG(DEBUG, "sendfile by noncgi");
-            LOG(INFO, "sendfile : " + _httpResponse._path);
-            LOG(INFO, "sendfile size: " + std::to_string(size));
+            // LOG(DEBUG, "sendfile by noncgi");
+            LOG(INFO, "sendfile : " + _httpResponse._path + "size: " + std::to_string(size));
         }
 
         return true;

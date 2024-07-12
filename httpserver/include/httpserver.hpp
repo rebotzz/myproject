@@ -211,7 +211,7 @@ private:
         while(_httpHandler->handleRequest())    // 阻塞式recv, 通过close(fd)控制连接结束
         {
             *(task->_timeoutPtr) = 60;                // 重置连接结束倒计时; 临界资源
-            LOG(DEBUG, "sockfd: [" + std::to_string(task->_sockfd) + "] 重置timeout");
+            // LOG(DEBUG, "sockfd: [" + std::to_string(task->_sockfd) + "] 重置timeout");
             if(!_httpHandler->isStop()){
                 _httpHandler->buildResponse();
                 _httpHandler->sendResponse();
@@ -266,9 +266,9 @@ public:
     {
         // 初始化:TCP连接, 线程池, 长链接管理
         std::unique_ptr<Tcpserver> tcp(Tcpserver::getInstance(_port, _ip));
-        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance(15));
+        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance(10)); //线程数量
         pthread_t tid;
-        pthread_create(&tid, nullptr, linkManager, this);   
+        // pthread_create(&tid, nullptr, linkManager, this);   
 
         // for test
         // std::atomic_int aa = 1;

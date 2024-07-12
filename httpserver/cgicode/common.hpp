@@ -43,11 +43,11 @@ bool cutString(const std::string& target, const std::string& separator, std::str
     return false;
 }
 
-class CgiArgument
+class CgiClass
 {
-private:
+public:
     std::string _method, _contentLength, _queryString;
-private:
+public:
     // 读取环境变量
     void readEnv()
     {
@@ -57,7 +57,7 @@ private:
         _queryString = (envPtr = getenv(QUERY_STRING)) == nullptr ? "" : envPtr;
     }
 public:
-    // 读取参数
+    // 读取参数: 包括正文(如果body存在)
     bool readArgument(std::string& argument_out)
     {
         readEnv();

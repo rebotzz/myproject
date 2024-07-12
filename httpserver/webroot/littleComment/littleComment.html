@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板</title>
+    <!-- 引入 Element UI 样式 -->
+    <link rel="stylesheet" href="index.css">
+    <!-- 引入 Vue -->
+    <script src="vue.js"></script>
+    <!-- 引入 Element UI -->
+    <script src="index.js"></script>
+    <style>
+        /* 全局样式 */
+		body {
+		  background-image: url("background.jpg");
+		  <!-- background-color: #f2f2f2; -->  
+		  <!-- background-size: cover; -->
+		  <!-- background-position: center; -->
+		  margin: 0;
+          padding: 0;
+		  font-family: Arial, sans-serif;
+		}
+ 
+        #app {
+            max-width: 800px;
+            margin: 50px auto;
+        }
+ 
+        .box-card {
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+ 
+        .el-form-item {
+            margin-bottom: 20px;
+        }
+ 
+        .message-list {
+            margin-top: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+ 
+        .message-item {
+            padding: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+ 
+        .message-item:last-child {
+            border-bottom: none;
+        }
+ 
+        .message-item p {
+            margin: 5px 0;
+        }
+ 
+        .title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+ 
+        .date {
+            color: #999;
+            font-size: 0.9em;
+        }
+ 
+        .download-link {
+            color: #409eff;
+            text-decoration: none;
+        }
+ 
+        .download-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-card class="box-card">
+        <div slot="header">
+            <span>留言板</span>
+        </div>
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="姓名">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="留言">
+                <el-input type="textarea" v-model="form.message"></el-input>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm">提交</el-button>
+                </el-form-item>
+        </el-form>
+    </el-card>
+ 
+    <el-card class="box-card" style="margin-top: 20px;">
+        <div slot="header">
+            <span>留言列表</span>
+        </div>
+        <div class="message-list">
+            <div v-for="(message, index) in messages" :key="index" class="message-item">
+                <p><strong>{{ message.name }}:</strong></p>
+                <p>{{ message.message }}</p>
+                <p class="date">{{ message.date }}</p>
+            </div>
+        </div>
+    </el-card>
+</div>
+ 
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                form: {
+                    name: '',
+                    message: ''
+                },
+                messages: []
+            };
+        },
+        // <!-- methods: { -->
+        //     <!-- submitForm() { -->
+        //         <!-- if (this.form.name && this.form.message) { -->
+        //             <!-- const now = new Date(); -->
+        //             <!-- const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`; -->
+					
+		// 			<!-- this.messages.push({ name: this.form.name, message: this.form.message, date: formattedDate }); -->
+        //             <!-- this.form.name = ''; -->
+        //             <!-- this.form.message = ''; -->
+        //         <!-- } else { -->
+        //             <!-- this.$message({ -->
+        //                 <!-- message: '请填写完整的姓名和留言内容', -->
+        //                 <!-- type: 'warning' -->
+        //             <!-- }); -->
+        //         <!-- } -->
+        //     <!-- } -->
+        // <!-- } -->
+		
+		
+		// 加入提交后端功能
+		methods: {
+			submitForm() {
+				// 构建message列表
+				if (this.form.name && this.form.message) {
+				const now = new Date();
+				const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+				this.messages.push({ name: this.form.name, message: this.form.message, date: formattedDate });
+				
+                fetch('/cgi/littleComment', {
+				  method: 'POST',
+				  headers: {
+					'Content-Type': 'application/json',
+				  },
+				  body: JSON.stringify(this.form),
+				})
+				.then(response => {
+				  if (!response.ok) {
+					throw new Error('Network response was not ok');
+				  }
+				  return response.json();
+				})
+				.then(data => {
+				  // 处理服务器返回的数据
+				  console.log(data);
+				  // 可以在这里更新状态或重新渲染UI
+				})
+				.catch(error => {
+				  console.error('Error:', error);
+				  // 错误处理
+				});
+                
+                this.form.name = '';
+				this.form.message = '';
+				} else {
+					this.$message({
+						message: '请填写完整的姓名和留言内容',
+						type: 'warning'
+					});
+				}
+
+			}
+		}
+			
+    });
+</script>
+</body>
+</html>

@@ -429,7 +429,7 @@ public:
     {
         _httpResponse._path = WEB_ROOT;
         _httpResponse._path += _httpRequest._url;
-        LOG(INFO, "path: " + _httpResponse._path);
+        // LOG(INFO, "path: " + _httpResponse._path);
         if(_httpRequest._url.find("..") != std::string::npos){
             // 非法请求
             _httpResponse._statusCode = HttpResponse::Forbidden;
@@ -446,7 +446,7 @@ public:
             _httpResponse._statusCode = 404;
         }
         else{
-            LOG(INFO, "url exists, file: " + _httpResponse._path);
+            // LOG(INFO, "url exists, file: " + _httpResponse._path);
             if(S_ISDIR(fileStatus.st_mode)){    // 如果是目录文件
                 _httpResponse._path += "/"; 
                 _httpResponse._path += HOME_PAGE; 
@@ -513,12 +513,12 @@ public:
         else{
             ssize_t size = 0;
             if((size = sendfile(_sockfd, _httpResponse._fd, nullptr, _httpResponse._contentLength)) < _httpResponse._contentLength){
-                LOG(ERROR, "sendfile error.");
+                LOG(ERROR, "sendfile error. file: " + _httpResponse._path);
                 return false;
             }
             close(_httpResponse._fd);
             // LOG(DEBUG, "sendfile by noncgi");
-            LOG(INFO, "sendfile : " + _httpResponse._path + "size: " + std::to_string(size));
+            LOG(INFO, "[sockfd]: " + std::to_string(_sockfd) + " sendfile: " + _httpResponse._path + " size: " + std::to_string(size));
         }
 
         return true;

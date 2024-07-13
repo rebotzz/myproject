@@ -101,7 +101,7 @@ public:
         _taskQueue.push(task);
         pthread_mutex_unlock(&_mutex);
         pthread_cond_signal(&_cond);   // debug:需要唤醒线程
-        LOG(DEBUG, "push task seccess.");
+        // LOG(DEBUG, "push task seccess.");
         return true;
     }
 

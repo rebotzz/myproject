@@ -1,4 +1,9 @@
 #include <iostream>
+
+
+
+
+#if 0
 #include <pthread.h>
 #include <memory>
 #include "threadPool.hpp"
@@ -68,36 +73,36 @@ void sigpipe_hander(int sig)
     cout<<"get a signal pipe"<<endl;
 }
 
-int main()
-{
-    // 建立连接
-    auto* tcp = Tcpserver::getInstance();
-    string peer;
-    sockfd = tcp->Accepter(peer);
-    // signal(SIGPIPE, sigpipe_hander);
-    signal(SIGPIPE, SIG_IGN);   // 就算忽略SIGPIPE, 关闭fd后,read结束阻塞
+// int main()
+// {
+//     // 建立连接
+//     auto* tcp = Tcpserver::getInstance();
+//     string peer;
+//     sockfd = tcp->Accepter(peer);
+//     // signal(SIGPIPE, sigpipe_hander);
+//     signal(SIGPIPE, SIG_IGN);   // 就算忽略SIGPIPE, 关闭fd后,read结束阻塞
 
-    // 定时器,关闭文件
-    signal(SIGALRM, sigalrm_hander);
-    alarm(10);
-    cout<<"开始计时: 10s"<<endl;
-    while(true)
-    {
-        char buff[128] = {0};
-        ssize_t s = read(sockfd, buff, sizeof(buff) - 1);
-        if(s > 0) buff[s] = 0;
-        if(s <= 0) break;
+//     // 定时器,关闭文件
+//     signal(SIGALRM, sigalrm_hander);
+//     alarm(10);
+//     cout<<"开始计时: 10s"<<endl;
+//     while(true)
+//     {
+//         char buff[128] = {0};
+//         ssize_t s = read(sockfd, buff, sizeof(buff) - 1);
+//         if(s > 0) buff[s] = 0;
+//         if(s <= 0) break;
 
-        cout<<"read: "<<buff<<endl;
-        alarm(10);
-        cout<<"重新开始计时: 5s"<<endl;
-    }
+//         cout<<"read: "<<buff<<endl;
+//         alarm(10);
+//         cout<<"重新开始计时: 5s"<<endl;
+//     }
 
-    cout<<"程序退出"<<endl;
+//     cout<<"程序退出"<<endl;
 
-    delete tcp;
-    return 0;
-}
+//     delete tcp;
+//     return 0;
+// }
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -203,4 +208,41 @@ bool test_comment_cgi()
 //     cout<<"after wait, 父进程 exit"<<endl;
 //     return 0;
 // }
+
+#endif
+
+#include <string>
+#include <cstring>
+#include <cstdlib>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+using namespace std;
+#define FILE_PATH "./comment.txt"
+
+int main()
+{
+    // 留言板功能cgi code...
+    // 1.读取环境变量 2.读取参数
+
+    cerr<<"这里是: 留言板功能cgi"<<endl;
+
+    int fd = open(FILE_PATH, O_CREAT | O_APPEND | O_WRONLY, 0666);
+    if(fd < 0) {
+        printf("留言板文件打开错误.");
+        return 1;
+    }
+
+    string argument = "test comment write file.\n你好, 你能看见吗?\n";
+    write(fd, argument.c_str(), argument.size());
+    close(fd);
+
+
+    cerr<<"留言板功能cgi read: "<<argument<<endl;
+    cerr<<"留言板功能cgi 结束, bye."<<endl;
+    return 0;
+}
+
 

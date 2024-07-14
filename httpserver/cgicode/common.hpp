@@ -9,18 +9,12 @@
 #define QUERY_STRING "QUERY_STRING"
 
 #define LOG(logLevel, message) Log(#logLevel, message, __FILE__, __LINE__)  // 宏函数
+std::string gettime();
 void Log(std::string loglevel, std::string msg, std::string file, int line)
 {
     // [日志级别][时间][日志描述][文件][行号]
 
-    time_t timestamp = time(nullptr);
-    struct tm* caltime = localtime(&timestamp);
-    std::string timestr = std::to_string(caltime->tm_year + 1900) + "-";
-    timestr += std::to_string(caltime->tm_mon + 1) + "-";
-    timestr += std::to_string(caltime->tm_mday) + " ";
-    timestr += std::to_string(caltime->tm_hour) + ":";
-    timestr += std::to_string(caltime->tm_min) + ":";
-    timestr += std::to_string(caltime->tm_sec);
+    std::string timestr = gettime();
     std::cout<<"["<<loglevel<<"]["<<timestr<<"]["<<msg<<"]["<<file<<"]["<<line<<"]"<<std::endl;
 }
 enum LOG_LEVEL
@@ -31,6 +25,18 @@ enum LOG_LEVEL
     ERROR,
     FATAL
 };
+
+std::string gettime()
+{
+    time_t timestamp = time(nullptr);
+    struct tm* caltime = localtime(&timestamp);
+    int year = caltime->tm_year + 1900, month = caltime->tm_mon + 1, day = caltime->tm_mday;
+    int hour = caltime->tm_hour, minute = caltime->tm_min, second = caltime->tm_sec;
+    char buff[32] = {0};
+    snprintf(buff, sizeof(buff), "%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+
+    return buff;
+}
 
 bool cutString(const std::string& target, const std::string& separator, std::string& out1, std::string& out2)
 {   

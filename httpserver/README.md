@@ -38,5 +38,23 @@
 猜测: 连续报头解析错误导致 --> 连接断开  测试结果: 连续报头解析正确;
 猜测: 浏览器为了性能使用多线程获取资源, 导致多个tcp socket
 一个hash表, 使得一个ip port 只能有一个task  --> 不行:浏览器可能多个线程获取资源, 多个socket
-
 暂时无法解决: 退回http/1.0短链接
+猜测:
+还可能是浏览器使用了更高级的http协议2/3
+线程池动态增加，依据任务队列的数量，如果超过一定百分比，增加线程数量，并管理起来
+是不是直接sendfile 没有让响应报头和文本关联起来  -- 不,代码是关联的,但是结果需要验证
+有点像http2 服务器可以把资源提前发送
+
+### 小知识
+- 1.mysql
+```
+systemctl start mysql.service  // mysql8.0 服务端启动不是mysqld, 是mysql.service
+/etc/mysql/mysql.conf.d/mysqld.cnf  // mysql8.0修改配置
+password("密码") 被删除了 替代: md5() --> 32字节; SHA1() --> 40字节
+flush privileges
+```
+- 2.文件
+```
+open打开文件, 如果新建文件, 8进制权限表示需要0666, 不能直接666, 0表示八进制
+```
+- 3.cpp-http开源库的使用

@@ -335,7 +335,7 @@ private:
             int status = 0;
             pid_t ret = waitpid(id, &status, 0);
             if(ret == id && WIFEXITED(status)){
-                LOG(INFO, "child process exit normally.");
+                LOG(DEBUG, "child process exit normally.");
             }
             else {
                 if(ret != id) LOG(ERROR, "wait child process failed");

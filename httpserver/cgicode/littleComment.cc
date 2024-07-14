@@ -1,11 +1,14 @@
 #include <string>
 #include <cstring>
+#include <cstdlib>
 #include <unistd.h>
 #include <sys/types.h>
-#include <cstdlib>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "common.hpp"
 
 using namespace std;
+#define FILE_PATH "./comment.txt"
 
 int main()
 {
@@ -14,10 +17,20 @@ int main()
     string argument;
     CgiClass cgiArgs;
     cgiArgs.readArgument(argument); // 包括正文
-    int contentLen = atoi(cgiArgs._contentLength.c_str());
 
-    cout<<"这里是: 留言板功能cgi"<<endl;
-    cout<<"read: "<<argument<<endl;
+    cerr<<"这里是: 留言板功能cgi"<<endl;
+    cerr<<"read: "<<argument<<endl;
+
+    int fd = open(FILE_PATH, O_CREAT | O_APPEND | O_WRONLY, 0666);  //debug: 666 -> 0666
+    if(fd < 0) {
+        LOG(ERROR, "留言板文件打开错误.");
+        return 1;
+    }
+
+    // string out = "[" + gettime() + "] " + argument + "\n";
+    write(fd, argument.c_str(), argument.size());
+    close(fd);
+
 
     cerr<<"留言板功能cgi read: "<<argument<<endl;
     cerr<<"留言板功能cgi 结束, bye."<<endl;

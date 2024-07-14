@@ -37,6 +37,7 @@ private:
             _threads.push_back(tid);
             // LOG(DEBUG, "create a new thread " + std::to_string(i));
         }
+        LOG(INFO, "threads pool initialize seccess.");
     }
     ThreadPool(Self& _self) = delete;
     Self& operator=(Self& _self) = delete;
@@ -65,7 +66,7 @@ private:
             pthread_mutex_unlock(&tp->_mutex);
 
             // 2.执行任务
-            LOG(DEBUG, "thread: " + std::to_string(pthread_self()) + ", sockfd: " + std::to_string(task._sockfd));
+            // LOG(DEBUG, "thread: " + std::to_string(pthread_self()) + ", sockfd: " + std::to_string(task._sockfd));
             task();
         }
 

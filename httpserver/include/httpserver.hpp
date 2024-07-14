@@ -86,6 +86,7 @@ public:
 
 // HttpServer 0.2版本,线程池 
 // 短链接:一旦处理完成立刻断开连接;优点:避免长时间占用.缺点:重复TCP连接建立,消耗资源
+#define HTTP_SERVER_0_2
 #ifdef HTTP_SERVER_0_2
 // HttpServer 1.1版本:线程池,生产者消费者模型
 class HttpServer
@@ -125,7 +126,7 @@ private:
             _httpHandler->sendResponse();
         }
 
-        LOG(DEBUG, "handle http finish, close link.");
+        LOG(INFO, "handle http finish, close link.");
         // 关闭链接
         close(sockfd);
         return nullptr;
@@ -151,7 +152,8 @@ public:
                 continue;
             }
             std::cout<<"\n\n---------begin-------------"<<std::endl;
-            LOG(INFO, "accept a new link, ip: " + peerIP + ", sockfd: " + std::to_string(sockfd));
+            std::string peer = peerIP + ":" + std::to_string(sockfd);
+            LOG(INFO, "accept a new link. " + peer);
 
             // 2.派发任务给线程
             threadPool->pushTask(Task(sockfd));
@@ -166,7 +168,7 @@ public:
 
 
 // HttpServer 0.3版本,线程池+长链接: 建立TCP连接后维持连接,以便后续通讯. 缺点:长时间占用
-#define HTTP_SERVER_0_3
+// #define HTTP_SERVER_0_3
 #ifdef HTTP_SERVER_0_3
 // HttpServer 1.1版本:线程池,生产者消费者模型
 class HttpServer

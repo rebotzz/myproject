@@ -8,7 +8,7 @@
 - 4.单例设计, CGI编写使用:网络计算器,mysql数据库访问(注册),todo: 日期计算器,搜索引擎(代理)
 - 5.实现http/1.1长链接功能:单独一个线程管理连接
 - todo: IO多路复用(reactor模型), 音乐播放功能, 留言板功能, http/1.1长链接功能, 视频播放功能? 网络.js小游戏功能? url中特殊字符需要(decode/encode) https
-
+- cpp-http开源库的使用
 
 
 ### 遇到的问题
@@ -57,4 +57,7 @@ flush privileges
 ```
 open打开文件, 如果新建文件, 8进制权限表示需要0666, 不能直接666, 0表示八进制
 ```
-- 3.cpp-http开源库的使用
+- 3.http html url
+```
+http index.html中的url是相对路径,相对于index.html的路径 
+```

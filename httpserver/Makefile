@@ -6,7 +6,7 @@ cgiPath=cgicode
 all:$(bin) bin_cgi
 
 $(bin):$(source)
-	g++ -o $@ $^ -std=c++17 -lpthread #-D__DEBUG__ 
+	g++ -o $@ $^ -std=c++17 -lpthread -D__LOG_FILE__ #-D__DEBUG__ 
 
 bin_cgi:
 	cd $(cgiPath);\

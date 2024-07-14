@@ -487,12 +487,12 @@ public:
 
        // 发送状态行
         if(send(_sockfd, _statusLine.c_str(), _statusLine.size(), 0) < 0){
-            LOG(ERROR, "send error");
+            LOG(ERROR, "send _statusLine error");
         }
         // 报头
         for(auto& line : _responseHead){
             if(send(_sockfd, line.c_str(), line.size(), 0) < 0){
-                LOG(ERROR, "send error");
+                LOG(ERROR, "send _responseHead error");
             }
         }
         // 空行

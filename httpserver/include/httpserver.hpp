@@ -141,7 +141,7 @@ public:
     void loop()
     {
         std::unique_ptr<Tcpserver> tcp(Tcpserver::getInstance(_port, _ip));
-        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance());
+        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance(15));
 
         while(!_stop)
         {
@@ -151,9 +151,8 @@ public:
             if(sockfd < 0){
                 continue;
             }
-            std::cout<<"\n\n---------begin-------------"<<std::endl;
             std::string peer = peerIP + ":" + std::to_string(sockfd);
-            LOG(INFO, "accept a new link. " + peer);
+            LOG(INFO, "\n\n---------begin-------------\naccept a new link. " + peer);
 
             // 2.派发任务给线程
             threadPool->pushTask(Task(sockfd));

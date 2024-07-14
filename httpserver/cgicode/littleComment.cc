@@ -29,6 +29,7 @@ int main()
 
     // string out = "[" + gettime() + "] " + argument + "\n";
     write(fd, argument.c_str(), argument.size());
+    write(fd, "\n", sizeof("\n"));
     close(fd);
 
 

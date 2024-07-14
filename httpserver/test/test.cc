@@ -218,7 +218,7 @@ bool test_comment_cgi()
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <atomic>
 using namespace std;
 #define FILE_PATH "./comment.txt"
 
@@ -227,21 +227,24 @@ int main()
     // 留言板功能cgi code...
     // 1.读取环境变量 2.读取参数
 
-    cerr<<"这里是: 留言板功能cgi"<<endl;
+    // cerr<<"这里是: 留言板功能cgi"<<endl;
 
-    int fd = open(FILE_PATH, O_CREAT | O_APPEND | O_WRONLY, 0666);
-    if(fd < 0) {
-        printf("留言板文件打开错误.");
-        return 1;
-    }
+    // int fd = open(FILE_PATH, O_CREAT | O_APPEND | O_WRONLY, 0666);
+    // if(fd < 0) {
+    //     printf("留言板文件打开错误.");
+    //     return 1;
+    // }
 
-    string argument = "test comment write file.\n你好, 你能看见吗?\n";
-    write(fd, argument.c_str(), argument.size());
-    close(fd);
+    // string argument = "test comment write file.\n你好, 你能看见吗?\n";
+    // write(fd, argument.c_str(), argument.size());
+    // close(fd);
 
 
-    cerr<<"留言板功能cgi read: "<<argument<<endl;
-    cerr<<"留言板功能cgi 结束, bye."<<endl;
+    // cerr<<"留言板功能cgi read: "<<argument<<endl;
+    // cerr<<"留言板功能cgi 结束, bye."<<endl;
+
+    
+    
     return 0;
 }
 

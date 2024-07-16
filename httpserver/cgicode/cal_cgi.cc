@@ -9,7 +9,7 @@ int main() {
     cerr<<"start cal cgi"<<endl;
     // 1.读取环境变量 2.读取参数
     string argument;
-    CgiArgument cgiArgs;
+    CgiClass cgiArgs;
     cgiArgs.readArgument(argument);
 
     // 3.处理数据

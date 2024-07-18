@@ -14,8 +14,6 @@ public:
 	~FixedMemoryPool()
 	{
 		// 或许,生命周期随进程, 进程结束自动释放
-		//if(!_memory)
-		//	free(_memory -= 128 * sizeof(T) - _leftBytes);
 	}
 
 	//T* New(const T& val = T())

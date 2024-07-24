@@ -1,3 +1,10 @@
+# turb项目
+indata
+outdata
+*.jpg
+*.txt
+*.xlsx
+
 # Document
 .vscode
 #mysql

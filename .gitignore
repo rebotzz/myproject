@@ -4,6 +4,7 @@ outdata
 *.jpg
 *.txt
 *.xlsx
+*.ini
 
 # Document
 .vscode

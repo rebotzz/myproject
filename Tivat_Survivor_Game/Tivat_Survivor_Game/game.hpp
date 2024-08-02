@@ -51,10 +51,10 @@ public:
 class Animation
 {
 private:
-	int timer = 0;			// 动画计时器
-	int idx_frame = 0;		// 动画帧索引
-	int interval_ms = 0;	// 动画帧间隔
-	Atlas* anim_atlas = nullptr;
+	int timer = 0;					// 动画计时器
+	int idx_frame = 0;				// 动画帧索引
+	int interval_ms = 0;			// 动画帧间隔
+	Atlas* anim_atlas = nullptr;	// 动画图片资源
 public:
 	Animation(Atlas* atlas, int interval) 
 		:anim_atlas(atlas), interval_ms(interval)
@@ -71,42 +71,132 @@ public:
 		putimage_alpha(x, y, anim_atlas->frame_list[idx_frame]);
 	}
 
+	const Atlas* getAtlas()
+	{
+		return anim_atlas;
+	}
+
 	~Animation() = default;
 };
 
-class Player
+// 角色类:玩家,敌人
+class Character
 {
-private:
-	const int _SPEED = 3;
-	const int _FRAME_HEIGHT = 80;		// 玩家高度
-	const int _FRAME_WIDTH = 80;		// 玩家宽度
-	const int _SHADOW_IMG_WIDTH = 32;	// 玩家阴影宽度
+protected:
+	int _FRAME_HEIGHT = 80;				// 角色高度
+	int _FRAME_WIDTH = 80;				// 角色宽度
+	int _SHADOW_IMG_WIDTH = 32;			// 角色阴影宽度
+	int _SHADOW_IMG_HEIGHT_DELTA = 25;	// 阴影与角色高度相对位置
 
-private:
-	// 玩家动画帧
+	// 角色动画帧素材
 	IMAGE _img_shadow;
 	Animation* _anim_left = nullptr;
 	Animation* _anim_right = nullptr;
 
-	// 玩家移动
+	// 角色移动
+	int _SPEED = 3;
 	POINT _position = { 500, 500 };
+	bool _face_left = true;
+
+	// 角色状态: 存活状态,血条,无敌帧计数器
+	bool _alive = true;
+	int _HP = 1;	
+	int invincible_frame_count = 0;
+
+public:
+	Character(Atlas* atlas_left, Atlas* atlas_right, std::wstring img_shadow_path)
+	{
+		_anim_left = new Animation(atlas_left, 45);
+		_anim_right = new Animation(atlas_right, 45);
+		loadimage(&_img_shadow, img_shadow_path.c_str());
+		_FRAME_HEIGHT = _anim_left->getAtlas()->frame_list[0]->getheight();
+		_FRAME_WIDTH = _anim_left->getAtlas()->frame_list[0]->getwidth();
+		_SHADOW_IMG_WIDTH = _img_shadow.getwidth();
+	}
+
+	bool checkAlive()
+	{
+		return _alive;
+	}
+
+	void updateStatus()
+	{
+		static const int interval = 200;
+		static int count = 0;
+		// interval帧内没有受伤,重置无敌帧
+		if(++count % interval == 0)	
+			invincible_frame_count = 0;
+	}
+
+	void hurt(int no_death_frame = 30)
+	{
+		// 避免每一帧都会受伤,无敌帧
+		if(invincible_frame_count++ % no_death_frame == 0)
+			--_HP;
+
+		if (_HP == 0) {
+			_alive = false;
+		}
+	}
+
+	// 绘制角色动画	delta_time动画帧间隔
+	void draw(int delta_time)
+	{
+		int pos_shadow_x = _position.x + (_FRAME_WIDTH / 2 - _SHADOW_IMG_WIDTH / 2);
+		int pos_shadow_y = _position.y + _FRAME_HEIGHT - _SHADOW_IMG_HEIGHT_DELTA;
+		putimage_alpha(pos_shadow_x, pos_shadow_y, &_img_shadow);
+
+		if (_face_left)
+			_anim_left->play(_position.x, _position.y, delta_time);
+		else
+			_anim_right->play(_position.x, _position.y, delta_time);
+	}
+
+	const POINT& getPosition() const { return _position; }
+	int width() const { return _FRAME_WIDTH; }
+	int height() const { return _FRAME_HEIGHT; }
+
+	~Character()
+	{
+		delete _anim_left;
+		delete _anim_right;
+	}
+};
+
+// 玩家类
+class Player : public Character
+{
+private:
 	bool _is_move_up = false;
 	bool _is_move_down = false;
 	bool _is_move_left = false;
 	bool _is_move_right = false;
-	bool _face_left = true;
+
+	// 玩家状态:蓝条
+	int _MP = 1;
+	int _bullet_count = 3;
 
 public:
-	Player(Atlas* atlas_left, Atlas* atlas_right)
+	Player(Atlas* atlas_left, Atlas* atlas_right, std::wstring img_shadow_path)
+		:Character(atlas_left, atlas_right, img_shadow_path) 
 	{
-		_anim_left = new Animation(atlas_left, 45);
-		_anim_right = new Animation(atlas_right, 45);
-		loadimage(&_img_shadow, L"resource/img/shadow_player.png");
+		_SPEED = 3;
+		_HP = 5;
+		_SHADOW_IMG_HEIGHT_DELTA = 8;
 	}
 
 	// 处理消息
 	void processEvent(const ExMessage& msg)
 	{
+		enum class VK_KEY
+		{
+			VK_A = 0x41,
+			VK_W = 0x57,
+			VK_S = 0x53,
+			VK_D = 0x44,
+			VK_F = 0x46
+		};
+
 		if (msg.message == WM_KEYDOWN) {
 			// win11虚拟按键码
 			switch (msg.vkcode)
@@ -115,8 +205,24 @@ public:
 			case VK_DOWN: _is_move_down = true; break;
 			case VK_LEFT: _is_move_left = true; break;
 			case VK_RIGHT: _is_move_right = true; break;
-			}
 
+			case int(VK_KEY::VK_W) : _is_move_up = true; break;
+			case int(VK_KEY::VK_S) : _is_move_down = true; break;
+			case int(VK_KEY::VK_A) : _is_move_left = true; break;
+			case int(VK_KEY::VK_D) : _is_move_right = true; break;
+			case int(VK_KEY::VK_F) :
+				if (_MP >= 3) {
+					_MP -= 3;
+					skill_2();
+				}
+				break;
+			case VK_SPACE: 
+				if (_MP >= 3) {
+					_MP -= 3;
+					skill_1();
+				}
+				break;
+			}
 		}
 		else if (msg.message == WM_KEYUP) {
 			switch (msg.vkcode)
@@ -125,11 +231,60 @@ public:
 			case VK_DOWN: _is_move_down = false; break;
 			case VK_LEFT: _is_move_left = false; break;
 			case VK_RIGHT: _is_move_right = false; break;
+
+			case int(VK_KEY::VK_W) : _is_move_up = false; break;
+			case int(VK_KEY::VK_S) : _is_move_down = false; break;
+			case int(VK_KEY::VK_A) : _is_move_left = false; break;
+			case int(VK_KEY::VK_D) : _is_move_right = false; break;
 			}
 		}
 	}
 
-	void move()
+	void drawStatusLine()
+	{
+		static const int RADIUS = 10;
+		// 绘制血条
+		settextcolor(RGB(255, 255, 255));
+		setlinecolor(RGB(255, 165, 79));
+		setfillcolor(RGB(238, 44, 44));
+		outtextxy(10, 10, _T("HP:"));
+		for (int i = 0; i < _HP; ++i) {
+			fillcircle(50 + 35 * i, 20, RADIUS);
+		}
+
+		// 绘制蓝条
+		setlinecolor(RGB(72, 118, 255));
+		setfillcolor(RGB(0, 191, 255));
+		outtextxy(10, 40, _T("MP:"));
+		for (int i = 0; i < _MP; ++i) {
+			fillcircle(50 + 35 * i, 50, RADIUS);
+		}
+	}
+
+	void skill_1() 
+	{
+		_bullet_count++;
+	}
+
+	void skill_2() 
+	{
+		_HP++;
+	}
+
+	void incrementMP()
+	{
+		static int count = 0;
+		static const int interval = 5;
+		if(++count % interval == 0)
+			++_MP;
+	}
+
+	int bulletCount() const
+	{
+		return _bullet_count;
+	}
+
+	void move() 
 	{
 		// 保证每个方向速度一致
 		int dir_x = _is_move_right - _is_move_left;
@@ -142,45 +297,19 @@ public:
 			_position.y += int(normalized_y * _SPEED);
 		}
 
-		// 玩家位置不能超出边界
+		// 角色位置不能超出边界
 		_position.x = max(0, _position.x);
 		_position.x = min(WINDOW_WIDTH - _FRAME_WIDTH, _position.x);
 		_position.y = max(0, _position.y);
 		_position.y = min(WINDOW_HEIGHT - _FRAME_HEIGHT, _position.y);
-	}
 
-	// 绘制玩家动画	delta_time动画帧间隔
-	void draw(int delta_time)
-	{
-		int pos_shadow_x = _position.x + (_FRAME_WIDTH / 2 - _SHADOW_IMG_WIDTH / 2);
-		int pos_shadow_y = _position.y + _FRAME_HEIGHT - 8;
-		putimage_alpha(pos_shadow_x, pos_shadow_y, &_img_shadow);
-
-		int dir_x = _is_move_right - _is_move_left;
 		if (dir_x < 0)
 			_face_left = true;
 		else if (dir_x > 0)
 			_face_left = false;
-
-		if (_face_left)
-			_anim_left->play(_position.x, _position.y, delta_time);
-		else
-			_anim_right->play(_position.x, _position.y, delta_time);
 	}
 
-	const POINT& getPosition() const
-	{
-		return _position;
-	}
-
-	int width() const { return _FRAME_WIDTH; }
-	int height() const { return _FRAME_HEIGHT; }
-
-	~Player()
-	{
-		delete _anim_left;
-		delete _anim_right;
-	}
+	~Player() = default;
 };
 
 
@@ -207,30 +336,14 @@ public:
 };
 
 // 敌人类
-class Enemy
+class Enemy : public Character
 {
-private:
-	const int _SPEED = 2;
-	const int _FRAME_HEIGHT = 80;		// 敌人高度
-	const int _FRAME_WIDTH = 80;		// 敌人宽度
-	const int _SHADOW_IMG_WIDTH = 48;	// 敌人阴影宽度
-
-private:
-	// 动画帧素材,位置
-	IMAGE _img_shadow;
-	Animation* _anim_left = nullptr;
-	Animation* _anim_right = nullptr;
-	POINT _position = { 500, 500 };
-	bool _face_left = true;
-	bool _alive = true;
 
 public:
-	Enemy(Atlas* atlas_left, Atlas* atlas_right)
+	Enemy(Atlas* atlas_left, Atlas* atlas_right, std::wstring shadow_path, int speed = 2)
+		:Character(atlas_left, atlas_right, shadow_path)
 	{
-		_anim_left = new Animation(atlas_left, 45);
-		_anim_right = new Animation(atlas_right, 45);
-		loadimage(&_img_shadow, L"resource/img/shadow_enemy.png");
-
+		_SPEED = speed;
 		// 边界处随机刷新敌人位置
 		enum SpawnEdge {
 			UP = 0,
@@ -283,7 +396,7 @@ public:
 		return false;
 	}
 
-	void move(const Player& player)
+	void move(const Player& player) 
 	{
 		// 追击玩家
 		POINT pos_player = player.getPosition();
@@ -303,34 +416,7 @@ public:
 			_face_left = false;
 	}
 
-	bool checkAlive()
-	{
-		return _alive;
-	}
-
-	void hurt()
-	{
-		_alive = false;
-	}
-
-	// 绘制玩家动画	delta_time动画帧间隔
-	void draw(int delta_time)
-	{
-		int pos_shadow_x = _position.x + (_FRAME_WIDTH / 2 - _SHADOW_IMG_WIDTH / 2);
-		int pos_shadow_y = _position.y + _FRAME_HEIGHT - 25;
-		putimage_alpha(pos_shadow_x, pos_shadow_y, &_img_shadow);
-
-		if (_face_left)
-			_anim_left->play(_position.x, _position.y, delta_time);
-		else
-			_anim_right->play(_position.x, _position.y, delta_time);
-	}
-
-	~Enemy()
-	{
-		delete _anim_left;
-		delete _anim_right;
-	}
+	~Enemy() = default;
 };
 
 class Button
@@ -472,18 +558,22 @@ void tryGenerateEnmey(std::vector<Enemy*>& enemy_list, Atlas * atlas_enemy_left,
 	static int count = 0;
 	static const int interval = 100;
 	if (++count % interval == 0) {
-		enemy_list.push_back(new Enemy(atlas_enemy_left, atlas_enemy_right));
+		enemy_list.push_back(new Enemy(atlas_enemy_left, atlas_enemy_right, L"resource/img/shadow_enemy.png"));
 	}
 }
 
 void updateBullets(std::vector<Bullet>& bullet_list, const Player& player)
 {
 	// 初始化
+	if (bullet_list.size() < player.bulletCount())
+		bullet_list.resize(player.bulletCount());
+
 	int pos_player_x = player.getPosition().x + player.width() / 2;
 	int pos_player_y = player.getPosition().y + player.height() / 2;
-	const static double interval = 2 * 3.1415926 / bullet_list.size();
+	double interval = 2 * 3.1415926 / bullet_list.size();
 	const static double RADIAL_SPEED = 25e-4;						// 子弹的径向波动速度
 	const static double TANGENT_SPEED = 45e-4;						// 子弹的切向旋转速度
+
 
 	double timeclock = GetTickCount();
 	double radius = 100 + sin(timeclock * RADIAL_SPEED) * 35;		// 子弹到玩家半径
@@ -502,5 +592,5 @@ void drawPlayerScore(int score)
 
 	setbkmode(TRANSPARENT);	// 文字背景透明
 	settextcolor(RGB(124, 252, 0));
-	outtextxy(20, 20, text);
+	outtextxy(20, 70, text);
 }

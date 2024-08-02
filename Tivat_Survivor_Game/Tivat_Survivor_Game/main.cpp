@@ -55,7 +55,7 @@ int main()
 	ExMessage msg;
 	IMAGE img_backgraund;
 	IMAGE img_menu;
-	Player player(atlas_player_left, atlas_player_right);
+	Player player(atlas_player_left, atlas_player_right, L"resource/img/shadow_player.png");
 	std::vector<Enemy*> enemy_list;
 	std::vector<Bullet> bullet_list(3);
 	int score = 0;
@@ -95,12 +95,22 @@ int main()
 			for (Enemy* enemy : enemy_list)
 			{
 				if (enemy->checkPlayerCollision(player)) {
-					running = false;
-					std::wstring s(L"挑战失败, 菜!\n共计得分: ");
-					s += std::to_wstring(score);
-					MessageBox(GetHWnd(), s.c_str(), L"游戏结束", MB_OK);
-					break;
+					player.hurt(70);
+					if (player.checkAlive() == false) {
+						running = false;
+						std::wstring s;
+						if (score < 60) s += L"挑战失败, 菜!";
+						else if (score < 120) s += L"哟,有点长进";
+						else if (score < 200) s += L"呵,不过如此!";
+						else s += L"嗯,还行";
+						s += L"\n共计得分: ";
+						s += std::to_wstring(score);
+						MessageBox(GetHWnd(), s.c_str(), L"游戏结束", MB_OK);
+						break;
+					}
 				}
+				else
+					player.updateStatus();
 			}
 			// 子弹与敌人碰撞检测
 			for (Bullet& bullet : bullet_list)
@@ -109,10 +119,11 @@ int main()
 				{
 					if (enemy->checkBulletCollision(bullet)) {
 						enemy->hurt();
-						score++;
 						//mciSendString(L"play hit from 0", nullptr, 0, nullptr);
 						play_hitvoice = true;
 					}
+					else
+						enemy->updateStatus();
 				}
 			}
 
@@ -124,6 +135,8 @@ int main()
 					std::swap(enemy_list[i], enemy_list.back());
 					enemy_list.pop_back();
 					delete enemy;
+					score++;
+					player.incrementMP();
 					continue;
 				}
 				++i;
@@ -142,6 +155,7 @@ int main()
 				enemy->draw(1000 / 144);
 			for (Bullet& bullet : bullet_list)
 				bullet.draw();
+			player.drawStatusLine();
 			drawPlayerScore(score);
 		}
 		else

@@ -21,6 +21,7 @@ idx_current_anim %= PLAYER_ANIM_NUM;
 
 
 
+	//static double radians[bulletCount] = { 0 };				
 
 
 

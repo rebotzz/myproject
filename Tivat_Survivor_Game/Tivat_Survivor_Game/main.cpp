@@ -6,14 +6,12 @@
 const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
 
-const int BUTTON_WIDTH = 192;
-const int BUTTON_HEIGHT = 75;
 
-bool is_started_game = false;
+
+std::atomic<bool> is_started_game = false;
 std::atomic<bool> running = true;
-std::atomic<bool> play_hitvoice = false;
-
-
+std::atomic<bool> play_hitvoice_enemy = false;
+std::atomic<bool> play_hurtvoice_player = false;
 
 
 
@@ -29,39 +27,41 @@ int main()
 	// 使用 Windows API 修改窗口名称
 	SetWindowText(hWnd, L"提瓦特幸存者");
 
-	// 加载资源
-	Atlas* atlas_player_left = new Atlas(L"resource/img/player_left_%d.png", 6);
-	Atlas* atlas_player_right = new Atlas(L"resource/img/player_right_%d.png", 6);
-	Atlas* atlas_enemy_left = new Atlas(L"resource/img/enemy_left_%d.png", 6);
-	Atlas* atlas_enemy_right = new Atlas(L"resource/img/enemy_right_%d.png", 6);
+	// 加载资源: Atlas共享资源,最上层管理
+	std::shared_ptr<Atlas> atlas_player_left = nullptr, atlas_player_right = nullptr;
+	std::shared_ptr<Atlas> atlas_player_left_sketch = nullptr, atlas_player_right_sketch = nullptr;
+	CharactersAtlas::loadCharacterAtlas(L"resource/img/player_left_%d.png", 6, atlas_player_left, atlas_player_right, atlas_player_left_sketch, atlas_player_right_sketch);
 
-	RECT region_btn_start_game, region_btn_quit_game;
+	// 敌人
+	std::vector<CharactersAtlas> enemys;
+	enemys.push_back(CharactersAtlas(L"resource/img/bee_left_%d.png", 4));
+	enemys.push_back(CharactersAtlas(L"resource/img/boar_left_%d.png", 6));
+	enemys.push_back(CharactersAtlas(L"resource/img/snail_left_%d.png", 8));
+	CharactersAtlas& enemy_bee = enemys[0];
+	CharactersAtlas& enemy_boar = enemys[1];
+	CharactersAtlas& enemy_snail = enemys[2];
+
+
+	std::shared_ptr<IMAGE> img_player_shadow(new IMAGE), img_enemy_shadow(new IMAGE);
+	loadimage(img_player_shadow.get(), L"resource/img/shadow_player.png");
+	loadimage(img_enemy_shadow.get(), L"resource/img/shadow_enemy.png");
 	
-	region_btn_start_game.left = (WINDOW_WIDTH - BUTTON_WIDTH) / 2;
-	region_btn_start_game.right = region_btn_start_game.left + BUTTON_WIDTH;
-	region_btn_start_game.top = 430;
-	region_btn_start_game.bottom = region_btn_start_game.top + BUTTON_HEIGHT;
-
-	region_btn_quit_game.left = (WINDOW_WIDTH - BUTTON_WIDTH) / 2;
-	region_btn_quit_game.right = region_btn_quit_game.left + BUTTON_WIDTH;
-	region_btn_quit_game.top = 550;
-	region_btn_quit_game.bottom = region_btn_quit_game.top + BUTTON_HEIGHT;
-
-	StartGameButton btn_start_game(region_btn_start_game, _T("resource/img/ui_start_idle.png"),
-		_T("resource/img/ui_start_hovered.png"), _T("resource/img/ui_start_pushed.png"));
-	QuitGameButton btn_quit_game(region_btn_quit_game, _T("resource/img/ui_quit_idle.png"),
-		_T("resource/img/ui_quit_hovered.png"), _T("resource/img/ui_quit_pushed.png"));
+	std::shared_ptr<StartGameButton> btn_start_game = nullptr;
+	std::shared_ptr<QuitGameButton> btn_quit_game = nullptr;
+	loadButtonImage(btn_start_game, btn_quit_game);
 
 	ExMessage msg;
 	IMAGE img_backgraund;
 	IMAGE img_menu;
-	Player player(atlas_player_left, atlas_player_right, L"resource/img/shadow_player.png");
+	Player player(atlas_player_left.get(), atlas_player_right.get(), atlas_player_left_sketch.get(), atlas_player_right_sketch.get(), img_player_shadow.get());
+	player.setCharaterAttribute(CharaterAttribute(3, 5, 300));
 	std::vector<Enemy*> enemy_list;
-	std::vector<Bullet> bullet_list(3);
+	std::vector<Bullet> bullet_list;	// todo:增加非绕玩家旋转子弹
 	int score = 0;
 
 	loadimage(&img_backgraund, L"resource/img/background.png");
 	loadimage(&img_menu, L"resource/img/menu.png");
+	DWORD anim_delta_time = 0;
 
 	while (running)
 	{
@@ -70,12 +70,12 @@ int main()
 		// 处理消息: 异步
 		if (peekmessage(&msg, EX_KEY | EX_MOUSE))
 		{
-			if(is_started_game)
+			if (is_started_game)
 				player.processEvent(msg);
 			else
 			{
-				btn_start_game.processEvent(msg);
-				btn_quit_game.processEvent(msg);
+				btn_start_game->processEvent(msg);
+				btn_quit_game->processEvent(msg);
 			}
 		}
 
@@ -83,7 +83,26 @@ int main()
 
 		if (is_started_game)
 		{
-			tryGenerateEnmey(enemy_list, atlas_enemy_left, atlas_enemy_right);
+			// 蜜蜂敌人
+			CharactersAtlas* enemy = nullptr;
+			CharaterAttribute enemy_attri;
+			int choice_enemy = rand() % 10;
+			if (choice_enemy <= 2) {
+				enemy_attri = CharaterAttribute(3, 1, 110);
+				enemy = &enemy_bee;
+			}
+			// 野猪敌人
+			else if (choice_enemy <= 7) {
+				enemy_attri = CharaterAttribute(2, 2, 130);
+				enemy = &enemy_boar;
+			}
+			//// 蜗牛敌人
+			//else {
+			//	enemy_attri = CharaterAttribute(2, 3, 150);
+			//	enemy = &enemy_snail;
+			//}
+			tryGenerateEnmey(enemy_list, enemy->get_left(), enemy->get_right(), enemy->get_left_sketch(), enemy->get_right_sketch(), img_enemy_shadow.get(), enemy_attri);
+
 			player.move();
 			for (Enemy* enemy : enemy_list)
 			{
@@ -95,9 +114,14 @@ int main()
 			for (Enemy* enemy : enemy_list)
 			{
 				if (enemy->checkPlayerCollision(player)) {
-					player.hurt(70);
+					player.hurt();
+					// 回到开始界面,重置敌人,玩家;
 					if (player.checkAlive() == false) {
-						running = false;
+						is_started_game = false;
+						for (Enemy* enemy : enemy_list)
+							enemy->kill();
+						player.reset();
+
 						std::wstring s;
 						if (score < 60) s += L"挑战失败, 菜!";
 						else if (score < 120) s += L"哟,有点长进";
@@ -120,7 +144,6 @@ int main()
 					if (enemy->checkBulletCollision(bullet)) {
 						enemy->hurt();
 						//mciSendString(L"play hit from 0", nullptr, 0, nullptr);
-						play_hitvoice = true;
 					}
 					else
 						enemy->updateStatus();
@@ -150,9 +173,11 @@ int main()
 		if (is_started_game)
 		{
 			putimage(0, 0, &img_backgraund);
-			player.draw(1000 / 144);
+			player.draw(anim_delta_time);
+			//player.testRenderFrozen();
+
 			for (Enemy* enemy : enemy_list)
-				enemy->draw(1000 / 144);
+				enemy->draw(anim_delta_time);
 			for (Bullet& bullet : bullet_list)
 				bullet.draw();
 			player.drawStatusLine();
@@ -161,8 +186,8 @@ int main()
 		else
 		{
 			putimage(0, 0, &img_menu);
-			btn_start_game.draw();
-			btn_quit_game.draw();
+			btn_start_game->draw();
+			btn_quit_game->draw();
 		}
 
 
@@ -172,17 +197,14 @@ int main()
 		// 帧率控制
 		DWORD end_time = ::GetTickCount();
 		DWORD delta_time = end_time - begin_time;
-		if (delta_time < 1000 / 144) {
+		if (delta_time < 1000 / 144) 
 			Sleep(1000 / 144 - delta_time);
-		}
+		anim_delta_time = GetTickCount() - begin_time;
 	}
 
-	delete atlas_player_left;
-	delete atlas_player_right;
-	delete atlas_enemy_left;
-	delete atlas_enemy_right;
 
 	EndBatchDraw();
 	closegraph();
+
 	return 0;
 }

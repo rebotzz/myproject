@@ -1,0 +1,230 @@
+[INFO][2024-07-14 17:43:48][start httpserver.][main.cc][17]
+[INFO][2024-07-14 17:43:48][socket initialized seccess.][./include/tcpserver.hpp][54]
+[INFO][2024-07-14 17:43:48][threads pool initialize seccess.][./include/threadPool.hpp][40]
+[INFO][2024-07-14 17:43:51][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:43:51][
+
+---------begin-------------
+accept a new link. 221.212.116.27:5][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:43:53][[sockfd]: 4 sendfile: webroot/index.html size: 1189][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:43:54][[sockfd]: 5 sendfile: webroot/background.jpg size: 181211][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:43:54][
+
+---------begin-------------
+accept a new link. 221.212.116.27:6][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:43:54][[sockfd]: 6 sendfile: webroot/favicon.ico size: 16958][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:43:54][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:43:55][[sockfd]: 4 sendfile: webroot/littleComment/littleComment.html size: 5387][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:43:55][
+
+---------begin-------------
+accept a new link. 221.212.116.27:5][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:43:57][
+
+---------begin-------------
+accept a new link. 221.212.116.27:6][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:01][[sockfd]: 5 sendfile: webroot/littleComment/background.jpg size: 884681][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:01][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:02][[sockfd]: 6 sendfile: webroot/home/index.html size: 12510][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:5][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 5 sendfile: webroot/home/css/process.css size: 6271][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:6][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:8][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 4 sendfile: webroot/home/css/main.css size: 27437][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][[sockfd]: 6 sendfile: webroot/home/images/upload/head.jpg size: 50427][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:10][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 10 sendfile: webroot/home/images/icon/github.png size: 5045][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:5][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 4 sendfile: webroot/home/images/icon/cycle.png size: 10792][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:6][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 6 sendfile: webroot/home/images/icon/weibo.png size: 7282][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:9][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 9 sendfile: webroot/home/images/icon/blog.png size: 24810][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:12][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 12 sendfile: webroot/home/images/icon/arrowhead.png size: 418][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 4 sendfile: webroot/home/images/icon/green_cycle.png size: 7735][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:6][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 6 sendfile: webroot/home/images/icon/yellow_cycle.png size: 4659][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:9][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 9 sendfile: webroot/home/images/icon/blue_cycle.png size: 1685][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:10][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 10 sendfile: webroot/home/js/main.js size: 12875][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:6][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:9][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 9 sendfile: webroot/home/images/icon/arrowleft.png size: 555][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][[sockfd]: 5 sendfile: webroot/home/images/upload/pic_2.jpg size: 171478][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:13][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][[sockfd]: 13 sendfile: webroot/home/images/icon/arrowright.png size: 543][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:7][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:03][
+
+---------begin-------------
+accept a new link. 221.212.116.27:5][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:04][
+
+---------begin-------------
+accept a new link. 221.212.116.27:13][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:04][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:05][[sockfd]: 8 sendfile: webroot/home/images/upload/pic_0.jpg size: 641011][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:05][
+
+---------begin-------------
+accept a new link. 221.212.116.27:10][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:05][[sockfd]: 10 sendfile: webroot/home/images/upload/weixin_qr.png size: 11943][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:05][[sockfd]: 4 sendfile: webroot/home/images/upload/reading.jpg size: 66538][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:8][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 8 sendfile: webroot/home/images/upload/dingding_qr.png size: 10559][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 4 sendfile: webroot/home/images/upload/qq_qr.jpg size: 3462][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:8][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 8 sendfile: webroot/home/images/icon/github_white.png size: 35610][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:10][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 10 sendfile: webroot/home/favicon.ico size: 16958][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 4 sendfile: webroot/home/images/icon/email.png size: 16804][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:8][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 8 sendfile: webroot/home/images/icon/weixin.png size: 9671][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][[sockfd]: 5 sendfile: webroot/home/images/upload/kapok.jpg size: 149765][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][[sockfd]: 6 sendfile: webroot/home/images/upload/pic_3.jpg size: 252817][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:10][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 10 sendfile: webroot/home/images/icon/dingding.png size: 6644][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:06][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:06][[sockfd]: 4 sendfile: webroot/home/images/icon/qq.png size: 24544][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:07][[sockfd]: 13 sendfile: webroot/home/images/upload/acg.png size: 385070][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:09][[sockfd]: 7 sendfile: webroot/home/images/upload/pic_4.jpg size: 647608][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:44:09][
+
+---------begin-------------
+accept a new link. 221.212.116.27:8][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:44:09][
+
+---------begin-------------
+accept a new link. 221.212.116.27:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:47:18][
+
+---------begin-------------
+accept a new link. 114.132.203.158:5][./include/httpserver.hpp][290]
+[ERROR][2024-07-14 17:47:18][url request resource not exists: webroot/home/home/images/upload/pic_0.jpg][./include/protocol.hpp][445]
+[ERROR][2024-07-14 17:47:18][open file error, file: webroot/404.html][./include/protocol.hpp][381]
+[ERROR][2024-07-14 17:47:18][sendfile error. file: webroot/404.html][./include/protocol.hpp][516]
+[INFO][2024-07-14 17:49:41][
+
+---------begin-------------
+accept a new link. 114.132.203.161:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:49:41][[sockfd]: 4 sendfile: webroot/home/images/upload/pic_4.jpg size: 647608][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:49:42][
+
+---------begin-------------
+accept a new link. 14.17.90.17:5][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:49:44][[sockfd]: 5 sendfile: webroot/home/images/upload/pic_4.jpg size: 647608][./include/protocol.hpp][521]
+[INFO][2024-07-14 17:55:09][
+
+---------begin-------------
+accept a new link. 114.132.203.10:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 17:55:09][[sockfd]: 4 sendfile: webroot/home/images/icon/blog.png size: 24810][./include/protocol.hpp][521]
+[INFO][2024-07-14 18:00:32][
+
+---------begin-------------
+accept a new link. 95.214.27.7:5][./include/httpserver.hpp][290]
+[ERROR][2024-07-14 18:00:32][url request resource not exists: webroot/config][./include/protocol.hpp][445]
+[ERROR][2024-07-14 18:00:32][open file error, file: webroot/404.html][./include/protocol.hpp][381]
+[ERROR][2024-07-14 18:00:32][sendfile error. file: webroot/404.html][./include/protocol.hpp][516]
+[INFO][2024-07-14 18:01:43][
+
+---------begin-------------
+accept a new link. 114.132.202.237:4][./include/httpserver.hpp][290]
+[INFO][2024-07-14 18:01:43][[sockfd]: 4 sendfile: webroot/home/images/icon/green_cycle.png size: 7735][./include/protocol.hpp][521]
+[INFO][2024-07-14 18:01:43][
+
+---------begin-------------
+accept a new link. 14.152.83.80:5][./include/httpserver.hpp][290]
+[INFO][2024-07-14 18:01:43][[sockfd]: 5 sendfile: webroot/home/images/icon/green_cycle.png size: 7735][./include/protocol.hpp][521]

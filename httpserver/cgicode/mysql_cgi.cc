@@ -35,7 +35,7 @@ int main()
     cerr<<mysql_get_client_version()<<endl;
     // // 1.读取参数
     string argument;
-    CgiArgument cgi;
+    CgiClass cgi;
     cgi.readArgument(argument);
     // for debug
     // cout<<"input sql: ";

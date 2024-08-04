@@ -1,6 +1,7 @@
 #pragma once
 #include <signal.h>
 #include <list>
+#include <unordered_map>
 #include <atomic>
 #include "protocol.hpp"
 #include "tcpserver.hpp"
@@ -85,6 +86,7 @@ public:
 
 // HttpServer 0.2版本,线程池 
 // 短链接:一旦处理完成立刻断开连接;优点:避免长时间占用.缺点:重复TCP连接建立,消耗资源
+// #define HTTP_SERVER_0_2
 #ifdef HTTP_SERVER_0_2
 // HttpServer 1.1版本:线程池,生产者消费者模型
 class HttpServer
@@ -124,7 +126,7 @@ private:
             _httpHandler->sendResponse();
         }
 
-        LOG(DEBUG, "handle http finish, close link.");
+        LOG(INFO, "handle http finish, close link.");
         // 关闭链接
         close(sockfd);
         return nullptr;
@@ -139,7 +141,7 @@ public:
     void loop()
     {
         std::unique_ptr<Tcpserver> tcp(Tcpserver::getInstance(_port, _ip));
-        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance());
+        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance(15));
 
         while(!_stop)
         {
@@ -149,8 +151,8 @@ public:
             if(sockfd < 0){
                 continue;
             }
-            std::cout<<"\n\n---------begin-------------"<<std::endl;
-            LOG(INFO, "accept a new link, ip: " + peerIP + ", sockfd: " + std::to_string(sockfd));
+            std::string peer = peerIP + ":" + std::to_string(sockfd);
+            LOG(INFO, "\n\n---------begin-------------\naccept a new link. " + peer);
 
             // 2.派发任务给线程
             threadPool->pushTask(Task(sockfd));
@@ -167,7 +169,6 @@ public:
 // HttpServer 0.3版本,线程池+长链接: 建立TCP连接后维持连接,以便后续通讯. 缺点:长时间占用
 #define HTTP_SERVER_0_3
 #ifdef HTTP_SERVER_0_3
-// HttpServer 1.1版本:线程池,生产者消费者模型
 class HttpServer
 {
     typedef HttpServer Self;
@@ -176,7 +177,7 @@ private:
     int _port;
     std::string _ip;
     bool _stop;                 // HttpServer退出标志位
-    std::list<Task> _tasks;    // 任务列表
+    std::list<Task> _tasks;     // 任务列表: 临界资源,但是冲突可能性小,暂时不加锁
 
 private:
     HttpServer(const HttpServer& self) = delete;
@@ -206,12 +207,13 @@ private:
         int sockfd = task->_sockfd;
 
         // 处理http请求
-        std::unique_ptr<EndPoint> _httpHandler(new EndPoint(sockfd, HTTP_VERSION_1_1));
+        std::unique_ptr<EndPoint> _httpHandler(new EndPoint(sockfd, HTTP_VERSION_1_0));
         // http/1.1 维持长链接
         while(_httpHandler->handleRequest())    // 阻塞式recv, 通过close(fd)控制连接结束
+        // _httpHandler->handleRequest();       // 当长链接有bug, 暂时退回短链接
         {
             *(task->_timeoutPtr) = 60;                // 重置连接结束倒计时; 临界资源
-            LOG(DEBUG, "sockfd: [" + std::to_string(task->_sockfd) + "] 重置timeout");
+            // LOG(DEBUG, "sockfd: [" + std::to_string(task->_sockfd) + "] 重置timeout");
             if(!_httpHandler->isStop()){
                 _httpHandler->buildResponse();
                 _httpHandler->sendResponse();
@@ -220,8 +222,11 @@ private:
 
         LOG(DEBUG, "sockfd: [" + std::to_string(task->_sockfd) + "] handle http finish, close link.");
         // 关闭链接, 任务结束
-        close(sockfd);
-        *(task->_alivePtr) = false; // 让linkManager结束管理
+        if(*task->_alivePtr){
+            close(sockfd);
+            *(task->_alivePtr) = false; // 让linkManager结束管理
+        }
+
         return nullptr;
     }
     // 长链接超时管理
@@ -242,8 +247,10 @@ private:
                     // LOG(DEBUG, "sockfd: [" + std::to_string(iter->_sockfd) + "] timeout剩余时间: " + std::to_string(*iter->_timeoutPtr));
                     // 如果在timeout时间内没有通讯,断开连接,移除任务列表
                     if((*(iter->_timeoutPtr))-- < 0 || *iter->_alivePtr == false){ // 临界资源
-                        if(iter->_sockfd > 0 && (*iter->_alivePtr)) 
+                        if(iter->_sockfd > 0 && (*iter->_alivePtr)) {
                             close(iter->_sockfd);
+                            *iter->_alivePtr = false;   // 避免别的线程重复close
+                        }
                         LOG(DEBUG, "sockfd: [" + std::to_string(iter->_sockfd) + "] timeout! ");
                         iter = tasks.erase(iter);
                     }
@@ -266,17 +273,9 @@ public:
     {
         // 初始化:TCP连接, 线程池, 长链接管理
         std::unique_ptr<Tcpserver> tcp(Tcpserver::getInstance(_port, _ip));
-        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance(15));
+        std::unique_ptr<ThreadPool<Task>> threadPool(ThreadPool<Task>::getInstance(10)); //线程数量
         pthread_t tid;
         pthread_create(&tid, nullptr, linkManager, this);   
-
-        // for test
-        // std::atomic_int aa = 1;
-        // std::atomic_bool bb = 1;
-        // using std::cout;
-        // using std::endl;
-        // cout<<"atomic_int is lock free: "<<aa.is_lock_free()<<endl;
-        // cout<<"atomic_bool is lock free: "<<aa.is_lock_free()<<endl;
 
         while(!_stop)
         {
@@ -286,8 +285,9 @@ public:
             if(sockfd < 0){
                 continue;
             }
-            std::cout<<"\n\n---------begin-------------"<<std::endl;
-            LOG(INFO, "accept a new link, ip: " + peerIP + ", sockfd: " + std::to_string(sockfd));
+
+            std::string peer = peerIP + ":" + std::to_string(sockfd);
+            LOG(INFO, "\n\n---------begin-------------\naccept a new link. " + peer);
 
             // 2.派发任务给线程
             Task newTask(sockfd, std::make_shared<std::atomic_int>(60), std::make_shared<std::atomic_bool>(true));

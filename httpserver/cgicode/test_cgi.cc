@@ -21,7 +21,7 @@ int main() {
     //     cout<<"not find QUERY_STRING"<<endl;
     // }
     string args;
-    CgiArgument().readArgument(args);
+    CgiClass().readArgument(args);
     cerr<<"read arguments: "<<args<<endl;
         
     cerr<<"bye cgi." <<endl;

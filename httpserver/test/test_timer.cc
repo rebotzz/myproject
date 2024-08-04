@@ -7,6 +7,9 @@
 #include <cstring>
 #include <atomic>
 
+
+// 该方案废弃. 存在目前不能解决问题
+
 // 每个线程的数据结构
 typedef struct ThreadData {
     timer_t timer_id;
@@ -50,7 +53,7 @@ void *thread_func(void *arg) {
     }
 
     // 注册信号处理函数
-    memset(&sa, 0, sizeof(sa));
+    memset(&sa, 0, sizeof(sa));     // 类型不匹配, 
     sa.sa_sigaction = [data](int signum, siginfo_t *info, void *context) {
         printf("Timer expired in thread %lu\n", (unsigned long)pthread_self());
         data->should_exit.store(true, std::memory_order_release);

@@ -35,8 +35,9 @@ private:
                 continue;
             }
             _threads.push_back(tid);
-            LOG(DEBUG, "create a new thread " + std::to_string(i));
+            // LOG(DEBUG, "create a new thread " + std::to_string(i));
         }
+        LOG(INFO, "threads pool initialize seccess.");
     }
     ThreadPool(Self& _self) = delete;
     Self& operator=(Self& _self) = delete;
@@ -51,25 +52,25 @@ private:
             // 1.获取任务
             pthread_mutex_lock(&tp->_mutex);
             while(tp->_taskQueue.empty()){
-                LOG(DEBUG, "tash queue empty, thread wait.");
+                // LOG(DEBUG, "tash queue empty, thread wait.");
                 pthread_cond_wait(&tp->_cond, &tp->_mutex);
                 if(tp->_stop && tp->_taskQueue.empty()){  // 收到接收通知&&任务为空,退出线程
                     pthread_mutex_unlock(&tp->_mutex);
-                    LOG(DEBUG, "thread exit");
+                    // LOG(DEBUG, "thread exit");
                     return nullptr;
                 }
             }
-            LOG(DEBUG, "thread wake up");
+            // LOG(DEBUG, "thread wake up");
             Task task;
             tp->popTask(task);
             pthread_mutex_unlock(&tp->_mutex);
 
             // 2.执行任务
-            LOG(DEBUG, "get a tast, thread start task.");
+            // LOG(DEBUG, "thread: " + std::to_string(pthread_self()) + ", sockfd: " + std::to_string(task._sockfd));
             task();
         }
 
-        LOG(DEBUG, "thread exit");
+        // LOG(DEBUG, "thread exit");
         return nullptr;
     }
     bool popTask(Task& task)
@@ -101,7 +102,7 @@ public:
         _taskQueue.push(task);
         pthread_mutex_unlock(&_mutex);
         pthread_cond_signal(&_cond);   // debug:需要唤醒线程
-        LOG(DEBUG, "push task seccess.");
+        // LOG(DEBUG, "push task seccess.");
         return true;
     }
 

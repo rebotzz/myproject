@@ -1,5 +1,3 @@
-#include <thread>
-#include <atomic>
 #include "game.hpp"
 
 const int WINDOW_WIDTH = 1270;
@@ -11,6 +9,7 @@ std::atomic<bool> running = true;
 std::atomic<bool> play_hitvoice_enemy = false;
 std::atomic<bool> play_hurtvoice_player = false;
 std::atomic<int> player_choice = PAIMON;
+std::thread* thread_music = nullptr;
 
 int main()
 {
@@ -66,10 +65,10 @@ int main()
 
 	CharactersAtlas* cur_player = &player_atlas_paimon;
 	Player player_paimon(cur_player->get_left(), cur_player->get_right(), cur_player->get_left_sketch(), cur_player->get_right_sketch(), cur_player->get_shadow(), cur_player->get_head());
-	player_paimon.setCharaterAttribute(CharaterAttribute(40, 5, 1, 1000));
+	player_paimon.setCharaterAttribute(CharaterAttribute(40, 5, 1, 1000, 3));
 	cur_player = &player_atlas_theresa;
 	Player player_theresa(cur_player->get_left(), cur_player->get_right(), cur_player->get_left_sketch(), cur_player->get_right_sketch(), cur_player->get_shadow(), cur_player->get_head());
-	player_theresa.setCharaterAttribute(CharaterAttribute(30, 6, 3, 1200));
+	player_theresa.setCharaterAttribute(CharaterAttribute(30, 5, 3, 1000, 6));
 	Player* player = &player_paimon;
 
 	std::vector<Enemy*> enemy_list;
@@ -79,11 +78,6 @@ int main()
 	loadimage(&img_backgraund, L"resource/img/background.png");
 	loadimage(&img_menu, L"resource/img/menu.png");
 	DWORD anim_delta_time = 0;
-
-
-	// ford debug
-	//is_started_game = true;
-	//is_choice_player = false;
 
 	while (running)
 	{
@@ -156,21 +150,22 @@ int main()
 					player->hurt();
 					// 回到开始界面,重置敌人,玩家;
 					if (player->checkAlive() == false) {
-						is_started_game = false;
-						is_choice_player = false;
-						for (Enemy* enemy : enemy_list)
-							enemy->kill();
-						player->reset();
-
 						std::wstring s;
-						if (score < 120) s += L"挑战失败, 菜!";
+						if (score < 120) s += L"唉,结束了";
 						else if (score < 240) s += L"哟,有点长进";
-						else if (score < 360) s += L"呵,不过如此!";
+						else if (score < 360) s += L"呵,又结束了";
 						else if (score < 1000) s += L"嗯,还行";
 						else s += L"厉害,厉害.";
 						s += L"\n共计得分: ";
 						s += std::to_wstring(score);
 						MessageBox(GetHWnd(), s.c_str(), L"游戏结束", MB_OK);
+
+						score = 0;
+						is_started_game = false;
+						is_choice_player = false;
+						for (Enemy* enemy : enemy_list)
+							enemy->kill();
+						player->reset();
 						break;
 					}
 				}
@@ -180,7 +175,7 @@ int main()
 			{
 				for (Enemy* enemy : enemy_list)
 				{
-					if (enemy->checkBulletCollision(bullet)) {
+					if (enemy->checkAlive() && enemy->checkBulletCollision(bullet)) {
 						int damage_value = enemy->hurt();
 						score += damage_value;
 						player->incrementMP(damage_value);
@@ -196,8 +191,10 @@ int main()
 					std::swap(enemy_list[i], enemy_list.back());
 					enemy_list.pop_back();
 					delete enemy;
-					score++;
-					player->incrementMP(1);
+					if(is_started_game) {
+						score++;
+						player->incrementMP(1);
+					}
 					continue;
 				}
 				++i;
@@ -246,6 +243,10 @@ int main()
 
 	EndBatchDraw();
 	closegraph();
+	if (thread_music) {
+		thread_music->join();
+		delete thread_music;
+	}
 
 	return 0;
 }

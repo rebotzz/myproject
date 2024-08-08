@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <thread>
+#include <atomic>
 #include <ctime>
 #include <easyx.h>
 
@@ -13,6 +15,7 @@ extern std::atomic<bool> running;
 extern std::atomic<bool> play_hitvoice_enemy;
 extern std::atomic<bool> play_hurtvoice_player;
 extern std::atomic<int>  player_choice;
+extern std::thread* thread_music;
 
 #define PAIMON 1
 #define THERESA 2
@@ -110,10 +113,14 @@ public:
 class Animation
 {
 private:
+	// 核心
 	int timer = 0;					// 动画计时器,与帧率无关,与时间有关
 	int idx_frame = 0;				// 动画帧索引
 	int interval_ms = 0;			// 动画帧间隔
 	Atlas* anim_atlas = nullptr;	// 动画图片资源
+
+	// 其他
+	int frozen_timer = 0;			// 冻结计时器
 
 public:
 	Animation(Atlas* atlas, int interval)
@@ -132,6 +139,7 @@ public:
 				idx_frame = (idx_frame + 1) % anim_atlas->frame_list.size();
 			}
 			putimage_alpha(x, y, &anim_atlas->frame_list[idx_frame]);
+			frozen_timer = 0;
 		}
 		// 冻结状态
 		else
@@ -154,10 +162,10 @@ public:
 		}
 
 		// 冰面高光特效
-		static int frozen_timer = 0;		// 冻结计时器
-		static int highlight_pos_y = 0;		// 扫描线竖直坐标
-		static int THICKNESS = 5;			// 扫描线宽度
-		int cur_idx_frame = idx_frame;		// 当前帧
+		static int highlight_pos_y = 0;			// 扫描线竖直坐标
+		static int THICKNESS = 5;				// 扫描线宽度
+		int cur_idx_frame = idx_frame;			// 当前帧
+		static const int interval_ms = 1000;	// 冻结扫描线重置间隔
 
 		// 拷贝当前帧用于后续处理,冻结,序列帧停止变化
 		IMAGE cur_frame_img = anim_atlas->frame_list[cur_idx_frame];
@@ -171,11 +179,11 @@ public:
 		}
 
 		// 更新扫描线位置
-		highlight_pos_y = (highlight_pos_y + 1) ;
-		// 更新冻结计时器,并重置扫描线位置
-		if (++frozen_timer % 300 == 0) {
-			frozen_timer = 0;
+		highlight_pos_y = highlight_pos_y + 1;
+		frozen_timer += delta_time;
+		if (frozen_timer % 600 == 0) {
 			highlight_pos_y = 0;
+			frozen_timer = 0;
 		}
 
 		// 遍历当前帧色彩缓冲区,将不透明区域进行混叠
@@ -190,7 +198,7 @@ public:
 				DWORD color_frame_img = color_buff_frame_img[idx];
 				if ((color_frame_img & 0xff000000) >> 24) {
 					static const float RATIO = 0.25f;		// 混叠比率
-					static const float THRESHOLD = 0.73f;	// 高亮阈值 
+					static const float THRESHOLD = 0.69f;	// 高亮阈值 
 					// colorbuff在内存存储顺序是B G R, 所以交换 R B
 					BYTE r = BYTE(GetBValue(color_frame_img)) * RATIO + BYTE(GetBValue(color_ice_img)) * (1 - RATIO);
 					BYTE g = BYTE(GetGValue(color_frame_img)) * RATIO + BYTE(GetGValue(color_ice_img)) * (1 - RATIO);
@@ -237,9 +245,10 @@ public:
 	int _HP;
 	int _MP;
 	int _no_death_interval_ms;	// 帧率有波动:无敌帧->无敌时间
+	int _bullet_count = 0;		// 子弹数目,玩家独有
 public:
-	CharaterAttribute(int speed = 20, int HP = 1, int MP = 0, int no_death_interval_ms = 500)
-		:_SPEED(speed), _HP(HP), _MP(MP), _no_death_interval_ms(no_death_interval_ms) {}
+	CharaterAttribute(int speed = 20, int HP = 1, int MP = 0, int no_death_interval_ms = 500, int bullet_count = 3)
+		:_SPEED(speed), _HP(HP), _MP(MP), _no_death_interval_ms(no_death_interval_ms), _bullet_count(bullet_count) {}
 };
 
 
@@ -290,7 +299,7 @@ public:
 		return _alive;
 	}
 
-	void setStatus(int speed, int HP, bool invicible_status = false, bool frozen_status = false, POINT pos = {-1, -1})
+	void setStatus(int speed, int HP, bool invicible_status = false, bool frozen_status = false, POINT pos = { -1, -1 })
 	{
 		_attribute._SPEED = speed;
 		_attribute._HP = HP;
@@ -365,12 +374,6 @@ public:
 		}
 	}
 
-	void testRenderFrozen(bool is_frozen = true)
-	{
-		static int x = 100, y = 100;
-		_anim_left->renderFrozen(x, y, true);
-	}
-
 	~Character()
 	{
 		delete _anim_left;
@@ -435,7 +438,6 @@ private:
 	bool _is_move_right = false;
 
 	// 玩家状态:子弹数量,大招开启
-	int _bullet_count = 3;
 	bool _unique_skill = false;
 	IMAGE* _img_head = nullptr;
 public:
@@ -473,24 +475,9 @@ public:
 			case VK_S: _is_move_down = true; break;
 			case VK_A: _is_move_left = true; break;
 			case VK_D: _is_move_right = true; break;
-			case VK_SPACE:
-				if (_attribute._MP >= 2) {
-					_attribute._MP -= 2;
-					skill_1();
-				}
-				break;
-			case VK_F:
-				if (_attribute._MP >= 3) {
-					_attribute._MP -= 3;
-					skill_2();
-				}
-				break;
-			case VK_Q:
-				if (_attribute._MP >= 5) {
-					_attribute._MP -= 5;
-					skill_3();
-				}
-				break;
+
+			case VK_F: skill_1(); break;
+			case VK_SPACE: skill_2(); break;
 			}
 		}
 		else if (msg.message == WM_KEYUP) {
@@ -514,7 +501,6 @@ public:
 	{
 		_attribute = _origin_attri;
 		_alive = true;
-		_bullet_count = 3;
 		_invicible_status = false;
 
 		_position = { 500, 500 };
@@ -553,7 +539,7 @@ public:
 
 		// 绘制技能提示
 		settextcolor(RGB(255, 110, 180));
-		outtextxy(30 + width, 70, L"[空格]一技能  [F]二技能  [Q]绝招");
+		outtextxy(30 + width, 70, L" [F]一技能  [空格]二技能");
 
 		// 绘制玩家得分
 		static TCHAR text[64] = { 0 };
@@ -565,7 +551,7 @@ public:
 	virtual int hurt()
 	{
 		int damage = _hurt();
-		if(damage != 0)
+		if (damage != 0)
 			play_hurtvoice_player = true;
 		return damage;
 	}
@@ -606,7 +592,7 @@ public:
 
 	int bulletCount() const
 	{
-		return _bullet_count;
+		return _attribute._bullet_count;
 	}
 
 	void move()
@@ -643,20 +629,29 @@ private:
 
 	void skill_1()
 	{
-		_attribute._HP++;
+		if (_attribute._MP >= 3) {
+			_attribute._MP -= 3;
+			_attribute._HP++;
+		}
 	}
 
 	void skill_2()
 	{
-		_bullet_count++;
+		if (player_choice == PAIMON)
+		{
+			if (_attribute._MP >= 4) {
+				_attribute._MP -= 4;
+				_attribute._bullet_count++;
+			}
+		}
+		else if (player_choice == THERESA)
+		{
+			if (!_unique_skill && _attribute._MP >= 4) {
+				_attribute._MP -= 4;
+				_unique_skill = true;	// 大招
+			}
+		}
 	}
-
-	// 大招
-	void skill_3()
-	{
-		_unique_skill = true;
-	}
-
 };
 
 
@@ -889,7 +884,7 @@ public:
 
 	~CharactersAtlas() = default;
 
-	
+
 	IMAGE* get_head() { return atlas_character_head.get(); }
 	IMAGE* get_shadow() { return atlas_character_shadow.get(); }
 	Atlas* get_left() { return atlas_character_left.get(); }
@@ -952,24 +947,35 @@ protected:
 			// 独立线程,避免播放打击音效卡顿
 			auto thread_routine_music = []()
 				{
-					// 线程有独立栈帧,所以main()中调用mciSendString对线程不可见
-					mciSendString(L"open resource/mus/bgm.mp3 alias bgm", nullptr, 0, nullptr);
+					// 线程有独立栈帧,所以main的一个代码块中调用mciSendString对线程不可见
+					mciSendString(L"open resource/mus/bgm1.mp3 alias bgm1", nullptr, 0, nullptr);
+					mciSendString(L"open resource/mus/bgm2.mp3 alias bgm2", nullptr, 0, nullptr);
 					mciSendString(L"open resource/mus/hit.wav alias hit", nullptr, 0, nullptr);
 					mciSendString(L"open resource/mus/hurt.wav alias hurt", nullptr, 0, nullptr);
-					mciSendString(L"play bgm repeat from 0", nullptr, 0, nullptr);
+					mciSendString(L"play bgm1 repeat from 0", nullptr, 0, nullptr);
+					mciSendString(L"play bgm2 repeat from 0", nullptr, 0, nullptr);
 					static bool play_music = true;
 					while (running)
 					{
 						if (is_started_game)
 						{
+							if (player_choice == PAIMON)
+								mciSendString(L"stop bgm2", nullptr, 0, nullptr);
+							else if (player_choice == THERESA)
+								mciSendString(L"stop bgm1", nullptr, 0, nullptr);
+
 							if (!play_music) {
-								mciSendString(L"resume bgm", nullptr, 0, nullptr);
+								if (player_choice == PAIMON)
+									mciSendString(L"resume bgm1", nullptr, 0, nullptr);
+								else if (player_choice == THERESA)
+									mciSendString(L"resume bgm2", nullptr, 0, nullptr);
 								play_music = true;
 							}
 						}
 						else
 						{
-							mciSendString(L"stop bgm", nullptr, 0, nullptr);
+							mciSendString(L"stop bgm1", nullptr, 0, nullptr);
+							mciSendString(L"stop bgm2", nullptr, 0, nullptr);
 							play_music = false;
 						}
 
@@ -985,8 +991,7 @@ protected:
 						Sleep(1000 / 144);
 					}
 				};
-			std::thread thread_music(thread_routine_music);
-			thread_music.detach();
+			thread_music = new std::thread(thread_routine_music);
 		}
 	}
 };

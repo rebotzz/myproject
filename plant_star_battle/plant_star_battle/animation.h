@@ -2,7 +2,7 @@
 #include <functional>
 #include "util.h"
 #include "atlas.h"
-
+#include "camera.h"
 
 class Animation
 {
@@ -11,7 +11,7 @@ private:
 	int _interval_ms = 0;				// 帧间隔
 	int _idx_frame = 0;					// 帧索引
 	Atlas* _atlas = nullptr;			// 图片集
-	bool _is_loop = false;
+	bool _is_loop = false;				// 是否循环播放
 	std::function<void()> _callback;	// 动画结束处理
 
 public:
@@ -71,6 +71,7 @@ public:
 			if (_idx_frame >= _atlas->get_size())
 			{
 				_idx_frame = _is_loop ?  0 : _atlas->get_size() - 1;
+				// 非循环播放时,动画播放结束逻辑
 				if (!_is_loop && _callback)	// function重载了operator bool,检测是否可调用
 				{
 					_callback();
@@ -79,8 +80,8 @@ public:
 		}
 	} 
 
-	void on_draw(int x, int y) const
+	void on_draw(const Camera& camera, int x, int y) const
 	{
-		putimage_alpha(x, y, _atlas->get_image(_idx_frame));
+		putimage_alpha(camera, x, y, _atlas->get_image(_idx_frame));
 	}
 };

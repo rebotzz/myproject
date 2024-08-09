@@ -6,32 +6,11 @@
 #include "game_scene.h"
 #include "selector_scene.h"
 #include "scene_manager.h"
+#include "platform.h"
 
 // 植物明星大乱斗
 
 // 游戏资源
-
-// 玩家标识
-IMAGE img_1P;
-IMAGE img_IP_cursor;
-IMAGE img_1P_desc;
-IMAGE img_1P_selector_btn_down_right;
-IMAGE img_1P_selector_btn_idle_right;
-IMAGE img_1P_selector_btn_down_left;
-IMAGE img_1P_selector_btn_idle_left;
-IMAGE img_1P_winner;
-
-IMAGE img_2P;
-IMAGE img_2P_cursor;
-IMAGE img_2P_desc;
-IMAGE img_2P_selector_btn_down_right;
-IMAGE img_2P_selector_btn_idle_right;
-IMAGE img_2P_selector_btn_down_left;
-IMAGE img_2P_selector_btn_idle_left;
-IMAGE img_2P_winner;
-
-IMAGE winner_bar;
-
 // 角色头像图标
 IMAGE img_avatar_gloomshroom_right;
 IMAGE img_avatar_nut_right;
@@ -60,7 +39,7 @@ Atlas atlas_run_effect;
 
 
 // 角色动画帧
-// 幽暗蘑菇
+// 忧郁蘑菇
 Atlas atlas_gloomshroom_bubbles;
 Atlas atlas_gloomshroom_bubbles_ex;
 Atlas atlas_player_gloomshroom_attack_ex_right;
@@ -115,6 +94,14 @@ Atlas atlas_player_sunflower_die_left;
 Atlas atlas_player_sunflower_idle_left;
 Atlas atlas_player_sunflower_run_left;
 
+
+// 玩家标识
+IMAGE img_IP_cursor;
+IMAGE img_1P_winner;
+IMAGE img_2P_cursor;
+IMAGE img_2P_winner;
+IMAGE winner_bar;
+
 // 菜单界面
 IMAGE img_menu_background;
 
@@ -122,7 +109,23 @@ IMAGE img_menu_background;
 IMAGE img_VS;
 IMAGE img_selector_background;
 IMAGE img_selector_tips;
-IMAGE img_gravestone;
+IMAGE img_gravestone_right;
+IMAGE img_gravestone_left;
+
+IMAGE img_1P;
+IMAGE img_1P_desc;
+IMAGE img_1P_selector_btn_down_right;
+IMAGE img_1P_selector_btn_idle_right;
+IMAGE img_1P_selector_btn_down_left;
+IMAGE img_1P_selector_btn_idle_left;
+
+IMAGE img_2P;
+IMAGE img_2P_desc;
+IMAGE img_2P_selector_btn_down_right;
+IMAGE img_2P_selector_btn_idle_right;
+IMAGE img_2P_selector_btn_down_left;
+IMAGE img_2P_selector_btn_idle_left;
+
 IMAGE img_gloomshroom_selector_background_right;
 IMAGE img_nut_selector_background_right;
 IMAGE img_peashooter_selector_background_right;
@@ -133,11 +136,10 @@ IMAGE img_nut_selector_background_left;
 IMAGE img_peashooter_selector_background_left;
 IMAGE img_sunflower_selector_background_left;
 
-
 // 游戏背景
 IMAGE img_hills;
-IMAGE img_platform_large;
-IMAGE img_platform_small;
+IMAGE img_large_platform;
+IMAGE img_small_platform;
 IMAGE img_sky;
 
 
@@ -146,16 +148,16 @@ IMAGE img_sky;
 const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
 
-// 游戏运行标志
-bool running = true;
-
+bool running = true;		// 游戏是否继续运行
+bool is_debug = false;		// 是否开启调试模式
 
 // 菜单
 std::shared_ptr<Scene> menu_scene(new MenuScene);
 std::shared_ptr<Scene> selector_scene(new SelectorScene);
 std::shared_ptr<Scene> game_scene(new GameScene);
 SceneManager scene_manager;
-
+Camera main_camera;
+std::vector<Platform> platforms;	// 玩家站立平台
 
 void flip_atlas(Atlas* src, Atlas* dst)
 {
@@ -174,11 +176,14 @@ int main()
 	// 初始化
 	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);
 	BeginBatchDraw();
+	settextstyle(28, 0, _T("IPix"));
+	setbkmode(TRANSPARENT);
 	ExMessage msg;
 	const int FPS = 60;
 
 	load_game_resources();
 	scene_manager.set_current_scene(menu_scene.get());
+
 
 	while (running)
 	{
@@ -189,7 +194,6 @@ int main()
 		{
 			scene_manager.on_input(msg);
 		}
-
 
 		// 数据处理
 		static DWORD last_tick_time = GetTickCount();
@@ -203,7 +207,7 @@ int main()
 		// 绘制图片
 		cleardevice();
 
-		scene_manager.on_draw();
+		scene_manager.on_draw(main_camera);
 
 		FlushBatchDraw();
 
@@ -270,7 +274,7 @@ void load_game_resources()
 	atlas_run_effect.load_from_file(L"resources/run_effect_%d.png", 4);
 
 	// 角色动画帧
-	// 幽暗菇
+	// 忧郁菇
 	atlas_gloomshroom_bubbles.load_from_file(L"resources/bubbles_%d.png", 7);
 	atlas_gloomshroom_bubbles_ex.load_from_file(L"resources/bubbles_ex_%d.png", 7);
 	atlas_player_gloomshroom_attack_ex_right.load_from_file(L"resources/gloomshroom_attack_ex_%d.png", 7);
@@ -329,11 +333,12 @@ void load_game_resources()
 	loadimage(&img_VS, L"resources/VS.png");
 	loadimage(&img_selector_background, L"resources/selector_background.png");
 	loadimage(&img_selector_tips, L"resources/selector_tip.png");
-	loadimage(&img_gravestone, L"resources/gravestone.png");
+	loadimage(&img_gravestone_right, L"resources/gravestone.png");
 	loadimage(&img_gloomshroom_selector_background_right, L"resources/gloomshroom_selector_background.png");
 	loadimage(&img_nut_selector_background_right, L"resources/nut_selector_background.png");
 	loadimage(&img_peashooter_selector_background_right, L"resources/peashooter_selector_background.png");
 	loadimage(&img_sunflower_selector_background_right, L"resources/sunflower_selector_background.png");
+	flip_image(&img_gravestone_right, &img_gravestone_left);
 	flip_image(&img_gloomshroom_selector_background_right, &img_gloomshroom_selector_background_left);
 	flip_image(&img_nut_selector_background_right, &img_nut_selector_background_left);
 	flip_image(&img_peashooter_selector_background_right, &img_peashooter_selector_background_left);
@@ -341,8 +346,8 @@ void load_game_resources()
 
 	// 游戏背景
 	loadimage(&img_hills, L"resources/hills.png");
-	loadimage(&img_platform_large, L"resources/platform_large.png");
-	loadimage(&img_platform_small, L"resources/platform_small.png");
+	loadimage(&img_large_platform, L"resources/platform_large.png");
+	loadimage(&img_small_platform, L"resources/platform_small.png");
 	loadimage(&img_sky, L"resources/sky.png");
 
 

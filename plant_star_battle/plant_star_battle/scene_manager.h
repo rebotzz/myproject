@@ -18,7 +18,6 @@ public:
 
 private:
 	Scene* _current_scene;
-	//SceneType _scene_type = SceneType::MENU;
 
 public:
 	void set_current_scene(Scene* scene)
@@ -57,9 +56,9 @@ public:
 		_current_scene->on_update(delta_time);
 	}
 
-	void on_draw()
+	void on_draw(const Camera& camera)
 	{
-		_current_scene->on_draw();
+		_current_scene->on_draw(camera);
 	}
 };
 

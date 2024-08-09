@@ -16,6 +16,12 @@
     <Filter Include="头文件\scene">
       <UniqueIdentifier>{3b4cddf1-67b5-486a-bed2-b72a17dc636f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\camera">
+      <UniqueIdentifier>{c5856c8e-2792-442e-9947-335368d9d5ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\animation">
+      <UniqueIdentifier>{b7886ff1-cb54-43c8-8dc2-7c89c40a25a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,17 +47,23 @@
     <ClInclude Include="selector_scene.h">
       <Filter>头文件\scene</Filter>
     </ClInclude>
-    <ClInclude Include="atlas.h">
+    <ClInclude Include="timer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="animation.h">
+    <ClInclude Include="platform.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vector2.h">
-      <Filter>头文件\scene</Filter>
+      <Filter>头文件\camera</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>头文件\scene</Filter>
+      <Filter>头文件\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="animation.h">
+      <Filter>头文件\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="atlas.h">
+      <Filter>头文件\animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,9 +2,13 @@
 #include "scene.h"
 #include "scene_manager.h"
 #include "animation.h"
+#include "player_peashoter.h"
+#include "player_sunflower.h"
 
 
 extern SceneManager scene_manager;
+extern std::shared_ptr<Player> player_1;			// 玩家1
+extern std::shared_ptr<Player> player_2;			// 玩家2
 
 // 角色选择界面
 extern IMAGE img_VS;
@@ -385,5 +389,35 @@ public:
 	virtual void on_exit()
 	{
 		mciSendString(L"stop bgm_menu", nullptr, 0, nullptr);
+
+		switch (_player_type_1)
+		{
+		case PlayerType::PEASHOTER:
+			player_1 = std::shared_ptr<Player>(new PlayerPeashoter);
+			break;
+		case PlayerType::SUNFLOWER:
+			player_1 = std::shared_ptr<Player>(new PlayerSunflower);
+			break;
+		case PlayerType::NUT:
+			break;
+		case PlayerType::GLOOMSHROOM:
+			break;
+		}
+		player_1->set_playerID(PlayerID::P1);
+
+		switch (_player_type_2)
+		{
+		case PlayerType::PEASHOTER:
+			player_2 = std::shared_ptr<Player>(new PlayerPeashoter);
+			break;
+		case PlayerType::SUNFLOWER:
+			player_2 = std::shared_ptr<Player>(new PlayerSunflower);
+			break;
+		case PlayerType::NUT:
+			break;
+		case PlayerType::GLOOMSHROOM:
+			break;
+		}
+		player_2->set_playerID(PlayerID::P2);
 	}
 };

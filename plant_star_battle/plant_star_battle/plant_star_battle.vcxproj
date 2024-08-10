@@ -136,8 +136,12 @@
     <ClInclude Include="game_scene.h" />
     <ClInclude Include="menu_scene.h" />
     <ClInclude Include="platform.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="playerID.h" />
+    <ClInclude Include="player_peashoter.h" />
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="selector_scene.h" />
+    <ClInclude Include="player_sunflower.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="scene.h" />

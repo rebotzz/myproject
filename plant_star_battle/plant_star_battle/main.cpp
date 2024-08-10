@@ -7,6 +7,7 @@
 #include "selector_scene.h"
 #include "scene_manager.h"
 #include "platform.h"
+#include "player.h"
 
 // 植物明星大乱斗
 
@@ -148,16 +149,18 @@ IMAGE img_sky;
 const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
 
-bool running = true;		// 游戏是否继续运行
-bool is_debug = false;		// 是否开启调试模式
 
-// 菜单
-std::shared_ptr<Scene> menu_scene(new MenuScene);
-std::shared_ptr<Scene> selector_scene(new SelectorScene);
-std::shared_ptr<Scene> game_scene(new GameScene);
-SceneManager scene_manager;
-Camera main_camera;
-std::vector<Platform> platforms;	// 玩家站立平台
+bool running = true;										// 游戏是否继续运行
+bool is_debug = false;										// 是否开启调试模式
+std::shared_ptr<Scene> menu_scene(new MenuScene);			// 菜单场景
+std::shared_ptr<Scene> selector_scene(new SelectorScene);	// 选择角色场景
+std::shared_ptr<Scene> game_scene(new GameScene);			// 游戏场景
+SceneManager scene_manager;									// 场景管理器
+Camera main_camera;											// 摄像机
+std::vector<Platform> platform_list;						// 玩家站立平台
+std::shared_ptr<Player> player_1 = nullptr;					// 玩家1
+std::shared_ptr<Player> player_2 = nullptr;					// 玩家2
+
 
 void flip_atlas(Atlas* src, Atlas* dst)
 {

@@ -22,6 +22,9 @@
     <Filter Include="头文件\animation">
       <UniqueIdentifier>{b7886ff1-cb54-43c8-8dc2-7c89c40a25a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\player">
+      <UniqueIdentifier>{fb847609-e55c-4ea7-a647-ea3b77135a39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -64,6 +67,18 @@
     </ClInclude>
     <ClInclude Include="atlas.h">
       <Filter>头文件\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>头文件\player</Filter>
+    </ClInclude>
+    <ClInclude Include="player_peashoter.h">
+      <Filter>头文件\player</Filter>
+    </ClInclude>
+    <ClInclude Include="player_sunflower.h">
+      <Filter>头文件\player</Filter>
+    </ClInclude>
+    <ClInclude Include="playerID.h">
+      <Filter>头文件\player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

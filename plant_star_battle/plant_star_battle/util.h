@@ -20,7 +20,7 @@ inline void putimage_alpha(const Camera& camera, int dst_x, int dst_y, IMAGE* im
 	int w = img->getwidth();
 	int h = img->getheight();
 	Vector2 pos_camera = camera.get_position();
-	AlphaBlend(GetImageHDC(nullptr), (int)(dst_x - pos_camera._x), (int)(dst_y - pos_camera._y), w, h,
+	AlphaBlend(GetImageHDC(nullptr), (int)(dst_x - pos_camera.x), (int)(dst_y - pos_camera.y), w, h,
 		GetImageHDC(img), 0, 0, w, h, { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA });
 }
 
@@ -36,7 +36,7 @@ inline void putimage_alpha(int dst_x, int dst_y, int width, int height, IMAGE* i
 inline void line(const Camera& camera, int x1, int y1, int x2, int y2)
 {
 	Vector2 pos_camera = camera.get_position();
-	line(x1 - pos_camera._x, y1 - pos_camera._y, x2 - pos_camera._x, y2 - pos_camera._y);
+	line(x1 - (int)pos_camera.x, y1 - (int)pos_camera.y, x2 - (int)pos_camera.x, y2 - (int)pos_camera.y);
 }
 
 //×óÓÒ·­×ªÍ¼Æ¬, Ìá¸ßËØ²Ä¸´ÓÃ

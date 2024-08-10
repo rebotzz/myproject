@@ -23,5 +23,12 @@ public:
 	void on_draw(const Camera& camera)
 	{
 		putimage_alpha(camera, _render_position.x, _render_position.y, _img);
+
+		if (is_debug)
+		{
+			// »æÖÆÅö×²¼ì²âÏß
+			setlinecolor(RGB(255, 0, 0));
+			line(camera, (int)_shape.left, (int)_shape.y, (int)_shape.right, (int)_shape.y);
+		}
 	}
 };

@@ -7,12 +7,12 @@
 class Animation
 {
 private:
-	int _timer = 0;						// 计时器
-	int _interval_ms = 0;				// 帧间隔
-	int _idx_frame = 0;					// 帧索引
-	Atlas* _atlas = nullptr;			// 图片集
-	bool _is_loop = false;				// 是否循环播放
-	std::function<void()> _callback;	// 动画结束处理
+	int _timer = 0;						// 动画播放发计时器		
+	int _interval_ms = 0;				// 帧间隔,单帧动画持续时长
+	int _idx_frame = 0;					// 帧索引,当前正在播放的动画帧
+	Atlas* _atlas = nullptr;			// 动画帧图片
+	bool _is_loop = false;				// 是否循环播放						
+	std::function<void()> _callback;	// 动画结束处理	
 
 public:
 	Animation() = default;

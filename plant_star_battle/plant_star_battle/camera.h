@@ -14,7 +14,6 @@ private:
 public:
 	Camera()
 	{
-		srand((unsigned int)time(nullptr));
 		_timer_shake.set_one_shot(true);
 		_timer_shake.set_callback(
 			[&]()

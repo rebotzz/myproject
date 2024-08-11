@@ -2,14 +2,18 @@
 #include "scene.h"
 #include "scene_manager.h"
 #include "platform.h"
-#include "player.h"						// debug:忘记include对应头文件会出现奇怪的报错
+#include "player.h"									// debug:忘记include对应头文件会出现奇怪的报错
+#include "status_bar.h"
 
 extern bool is_debug;
 extern SceneManager scene_manager;					
+extern Camera main_camera;							// 摄像机
 extern std::vector<Platform> platform_list;
+extern std::vector<Bullet*> bullet_list;
 extern std::shared_ptr<Player> player_1;			// 玩家1
 extern std::shared_ptr<Player> player_2;			// 玩家2
-
+extern IMAGE* img_player_1_avatar;						// 玩家1头像
+extern IMAGE* img_player_2_avatar;						// 玩家2头像
 
 // 游戏背景
 extern IMAGE img_hills;
@@ -22,11 +26,12 @@ class GameScene : public Scene
 private:
 	POINT _pos_img_hills = { 0, 0 };
 	POINT _pos_img_sky = { 0, 0 };
+	StatusBar _status_bar_1P;						// 玩家1状态栏 
+	StatusBar _status_bar_2P;						// 玩家2状态栏 
 
 public:
 	GameScene() = default;
 	~GameScene() = default;
-
 
 	virtual void on_enter() override
 	{
@@ -70,7 +75,12 @@ public:
 		small_platform_3._shape.right = (float)small_platform_3._render_position.x + (float)small_platform_3._img->getwidth() - 40;
 
 		player_1->set_position({ 200, 100 });
-		player_2->set_position({ 600, 100 });
+		player_2->set_position({ 900, 100 });
+
+		_status_bar_1P.set_avatar(img_player_1_avatar);
+		_status_bar_2P.set_avatar(img_player_2_avatar);
+		_status_bar_1P.set_position(200, getheight() - 100);
+		_status_bar_2P.set_position(750, getheight() - 100);
 
 		mciSendString(L"play bgm_game repeat from 0", nullptr, 0, nullptr);
 	}
@@ -95,8 +105,32 @@ public:
 
 	virtual void on_update(int interval_ms) override
 	{
+		// 更新玩家
 		player_1->on_update(interval_ms);
 		player_2->on_update(interval_ms);
+
+		// 更新摄像机
+		main_camera.on_update(interval_ms);
+
+		// 移除可以删除的子弹: remove_if将判断条件为真的元素放在末尾,并返回新的末尾
+		bullet_list.erase(std::remove_if(bullet_list.begin(), bullet_list.end(),
+			[](Bullet* bullet)
+			{
+				bool deletable = bullet->check_can_remove();
+				if (deletable) delete bullet;
+				return deletable;
+			}),
+			bullet_list.end());
+
+		// 更新子弹状态
+		for (Bullet* bullet : bullet_list)
+			bullet->on_update(interval_ms);
+
+		// 更新状态栏
+		_status_bar_1P.set_hp(player_1->get_hp());
+		_status_bar_1P.set_mp(player_1->get_mp());
+		_status_bar_2P.set_hp(player_2->get_hp());
+		_status_bar_2P.set_mp(player_2->get_mp());
 	}
 
 	virtual void on_draw(const Camera& camera) override
@@ -115,8 +149,17 @@ public:
 			outtextxy(10, 10, L"调试模式中, 按'Q'键关闭");
 		}
 
+		// 玩家
 		player_1->on_draw(camera);
 		player_2->on_draw(camera);
+
+		// 子弹
+		for (Bullet* bullet : bullet_list)
+			bullet->on_draw(camera);
+
+		// 状态栏
+		_status_bar_1P.on_draw();
+		_status_bar_2P.on_draw();
 	}
 
 	virtual void on_exit()

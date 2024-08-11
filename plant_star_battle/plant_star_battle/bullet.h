@@ -5,7 +5,10 @@
 #include "player_id.h"
 #include "camera.h"
 
+extern bool is_debug;
+
 // 子弹基类
+// 执行逻辑: 子弹碰撞后触发碰撞执行逻辑,然后子弹无效,并开始播放子弹破碎动画,动画结束子弹可删除
 class Bullet
 {
 protected:
@@ -15,7 +18,7 @@ protected:
 	int _damage = 10;					// 子弹伤害
 	bool _valid = true;					// 子弹碰撞检测是否有效
 	bool _can_remove = false;			// 子弹是否移除
-	std::function<void()> _callback;	// 子弹碰撞后回调逻辑
+	std::function<void()> _callback;	// 子弹碰撞回调逻辑
 	PlayerID _target_id = PlayerID::P1;	// 子弹碰撞目标玩家id,区分敌我
 
 public:
@@ -57,6 +60,10 @@ public:
 		_velocity.x = x;
 		_velocity.y = y;
 	}
+	void set_velocity(const Vector2& velocity)
+	{
+		_velocity = velocity;
+	}
 
 	const Vector2& get_velocity() const
 	{
@@ -67,6 +74,10 @@ public:
 	{
 		_position.x = x;
 		_position.y = y;
+	}
+	void set_position(const Vector2& position)
+	{
+		_position = position;
 	}
 
 	const Vector2& get_position() const
@@ -110,7 +121,15 @@ public:
 	}
 
 	virtual void on_draw(const Camera& camera) const
-	{}
+	{
+		if (is_debug)
+		{
+			setlinecolor(RGB(255, 255, 255));
+			setfillcolor(RGB(255, 255, 255));
+			rectangle(camera, (int)_position.x, (int)_position.y, (int)(_position.x + _size.x), (int)(_position.y + _size.y));
+			solidcircle(camera, (int)(_position.x + _size.x / 2), (int)(_position.y + _size.y / 2), 5);
+		}
+	}
 
 	virtual void on_update(int interval_ms)
 	{}
@@ -125,4 +144,9 @@ protected:
 			|| _position.y - pos_camera.y > getheight() || _position.y + _size.y - pos_camera.y < 0;
 	}
 
+	bool check_if_exceeds_screen()
+	{
+		return _position.x + _size.x < 0 || _position.x > getwidth()
+			|| _position.y > getheight() || _position.y + _size.y < 0;
+	}
 };

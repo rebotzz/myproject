@@ -9,6 +9,14 @@
 extern SceneManager scene_manager;
 extern std::shared_ptr<Player> player_1;			// 玩家1
 extern std::shared_ptr<Player> player_2;			// 玩家2
+extern IMAGE* img_player_1_avatar;						// 玩家1头像
+extern IMAGE* img_player_2_avatar;						// 玩家2头像
+
+// 角色头像图标
+extern IMAGE img_avatar_gloomshroom;
+extern IMAGE img_avatar_nut;
+extern IMAGE img_avatar_peashooter;
+extern IMAGE img_avatar_sunflower;
 
 // 角色选择界面
 extern IMAGE img_VS;
@@ -38,7 +46,7 @@ extern IMAGE img_2P_selector_btn_idle_right;
 extern IMAGE img_2P_selector_btn_down_left;
 extern IMAGE img_2P_selector_btn_idle_left;
 
-// 玩家图片集
+// 玩家动画帧
 extern Atlas atlas_player_gloomshroom_idle_right;
 extern Atlas atlas_player_gloomshroom_idle_left;
 extern Atlas atlas_player_nut_idle_right;
@@ -47,6 +55,12 @@ extern Atlas atlas_player_peashooter_idle_right;
 extern Atlas atlas_player_peashooter_idle_left;
 extern Atlas atlas_player_sunflower_idle_right;
 extern Atlas atlas_player_sunflower_idle_left;
+
+// 角色头像图标
+extern IMAGE img_avatar_gloomshroom;
+extern IMAGE img_avatar_nut;
+extern IMAGE img_avatar_peashooter;
+extern IMAGE img_avatar_sunflower;
 
 
 class SelectorScene : public Scene
@@ -393,14 +407,18 @@ public:
 		switch (_player_type_1)
 		{
 		case PlayerType::PEASHOTER:
+			img_player_1_avatar = &img_avatar_peashooter;
 			player_1 = std::shared_ptr<Player>(new PlayerPeashoter);
 			break;
 		case PlayerType::SUNFLOWER:
+			img_player_1_avatar = &img_avatar_sunflower;
 			player_1 = std::shared_ptr<Player>(new PlayerSunflower);
 			break;
 		case PlayerType::NUT:
+			img_player_1_avatar = &img_avatar_nut;
 			break;
 		case PlayerType::GLOOMSHROOM:
+			img_player_1_avatar = &img_avatar_gloomshroom;
 			break;
 		}
 		player_1->set_playerID(PlayerID::P1);
@@ -408,14 +426,18 @@ public:
 		switch (_player_type_2)
 		{
 		case PlayerType::PEASHOTER:
+			img_player_2_avatar = &img_avatar_peashooter;
 			player_2 = std::shared_ptr<Player>(new PlayerPeashoter);
 			break;
 		case PlayerType::SUNFLOWER:
+			img_player_2_avatar = &img_avatar_sunflower;
 			player_2 = std::shared_ptr<Player>(new PlayerSunflower);
 			break;
 		case PlayerType::NUT:
+			img_player_2_avatar = &img_avatar_nut;
 			break;
 		case PlayerType::GLOOMSHROOM:
+			img_player_2_avatar = &img_avatar_gloomshroom;
 			break;
 		}
 		player_2->set_playerID(PlayerID::P2);

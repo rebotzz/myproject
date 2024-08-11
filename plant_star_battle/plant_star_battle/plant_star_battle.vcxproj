@@ -132,16 +132,22 @@
   <ItemGroup>
     <ClInclude Include="animation.h" />
     <ClInclude Include="atlas.h" />
+    <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="game_scene.h" />
     <ClInclude Include="menu_scene.h" />
+    <ClInclude Include="pea_bullet.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="player.h" />
-    <ClInclude Include="playerID.h" />
+    <ClInclude Include="player_id.h" />
     <ClInclude Include="player_peashoter.h" />
+    <ClInclude Include="particle.h" />
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="selector_scene.h" />
     <ClInclude Include="player_sunflower.h" />
+    <ClInclude Include="status_bar.h" />
+    <ClInclude Include="sun_bullet.h" />
+    <ClInclude Include="sun_ex_bullet.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="scene.h" />

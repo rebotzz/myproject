@@ -1,27 +1,19 @@
 #include <memory>
 #include <easyx.h>
-#include "util.h"
-#include "atlas.h"
 #include "menu_scene.h"
 #include "game_scene.h"
 #include "selector_scene.h"
 #include "scene_manager.h"
-#include "platform.h"
 #include "player.h"
 
 // 植物明星大乱斗
 
 // 游戏资源
 // 角色头像图标
-IMAGE img_avatar_gloomshroom_right;
-IMAGE img_avatar_nut_right;
-IMAGE img_avatar_peashooter_right;
-IMAGE img_avatar_sunflower_right;
-
-IMAGE img_avatar_gloomshroom_left;
-IMAGE img_avatar_nut_left;
-IMAGE img_avatar_peashooter_left;
-IMAGE img_avatar_sunflower_left;
+IMAGE img_avatar_gloomshroom;
+IMAGE img_avatar_nut;
+IMAGE img_avatar_peashooter;
+IMAGE img_avatar_sunflower;
 
 // 增益buff
 Atlas atlas_buff_box_blue;
@@ -80,9 +72,9 @@ Atlas atlas_player_peashooter_idle_left;
 Atlas atlas_player_peashooter_run_left;
 
 // 向日葵
-Atlas atlas_sunflower_sun;
+Atlas atlas_sunflower_sun_idle;
 Atlas atlas_sunflower_sun_explode;
-Atlas atlas_sunflower_sun_ex;
+Atlas atlas_sunflower_sun_ex_idle;
 Atlas atlas_sunflower_sun_ex_explode;
 Atlas atlas_sunflower_sun_text;
 Atlas atlas_player_sunflower_attack_ex_right;
@@ -157,9 +149,14 @@ std::shared_ptr<Scene> selector_scene(new SelectorScene);	// 选择角色场景
 std::shared_ptr<Scene> game_scene(new GameScene);			// 游戏场景
 SceneManager scene_manager;									// 场景管理器
 Camera main_camera;											// 摄像机
-std::vector<Platform> platform_list;						// 玩家站立平台
 std::shared_ptr<Player> player_1 = nullptr;					// 玩家1
 std::shared_ptr<Player> player_2 = nullptr;					// 玩家2
+IMAGE* img_player_1_avatar = nullptr;						// 玩家1头像
+IMAGE* img_player_2_avatar = nullptr;						// 玩家2头像
+std::vector<Platform> platform_list;						// 玩家站立平台列表
+std::vector<Bullet*> bullet_list;							// 玩家生成的子弹列表
+
+
 
 
 void flip_atlas(Atlas* src, Atlas* dst)
@@ -183,16 +180,16 @@ int main()
 	setbkmode(TRANSPARENT);
 	ExMessage msg;
 	const int FPS = 60;
+	srand((unsigned int)time(nullptr));
 
 	load_game_resources();
 	scene_manager.set_current_scene(menu_scene.get());
 
-
 	while (running)
 	{
 		DWORD begin_time = GetTickCount();
-		// 消息处理
 
+		// 消息处理
 		if (peekmessage(&msg, EX_MOUSE | EX_KEY))
 		{
 			scene_manager.on_input(msg);
@@ -204,7 +201,6 @@ int main()
 		DWORD delta_tick_time = current_tick_time - last_tick_time;
 		scene_manager.on_update(delta_tick_time);
 		last_tick_time = current_tick_time;
-
 
 
 		// 绘制图片
@@ -253,14 +249,10 @@ void load_game_resources()
 
 	// 角色头像图标
 	loadimage(&winner_bar, L"resources/winner_bar.png");
-	loadimage(&img_avatar_gloomshroom_right, L"resources/avatar_gloomshroom.png");
-	loadimage(&img_avatar_nut_right, L"resources/avatar_nut.png");
-	loadimage(&img_avatar_peashooter_right, L"resources/avatar_peashooter.png");
-	loadimage(&img_avatar_sunflower_right, L"resources/avatar_sunflower.png");
-	flip_image(&img_avatar_gloomshroom_right, &img_avatar_gloomshroom_left);
-	flip_image(&img_avatar_nut_right, &img_avatar_nut_left);
-	flip_image(&img_avatar_peashooter_right, &img_avatar_peashooter_left);
-	flip_image(&img_avatar_sunflower_right, &img_avatar_sunflower_left);
+	loadimage(&img_avatar_gloomshroom, L"resources/avatar_gloomshroom.png");
+	loadimage(&img_avatar_nut, L"resources/avatar_nut.png");
+	loadimage(&img_avatar_peashooter, L"resources/avatar_peashooter.png");
+	loadimage(&img_avatar_sunflower, L"resources/avatar_sunflower.png");
 
 	// 增益buff
 	atlas_buff_box_blue.load_from_file(L"resources/buff_box_blue_%d.png", 4);
@@ -315,9 +307,9 @@ void load_game_resources()
 
 
 	// 向日葵
-	atlas_sunflower_sun.load_from_file(L"resources/sun_%d.png", 5);
+	atlas_sunflower_sun_idle.load_from_file(L"resources/sun_%d.png", 5);
 	atlas_sunflower_sun_explode.load_from_file(L"resources/sun_explode_%d.png", 5);
-	atlas_sunflower_sun_ex.load_from_file(L"resources/sun_ex_%d.png", 5);
+	atlas_sunflower_sun_ex_idle.load_from_file(L"resources/sun_ex_%d.png", 5);
 	atlas_sunflower_sun_ex_explode.load_from_file(L"resources/sun_ex_explode_%d.png", 5);
 	atlas_sunflower_sun_text.load_from_file(L"resources/sun_text_%d.png", 6);
 	atlas_player_sunflower_attack_ex_right.load_from_file(L"resources/sunflower_attack_ex_%d.png", 9);

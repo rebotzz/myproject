@@ -1,7 +1,6 @@
 #pragma once
 #include <easyx.h>
 #include <cassert>
-#include <iostream>
 #include "camera.h"
 
 #pragma comment(lib, "WINmm.lib")	// mciSendString() 媒体控制接口
@@ -35,8 +34,26 @@ inline void putimage_alpha(int dst_x, int dst_y, int width, int height, IMAGE* i
 
 inline void line(const Camera& camera, int x1, int y1, int x2, int y2)
 {
-	Vector2 pos_camera = camera.get_position();
+	const Vector2& pos_camera = camera.get_position();
 	line(x1 - (int)pos_camera.x, y1 - (int)pos_camera.y, x2 - (int)pos_camera.x, y2 - (int)pos_camera.y);
+}
+
+inline void rectangle(const Camera& camera, int left, int  top, int  right, int  bottom)
+{
+	const Vector2& pos_camera = camera.get_position();
+	rectangle(left - (int)pos_camera.x, top - (int)pos_camera.y, right - (int)pos_camera.x, bottom - (int)pos_camera.y);
+}
+
+inline void solidroundrect(const Camera& camera, int left, int  top, int  right, int  bottom, int ellipsewidth, int ellipseheight)
+{
+	const Vector2& pos_camera = camera.get_position();
+	solidroundrect(left - (int)pos_camera.x, top - (int)pos_camera.y, right - (int)pos_camera.x, bottom - (int)pos_camera.y, ellipsewidth, ellipseheight);
+}
+
+inline void	solidcircle(const Camera& camera, int x, int y, int radius)
+{
+	const Vector2& pos_camera = camera.get_position();
+	solidcircle(x - (int)pos_camera.x, y - (int)pos_camera.y, radius);
 }
 
 //左右翻转图片, 提高素材复用
@@ -58,3 +75,20 @@ inline void flip_image(IMAGE* src, IMAGE* dst)
 	}
 }
 
+// 生成角色白色剪影图片
+inline void sketch_image(IMAGE* src, IMAGE* dst)
+{
+	int width = src->getwidth(), height = src->getheight();
+	dst->Resize(width, height);
+	DWORD* img_src_buffer = GetImageBuffer(src);
+	DWORD* img_dst_buffer = GetImageBuffer(dst);
+	for (int y = 0; y < height; ++y)
+	{
+		for (int x = 0; x < width; ++x)
+		{
+			// 保持源透明通道不变,颜色改为白色
+			int idx = y * width + x;
+			img_dst_buffer[idx] = BGR(RGB(255, 255, 255)) | (img_src_buffer[idx] & 0xff000000);	
+		}
+	}
+}

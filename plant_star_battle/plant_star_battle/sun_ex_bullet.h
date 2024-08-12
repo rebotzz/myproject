@@ -40,12 +40,7 @@ public:
 	virtual bool check_collision(const Vector2& position, const Vector2& size)
 	{
 		// 由于大型日光炸弹过大,碰撞检测矩形是否相交
-		bool is_x_collide = (max(_position.x + _size.x, position.x + size.x) - min(_position.x, position.x))
-			< (size.x + _size.x);
-		bool is_y_collide = (max(_position.y + _size.y, position.y + size.y) - min(_position.y, position.y))
-			< (size.y + _size.y);
-
-		return is_x_collide && is_y_collide;
+		return check_collision_rect(position, size);
 	}
 
 	virtual void on_collide() override

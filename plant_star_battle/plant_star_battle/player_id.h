@@ -4,5 +4,6 @@
 enum class PlayerID
 {
 	P1 = 0,
-	P2
+	P2,
+	ALL			// 那个玩家都可以 
 };

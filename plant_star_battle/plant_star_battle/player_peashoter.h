@@ -3,15 +3,15 @@
 #include "pea_bullet.h"
 
 // 豌豆射手
-extern Atlas atlas_player_peashooter_idle_right;
-extern Atlas atlas_player_peashooter_run_right;
-extern Atlas atlas_player_peashooter_idle_left;
-extern Atlas atlas_player_peashooter_run_left;
+extern Atlas atlas_player_peashoter_idle_right;
+extern Atlas atlas_player_peashoter_run_right;
+extern Atlas atlas_player_peashoter_idle_left;
+extern Atlas atlas_player_peashoter_run_left;
 
-extern Atlas atlas_player_peashooter_attack_ex_right;
-extern Atlas atlas_player_peashooter_attack_ex_left;
-extern Atlas atlas_player_peashooter_die_left;
-extern Atlas atlas_player_peashooter_die_right;
+extern Atlas atlas_player_peashoter_attack_ex_right;
+extern Atlas atlas_player_peashoter_attack_ex_left;
+extern Atlas atlas_player_peashoter_die_left;
+extern Atlas atlas_player_peashoter_die_right;
 
 
 class PlayerPeashoter : public Player
@@ -24,15 +24,17 @@ private:
 	Timer _timer_spawn_pea_ex;					// 特殊攻击时,豌豆子弹发射计时器
 
 public:
-	PlayerPeashoter()
+	PlayerPeashoter(bool face_right = true):Player(face_right)
 	{
 		// 初始化
-		_animation_idle_left.set_atlas(&atlas_player_peashooter_idle_left);
-		_animation_idle_right.set_atlas(&atlas_player_peashooter_idle_right);
-		_animation_run_left.set_atlas(&atlas_player_peashooter_run_left);
-		_animation_run_right.set_atlas(&atlas_player_peashooter_run_right);
-		_animation_attack_ex_left.set_atlas(&atlas_player_peashooter_attack_ex_left);
-		_animation_attack_ex_right.set_atlas(&atlas_player_peashooter_attack_ex_right);
+		_animation_idle_left.set_atlas(&atlas_player_peashoter_idle_left);
+		_animation_idle_right.set_atlas(&atlas_player_peashoter_idle_right);
+		_animation_run_left.set_atlas(&atlas_player_peashoter_run_left);
+		_animation_run_right.set_atlas(&atlas_player_peashoter_run_right);
+		_animation_attack_ex_left.set_atlas(&atlas_player_peashoter_attack_ex_left);
+		_animation_attack_ex_right.set_atlas(&atlas_player_peashoter_attack_ex_right);
+		_animation_die_left.set_atlas(&atlas_player_peashoter_die_left);
+		_animation_die_right.set_atlas(&atlas_player_peashoter_die_right);
 
 		_animation_idle_left.set_interval(75);
 		_animation_idle_right.set_interval(75);
@@ -40,6 +42,8 @@ public:
 		_animation_run_right.set_interval(75);
 		_animation_attack_ex_left.set_interval(75);
 		_animation_attack_ex_right.set_interval(75);
+		_animation_die_left.set_interval(150);
+		_animation_die_right.set_interval(150);
 
 		_animation_idle_left.set_loop(true);
 		_animation_idle_right.set_loop(true);
@@ -47,13 +51,15 @@ public:
 		_animation_run_right.set_loop(true);
 		_animation_attack_ex_left.set_loop(true);
 		_animation_attack_ex_right.set_loop(true);
+		_animation_die_left.set_loop(false);
+		_animation_die_right.set_loop(false);
 
 		// 玩家碰撞矩形
 		_size.x = 96;
 		_size.y = 96;
 
 		// 基类构造在派生类构造之前, 需要更改计时器wait_time
-		_attack_cd = 250;	
+		_attack_cd = 400;	
 		_timer_attack_cd.set_wait_time(_attack_cd);
 		_timer_attack_ex.set_wait_time(_attack_ex_duration);
 
@@ -117,13 +123,13 @@ private:
 		// 子弹生成位置在豌豆射手枪口
 		bullet_position.x = _is_face_right ?
 			_position.x + _size.x - bullet_size.x
-			: _position.x/* + bullet_size.x*/;
+			: _position.x;
 		bullet_position.y = _position.y;
 
 		bullet_velocity.x = _is_face_right ? speed : -speed;
 		pea_bullet->set_collide_target(_id == PlayerID::P1 ? PlayerID::P2 : PlayerID::P1);
-
-		pea_bullet->set_callback([&]() { _mp += 20; });
+		pea_bullet->set_damage(10);
+		pea_bullet->set_callback([&]() { _mp += 25; });
 		pea_bullet->set_position(bullet_position);
 		pea_bullet->set_velocity(bullet_velocity);
 

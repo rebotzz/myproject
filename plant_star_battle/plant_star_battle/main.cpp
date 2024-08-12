@@ -1,5 +1,6 @@
 #include <memory>
 #include <easyx.h>
+#include <ctime>
 #include "menu_scene.h"
 #include "game_scene.h"
 #include "selector_scene.h"
@@ -17,19 +18,19 @@ IMAGE img_avatar_sunflower;
 
 // 增益buff
 Atlas atlas_buff_box_blue;
-Atlas atlas_buff_box_pick;
+Atlas atlas_buff_box_grey;
+Atlas atlas_buff_box_red;
 Atlas atlas_buff_box_yellow;
 
 IMAGE img_buff_icon_hurry;
 IMAGE img_buff_icon_invisible;
-IMAGE img_buff_icon_recover;
-IMAGE img_buff_icon_silence;
+IMAGE img_buff_icon_recover_hp;
+IMAGE img_buff_icon_recover_mp;
 
 // 动作特效
 Atlas atlas_jump_effect;
 Atlas atlas_land_effect;
 Atlas atlas_run_effect;
-
 
 // 角色动画帧
 // 忧郁蘑菇
@@ -50,26 +51,25 @@ Atlas atlas_player_nut_attack_ex_right;
 Atlas atlas_player_nut_die_right;
 Atlas atlas_player_nut_idle_right;
 Atlas atlas_player_nut_run_right;
-Atlas atlas_player_nut_explode_right;
+Atlas atlas_nut_explode;
 
 Atlas atlas_player_nut_attack_ex_left;
 Atlas atlas_player_nut_die_left;
 Atlas atlas_player_nut_idle_left;
 Atlas atlas_player_nut_run_left;
-Atlas atlas_player_nut_explode_left;
 
 // 豌豆射手
 IMAGE img_pea_bullet;
 Atlas atlas_pea_bullet_break;
-Atlas atlas_player_peashooter_attack_ex_right;
-Atlas atlas_player_peashooter_die_right;
-Atlas atlas_player_peashooter_idle_right;
-Atlas atlas_player_peashooter_run_right;
+Atlas atlas_player_peashoter_attack_ex_right;
+Atlas atlas_player_peashoter_die_right;
+Atlas atlas_player_peashoter_idle_right;
+Atlas atlas_player_peashoter_run_right;
 
-Atlas atlas_player_peashooter_attack_ex_left;
-Atlas atlas_player_peashooter_die_left;
-Atlas atlas_player_peashooter_idle_left;
-Atlas atlas_player_peashooter_run_left;
+Atlas atlas_player_peashoter_attack_ex_left;
+Atlas atlas_player_peashoter_die_left;
+Atlas atlas_player_peashoter_idle_left;
+Atlas atlas_player_peashoter_run_left;
 
 // 向日葵
 Atlas atlas_sunflower_sun_idle;
@@ -89,11 +89,11 @@ Atlas atlas_player_sunflower_run_left;
 
 
 // 玩家标识
-IMAGE img_IP_cursor;
-IMAGE img_1P_winner;
-IMAGE img_2P_cursor;
-IMAGE img_2P_winner;
-IMAGE winner_bar;
+IMAGE img_1P_cursor;							// 玩家1头顶光标
+IMAGE img_2P_cursor;							// 玩家2头顶光标
+IMAGE img_1P_winner;							// 玩家1获胜滚动条
+IMAGE img_2P_winner;							// 玩家2获胜滚动条
+IMAGE img_winner_bar;							// 获胜滚动条底色
 
 // 菜单界面
 IMAGE img_menu_background;
@@ -155,8 +155,7 @@ IMAGE* img_player_1_avatar = nullptr;						// 玩家1头像
 IMAGE* img_player_2_avatar = nullptr;						// 玩家2头像
 std::vector<Platform> platform_list;						// 玩家站立平台列表
 std::vector<Bullet*> bullet_list;							// 玩家生成的子弹列表
-
-
+std::vector<Buff*> buff_list;								// 场地随机buff列表
 
 
 void flip_atlas(Atlas* src, Atlas* dst)
@@ -183,6 +182,7 @@ int main()
 	srand((unsigned int)time(nullptr));
 
 	load_game_resources();
+
 	scene_manager.set_current_scene(menu_scene.get());
 
 	while (running)
@@ -230,7 +230,7 @@ void load_game_resources()
 
 	// 加载图片
 	loadimage(&img_1P, L"resources/1P.png");
-	loadimage(&img_IP_cursor, L"resources/1P_cursor.png");
+	loadimage(&img_1P_cursor, L"resources/1P_cursor.png");
 	loadimage(&img_1P_desc, L"resources/1P_desc.png");
 	loadimage(&img_1P_selector_btn_down_right, L"resources/1P_selector_btn_down.png");
 	loadimage(&img_1P_selector_btn_idle_right, L"resources/1P_selector_btn_idle.png");
@@ -248,7 +248,7 @@ void load_game_resources()
 	loadimage(&img_2P_winner, L"resources/2P_winner.png");
 
 	// 角色头像图标
-	loadimage(&winner_bar, L"resources/winner_bar.png");
+	loadimage(&img_winner_bar, L"resources/winner_bar.png");
 	loadimage(&img_avatar_gloomshroom, L"resources/avatar_gloomshroom.png");
 	loadimage(&img_avatar_nut, L"resources/avatar_nut.png");
 	loadimage(&img_avatar_peashooter, L"resources/avatar_peashooter.png");
@@ -256,12 +256,13 @@ void load_game_resources()
 
 	// 增益buff
 	atlas_buff_box_blue.load_from_file(L"resources/buff_box_blue_%d.png", 4);
-	atlas_buff_box_pick.load_from_file(L"resources/buff_box_pink_%d.png", 4);
+	atlas_buff_box_red.load_from_file(L"resources/buff_box_red_%d.png", 4);
+	atlas_buff_box_grey.load_from_file(L"resources/buff_box_grey_%d.png", 4);
 	atlas_buff_box_yellow.load_from_file(L"resources/buff_box_yellow_%d.png", 4);
 	loadimage(&img_buff_icon_hurry, L"resources/buff_icon_hurry.png");
 	loadimage(&img_buff_icon_invisible, L"resources/buff_icon_invisible.png");
-	loadimage(&img_buff_icon_recover, L"resources/buff_icon_recover.png");
-	loadimage(&img_buff_icon_silence, L"resources/buff_icon_silence.png");
+	loadimage(&img_buff_icon_recover_hp, L"resources/buff_icon_recover_hp.png");
+	loadimage(&img_buff_icon_recover_mp, L"resources/buff_icon_recover_mp.png");
 
 	// 动作特效
 	atlas_jump_effect.load_from_file(L"resources/jump_effect_%d.png", 5);
@@ -286,24 +287,23 @@ void load_game_resources()
 	atlas_player_nut_die_right.load_from_file(L"resources/nut_die_%d.png", 3);
 	atlas_player_nut_idle_right.load_from_file(L"resources/nut_idle_%d.png", 3);
 	atlas_player_nut_run_right.load_from_file(L"resources/nut_run_%d.png", 3);
-	atlas_player_nut_explode_right.load_from_file(L"resources/nut_explode_%d.png", 5);
+	atlas_nut_explode.load_from_file(L"resources/nut_explode_%d.png", 5);
 	flip_atlas(&atlas_player_nut_attack_ex_right, &atlas_player_nut_attack_ex_left);
 	flip_atlas(&atlas_player_nut_die_right, &atlas_player_nut_die_left);
 	flip_atlas(&atlas_player_nut_idle_right, &atlas_player_nut_idle_left);
-	flip_atlas(&atlas_player_nut_explode_right, &atlas_player_nut_explode_left);
-
+	flip_atlas(&atlas_player_nut_run_right, &atlas_player_nut_run_left);
 
 	// 豌豆射手
 	loadimage(&img_pea_bullet, L"resources/pea.png");
 	atlas_pea_bullet_break.load_from_file(L"resources/pea_break_%d.png", 3);
-	atlas_player_peashooter_attack_ex_right.load_from_file(L"resources/peashooter_attack_ex_%d.png", 3);
-	atlas_player_peashooter_die_right.load_from_file(L"resources/peashooter_die_%d.png", 4);
-	atlas_player_peashooter_idle_right.load_from_file(L"resources/peashooter_idle_%d.png", 9);
-	atlas_player_peashooter_run_right.load_from_file(L"resources/peashooter_run_%d.png", 5);
-	flip_atlas(&atlas_player_peashooter_attack_ex_right, &atlas_player_peashooter_attack_ex_left);
-	flip_atlas(&atlas_player_peashooter_die_right, &atlas_player_peashooter_die_left);
-	flip_atlas(&atlas_player_peashooter_idle_right, &atlas_player_peashooter_idle_left);
-	flip_atlas(&atlas_player_peashooter_run_right, &atlas_player_peashooter_run_left);
+	atlas_player_peashoter_attack_ex_right.load_from_file(L"resources/peashooter_attack_ex_%d.png", 3);
+	atlas_player_peashoter_die_right.load_from_file(L"resources/peashooter_die_%d.png", 4);
+	atlas_player_peashoter_idle_right.load_from_file(L"resources/peashooter_idle_%d.png", 9);
+	atlas_player_peashoter_run_right.load_from_file(L"resources/peashooter_run_%d.png", 5);
+	flip_atlas(&atlas_player_peashoter_attack_ex_right, &atlas_player_peashoter_attack_ex_left);
+	flip_atlas(&atlas_player_peashoter_die_right, &atlas_player_peashoter_die_left);
+	flip_atlas(&atlas_player_peashoter_idle_right, &atlas_player_peashoter_idle_left);
+	flip_atlas(&atlas_player_peashoter_run_right, &atlas_player_peashoter_run_left);
 
 
 	// 向日葵
@@ -362,6 +362,7 @@ void load_game_resources()
 	mciSendString(L"open resources/sun_explode.mp3 alias sun_explode", nullptr, 0, nullptr);
 	mciSendString(L"open resources/sun_explode_ex.mp3 alias sun_explode_ex", nullptr, 0, nullptr);
 	mciSendString(L"open resources/sun_text.mp3 alias sun_text", nullptr, 0, nullptr);
+	mciSendString(L"open resources/buff.mp3 alias buff", nullptr, 0, nullptr);
 
 	mciSendString(L"open resources/nut_dash.wav alias nut_dash", nullptr, 0, nullptr);
 	mciSendString(L"open resources/ui_confirm.wav alias ui_confirm", nullptr, 0, nullptr);

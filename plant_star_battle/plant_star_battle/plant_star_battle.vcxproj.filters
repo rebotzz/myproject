@@ -28,6 +28,9 @@
     <Filter Include="头文件\bullet">
       <UniqueIdentifier>{f5dbcefc-80c8-435a-845c-2b197bea1e5c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\buff">
+      <UniqueIdentifier>{cd16117c-3141-433a-9200-a2747913f58d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,9 +61,6 @@
     </ClInclude>
     <ClInclude Include="platform.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vector2.h">
-      <Filter>头文件\camera</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>头文件\camera</Filter>
@@ -99,6 +99,30 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="particle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="player_nut.h">
+      <Filter>头文件\player</Filter>
+    </ClInclude>
+    <ClInclude Include="nut_explode_bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="player_gloomshroom.h">
+      <Filter>头文件\player</Filter>
+    </ClInclude>
+    <ClInclude Include="bubbles_bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="bubbles_ex_bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="buff_bullet.h">
+      <Filter>头文件\buff</Filter>
+    </ClInclude>
+    <ClInclude Include="buff_id.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

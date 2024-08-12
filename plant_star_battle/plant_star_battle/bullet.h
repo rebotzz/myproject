@@ -12,14 +12,18 @@ extern bool is_debug;
 class Bullet
 {
 protected:
-	Vector2 _size;						// 子弹尺寸
-	Vector2 _position;					// 子弹位置
+	Vector2 _size;						// 子弹碰撞体尺寸
+	Vector2 _position;					// 子弹碰撞体位置
 	Vector2 _velocity;					// 子弹速度
 	int _damage = 10;					// 子弹伤害
 	bool _valid = true;					// 子弹碰撞检测是否有效
 	bool _can_remove = false;			// 子弹是否移除
 	std::function<void()> _callback;	// 子弹碰撞回调逻辑
 	PlayerID _target_id = PlayerID::P1;	// 子弹碰撞目标玩家id,区分敌我
+
+	// 当子弹图片尺寸与碰撞尺寸不同时使用以下参数
+	Vector2 _img_size;					// 子弹图片大小
+	Vector2 _render_offset;				// 子弹碰撞矩形与渲染图片的偏移(统一中心)
 
 public:
 	Bullet() = default;
@@ -43,6 +47,16 @@ public:
 	const Vector2& get_size() const
 	{
 		return _size;
+	}
+
+	void set_img_size(float x, float y)
+	{
+		_img_size.x = x, _img_size.y = y;
+	}
+
+	const Vector2& get_img_size() const
+	{
+		return _img_size;
 	}
 
 	void set_collide_target(PlayerID target)
@@ -122,10 +136,11 @@ public:
 
 	virtual void on_draw(const Camera& camera) const
 	{
+		// 子弹碰撞检测边框
 		if (is_debug)
 		{
 			setlinecolor(RGB(255, 255, 255));
-			setfillcolor(RGB(255, 255, 255));
+			setfillcolor(RGB(255, 51, 51));
 			rectangle(camera, (int)_position.x, (int)_position.y, (int)(_position.x + _size.x), (int)(_position.y + _size.y));
 			solidcircle(camera, (int)(_position.x + _size.x / 2), (int)(_position.y + _size.y / 2), 5);
 		}
@@ -148,5 +163,16 @@ protected:
 	{
 		return _position.x + _size.x < 0 || _position.x > getwidth()
 			|| _position.y > getheight() || _position.y + _size.y < 0;
+	}
+
+	// 碰撞检测矩形是否相交
+	bool check_collision_rect(const Vector2& position, const Vector2& size)
+	{
+		bool is_x_collide = (max(_position.x + _size.x, position.x + size.x) - min(_position.x, position.x))
+			< (size.x + _size.x);
+		bool is_y_collide = (max(_position.y + _size.y, position.y + size.y) - min(_position.y, position.y))
+			< (size.y + _size.y);
+
+		return is_x_collide && is_y_collide;
 	}
 };

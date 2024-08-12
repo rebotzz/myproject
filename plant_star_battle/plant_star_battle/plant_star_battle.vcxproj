@@ -132,14 +132,21 @@
   <ItemGroup>
     <ClInclude Include="animation.h" />
     <ClInclude Include="atlas.h" />
+    <ClInclude Include="bubbles_bullet.h" />
+    <ClInclude Include="bubbles_ex_bullet.h" />
+    <ClInclude Include="buff_bullet.h" />
+    <ClInclude Include="buff_id.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="game_scene.h" />
     <ClInclude Include="menu_scene.h" />
+    <ClInclude Include="nut_explode_bullet.h" />
     <ClInclude Include="pea_bullet.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="player_gloomshroom.h" />
     <ClInclude Include="player_id.h" />
+    <ClInclude Include="player_nut.h" />
     <ClInclude Include="player_peashoter.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="scene_manager.h" />

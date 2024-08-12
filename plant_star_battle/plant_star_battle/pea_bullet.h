@@ -25,7 +25,7 @@ public:
 		_animation_break.set_loop(false);
 		_animation_break.set_callback([&]() { _can_remove = true; });
 	}
-	~PeaBullet(){}
+	~PeaBullet() {}
 
 	virtual void on_collide()
 	{
@@ -48,9 +48,9 @@ public:
 
 	virtual void on_update(int interval_ms)
 	{
-		if (_valid)
-			_position += _velocity * (float)interval_ms;
-		else
+		_position += _velocity * (float)interval_ms;
+
+		if (!_valid)
 			_animation_break.on_update(interval_ms);
 
 		if (check_if_exceeds_screen())

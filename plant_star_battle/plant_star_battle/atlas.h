@@ -3,6 +3,8 @@
 #include <cassert>
 #include <easyx.h>
 
+#include <iostream>
+
 class Atlas
 {
 private:

@@ -1,7 +1,6 @@
 #pragma once
 #include "vector2.h"
 #include "timer.h"
-#include <ctime>
 
 class Camera
 {

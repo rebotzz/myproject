@@ -1,18 +1,24 @@
 #pragma once
 #include <easyx.h>
 #include "util.h"
+#include "buff_id.h"
 
-#include <string>
+
+extern IMAGE img_buff_icon_hurry;
+extern IMAGE img_buff_icon_invisible;
+extern IMAGE img_buff_icon_recover_hp;
+extern IMAGE img_buff_icon_recover_mp;
 
 // 角色状态栏
 class StatusBar
 {
 private:
-	int _hp = 0;					// 显示玩家生命值
-	int _mp = 0;					// 显示玩家能量值
-	IMAGE* _img_avator = nullptr;	// 显示玩家头像
-	POINT _position = { 0 };		// 显示的位置
-	const int _width = 275;			// 状态条宽度
+	int _hp = 0;						// 显示玩家生命值
+	int _mp = 0;						// 显示玩家能量值
+	IMAGE* _img_avator = nullptr;		// 显示玩家头像
+	POINT _position = { 0 };			// 显示的位置
+	const int _width = 275;				// 状态条宽度
+	BuffID _buff_id = BuffID::INVALID;	// 玩家buff状态
 
 public:
 	void set_hp(int val)
@@ -23,6 +29,11 @@ public:
 	void set_mp(int val)
 	{
 		_mp = val;
+	}
+
+	void set_buff(BuffID id)
+	{
+		_buff_id = id;
 	}
 
 	void set_position(int x, int y)
@@ -56,12 +67,16 @@ public:
 		setfillcolor(RGB(83, 131, 195));
 		solidroundrect(_position.x + 100, _position.y + 45, _position.x + 100 + mp_bar_width + 3, _position.y + 68, 8, 8);
 
+		// buff icon绘制
+		if (_buff_id == BuffID::HURRY)
+			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_hurry.getheight(), &img_buff_icon_hurry);
+		else if (_buff_id == BuffID::INVISIBLE)
+			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_invisible.getheight(), &img_buff_icon_invisible);
+		else if (_buff_id == BuffID::RECOVERY_HP)
+			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_recover_hp.getheight(), &img_buff_icon_recover_hp);
+		else if (_buff_id == BuffID::RECOVERY_MP)
+			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_recover_mp.getheight(), &img_buff_icon_recover_mp);
 
-		// for debug
-		//std::wstring buff = L"hp: " + std::to_wstring(_hp);
-		//outtextxy(_position.x - 50, _position.y + 10, buff.c_str());
-		//buff = L"mp: " + std::to_wstring(_mp);
-		//outtextxy(_position.x - 50, _position.y + 45, buff.c_str());
 	}
 
 };

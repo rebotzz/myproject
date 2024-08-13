@@ -99,7 +99,7 @@ public:
 		return _position;
 	}
 
-	void set_valid(bool flag)
+	virtual void set_valid(bool flag)
 	{
 		_valid = flag;
 	}

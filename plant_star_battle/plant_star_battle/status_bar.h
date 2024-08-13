@@ -69,13 +69,13 @@ public:
 
 		// buff iconªÊ÷∆
 		if (_buff_id == BuffID::HURRY)
-			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_hurry.getheight(), &img_buff_icon_hurry);
+			putimage_alpha(_position.x + 100, _position.y + 10 - img_buff_icon_hurry.getheight(), &img_buff_icon_hurry);
 		else if (_buff_id == BuffID::INVISIBLE)
-			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_invisible.getheight(), &img_buff_icon_invisible);
+			putimage_alpha(_position.x + 100, _position.y + 10 - img_buff_icon_invisible.getheight(), &img_buff_icon_invisible);
 		else if (_buff_id == BuffID::RECOVERY_HP)
-			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_recover_hp.getheight(), &img_buff_icon_recover_hp);
+			putimage_alpha(_position.x + 100, _position.y + 10 - img_buff_icon_recover_hp.getheight(), &img_buff_icon_recover_hp);
 		else if (_buff_id == BuffID::RECOVERY_MP)
-			putimage_alpha(_position.x + 100, _position.y - img_buff_icon_recover_mp.getheight(), &img_buff_icon_recover_mp);
+			putimage_alpha(_position.x + 100, _position.y + 10 - img_buff_icon_recover_mp.getheight(), &img_buff_icon_recover_mp);
 
 	}
 

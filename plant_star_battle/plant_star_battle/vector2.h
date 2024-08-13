@@ -58,6 +58,11 @@ public:
 		return Vector2(x * value, y * value);
 	}
 
+	Vector2 operator/(float value) const
+	{
+		return Vector2(x / value, y / value);
+	}
+
 	float length()
 	{
 		return sqrt(x * x + y * y);

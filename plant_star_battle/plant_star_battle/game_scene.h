@@ -5,9 +5,10 @@
 #include "player.h"									// debug:忘记include对应头文件会出现奇怪的报错
 #include "status_bar.h"
 #include "buff_bullet.h"
+#include "game_place_id.h"
 
 extern bool is_debug;
-extern SceneManager scene_manager;					
+extern SceneManager scene_manager;
 extern Camera main_camera;							// 摄像机
 extern std::shared_ptr<Player> player_1;			// 玩家1
 extern std::shared_ptr<Player> player_2;			// 玩家2
@@ -16,6 +17,7 @@ extern IMAGE* img_player_2_avatar;					// 玩家2头像
 extern std::vector<Platform> platform_list;
 extern std::vector<Bullet*> bullet_list;
 extern std::vector<Buff*> buff_list;
+extern GamePlace game_place;						// 游戏战斗场景
 
 
 // 游戏背景
@@ -23,6 +25,9 @@ extern IMAGE img_sky;								// 背景天空
 extern IMAGE img_hills;								// 背景山脉
 extern IMAGE img_large_platform;					// 玩家站立大平台
 extern IMAGE img_small_platform;					// 玩家站立小平台
+extern IMAGE img_hollow_background;
+extern IMAGE img_hollow_large_platform;
+extern IMAGE img_hollow_small_platform;
 
 // 玩家标识
 extern IMAGE img_1P_cursor;							// 玩家1头顶光标
@@ -36,6 +41,7 @@ class GameScene : public Scene
 private:
 	POINT _pos_img_hills = { 0, 0 };
 	POINT _pos_img_sky = { 0, 0 };
+	POINT _pos_img_hollow_background = { 0, 0 };
 	StatusBar _status_bar_1P;						// 玩家1状态栏 
 	StatusBar _status_bar_2P;						// 玩家2状态栏 
 	bool _is_showing_cursor = false;				// 是否显示玩家头顶光标
@@ -53,7 +59,8 @@ private:
 	float _speed_winner_bar = 1.95f;				// 滚动条滑动速度
 	float _speed_winner_text = 1.65f;				// 滚动文本滑动速度
 
-	Timer _timer_random_buff;							// 场地随机buff定时器
+	Timer _timer_random_buff;						// 场地随机buff定时器
+	GamePlace _place_id = GamePlace::Nature;
 
 public:
 	GameScene() = default;
@@ -65,55 +72,35 @@ public:
 		_is_slide_out_started = false;
 		_is_showing_cursor = true;
 
-		// 场景初始化
-		_pos_img_hills.x = (getwidth() - img_hills.getwidth()) / 2;
-		_pos_img_hills.y = (getheight() - img_hills.getheight()) / 2;
-		_pos_img_sky.x = (getwidth() - img_sky.getwidth()) / 2;
-		_pos_img_sky.y = (getheight() - img_sky.getheight()) / 2;
-
-		platform_list.resize(4);
-		Platform& large_platform = platform_list[0];
-		large_platform._img = &img_large_platform;
-		large_platform._render_position.x = 122;
-		large_platform._render_position.y = 455;
-		large_platform._shape.y = (float)large_platform._render_position.y + 60;
-		// 碰撞检查边缘略小于图片
-		large_platform._shape.left = (float)large_platform._render_position.x + 30;
-		large_platform._shape.right = (float)large_platform._render_position.x + (float)large_platform._img->getwidth() - 30;
-
-		Platform& small_platform_1 = platform_list[1];
-		small_platform_1._img = &img_small_platform;
-		small_platform_1._render_position.x = 175;
-		small_platform_1._render_position.y = 360;
-		small_platform_1._shape.y = (float)small_platform_1._render_position.y + (float)small_platform_1._img->getheight() / 2;
-		small_platform_1._shape.left = (float)small_platform_1._render_position.x + 40;
-		small_platform_1._shape.right = (float)small_platform_1._render_position.x + (float)small_platform_1._img->getwidth() - 40;
-
-		Platform& small_platform_2 = platform_list[2];
-		small_platform_2._img = &img_small_platform;
-		small_platform_2._render_position.x = 855;
-		small_platform_2._render_position.y = 360;
-		small_platform_2._shape.y = (float)small_platform_2._render_position.y + (float)small_platform_2._img->getheight() / 2;
-		small_platform_2._shape.left = (float)small_platform_2._render_position.x + 40;
-		small_platform_2._shape.right = (float)small_platform_2._render_position.x + (float)small_platform_2._img->getwidth() - 40;
-
-		Platform& small_platform_3 = platform_list[3];
-		small_platform_3._img = &img_small_platform;
-		small_platform_3._render_position.x = 515;
-		small_platform_3._render_position.y = 225;
-		small_platform_3._shape.y = (float)small_platform_3._render_position.y + (float)small_platform_3._img->getheight() / 2;
-		small_platform_3._shape.left = (float)small_platform_3._render_position.x + 40;
-		small_platform_3._shape.right = (float)small_platform_3._render_position.x + (float)small_platform_3._img->getwidth() - 40;
+		// 初始化场地
+		if (game_place == GamePlace::Random)
+		{
+			switch (rand() % GamePlace::Random)
+			{
+			case GamePlace::Nature:
+				_place_id = GamePlace::Nature;
+				init_platform_natural();
+				break;
+			case GamePlace::Hollow:
+				_place_id = GamePlace::Hollow;
+				init_platform_hollow();
+				break;
+			}
+		}
+		else if (game_place == GamePlace::Nature)
+		{
+			_place_id = GamePlace::Nature;
+			init_platform_natural();
+		}
+		else
+		{
+			_place_id = GamePlace::Hollow;
+			init_platform_hollow();
+		}
 
 		// 玩家位置,朝向初始化
 		player_1->set_position({ 200, 50 });
 		player_2->set_position({ 900, 50 });
-
-		// 状态栏初始化
-		_status_bar_1P.set_avatar(img_player_1_avatar);
-		_status_bar_2P.set_avatar(img_player_2_avatar);
-		_status_bar_1P.set_position(200, getheight() - 100);
-		_status_bar_2P.set_position(750, getheight() - 100);
 
 		// 玩家获胜滚动效果初始化
 		_pos_img_winner_bar.x = 0 - img_winner_bar.getwidth();
@@ -283,8 +270,16 @@ public:
 	virtual void on_draw(const Camera& camera) override
 	{
 		// 背景
-		putimage_alpha(_pos_img_sky.x, _pos_img_sky.y, &img_sky);
-		putimage_alpha(_pos_img_hills.x, _pos_img_hills.y, &img_hills);
+		if (_place_id == GamePlace::Nature)
+		{
+			putimage_alpha(_pos_img_sky.x, _pos_img_sky.y, &img_sky);
+			putimage_alpha(_pos_img_hills.x, _pos_img_hills.y, &img_hills);
+		}
+		else if (_place_id == GamePlace::Hollow)
+		{
+			putimage_alpha(_pos_img_hollow_background.x, _pos_img_hollow_background.y, &img_hollow_background);
+		}
+
 
 		// 平台
 		for (Platform& platform : platform_list)
@@ -304,10 +299,18 @@ public:
 		if (_is_showing_cursor)
 		{
 			Vector2 pos_1P_cursor, pos_2P_cursor;
-			pos_1P_cursor.x = player_1->get_position().x + (player_1->get_size().x - img_1P_cursor.getwidth()) / 2;
-			pos_1P_cursor.y = player_1->get_position().y + - img_1P_cursor.getheight();
-			pos_2P_cursor.x = player_2->get_position().x + (player_2->get_size().x - img_2P_cursor.getwidth()) / 2;
-			pos_2P_cursor.y = player_2->get_position().y + -img_1P_cursor.getheight();
+			pos_1P_cursor.x = player_1->get_achor_mode() == Player::AchorMode::LeftTop ?
+				player_1->get_position().x + (player_1->get_size().x - img_1P_cursor.getwidth()) / 2
+				: player_1->get_position().x - img_1P_cursor.getwidth() / 2;
+			pos_1P_cursor.y = player_1->get_achor_mode() == Player::AchorMode::LeftTop ?
+				player_1->get_position().y + -img_1P_cursor.getheight()
+				: player_1->get_position().y + -img_1P_cursor.getheight() - player_1->get_size().y;
+			pos_2P_cursor.x = player_2->get_achor_mode() == Player::AchorMode::LeftTop ?
+				player_2->get_position().x + (player_2->get_size().x - img_2P_cursor.getwidth()) / 2
+				: player_2->get_position().x - img_2P_cursor.getwidth() / 2;
+			pos_2P_cursor.y = player_2->get_achor_mode() == Player::AchorMode::LeftTop ?
+				player_2->get_position().y + -img_1P_cursor.getheight()
+				: player_2->get_position().y + -img_1P_cursor.getheight() - player_2->get_size().y;
 			putimage_alpha(camera, (int)pos_1P_cursor.x, (int)pos_1P_cursor.y, &img_1P_cursor);
 			putimage_alpha(camera, (int)pos_2P_cursor.x, (int)pos_2P_cursor.y, &img_2P_cursor);
 		}
@@ -330,7 +333,7 @@ public:
 		else
 		{
 			putimage_alpha(camera, _pos_img_winner_bar.x, _pos_img_winner_bar.y, &img_winner_bar);
-			putimage_alpha(camera, _pos_img_winner_text.x, _pos_img_winner_text.y, 
+			putimage_alpha(camera, _pos_img_winner_text.x, _pos_img_winner_text.y,
 				player_1->get_hp() > 0 ? &img_1P_winner : &img_2P_winner);
 		}
 
@@ -350,6 +353,114 @@ public:
 			delete buff;
 		buff_list.clear();
 
+		platform_list.clear();
+
 		mciSendString(L"stop bgm_game", nullptr, 0, nullptr);
 	}
+
+private:
+	void init_platform_natural()
+	{
+		// 场景初始化
+		_pos_img_hills.x = (getwidth() - img_hills.getwidth()) / 2;
+		_pos_img_hills.y = (getheight() - img_hills.getheight()) / 2;
+		_pos_img_sky.x = (getwidth() - img_sky.getwidth()) / 2;
+		_pos_img_sky.y = (getheight() - img_sky.getheight()) / 2;
+
+		platform_list.resize(4);
+		Platform& large_platform = platform_list[0];
+		large_platform._img = &img_large_platform;
+		large_platform._render_position.x = 122;
+		large_platform._render_position.y = 455;
+		large_platform._shape.y = (float)large_platform._render_position.y + 60;
+		// 碰撞检查边缘略小于图片
+		large_platform._shape.left = (float)large_platform._render_position.x + 30;
+		large_platform._shape.right = (float)large_platform._render_position.x + (float)large_platform._img->getwidth() - 30;
+
+		Platform& small_platform_1 = platform_list[1];
+		small_platform_1._img = &img_small_platform;
+		small_platform_1._render_position.x = 175;
+		small_platform_1._render_position.y = 360;
+		small_platform_1._shape.y = (float)small_platform_1._render_position.y + (float)small_platform_1._img->getheight() / 2;
+		small_platform_1._shape.left = (float)small_platform_1._render_position.x + 40;
+		small_platform_1._shape.right = (float)small_platform_1._render_position.x + (float)small_platform_1._img->getwidth() - 40;
+
+		Platform& small_platform_2 = platform_list[2];
+		small_platform_2._img = &img_small_platform;
+		small_platform_2._render_position.x = 855;
+		small_platform_2._render_position.y = 360;
+		small_platform_2._shape.y = (float)small_platform_2._render_position.y + (float)small_platform_2._img->getheight() / 2;
+		small_platform_2._shape.left = (float)small_platform_2._render_position.x + 40;
+		small_platform_2._shape.right = (float)small_platform_2._render_position.x + (float)small_platform_2._img->getwidth() - 40;
+
+		Platform& small_platform_3 = platform_list[3];
+		small_platform_3._img = &img_small_platform;
+		small_platform_3._render_position.x = 515;
+		small_platform_3._render_position.y = 225;
+		small_platform_3._shape.y = (float)small_platform_3._render_position.y + (float)small_platform_3._img->getheight() / 2;
+		small_platform_3._shape.left = (float)small_platform_3._render_position.x + 40;
+		small_platform_3._shape.right = (float)small_platform_3._render_position.x + (float)small_platform_3._img->getwidth() - 40;
+	
+	
+		// 状态栏初始化
+		_status_bar_1P.set_avatar(img_player_1_avatar);
+		_status_bar_2P.set_avatar(img_player_2_avatar);
+		_status_bar_1P.set_position(200, getheight() - 100);
+		_status_bar_2P.set_position(750, getheight() - 100);
+	}
+
+	void init_platform_hollow()
+	{
+		_pos_img_hollow_background.x = (getwidth() - img_sky.getwidth()) / 2;
+		_pos_img_hollow_background.y = (getheight() - img_sky.getheight()) / 2;
+
+		platform_list.resize(5);
+		Platform& large_platform = platform_list[0];
+		large_platform._img = &img_hollow_large_platform;
+		large_platform._render_position.x = 0;
+		large_platform._render_position.y = getheight() - img_hollow_large_platform.getheight() + 30;
+		large_platform._shape.y = (float)large_platform._render_position.y + 30;
+		// 碰撞检查边缘略小于图片
+		large_platform._shape.left = (float)large_platform._render_position.x + 30;
+		large_platform._shape.right = (float)large_platform._render_position.x + (float)large_platform._img->getwidth() - 30;
+
+		Platform& small_platform_1 = platform_list[1];
+		small_platform_1._img = &img_hollow_small_platform;
+		small_platform_1._render_position.x = 100;
+		small_platform_1._render_position.y = 450;
+		small_platform_1._shape.y = (float)small_platform_1._render_position.y + (float)small_platform_1._img->getheight() / 2;
+		small_platform_1._shape.left = (float)small_platform_1._render_position.x + 40;
+		small_platform_1._shape.right = (float)small_platform_1._render_position.x + (float)small_platform_1._img->getwidth() - 40;
+
+		Platform& small_platform_2 = platform_list[2];
+		small_platform_2._img = &img_hollow_small_platform;
+		small_platform_2._render_position.x = 900;
+		small_platform_2._render_position.y = 320;
+		small_platform_2._shape.y = (float)small_platform_2._render_position.y + (float)small_platform_2._img->getheight() / 2;
+		small_platform_2._shape.left = (float)small_platform_2._render_position.x + 40;
+		small_platform_2._shape.right = (float)small_platform_2._render_position.x + (float)small_platform_2._img->getwidth() - 40;
+
+		Platform& small_platform_3 = platform_list[3];
+		small_platform_3._img = &img_hollow_small_platform;
+		small_platform_3._render_position.x = 1000;
+		small_platform_3._render_position.y = 500;
+		small_platform_3._shape.y = (float)small_platform_3._render_position.y + (float)small_platform_3._img->getheight() / 2;
+		small_platform_3._shape.left = (float)small_platform_3._render_position.x + 40;
+		small_platform_3._shape.right = (float)small_platform_3._render_position.x + (float)small_platform_3._img->getwidth() - 40;
+
+		Platform& small_platform_4 = platform_list[4];
+		small_platform_4._img = &img_hollow_small_platform;
+		small_platform_4._render_position.x = 500;
+		small_platform_4._render_position.y = 250;
+		small_platform_4._shape.y = (float)small_platform_4._render_position.y + (float)small_platform_4._img->getheight() / 2;
+		small_platform_4._shape.left = (float)small_platform_4._render_position.x + 40;
+		small_platform_4._shape.right = (float)small_platform_4._render_position.x + (float)small_platform_4._img->getwidth() - 40;
+
+		// 状态栏初始化
+		_status_bar_1P.set_avatar(img_player_1_avatar);
+		_status_bar_2P.set_avatar(img_player_2_avatar);
+		_status_bar_1P.set_position(20, 40);
+		_status_bar_2P.set_position(870, 40);
+	}
+
 };

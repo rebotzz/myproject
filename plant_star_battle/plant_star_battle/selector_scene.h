@@ -6,18 +6,22 @@
 #include "player_sunflower.h"
 #include "player_nut.h"
 #include "player_gloomshroom.h"
+#include "player_hornet.h"
+#include "game_place_id.h"
 
 extern SceneManager scene_manager;
 extern std::shared_ptr<Player> player_1;			// 玩家1
 extern std::shared_ptr<Player> player_2;			// 玩家2
-extern IMAGE* img_player_1_avatar;						// 玩家1头像
-extern IMAGE* img_player_2_avatar;						// 玩家2头像
+extern IMAGE* img_player_1_avatar;					// 玩家1头像
+extern IMAGE* img_player_2_avatar;					// 玩家2头像
+extern GamePlace game_place;						// 游戏战斗场景
 
 // 角色头像图标
 extern IMAGE img_avatar_gloomshroom;
 extern IMAGE img_avatar_nut;
 extern IMAGE img_avatar_peashooter;
 extern IMAGE img_avatar_sunflower;
+extern IMAGE img_avatar_hornet;
 
 // 角色选择界面
 extern IMAGE img_VS;
@@ -33,6 +37,8 @@ extern IMAGE img_gloomshroom_selector_background_left;
 extern IMAGE img_nut_selector_background_left;
 extern IMAGE img_peashooter_selector_background_left;
 extern IMAGE img_sunflower_selector_background_left;
+extern IMAGE img_hornet_selector_background_unkown;
+
 
 extern IMAGE img_1P;
 extern IMAGE img_1P_desc;
@@ -48,20 +54,11 @@ extern IMAGE img_2P_selector_btn_down_left;
 extern IMAGE img_2P_selector_btn_idle_left;
 
 // 玩家动画帧
-extern Atlas atlas_player_gloomshroom_idle_right;
-extern Atlas atlas_player_gloomshroom_idle_left;
-extern Atlas atlas_player_nut_idle_right;
-extern Atlas atlas_player_nut_idle_left;
 extern Atlas atlas_player_peashoter_idle_right;
-extern Atlas atlas_player_peashoter_idle_left;
-extern Atlas atlas_player_sunflower_idle_right;
+extern Atlas atlas_player_gloomshroom_idle_left;
+extern Atlas atlas_player_nut_idle_left;
 extern Atlas atlas_player_sunflower_idle_left;
-
-// 角色头像图标
-extern IMAGE img_avatar_gloomshroom;
-extern IMAGE img_avatar_nut;
-extern IMAGE img_avatar_peashooter;
-extern IMAGE img_avatar_sunflower;
+extern Atlas atlas_player_hornet_idle_left;
 
 
 class SelectorScene : public Scene
@@ -69,10 +66,12 @@ class SelectorScene : public Scene
 private:
 	enum class PlayerType
 	{
+		
 		PEASHOTER = 0,
 		SUNFLOWER,
 		NUT,
 		GLOOMSHROOM,
+		HORNET,
 		INVALID
 	};
 
@@ -109,6 +108,7 @@ private:
 	LPCTSTR _str_name_sunflower = L"向日葵";
 	LPCTSTR _str_name_nut = L"坚果";
 	LPCTSTR _str_name_gloomshroom = L"忧郁蘑菇";
+	LPCTSTR _str_name_hornet = L"大黄蜂";
 	int _selector_background_scroll_offset_x = 0;					// 背景板滚动偏移距离
 	PlayerType _player_type_1 = PlayerType::PEASHOTER;				// 玩家1P角色类型
 	PlayerType _player_type_2 = PlayerType::SUNFLOWER;				// 玩家2P角色类型
@@ -116,6 +116,9 @@ private:
 	Animation _animation_sunflower;									// 向日葵动画
 	Animation _animation_nut;										// 坚果动画
 	Animation _animation_gloomshroom;								// 向日葵动画
+	Animation _animation_hornet;									// 空洞骑士大黄蜂
+
+	GamePlace _game_place_type;
 
 public:
 	SelectorScene() = default;
@@ -174,6 +177,9 @@ public:
 		_animation_gloomshroom.set_atlas(&atlas_player_gloomshroom_idle_left);
 		_animation_gloomshroom.set_loop(true);
 		_animation_gloomshroom.set_interval(100);
+		_animation_hornet.set_atlas(&atlas_player_hornet_idle_left);
+		_animation_hornet.set_loop(true);
+		_animation_hornet.set_interval(100);
 
 		_pos_animation_1P.x = _pos_img_gravestone_1P.x + 100;
 		_pos_animation_1P.y = _pos_img_gravestone_1P.y + 90;
@@ -196,6 +202,7 @@ public:
 	{
 		static const int VK_A = 0x41;
 		static const int VK_D = 0x44;
+		static const int VK_W = 0x57;
 
 		if (msg.message == WM_KEYDOWN)
 		{
@@ -244,6 +251,13 @@ public:
 				mciSendString(L"play ui_switch from 0", nullptr, 0, nullptr);
 				break;
 
+			case VK_W:
+				// 切换游戏场景
+				_game_place_type = (GamePlace)(((int)_game_place_type + 1) % (int)GamePlace::None);
+				game_place = _game_place_type;
+				mciSendString(L"play ui_switch from 0", nullptr, 0, nullptr);
+				break;
+
 			case VK_RETURN:
 				scene_manager.switch_scene(SceneManager::SceneType::GAME);
 				mciSendString(L"play ui_confirm from 0", nullptr, 0, nullptr);
@@ -261,6 +275,7 @@ public:
 		_animation_sunflower.on_update(interval_ms);
 		_animation_nut.on_update(interval_ms);
 		_animation_gloomshroom.on_update(interval_ms);
+		_animation_hornet.on_update(interval_ms);
 
 		_selector_background_scroll_offset_x += 5;
 		if (_selector_background_scroll_offset_x >= img_peashooter_selector_background_left.getwidth())
@@ -288,7 +303,11 @@ public:
 		case PlayerType::GLOOMSHROOM:
 			img_background_2P_ptr = &img_gloomshroom_selector_background_left;
 			break;
+		case PlayerType::HORNET:
+			img_background_2P_ptr = &img_hornet_selector_background_unkown;
+			break;
 		default:
+			img_background_2P_ptr = &img_peashooter_selector_background_right;
 			break;
 		}
 
@@ -306,7 +325,11 @@ public:
 		case PlayerType::GLOOMSHROOM:
 			img_background_1P_ptr = &img_gloomshroom_selector_background_right;
 			break;
+		case PlayerType::HORNET:
+			img_background_1P_ptr = &img_hornet_selector_background_unkown;
+			break;
 		default:
+			img_background_1P_ptr = &img_peashooter_selector_background_right;
 			break;
 		}
 
@@ -368,6 +391,11 @@ public:
 			_pos_name_1P.x = _pos_img_gravestone_1P.x + (img_gravestone_left.getwidth() - textwidth(_str_name_gloomshroom)) / 2;
 			outtextxy_shaded(_pos_name_1P.x, _pos_name_1P.y, _str_name_gloomshroom);
 			break;
+		case PlayerType::HORNET:
+			_animation_hornet.on_draw(camera, _pos_animation_1P.x - 25, _pos_animation_1P.y - 50);
+			_pos_name_1P.x = _pos_img_gravestone_1P.x + (img_gravestone_left.getwidth() - textwidth(_str_name_hornet)) / 2;
+			outtextxy_shaded(_pos_name_1P.x, _pos_name_1P.y, _str_name_hornet);
+			break;
 		default:
 			break;
 		}
@@ -394,10 +422,32 @@ public:
 			_pos_name_2P.x = _pos_img_gravestone_2P.x + (img_gravestone_left.getwidth() - textwidth(_str_name_gloomshroom)) / 2;
 			outtextxy_shaded(_pos_name_2P.x, _pos_name_2P.y, _str_name_gloomshroom);
 			break;
+		case PlayerType::HORNET:
+			_animation_hornet.on_draw(camera, _pos_animation_2P.x - 25, _pos_animation_2P.y - 50);
+			_pos_name_2P.x = _pos_img_gravestone_2P.x + (img_gravestone_left.getwidth() - textwidth(_str_name_hornet)) / 2;
+			outtextxy_shaded(_pos_name_2P.x, _pos_name_2P.y, _str_name_hornet);
+			break;
 		default:
 			break;
 		}
 
+		settextcolor(RGB(128, 128, 128));
+		static int pos_text_x = 450;
+		static int textlen = textwidth(L"[W]切换游戏场景: ");
+		outtextxy(pos_text_x, 640, L"[W]切换游戏场景: ");
+		settextcolor(RGB(0, 255, 255));
+		switch (_game_place_type)
+		{
+		case GamePlace::Nature:
+			outtextxy(pos_text_x + textlen, 640, L"Nature");;
+			break;
+		case GamePlace::Hollow:
+			outtextxy(pos_text_x + textlen, 640, L"Hollow");;
+			break;
+		case GamePlace::Random:
+			outtextxy(pos_text_x + textlen, 640, L"Random");;
+			break;
+		}
 	}
 
 	virtual void on_exit()
@@ -422,6 +472,10 @@ public:
 			img_player_1_avatar = &img_avatar_gloomshroom;
 			player_1 = std::shared_ptr<Player>(new PlayerGloomshroom);
 			break;
+		case PlayerType::HORNET:
+			img_player_1_avatar = &img_avatar_hornet;
+			player_1 = std::shared_ptr<Player>(new PlayerHornet);
+			break;
 		}
 		player_1->set_playerID(PlayerID::P1);
 
@@ -442,6 +496,10 @@ public:
 		case PlayerType::GLOOMSHROOM:
 			img_player_2_avatar = &img_avatar_gloomshroom;
 			player_2 = std::shared_ptr<Player>(new PlayerGloomshroom(false));
+			break;
+		case PlayerType::HORNET:
+			img_player_2_avatar = &img_avatar_hornet;
+			player_2 = std::shared_ptr<Player>(new PlayerHornet(false));
 			break;
 		}
 		player_2->set_playerID(PlayerID::P2);

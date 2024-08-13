@@ -1,3 +1,5 @@
+#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
+
 #include <memory>
 #include <easyx.h>
 #include <ctime>
@@ -15,6 +17,7 @@ IMAGE img_avatar_gloomshroom;
 IMAGE img_avatar_nut;
 IMAGE img_avatar_peashooter;
 IMAGE img_avatar_sunflower;
+IMAGE img_avatar_hornet;
 
 // 增益buff
 Atlas atlas_buff_box_blue;
@@ -87,6 +90,23 @@ Atlas atlas_player_sunflower_die_left;
 Atlas atlas_player_sunflower_idle_left;
 Atlas atlas_player_sunflower_run_left;
 
+// 空洞骑士:大黄蜂(小姐姐)
+Atlas atlas_player_hornet_idle_left;
+Atlas atlas_player_hornet_idle_right;
+Atlas atlas_player_hornet_run_left;
+Atlas atlas_player_hornet_run_right;
+Atlas atlas_player_hornet_jump_right;
+Atlas atlas_player_hornet_jump_left;
+Atlas atlas_player_hornet_fall_left; 
+Atlas atlas_player_hornet_fall_right;
+
+Atlas atlas_player_hornet_throw_silk_left;
+Atlas atlas_player_hornet_throw_silk_right;
+Atlas atlas_player_hornet_throw_sword_left;
+Atlas atlas_player_hornet_throw_sword_right;
+Atlas atlas_hornet_silk;
+Atlas atlas_hornet_sword_left;
+Atlas atlas_hornet_sword_right;
 
 // 玩家标识
 IMAGE img_1P_cursor;							// 玩家1头顶光标
@@ -128,12 +148,16 @@ IMAGE img_gloomshroom_selector_background_left;
 IMAGE img_nut_selector_background_left;
 IMAGE img_peashooter_selector_background_left;
 IMAGE img_sunflower_selector_background_left;
+IMAGE img_hornet_selector_background_unkown;
 
 // 游戏背景
 IMAGE img_hills;
 IMAGE img_large_platform;
 IMAGE img_small_platform;
 IMAGE img_sky;
+IMAGE img_hollow_background;
+IMAGE img_hollow_large_platform;
+IMAGE img_hollow_small_platform;
 
 
 
@@ -156,7 +180,7 @@ IMAGE* img_player_2_avatar = nullptr;						// 玩家2头像
 std::vector<Platform> platform_list;						// 玩家站立平台列表
 std::vector<Bullet*> bullet_list;							// 玩家生成的子弹列表
 std::vector<Buff*> buff_list;								// 场地随机buff列表
-
+GamePlace game_place = GamePlace::Nature;					// 游戏战斗场景
 
 void flip_atlas(Atlas* src, Atlas* dst)
 {
@@ -173,7 +197,8 @@ void load_game_resources();
 int main()
 {
 	// 初始化
-	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);
+	HWND hwnd = initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);
+	SetWindowText(hwnd, L"植物明星大乱斗");
 	BeginBatchDraw();
 	settextstyle(28, 0, _T("IPix"));
 	setbkmode(TRANSPARENT);
@@ -321,6 +346,25 @@ void load_game_resources()
 	flip_atlas(&atlas_player_sunflower_idle_right, &atlas_player_sunflower_idle_left);
 	flip_atlas(&atlas_player_sunflower_run_right, &atlas_player_sunflower_run_left);
 
+	// 空洞骑士:大黄蜂(小姐姐)
+	loadimage(&img_avatar_hornet, L"resources/hornet/hornet_avatar.png");
+	atlas_player_hornet_idle_left.load_from_file(L"resources/hornet/idle/%d.png", 6);
+	flip_atlas(&atlas_player_hornet_idle_left, &atlas_player_hornet_idle_right);
+	atlas_player_hornet_run_left.load_from_file(L"resources/hornet/run/%d.png", 8);
+	flip_atlas(&atlas_player_hornet_run_left, &atlas_player_hornet_run_right);
+	atlas_player_hornet_jump_left.load_from_file(L"resources/hornet/jump/%d.png", 8);
+	flip_atlas(&atlas_player_hornet_jump_left, &atlas_player_hornet_jump_right);
+
+	atlas_player_hornet_fall_left.load_from_file(L"resources/hornet/fall/%d.png", 4);
+	flip_atlas(&atlas_player_hornet_fall_left, &atlas_player_hornet_fall_right);
+	atlas_hornet_sword_left.load_from_file(L"resources/hornet/sword/%d.png", 3);
+	flip_atlas(&atlas_hornet_sword_left, &atlas_hornet_sword_right);
+	atlas_hornet_silk.load_from_file(L"resources/hornet/silk/%d.png", 9);
+	atlas_player_hornet_throw_silk_left.load_from_file(L"resources/hornet/throw_silk/%d.png", 17);
+	flip_atlas(&atlas_player_hornet_throw_silk_left, &atlas_player_hornet_throw_silk_right);
+	atlas_player_hornet_throw_sword_left.load_from_file(L"resources/hornet/throw_sword/%d.png", 16);
+	flip_atlas(&atlas_player_hornet_throw_sword_left, &atlas_player_hornet_throw_sword_right);
+
 	// 菜单界面
 	loadimage(&img_menu_background, L"resources/menu_background.png");
 
@@ -338,13 +382,17 @@ void load_game_resources()
 	flip_image(&img_nut_selector_background_right, &img_nut_selector_background_left);
 	flip_image(&img_peashooter_selector_background_right, &img_peashooter_selector_background_left);
 	flip_image(&img_sunflower_selector_background_right, &img_sunflower_selector_background_left);
+	loadimage(&img_hornet_selector_background_unkown, L"resources/hornet/hornet_selector_background.png");
+
 
 	// 游戏背景
 	loadimage(&img_hills, L"resources/hills.png");
 	loadimage(&img_large_platform, L"resources/platform_large.png");
 	loadimage(&img_small_platform, L"resources/platform_small.png");
 	loadimage(&img_sky, L"resources/sky.png");
-
+	loadimage(&img_hollow_background, L"resources/hollow/background.png");
+	loadimage(&img_hollow_large_platform, L"resources/hollow/platform_large.png");
+	loadimage(&img_hollow_small_platform, L"resources/hollow/platform_small.png");
 
 	// 加载音频
 	mciSendString(L"open resources/bgm_game.mp3 alias bgm_game", nullptr, 0, nullptr);
@@ -368,4 +416,13 @@ void load_game_resources()
 	mciSendString(L"open resources/ui_confirm.wav alias ui_confirm", nullptr, 0, nullptr);
 	mciSendString(L"open resources/ui_switch.wav alias ui_switch", nullptr, 0, nullptr);
 	mciSendString(L"open resources/ui_win.wav alias ui_win", nullptr, 0, nullptr);
+
+	mciSendString(L"open resources/hornet/audio/hurt_1.mp3 alias hornet_hurt_1", nullptr, 0, nullptr);
+	mciSendString(L"open resources/hornet/audio/hurt_2.mp3 alias hornet_hurt_2", nullptr, 0, nullptr);
+	mciSendString(L"open resources/hornet/audio/hurt_3.mp3 alias hornet_hurt_3", nullptr, 0, nullptr);
+	mciSendString(L"open resources/hornet/audio/say_throw_silk_1.mp3 alias hornet_say_throw_silk_1", nullptr, 0, nullptr);
+	mciSendString(L"open resources/hornet/audio/say_throw_silk_2.mp3 alias hornet_say_throw_silk_2", nullptr, 0, nullptr);
+	mciSendString(L"open resources/hornet/audio/say_throw_sword.mp3 alias hornet_say_throw_sword", nullptr, 0, nullptr);
+	mciSendString(L"open resources/hornet/audio/throw_silk.mp3 alias hornet_throw_silk", nullptr, 0, nullptr);
+	mciSendString(L"open resources/hornet/audio/throw_sword.mp3 alias hornet_throw_sword", nullptr, 0, nullptr);
 }

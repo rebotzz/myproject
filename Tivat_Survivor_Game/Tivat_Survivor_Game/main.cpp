@@ -1,3 +1,4 @@
+#pragma comment (linker,"/subsystem:windows /entry:wWinMainCRTStartup")
 #include "game.hpp"
 
 const int WINDOW_WIDTH = 1270;

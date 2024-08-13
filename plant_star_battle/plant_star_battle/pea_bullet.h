@@ -10,7 +10,7 @@ class PeaBullet : public Bullet
 {
 private:
 	IMAGE* _img;					// ×Óµ¯Í¼Æ¬
-	Animation _animation_break;		// ×Óµ¯ÆÆËé¶¯»­
+	Animation _animation_sword;		// ×Óµ¯ÆÆËé¶¯»­
 
 public:
 	PeaBullet()
@@ -20,10 +20,10 @@ public:
 		_damage = 10;
 
 		_img = &img_pea_bullet;
-		_animation_break.set_atlas(&atlas_pea_bullet_break);
-		_animation_break.set_interval(100);
-		_animation_break.set_loop(false);
-		_animation_break.set_callback([&]() { _can_remove = true; });
+		_animation_sword.set_atlas(&atlas_pea_bullet_break);
+		_animation_sword.set_interval(100);
+		_animation_sword.set_loop(false);
+		_animation_sword.set_callback([&]() { _can_remove = true; });
 	}
 	~PeaBullet() {}
 
@@ -51,7 +51,7 @@ public:
 		_position += _velocity * (float)interval_ms;
 
 		if (!_valid)
-			_animation_break.on_update(interval_ms);
+			_animation_sword.on_update(interval_ms);
 
 		if (check_if_exceeds_screen())
 			_can_remove = true;
@@ -62,7 +62,7 @@ public:
 		if (_valid)
 			putimage_alpha(camera, (int)_position.x, (int)_position.y, _img);
 		else
-			_animation_break.on_draw(camera, (int)_position.x, (int)_position.y);
+			_animation_sword.on_draw(camera, (int)_position.x, (int)_position.y);
 
 		Bullet::on_draw(camera);
 	}

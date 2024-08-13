@@ -125,5 +125,17 @@
     <ClInclude Include="buff_id.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="player_hornet.h">
+      <Filter>头文件\player</Filter>
+    </ClInclude>
+    <ClInclude Include="silk_bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="sword_bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="game_place_id.h">
+      <Filter>头文件\scene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

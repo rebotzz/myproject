@@ -138,6 +138,7 @@
     <ClInclude Include="buff_id.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="game_place_id.h" />
     <ClInclude Include="game_scene.h" />
     <ClInclude Include="menu_scene.h" />
     <ClInclude Include="nut_explode_bullet.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="platform.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="player_gloomshroom.h" />
+    <ClInclude Include="player_hornet.h" />
     <ClInclude Include="player_id.h" />
     <ClInclude Include="player_nut.h" />
     <ClInclude Include="player_peashoter.h" />
@@ -152,9 +154,11 @@
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="selector_scene.h" />
     <ClInclude Include="player_sunflower.h" />
+    <ClInclude Include="silk_bullet.h" />
     <ClInclude Include="status_bar.h" />
     <ClInclude Include="sun_bullet.h" />
     <ClInclude Include="sun_ex_bullet.h" />
+    <ClInclude Include="sword_bullet.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="scene.h" />

@@ -9,8 +9,6 @@
 #include "buff_id.h"
 #include "buff_bullet.h"
 
-#include <iostream>
-
 extern bool is_debug;
 extern std::vector<Platform> platform_list;
 extern std::vector<Bullet*> bullet_list;
@@ -23,6 +21,15 @@ extern Atlas atlas_run_effect;
 
 class Player
 {
+public:
+	// 玩家锚点位置
+	enum class AchorMode
+	{
+		Centered,
+		BottomCentered,
+		LeftTop			// 为了兼容之前的
+	};
+
 protected:
 	// 玩家动画
 	Animation _animation_idle_left;				// 玩家休闲动画左
@@ -36,6 +43,7 @@ protected:
 	Animation* _current_animation = nullptr;	// 玩家当前动画
 	PlayerID _id = PlayerID::P1;				// 玩家序号ID:玩家1,玩家2
 	IMAGE _img_sketch;							// 玩家受到攻击时白色剪影
+	bool _is_update_animation = true;			// 避免子类玩家动画和技能有关的情况
 
 	// 玩家移动状态
 	bool _is_left_key_down = false;				// 玩家是否向左移动
@@ -63,9 +71,10 @@ protected:
 	float _run_velocity = 0.55f;				// 玩家水平移动速度
 	float _jump_velocity = -0.85f;				// 玩家起跳初速度
 	Vector2 _velocity;							// 玩家当前二维速度矢量
-	const float _gravity = 1.6e-3f;				// 玩家重力加速度: 以画面表现为主
+	float _gravity = 1.6e-3f;					// 玩家重力加速度: 以画面表现为主
 	Vector2 _size;								// 玩家碰撞矩形
 	Vector2 _position;							// 玩家位置
+	AchorMode _achor_mode = AchorMode::LeftTop;	// 描述玩家位置的锚点模式
 
 	// 特效
 	std::vector<Particle> _particle_run_effect;	// 跑动粒子特效
@@ -108,9 +117,18 @@ public:
 			{
 				// 在玩家脚下生成粒子
 				Vector2 particle_position;
-				IMAGE* frame = atlas_run_effect.get_image(0);
-				particle_position.x = _position.x + (_size.x - frame->getwidth()) / 2;
-				particle_position.y = _position.y + _size.y - frame->getheight();
+				IMAGE* effect_frame = atlas_run_effect.get_image(0);
+				if (_achor_mode == AchorMode::LeftTop)
+				{
+					particle_position.x = _position.x + (_size.x - effect_frame->getwidth()) / 2;
+					particle_position.y = _position.y + _size.y - effect_frame->getheight();
+				}
+				else if (_achor_mode == AchorMode::BottomCentered)
+				{
+					particle_position.x = _position.x - effect_frame->getwidth() / 2;
+					particle_position.y = _position.y - effect_frame->getheight();
+				}
+
 				_particle_run_effect.emplace_back(&atlas_run_effect, particle_position, 75);
 			}
 		);
@@ -121,9 +139,18 @@ public:
 			[&]()
 			{
 				Vector2 particle_position;
-				IMAGE* frame = atlas_run_effect.get_image(0);
-				particle_position.x = _position.x + (_size.x - frame->getwidth()) / 2;
-				particle_position.y = _position.y + _size.y - frame->getheight();
+				IMAGE* effect_frame = atlas_run_effect.get_image(0);
+				if (_achor_mode == AchorMode::LeftTop)
+				{
+					particle_position.x = _position.x + (_size.x - effect_frame->getwidth()) / 2;
+					particle_position.y = _position.y + _size.y - effect_frame->getheight();
+				}
+				else if (_achor_mode == AchorMode::BottomCentered)
+				{
+					particle_position.x = _position.x - effect_frame->getwidth() / 2;
+					particle_position.y = _position.y - effect_frame->getheight();
+				}
+
 				_particle_die_effect.emplace_back(&atlas_run_effect, particle_position, 150);
 			}
 		);
@@ -139,12 +166,17 @@ public:
 			});
 		_timer_buff_recovery.set_wait_time(300);
 		_timer_buff_recovery.set_one_shot(false);
-		_timer_buff_recovery.set_callback([&]() 
+		_timer_buff_recovery.set_callback([&]()
 			{
 				if (_buff == BuffID::RECOVERY_HP)
 					_hp += 2;
-				else if(_buff == BuffID::RECOVERY_MP)
+				else if (_buff == BuffID::RECOVERY_MP)
 					_mp += 2;
+
+				if (_mp > 100)
+					_mp = 100;
+				if (_hp > 100)
+					_hp = 100;
 			});
 
 		_animation_jump_effect.set_atlas(&atlas_jump_effect);
@@ -158,16 +190,6 @@ public:
 	}
 
 	~Player() = default;
-
-	void set_playerID(PlayerID id)
-	{
-		_id = id;
-	}
-
-	void set_position(const Vector2& position)
-	{
-		_position = position;
-	}
 
 	void on_input(const ExMessage& msg)
 	{
@@ -289,6 +311,7 @@ public:
 			_current_animation = _is_face_right ? &_animation_attack_ex_right : &_animation_attack_ex_left;
 			_timer_attack_ex.on_update(interval_ms);
 		}
+
 		if (_is_invulnerable)
 		{
 			_timer_invulnerable.on_update(interval_ms);
@@ -298,11 +321,12 @@ public:
 		}
 		_timer_attack_cd.on_update(interval_ms);
 		_timer_run_particle_effect_generation.on_update(interval_ms);
-		if(_hp <= 0)
+		if (_hp <= 0)
 			_timer_die_particle_effect_generation.on_update(interval_ms);
 
 		// 更新当前动画
-		_current_animation->on_update(interval_ms);
+		if(_is_update_animation)
+			_current_animation->on_update(interval_ms);
 
 		// 物理判定检测
 		move_and_collide(interval_ms);
@@ -361,21 +385,56 @@ public:
 		if (_is_land_effect_visible)
 			_animation_land_effect.on_draw(camera, (int)_position_land_effect.x, (int)_position_land_effect.y);
 
-		// 玩家
+
+		// 玩家动画
+		Vector2 position_draw;
+		IMAGE* frame = _current_animation->get_frame();
+		if (_achor_mode == AchorMode::LeftTop)
+			position_draw = _position;
+		else if (_achor_mode == AchorMode::BottomCentered)
+			position_draw = { _position.x - frame->getwidth() / 2, _position.y - frame->getheight() };
+
 		if (!_is_invisible_player)
 		{
 			if (_hp > 0 && _is_invulnerable && _is_showing_sketch_frame)
-				putimage_alpha(camera, (int)_position.x, (int)_position.y, (IMAGE*)&_img_sketch);
+				putimage_alpha(camera, (int)position_draw.x, (int)position_draw.y, (IMAGE*)&_img_sketch);
 			else
-				_current_animation->on_draw(camera, (int)_position.x, (int)_position.y);
+				_current_animation->on_draw(camera, (int)position_draw.x, (int)position_draw.y);
 		}
 
-		// 玩家碰撞边框
 		if (is_debug)
 		{
+			Vector2 position_collision;
+			if (_achor_mode == AchorMode::LeftTop)
+				position_collision = _position;
+			else if (_achor_mode == AchorMode::BottomCentered)
+				position_collision = { _position.x - _size.x / 2, _position.y - _size.y };
+
+			// 玩家碰撞边框
 			setlinecolor(RGB(0, 255, 255));
-			rectangle(camera, (int)_position.x, (int)_position.y, (int)(_position.x + _size.x), (int)(_position.y + _size.y));
+			rectangle(camera, (int)position_collision.x, (int)position_collision.y,
+				(int)(position_collision.x + _size.x), (int)(position_collision.y + _size.y));
+
+			// 玩家动画帧边框
+			setlinecolor(RGB(0, 250, 154));
+			rectangle(camera, (int)position_draw.x, (int)position_draw.y,
+				(int)(position_draw.x + frame->getwidth()), (int)(position_draw.y + frame->getheight()));
+
+			// 玩家位置
+			setfillcolor(RGB(255, 165, 0));
+			solidcircle((int)_position.x, (int)_position.y, 5);
 		}
+	}
+
+
+	void set_playerID(PlayerID id)
+	{
+		_id = id;
+	}
+
+	void set_position(const Vector2& position)
+	{
+		_position = position;
 	}
 
 	const Vector2& get_position() const
@@ -408,8 +467,13 @@ public:
 		return _buff;
 	}
 
+	AchorMode get_achor_mode()
+	{
+		return _achor_mode;
+	}
+
 protected:
-	void on_jump()
+	virtual void on_jump()
 	{
 		// 避免无限跳,只有在平台上时才能跳
 		if (_velocity.y != 0 || _is_attack_ex)
@@ -419,18 +483,37 @@ protected:
 
 		_is_jump_effect_visible = true;
 		_animation_jump_effect.reset();
-		IMAGE* frame = _animation_jump_effect.get_frame();
-		_position_jump_effect.x = _position.x + (_size.x - frame->getwidth()) / 2;
-		_position_jump_effect.y = _position.y + _size.y - frame->getheight();
+		IMAGE* effect_frame = _animation_jump_effect.get_frame();
+
+		if (_achor_mode == AchorMode::LeftTop)
+		{
+			_position_jump_effect.x = _position.x + (_size.x - effect_frame->getwidth()) / 2;
+			_position_jump_effect.y = _position.y + _size.y - effect_frame->getheight();
+		}
+		else if (_achor_mode == AchorMode::BottomCentered)
+		{
+			_position_jump_effect.x = _position.x - effect_frame->getwidth() / 2;
+			_position_jump_effect.y = _position.y - effect_frame->getheight();
+		}
 	}
 
-	void on_land()
+	virtual void on_land()
 	{
 		_is_land_effect_visible = true;
 		_animation_land_effect.reset();
-		IMAGE* frame = _animation_land_effect.get_frame();
-		_position_land_effect.x = _position.x + (_size.x - frame->getwidth()) / 2;
-		_position_land_effect.y = _position.y + _size.y - frame->getheight();
+		IMAGE* effect_frame = _animation_land_effect.get_frame();
+
+		if (_achor_mode == AchorMode::LeftTop)
+		{
+			_position_land_effect.x = _position.x + (_size.x - effect_frame->getwidth()) / 2;
+			_position_land_effect.y = _position.y + _size.y - effect_frame->getheight();
+		}
+		else if (_achor_mode == AchorMode::BottomCentered)
+		{
+			_position_land_effect.x = _position.x - effect_frame->getwidth() / 2;
+			_position_land_effect.y = _position.y - effect_frame->getheight();
+		}
+
 	}
 
 	void on_run(float distance)
@@ -460,19 +543,37 @@ protected:
 			{
 				// x轴,y轴碰撞检测
 				const Platform::CollisionShape& shape = platform._shape;
-				bool is_x_collide = (max(_position.x + _size.x, shape.right) - min(_position.x, shape.left))
-					< (_size.y + shape.right - shape.left);
-				bool is_y_collide = (_position.y < shape.y && shape.y < _position.y + _size.y);
+				bool is_x_collide = false, is_y_collide = false;
+				if (_achor_mode == AchorMode::LeftTop)
+				{
+					is_x_collide = (max(_position.x + _size.x, shape.right) - min(_position.x, shape.left))
+						< (_size.y + shape.right - shape.left);
+					is_y_collide = (_position.y < shape.y && shape.y < _position.y + _size.y);
+				}
+				else if (_achor_mode == AchorMode::BottomCentered)
+				{
+					is_x_collide = (max(_position.x + _size.x / 2, shape.right) - min(_position.x - _size.x / 2, shape.left))
+						< (_size.x + shape.right - shape.left);
+					is_y_collide = (_position.y - _size.y < shape.y && shape.y < _position.y);
+				}
 
 				if (is_x_collide && is_y_collide)
 				{
 					// 条件:玩家上一帧脚底高于平台,避免下落过程中闪现回平台
-					float last_tick_pos_bottom_y = _position.y + _size.y - _velocity.y * interval_ms;
-					static const float delta_y = 0.25f;				// 避免误判,误差系数
+					float last_tick_pos_bottom_y = 0;
+					if (_achor_mode == AchorMode::LeftTop)
+						last_tick_pos_bottom_y = _position.y + _size.y - _velocity.y * interval_ms;
+					else if (_achor_mode == AchorMode::BottomCentered)
+						last_tick_pos_bottom_y = _position.y - _velocity.y * interval_ms;
+
+					static const float delta_y = 0.0001f;				// 避免误判
 					if (last_tick_pos_bottom_y <= shape.y + delta_y)
 					{
 						_velocity.y = 0;
-						_position.y = shape.y - _size.y;
+						if (_achor_mode == AchorMode::LeftTop)
+							_position.y = shape.y - _size.y;
+						else if (_achor_mode == AchorMode::BottomCentered)
+							_position.y = shape.y;
 
 						if (last_tick_velocity_y != 0)
 							on_land();
@@ -488,9 +589,15 @@ protected:
 		{
 			for (Bullet* bullet : bullet_list)
 			{
-				if (!_is_invulnerable && bullet->get_valid() 
+				Vector2 position_collision;
+				if (_achor_mode == AchorMode::LeftTop)
+					position_collision = _position;
+				else if (_achor_mode == AchorMode::BottomCentered)
+					position_collision = { _position.x - _size.x / 2, _position.y - _size.y };
+
+				if (!_is_invulnerable && bullet->get_valid()
 					&& bullet->get_collide_target() == _id
-					&& bullet->check_collision(_position, _size))
+					&& bullet->check_collision(position_collision, _size))
 				{
 					bullet->set_valid(false);
 					bullet->on_collide();
@@ -509,12 +616,18 @@ protected:
 		// buff碰撞检测
 		for (Buff* buff : buff_list)
 		{
-			if (buff->get_valid() && buff->check_collision(_position, _size))
+			Vector2 position_collision;
+			if (_achor_mode == AchorMode::LeftTop)
+				position_collision = _position;
+			else if (_achor_mode == AchorMode::BottomCentered)
+				position_collision = { _position.x - _size.x / 2, _position.y - _size.y };
+
+			if (buff->get_valid() && buff->check_collision(position_collision, _size))
 			{
 				buff->set_valid(false);
 				_buff = buff->get_buff_id();
 				buff->on_collide();
-				
+
 				if (_buff == BuffID::HURRY)
 					_run_velocity = 0.8f;
 				else if (_buff == BuffID::INVISIBLE)

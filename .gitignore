@@ -1,10 +1,18 @@
+# 我的忽略
+
 # turb项目
 indata
 outdata
 *.jpg
+*.png
 *.txt
 *.xlsx
 *.ini
+turbExtra/turbExtra/configure
+
+# test_torch测试项目代码
+test_torch
+
 
 # Document
 .vscode

@@ -9,10 +9,15 @@ outdata
 *.xlsx
 *.ini
 turbExtra/turbExtra/configure
+turbExtra/turbExtra/python/data
+turbExtra/turbExtra/python/image
+turbExtra/turbExtra/python/model
 
 # test_torch测试项目代码
 test_torch
 
+# 临时使用DLL的项目
+packageDLL
 
 # Document
 .vscode

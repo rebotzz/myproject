@@ -17,7 +17,7 @@ turbExtra/turbExtra/python/model
 test_torch
 
 # 临时使用DLL的项目
-packageDLL
+learn_DLL
 
 # Document
 .vscode

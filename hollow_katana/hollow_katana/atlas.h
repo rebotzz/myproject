@@ -2,10 +2,11 @@
 #include <vector>
 #include <easyx.h>
 
+
 class Atlas
 {
 private:
-	std::vector<IMAGE> _img_list;
+	std::vector<IMAGE> image_list;
 
 public:
 	Atlas() = default;
@@ -14,36 +15,36 @@ public:
 	void load_from_file(LPCTSTR path_image, int num)
 	{
 		// º”‘ÿ∂Øª≠÷°Õº∆¨
-		_img_list.clear();
-		_img_list.resize(num);
-		TCHAR buff[256] = { 0 };
+		image_list.clear();
+		image_list.resize(num);
+		TCHAR file_path[512] = { 0 };
 		for (int i = 0; i < num; ++i) {
-			_stprintf_s(buff, path_image, i + 1);
-			loadimage(&_img_list[i], buff);
+			_stprintf_s(file_path, path_image, i + 1);
+			loadimage(&image_list[i], file_path);
 		}
 	}
 
 	void clear()
 	{
-		_img_list.clear();
+		image_list.clear();
 	}
 
-	int get_size()
+	int get_size() const
 	{
-		return (int)_img_list.size();
+		return (int)image_list.size();
 	}
 
 	IMAGE* get_image(int idx)
 	{
-		if (idx < 0 || idx >= _img_list.size())
+		if (idx < 0 || idx >= image_list.size())
 			return nullptr;
 
-		return &_img_list[idx];
+		return &image_list[idx];
 	}
 
 	void add_image(const IMAGE& img)
 	{
-		_img_list.push_back(img);
+		image_list.push_back(img);
 	}
 
 };

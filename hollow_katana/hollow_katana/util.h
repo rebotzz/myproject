@@ -31,24 +31,25 @@ inline void putimage_alpha(int x, int y, IMAGE* img)
 }
 
 
-
-//左右翻转图片, 提高素材复用
-inline void flip_image(IMAGE* src, IMAGE* dst)
+inline void load_audio(LPCTSTR path, LPCTSTR id)
 {
-	int width = src->getwidth(), height = src->getheight();
-	dst->Resize(width, height);
-	DWORD* img_src_buffer = GetImageBuffer(src);
-	DWORD* img_dst_buffer = GetImageBuffer(dst);
-	// image在逻辑上是由像素点(R,G,B)构成的二维数组,内存上是一维数组
-	for (int y = 0; y < height; ++y)
-	{
-		for (int x = 0; x < width; ++x)
-		{
-			int src_idx = y * width + width - 1 - x;
-			int dst_idx = y * width + x;
-			img_dst_buffer[dst_idx] = img_src_buffer[src_idx];
-		}
-	}
+	static TCHAR buff[256] = { 0 };
+	_stprintf_s(buff, _T("open %s alias %s"), path, id);
+	mciSendString(buff, nullptr, 0, nullptr);
+}
+
+inline void play_audio(LPCTSTR id, bool is_loop = false)
+{
+	static TCHAR buff[256] = { 0 };
+	_stprintf_s(buff, _T("play %s %s from 0"), id, is_loop ? _T("repeat") : _T(""));
+	mciSendString(buff, nullptr, 0, nullptr);
+}
+
+inline void stop_audio(LPCTSTR id)
+{
+	static TCHAR buff[256] = { 0 };
+	_stprintf_s(buff, _T("stop %s"), id);
+	mciSendString(buff, nullptr, 0, nullptr);
 }
 
 // 生成角色白色剪影图片

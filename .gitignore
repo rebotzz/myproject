@@ -1,21 +1,20 @@
 # 我的忽略
 
+# 空洞武士 hollow_katana
+hollow_katana/hollow_katana/resources
+
 # turb项目
 indata
 outdata
-*.jpg
-*.png
-*.txt
-*.xlsx
 *.ini
 turbExtra/turbExtra/configure
 turbExtra/turbExtra/python/data
 turbExtra/turbExtra/python/image
 turbExtra/turbExtra/python/model
 
+# 临时忽略
 # test_torch测试项目代码
 test_torch
-
 # 临时使用DLL的项目
 learn_DLL
 

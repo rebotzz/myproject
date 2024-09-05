@@ -13,8 +13,8 @@
 - 6.cgi功能:留言板,网络计算器,mysql数据库访问(注册)
 
 ### 效果展示
-![主界面1](httpserver/showing/1.jpg?width=200)
-![主界面2](httpserver/showing/2.jpg?width=200)
+![主界面1](httpserver/showing/1.jpg?width=100)
+![主界面2](httpserver/showing/2.jpg?width=100)
 
 
 
@@ -32,8 +32,8 @@
 - 4.使用的三方库: easyX绘图, xlnt使用excel数据, boost插值, imgui制作图形界面, libtorch调用神经网络模型, 使用了python处理数据,训练模型
 
 ### 效果展示
-![主界面](turbExtra/showing/1.jpg?width=200)
-![结果](turbExtra/showing/2.jpg?width=200)
+![主界面](turbExtra/showing/1.jpg?width=100)
+![结果](turbExtra/showing/2.jpg?width=100)
 
 
 
@@ -51,9 +51,9 @@
 - 4.粒子系统, 碰撞检测,物理模拟简易实现
 
 ### 效果展示
-![选择界面](plant_star_battle/showing/1.jpg?width=200)
-![游戏界面1](plant_star_battle/showing/2.jpg?width=200)
-![游戏界面2](plant_star_battle/showing/3.jpg?width=200)
+![选择界面](plant_star_battle/showing/1.jpg?width=100)
+![游戏界面1](plant_star_battle/showing/2.jpg?width=100)
+![游戏界面2](plant_star_battle/showing/3.jpg?width=100)
 
 
 

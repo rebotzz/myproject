@@ -1,15 +1,11 @@
 # 我的忽略
 
 # 空洞武士 hollow_katana
-hollow_katana\hollow_katana\resources
+hollow_katana/hollow_katana/resources
 
 # turb项目
 indata
 outdata
-*.jpg
-*.png
-*.txt
-*.xlsx
 *.ini
 turbExtra/turbExtra/configure
 turbExtra/turbExtra/python/data

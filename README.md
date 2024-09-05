@@ -1,56 +1,51 @@
 # myproject
 项目练习代码
 
-## http server 
+## http server 自主实现http服务端
+[项目地址](https://github.com/rebotzz/myproject/tree/main/httpserver)
+
+###  使用知识
 - 1.tcp通讯,linux网络接口的使用
 - 2.http协议,读取并解析报头,构建响应,发送数据
 - 3.线程池技术,生产者消费者模型,互斥锁和条件变量
 - 4.单例设计, CGI原理:进程替换,进程间通讯/传参:匿名管道,环境变量
 - 5.实现http/1.1长链接功能:单独一个线程管理连接,超时处理
 - 6.cgi功能:留言板,网络计算器,mysql数据库访问(注册)
-- todo: 长时间运行bug: 发送请求资源失败,怀疑: 之前长链接管理有个地方当时懒得加锁, 长期看来还是得加
-```
-cgi功能: 
-    日期计算器,搜索引擎(代理)
-前端:
-    音乐播放功能,视频播放功能? 网络.js小游戏功能? 
-后端:
-    IO多路复用(reactor模型), 
-    url中特殊字符需要(decode/encode) https 
-    线程池数量动态调整,依据任务队列的数量，如果超过一定百分比，增加线程数量，并管理起来
-其他:
-    cpp-http开源库的使用
-```
 
+### 效果展示
+![主界面1](https://github.com/rebotzz/myproject/tree/main/httpserver/showing/1.png)
+![主界面2](https://github.com/rebotzz/myproject/tree/main/httpserver/showing/2.png)
 
-
-
-## 游戏:提瓦特幸存者
-
-### 进度
-- 1.提瓦特幸存者初版完成 v0.1 玩家敌人都一击必杀
-- 2.提瓦特幸存者 v0.2 血条,蓝条,技能机制, 角色选择
-
-## #所学到的知识
-- 1.使用easyX制作
-- 2.主循环: 接收消息 处理消息 渲染图片; 且避免长耗时任务
-- 3.动画帧逻辑, 碰撞检测
-- 4.图片会混叠,翻转
-
-### 吐槽
-```
-图片处理真麻烦, 还有抠图,调整大小
-```
 
 
 ## 燃气轮机特性线外插程序
+[项目地址](https://github.com/rebotzz/myproject/tree/main/turbExtra)
 
-### 开发过程小知识
-- 使用vcpkg管理第三方库
-- imgui使用了dx11的库文件需要引入项目,例如D:\Windows Kits\10\Lib\10.0.22621.0\um\x64\d3d11.lib		项目 - 配置属性 - 链接器 - 输入 - 附加依赖项
-- xlnt使用,这个库可能会与别的头文件(第三方库)冲突,放在最开始
-- easyX使用的是宽字符, 即编码是变长字符串,对应wstring, TCHAR[]类型, wstring系列接口和string系列接口对应cout/wcout输出不一样
-- 本地化,locale, 其utf8编码和别的编码转化
-- imgui的主要逻辑,和游戏设计的主要逻辑相似
-- .gitignore 切换分支后内容会变,所以需要在对应分支修改内容
-- 终于开发完成了, 完整的流程
+###  使用知识
+- 1.数学部分: 相似理论,插值
+- 2.神经网络:使用python训练神经网络(非线性回归),并在C++代码中使用模型
+- 3.可视化:制作了可视化界面,数据的绘制图像
+- 4.使用的三方库: easyX绘图, xlnt使用excel数据, boost插值, imgui制作图形界面, libtorch调用神经网络模型, 使用了python处理数据,训练模型
+
+### 效果展示
+![主界面](https://github.com/rebotzz/myproject/tree/main/turbExtra/showing/1.png)
+![结果](https://github.com/rebotzz/myproject/tree/main/turbExtra/showing/2.png)
+
+
+## 植物明星大乱斗小游戏
+[项目地址](https://github.com/rebotzz/myproject/tree/main/plant_star_battle)
+
+## 使用知识
+- 1.使用easyX图形库和windows API实现游戏功能
+- 2.数据逻辑和渲染分离,程序的主框架(初始化->循环[消息处理->数据处理->渲染处理])
+- 3.场景管理器, 定时器, 摄像机, 动画类
+- 4.粒子系统, 碰撞检测,物理模拟简易实现
+
+### 效果展示
+![选择界面](https://github.com/rebotzz/myproject/tree/main/plant_star_battle/showing/1.png)
+![游戏界面1](https://github.com/rebotzz/myproject/tree/main/plant_star_battle/showing/2.png)
+![游戏界面2](https://github.com/rebotzz/myproject/tree/main/plant_star_battle/showing/3.png)
+
+
+### 其他项目
+- 1.提瓦特幸存者小游戏

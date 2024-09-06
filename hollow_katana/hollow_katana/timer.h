@@ -7,7 +7,7 @@ class Timer
 private:
 	float pass_time = 0;					// 已过时间
 	float wait_time = 0;					// 等待时间
-	bool pause = false;						// 是否暂停
+	bool is_pause = false;					// 是否暂停
 	bool shotted = false;					// 是否触发
 	bool one_shot = true;					// 单次触发
 	std::function<void()> on_timeout;		// 触发回调
@@ -24,12 +24,12 @@ public:
 
 	void pause()
 	{
-		pause = true;
+		is_pause = true;
 	}
 
 	void resume()
 	{
-		pause = false;
+		is_pause = false;
 	}
 
 	void set_wait_time(float interval)
@@ -49,7 +49,7 @@ public:
 
 	void on_update(float delta)
 	{
-		if (pause)
+		if (is_pause)
 			return;
 			
 		pass_time += delta;

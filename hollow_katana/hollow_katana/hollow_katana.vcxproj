@@ -127,13 +127,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="charater.cpp" />
+    <ClCompile Include="collision_manager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="resources_manager.cpp" />
+    <ClCompile Include="state_machine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h" />
     <ClInclude Include="atlas.h" />
+    <ClInclude Include="charater.h" />
+    <ClInclude Include="collision_box.h" />
+    <ClInclude Include="collision_layer.h" />
+    <ClInclude Include="collision_manager.h" />
     <ClInclude Include="resources_manager.h" />
+    <ClInclude Include="state_machine.h" />
+    <ClInclude Include="state_node.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="vector2.h" />

@@ -7,16 +7,23 @@
 // 攻击/翻滚的定时器可以去掉,功能由动画结束的回调完成
 class PlayerAttackState : public StateNode
 {
-private:
-	Timer timer;
-
 public:
-	PlayerAttackState();
+	PlayerAttackState() = default;
 	~PlayerAttackState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
 	void update_hit_box_position();
+};
+
+class PlayerRollState : public StateNode
+{
+public:
+	PlayerRollState() = default;
+	~PlayerRollState() = default;
+	virtual void on_enter()  override;
+	virtual void on_update(float delta) override;
+	virtual void on_exit()  override;
 };
 
 class PlayerIdleState : public StateNode
@@ -33,19 +40,6 @@ class PlayerRunState : public StateNode
 public:
 	PlayerRunState() = default;
 	~PlayerRunState() = default;
-	virtual void on_enter()  override;
-	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
-};
-
-class PlayerRollState : public StateNode
-{
-private:
-	Timer timer;
-
-public:
-	PlayerRollState();
-	~PlayerRollState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;

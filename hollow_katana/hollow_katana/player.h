@@ -15,7 +15,7 @@ private:
 	const float SPEED_JUMP = 780.0f;
 	const float SPEED_ROLL = 800.0f;
 	const float ROLL_CD = 0.95f;
-	const float ATTACK_CD = 0.5f;
+	const float ATTACK_CD = 0.7f;
 
 private:
 	Timer timer_roll_cd;									// 翻滚冷却时间定时器

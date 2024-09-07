@@ -364,11 +364,17 @@ void Player::update_attack_dir(float mouse_x, float mouse_y)
 	float angle = atan2(mouse_y - position.y, mouse_x - position.x);	
 
 	if (angle >= -PI / 4 && angle < PI / 4)
+	{
 		attack_dir = AttackDir::Right;
+		is_face_left = false;
+	}
 	else if (angle >= PI / 4 && angle < (PI * 3 / 4))
-		attack_dir = AttackDir::Up;
-	else if (angle >= (-PI * 3 / 4) && angle < -PI / 4)
 		attack_dir = AttackDir::Down;
+	else if (angle >= (-PI * 3 / 4) && angle < -PI / 4)
+		attack_dir = AttackDir::Up;
 	else
+	{
 		attack_dir = AttackDir::Left;
+		is_face_left = true;
+	}
 }

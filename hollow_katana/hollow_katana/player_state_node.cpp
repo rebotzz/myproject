@@ -2,20 +2,6 @@
 #include "character_manager.h"
 #include "player.h"
 
-#include <iostream>
-
-PlayerAttackState::PlayerAttackState()
-{
-	timer.set_one_shot(true);
-	timer.set_wait_time(0.25f);
-	timer.set_on_timeout([]()
-		{
-			// 设置攻击状态标志false
-			// can_attack条件: 1.不在attack状态 + 2.cd结束 + 3.按下攻击键
-			Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
-			player->set_attacking(false);
-		});
-}
 
 void PlayerAttackState::on_enter()
 {
@@ -26,25 +12,23 @@ void PlayerAttackState::on_enter()
 	player->on_attack(); 
 	player->get_hit_box()->set_enabled(true);
 	update_hit_box_position();
-	timer.restart();
 
 	switch (random_range(1, 3))
 	{
 	case 1:
-		// play_audio(_T("player_attack_1"));
+		 play_audio(_T("player_attack_1"));
 		break;
 	case 2:
-		// play_audio(_T("player_attack_2"));
+		 play_audio(_T("player_attack_2"));
 		break;
 	case 3:
-		// play_audio(_T("player_attack_3"));
+		 play_audio(_T("player_attack_3"));
 		break;
 	}
 }
 
 void PlayerAttackState::on_update(float delta)
 {
-	timer.on_update(delta);
 	update_hit_box_position();
 
 	// 更新过程中可能会状态跳转
@@ -99,7 +83,7 @@ void PlayerRunState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("run");
 
-	// play_audio(_T("player_run"), true);
+	 play_audio(_T("player_run"), true);
 }
 
 void PlayerRunState::on_update(float delta)
@@ -124,17 +108,6 @@ void PlayerRunState::on_exit()
 }
 
 
-PlayerRollState::PlayerRollState()
-{
-	timer.set_one_shot(true);
-	timer.set_wait_time(0.35f);
-	timer.set_on_timeout([]()
-		{
-			Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
-			player->set_rolling(false);
-		});
-}
-
 void PlayerRollState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("roll");
@@ -144,13 +117,11 @@ void PlayerRollState::on_enter()
 	player->get_hurt_box()->set_enabled(false);
 	player->on_roll();
 
-	// play_audio(_T("player_roll"));
+	play_audio(_T("player_roll"));
 }
 
 void PlayerRollState::on_update(float delta)
 {
-	timer.on_update(delta);
-
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 
 	if (!player->get_rolling())
@@ -177,7 +148,7 @@ void PlayerJumpState::on_enter()
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->on_jump();
 
-	// play_audio(_T("player_jump"));
+	play_audio(_T("player_jump"));
 }
 
 void PlayerJumpState::on_update(float delta)
@@ -208,7 +179,7 @@ void PlayerFallState::on_update(float delta)
 		player->on_land();
 		player->switch_state("idle");
 
-		// play_audio(_T("player_land"));
+		play_audio(_T("player_land"));
 	}
 	else if (player->can_attack())
 		player->switch_state("attack");
@@ -255,7 +226,7 @@ void PlayerDeadState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("dead");
 	timer.restart();
-	// play_audio(_T("player_dead"));
+	play_audio(_T("player_dead"));
 }
 void PlayerDeadState::on_update(float delta)
 {

@@ -41,6 +41,7 @@ int main()
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 
+	play_audio(_T("bgm"), true);
 
 	// Ö÷Ñ­»·
 	while (!is_quit)

@@ -27,6 +27,11 @@ public:
 		this->size = size;
 	}
 
+	const Vector2& get_size() const
+	{
+		return size;
+	}
+
 	// 使用中心锚点模式
 	void set_position(const Vector2 position)
 	{
@@ -48,8 +53,8 @@ public:
 		this->on_collision = on_collision;
 	}
 
-	void set_enabled(bool val)
+	void set_enabled(bool flag)
 	{
-		enabled = val;
+		enabled = flag;
 	}
 };

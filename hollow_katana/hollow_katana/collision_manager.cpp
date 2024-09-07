@@ -8,7 +8,7 @@ CollisionManager::~CollisionManager() = default;
 
 CollisionManager* CollisionManager::instance()
 {
-	if (manager)
+	if (nullptr == manager)
 		manager = new CollisionManager();
 
 	return manager;

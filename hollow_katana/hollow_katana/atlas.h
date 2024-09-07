@@ -12,24 +12,17 @@ public:
 	Atlas() = default;
 	~Atlas() = default;
 
-	void load_from_file(LPCTSTR path_image, int num)
+	void load(LPCTSTR path_image, int num)
 	{
 		// º”‘ÿ∂Øª≠÷°Õº∆¨
 		image_list.clear();
 		image_list.resize(num);
-
-		for(auto img : image_list)
-		printf("%p\n", GetImageBuffer(&img));
-
 
 		TCHAR file_path[512] = { 0 };
 		for (int i = 0; i < num; ++i) {
 			_stprintf_s(file_path, path_image, i + 1);
 			loadimage(&image_list[i], file_path);
 		}
-
-		for (auto img : image_list)
-			printf("%p\n", GetImageBuffer(&img));
 	}
 
 	void clear()

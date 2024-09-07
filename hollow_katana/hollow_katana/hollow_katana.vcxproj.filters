@@ -22,6 +22,9 @@
     <Filter Include="头文件\character">
       <UniqueIdentifier>{453882eb-412a-461c-8a36-453b760ec040}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\character\player">
+      <UniqueIdentifier>{021aa1d8-74e5-4766-a083-7970489ab140}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -36,7 +39,16 @@
     <ClCompile Include="state_machine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="charater.cpp">
+    <ClCompile Include="character.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="character_manager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="player_state_node.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,8 +86,17 @@
     <ClInclude Include="state_machine.h">
       <Filter>头文件\state_machine</Filter>
     </ClInclude>
-    <ClInclude Include="charater.h">
+    <ClInclude Include="character.h">
       <Filter>头文件\character</Filter>
+    </ClInclude>
+    <ClInclude Include="character_manager.h">
+      <Filter>头文件\character</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>头文件\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="player_state_node.h">
+      <Filter>头文件\character\player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

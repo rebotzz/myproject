@@ -20,7 +20,6 @@ inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect
 		rect_src ? rect_src->w : img->getwidth(), rect_src ? rect_src->h : img->getheight(), blend_func);
 }
 
-
 // 使用系统库实现透明通道图片加载, easyX的putimage不能实现
 inline void putimage_alpha(int x, int y, IMAGE* img)
 {
@@ -29,7 +28,6 @@ inline void putimage_alpha(int x, int y, IMAGE* img)
 	AlphaBlend(GetImageHDC(nullptr), x, y, w, h,
 		GetImageHDC(img), 0, 0, w, h, { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA });
 }
-
 
 inline void load_audio(LPCTSTR path, LPCTSTR id)
 {
@@ -68,4 +66,9 @@ inline void sketch_image(IMAGE* src, IMAGE* dst)
 			img_dst_buffer[idx] = BGR(RGB(255, 255, 255)) | (img_src_buffer[idx] & 0xff000000);	
 		}
 	}
+}
+
+int random_range(int min_num, int max_num)
+{
+	return min_num + rand() % (max_num - min_num + 1);
 }

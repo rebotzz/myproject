@@ -1,5 +1,4 @@
-#include "charater.h"
-
+#include "character.h"
 
 Character::Character()
 {
@@ -26,7 +25,7 @@ Character::~Character()
 	CollisionManager::instance()->destroy_collision_box(hurt_box);
 }
 
-void Character::swith_state(const std::string& id)
+void Character::switch_state(const std::string& id)
 {
 	state_machine.swith_to(id);
 }
@@ -46,7 +45,7 @@ void Character::set_animation(const std::string& id)
 	current_animation->right.reset();
 }
 
-void Character::derease_hp()
+void Character::decrease_hp()
 {
 	if (is_invulnerable_status)
 		return;
@@ -63,14 +62,14 @@ void Character::on_update(float delta)
 	// 状态机更新
 	state_machine.on_update(delta);
 
-	// 角色位置更新()
-	if (hp < 0)
+	// 角色位置更新
+	if (hp < 0)								// todo: 这个判断是否必要?
 		velocity.x = 0;
 	if (enable_gravity)
 		velocity.y += GRAVITY * delta;
 	position += velocity * delta;
 
-	if (is_floor())
+	if (is_on_floor())
 	{
 		position.y = get_floor_y();
 		velocity.y = 0;

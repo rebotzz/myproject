@@ -76,7 +76,7 @@ public:
 		this->position = position;
 	}
 
-	void set_interval(int val)
+	void set_interval(float val)
 	{
 		timer.set_wait_time(val);
 	}
@@ -86,7 +86,7 @@ public:
 		is_loop = flag;
 	}
 
-	void on_update(int delta)
+	void on_update(float delta)
 	{
 		timer.on_update(delta);
 	} 
@@ -95,7 +95,7 @@ public:
 	{
 		const Frame& frame = frame_list[idx_frame];
 		Rect rect_dst;
-		rect_dst.x = frame.rect_src.x, rect_dst.y = frame.rect_src.y;
+		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
 		rect_dst.x = (int)position.x - frame.img->getwidth() / 2;
 		rect_dst.y = (achor_mode == AchorMode::BottomCentered ?
 			(int)position.y - frame.img->getheight() :

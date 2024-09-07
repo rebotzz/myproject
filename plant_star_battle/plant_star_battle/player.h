@@ -287,7 +287,7 @@ public:
 	{
 		// 角色位置更新
 		int direction = _is_right_key_down - _is_left_key_down;
-		if (direction != 0)
+		if (direction != 0 && _hp > 0)
 		{
 			if (!_is_attack_ex)
 				_is_face_right = direction > 0;
@@ -300,6 +300,10 @@ public:
 			_current_animation = (_is_face_right ? &_animation_idle_right : &_animation_idle_left);
 			_timer_run_particle_effect_generation.pause();
 		}
+		if (_position.x < (_achor_mode == AchorMode::LeftTop ? 0 : _size.x / 2))
+			_position.x = (_achor_mode == AchorMode::LeftTop ? 0 : _size.x / 2);
+		else if (_position.x > (getwidth() - (_achor_mode == AchorMode::LeftTop ? _size.x : _size.x / 2)))
+			_position.x = (getwidth() - (_achor_mode == AchorMode::LeftTop ? _size.x : _size.x / 2));
 
 		// 如果角色死亡
 		if (_hp <= 0)

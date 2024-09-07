@@ -165,7 +165,7 @@ void ResourcesManager::load()
 	for (auto& info : atlas_info_list)
 	{
 		Atlas* atlas = new Atlas();
-		atlas->load_from_file(info.path, info.num_frame);
+		atlas->load(info.path, info.num_frame);
 
 		for (int i = 0; i < atlas->get_size(); ++i)
 		{

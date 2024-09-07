@@ -22,7 +22,7 @@ protected:
 																		
 protected:																
 	int hp = 10;														// 生命值
-	float logic_height;													// 逻辑高度
+	float logic_height = 0.0f;											// 逻辑高度
 	bool is_face_left = false;											// 角色朝向
 	bool enable_gravity = true;											// 是否开始重力
 	Vector2 position;													// 角色位置,底部中心锚点模式
@@ -30,7 +30,7 @@ protected:
 	CollisionBox* hurt_box;												// 受击碰撞箱
 	CollisionBox* hit_box;												// 攻击碰撞箱
 	StateMachine state_machine;											// 状态机
-	Timer timer_invulnerable_status;											// 无敌状态计时器
+	Timer timer_invulnerable_status;									// 无敌状态计时器
 	Timer timer_invulnerable_blink;										// 无敌时间闪烁计时器
 	bool is_invulnerable_status = false;								// 是否无敌状态
 	bool is_blink_invisible = false;									// 是否无敌闪烁的不可见状态
@@ -41,69 +41,28 @@ public:
 	Character();
 	~Character();
 
-	int get_hp() const
-	{
-		return hp;
-	}
-
-	Vector2 get_logic_center() const
-	{
-		return {position.x, position.y - logic_height / 2 };
-	}
-
-	void set_position(const Vector2& position)
-	{
-		this->position = position;
-	}
-
-	const Vector2& get_position() const
-	{
-		return position;
-	}
-
-	void set_velocity(const Vector2& velocity)
-	{
-		this->velocity = velocity;
-	}
-
-	const Vector2& get_velocity() const
-	{
-		return velocity;
-	}
-
-	void set_gravity_enable(bool flag)
-	{
-		enable_gravity = flag;
-	}
-
-	CollisionBox* get_hurt_box() const
-	{
-		return hurt_box;
-	}
-
-	CollisionBox* get_hit_box() const
-	{
-		return hit_box;
-	}
-
-	bool is_floor() const
-	{
-		return position.y >= FLOOR_Y;
-	}
-
-	float get_floor_y() const
-	{
-		return FLOOR_Y;
-	}
-
-	void swith_state(const std::string& id);
+	void switch_state(const std::string& id);
 	void make_invulnerable();
 	void set_animation(const std::string& id);
-	void derease_hp();
+	void decrease_hp();
+
 	virtual void on_hurt() { };
 
-	virtual void input(const ExMessage& msg) { };
+	virtual void on_input(const ExMessage& msg) { };
 	virtual void on_update(float delta);
 	virtual void on_render();
 
+	int get_hp() const { return hp; }
+	void set_gravity_enable(bool flag) { enable_gravity = flag; }
+	bool is_on_floor() const { return position.y >= FLOOR_Y; }
+	float get_floor_y() const { return FLOOR_Y; }
+
+	Vector2 get_logic_center() const { return { position.x, position.y - logic_height / 2 }; }
+	void set_position(const Vector2& position) { this->position = position; }
+	const Vector2& get_position() const { return position; }
+	void set_velocity(const Vector2& velocity) { this->velocity = velocity; }
+	const Vector2& get_velocity() const { return velocity; }
+
+	CollisionBox* get_hurt_box() const { return hurt_box; }
+	CollisionBox* get_hit_box() const { return hit_box; }
 };

@@ -5,16 +5,18 @@ CharacterManager* CharacterManager::manager = nullptr;
 
 CharacterManager::CharacterManager()
 {
-	player = new Player();
-
+	player = new Player;
 }
-CharacterManager::~CharacterManager() = default;
-
+CharacterManager::~CharacterManager()
+{
+	delete player;
+	delete enemy;
+}
 
 CharacterManager* CharacterManager::instance()
 {
 	if (nullptr == manager)
-		manager = new CharacterManager;
+		manager = new CharacterManager();
 
 	return manager;
 }

@@ -65,7 +65,7 @@ void CollisionManager::on_debug_render()
 	// äÖÈ¾Åö×²¾ØÐÎ
 	for (const auto* collision_box : collision_box_list)
 	{
-		collision_box->enabled ? setlinecolor(RGB(255, 255, 255)) : setlinecolor(RGB(255, 0, 0));
+		collision_box->enabled ? setlinecolor(RGB(255, 0, 0)) : setlinecolor(RGB(0, 255, 255));
 		rectangle((int)(collision_box->position.x - collision_box->size.x / 2), 
 			(int)(collision_box->position.y - collision_box->size.y / 2),
 			(int)(collision_box->position.x + collision_box->size.x / 2),

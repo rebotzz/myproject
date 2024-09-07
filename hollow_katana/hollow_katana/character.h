@@ -6,7 +6,7 @@
 #include "collision_manager.h"
 #include "state_machine.h"
 
-// 角色基类
+// 角色基类, 角色由状态机驱动
 class Character
 {
 protected:

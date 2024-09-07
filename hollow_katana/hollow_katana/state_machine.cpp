@@ -1,5 +1,8 @@
 #include "state_machine.h"
 
+#include <iostream>
+using namespace std;
+
 
 void StateMachine::set_entry(const std::string& id)
 {
@@ -11,13 +14,16 @@ void StateMachine::register_state(const std::string& id, StateNode* state_node)
 	state_pool[id] = state_node;
 }
 
-void StateMachine::swith_to(const std::string& id)
+void StateMachine::switch_to(const std::string& id)
 {
 	if (current_state) 
 		current_state->on_exit();
 	current_state = state_pool[id];
-	if (current_state && need_init) 
+	if (current_state) 
 		current_state->on_enter();
+
+	// debug:
+	cout << "ÇÐ»»×´Ì¬: " << id << endl;
 }
 
 void StateMachine::on_update(float delta)
@@ -30,4 +36,7 @@ void StateMachine::on_update(float delta)
 	}
 
 	current_state->on_update(delta);
+
+	// debug:
+	cout << "×´Ì¬»ú¸üÐÂ..."<< endl;
 }

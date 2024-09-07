@@ -3,8 +3,8 @@
 #include <thread>
 #include <easyx.h>
 #include "resources_manager.h"
+#include "character_manager.h"
 #include "util.h"
-#include "player.h"
 
 using std::cout;
 using std::endl;
@@ -41,7 +41,6 @@ int main()
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 
-	Player player;
 
 	// 主循环
 	while (!is_quit)
@@ -49,23 +48,23 @@ int main()
 		// 处理消息
 		if (peekmessage(&msg, EX_MOUSE | EX_KEY))
 		{
-			player.on_input(msg);
+			CharacterManager::instance()->on_input(msg);
 		}
 
 		steady_clock::time_point frame_start = steady_clock::now();
 		duration<float> delta = duration<float>(frame_start - last_tick);
 
 		// 处理更新
-		player.on_update(delta.count());
-
+		CharacterManager::instance()->on_update(delta.count());
+		CollisionManager::instance()->process_collide();
 
 		// 处理绘图
 		setbkcolor(RGB(0, 0, 0));
 		cleardevice();	
 
 		render_background();
-
-		player.on_render();
+		CharacterManager::instance()->on_render();
+		CollisionManager::instance()->on_debug_render();
 
 		FlushBatchDraw();
 

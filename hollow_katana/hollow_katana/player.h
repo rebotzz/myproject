@@ -14,7 +14,7 @@ private:
 	const float SPEED_RUN = 300.0f;
 	const float SPEED_JUMP = 780.0f;
 	const float SPEED_ROLL = 800.0f;
-	const float ROLL_CD = 0.75f;
+	const float ROLL_CD = 0.95f;
 	const float ATTACK_CD = 0.5f;
 
 private:
@@ -55,11 +55,11 @@ public:
 
 	void set_rolling(bool flag) { is_rolling = flag; }
 	bool get_rolling() const { return is_rolling; }
-	bool can_rolling() const { return !is_rolling && is_roll_cd_comp && is_roll_key_down; }
+	bool can_roll() const { return !is_rolling && is_roll_cd_comp && is_roll_key_down; }
 
 	void set_attacking(bool flag) { is_attacking = flag; }
 	bool get_attacking() const { return is_attacking; }
-	bool can_attacking() const { return !is_attacking && is_attack_cd_comp && is_attack_key_down; }
+	bool can_attack() const { return !is_attacking && is_attack_cd_comp && is_attack_key_down; }
 
 	bool can_jump() const { return is_on_floor() && is_jump_key_down; }
 	int get_move_axis() const { return is_right_key_down - is_left_key_down; }

@@ -68,7 +68,7 @@ inline void sketch_image(IMAGE* src, IMAGE* dst)
 	}
 }
 
-int random_range(int min_num, int max_num)
+inline int random_range(int min_num, int max_num)
 {
 	return min_num + rand() % (max_num - min_num + 1);
 }

@@ -96,10 +96,10 @@ public:
 		const Frame& frame = frame_list[idx_frame];
 		Rect rect_dst;
 		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
-		rect_dst.x = (int)position.x - frame.img->getwidth() / 2;
+		rect_dst.x = (int)position.x - frame.rect_src.w / 2;
 		rect_dst.y = (achor_mode == AchorMode::BottomCentered ?
-			(int)position.y - frame.img->getheight() :
-			(int)position.y - frame.img->getheight() / 2);
+			(int)position.y - frame.rect_src.h :
+			(int)position.y - frame.rect_src.h / 2);
 
 		putimage_alpha_ex(frame.img, &rect_dst, &frame.rect_src);
 	}

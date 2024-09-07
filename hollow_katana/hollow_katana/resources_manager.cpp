@@ -63,7 +63,7 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 
 static inline bool check_image_valid(IMAGE* img)
 {
-	// vector中的IMAGE图片缓冲区好像有bug? 有时候加载失败不是nullptr,所以辅助图片尺寸判断
+	// vector中的IMAGE在堆上,IMAGE默认构造没有初始化缓存指针,所以辅助图片尺寸判断
 	return GetImageBuffer(img) && img->getheight() && img->getwidth();
 }
 

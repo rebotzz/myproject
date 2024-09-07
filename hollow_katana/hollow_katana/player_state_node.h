@@ -1,8 +1,10 @@
 #pragma once
 #include "state_node.h"
-#include "player.h"
+#include "timer.h"
 
 // 玩家的所有状态节点:闲置,奔跑,攻击,跳跃,下落,翻滚,死亡
+
+// 攻击/翻滚的定时器可以去掉,功能由动画结束的回调完成
 class PlayerAttackState : public StateNode
 {
 private:
@@ -10,7 +12,7 @@ private:
 
 public:
 	PlayerAttackState();
-	~PlayerAttackState();
+	~PlayerAttackState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
@@ -20,18 +22,17 @@ public:
 class PlayerIdleState : public StateNode
 {
 public:
-	PlayerIdleState();
-	~PlayerIdleState();
+	PlayerIdleState() = default;
+	~PlayerIdleState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
 };
 
 class PlayerRunState : public StateNode
 {
 public:
-	PlayerRunState();
-	~PlayerRunState();
+	PlayerRunState() = default;
+	~PlayerRunState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
@@ -44,7 +45,7 @@ private:
 
 public:
 	PlayerRollState();
-	~PlayerRollState();
+	~PlayerRollState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
@@ -52,28 +53,20 @@ public:
 
 class PlayerJumpState : public StateNode
 {
-private:
-	Timer timer;
-
 public:
-	PlayerJumpState();
-	~PlayerJumpState();
+	PlayerJumpState() = default;
+	~PlayerJumpState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
 };
 
 class PlayerFallState : public StateNode
 {
-private:
-	Timer timer;
-
 public:
-	PlayerFallState();
-	~PlayerFallState();
+	PlayerFallState() = default;
+	~PlayerFallState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
 };
 
 class PlayerDeadState : public StateNode
@@ -83,7 +76,7 @@ private:
 
 public:
 	PlayerDeadState();
-	~PlayerDeadState();
+	~PlayerDeadState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;

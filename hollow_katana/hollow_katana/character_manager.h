@@ -5,9 +5,9 @@
 class CharacterManager
 {
 private:
+	static CharacterManager* manager;
 	Character* player = nullptr;
 	Character* enemy = nullptr;
-	static CharacterManager* manager;
 
 private:
 	CharacterManager();

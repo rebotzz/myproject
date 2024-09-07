@@ -27,7 +27,7 @@ Character::~Character()
 
 void Character::switch_state(const std::string& id)
 {
-	state_machine.swith_to(id);
+	state_machine.switch_to(id);
 }
 
 void Character::make_invulnerable()
@@ -63,7 +63,7 @@ void Character::on_update(float delta)
 	state_machine.on_update(delta);
 
 	// 角色位置更新
-	if (hp < 0)								// todo: 这个判断是否必要?
+	if (hp < 0)
 		velocity.x = 0;
 	if (enable_gravity)
 		velocity.y += GRAVITY * delta;
@@ -91,8 +91,8 @@ void Character::on_update(float delta)
 		return;
 
 	Animation& animation = (is_face_left ? current_animation->left : current_animation->right);
-	animation.on_update(delta);
 	animation.set_position(position);
+	animation.on_update(delta);
 }
 
 void Character::on_render()

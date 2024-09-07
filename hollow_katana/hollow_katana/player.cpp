@@ -1,6 +1,7 @@
 #include <cmath>
 #include "player.h"
 #include "resources_manager.h"
+#include "player_state_node.h"
 
 #include <iostream>
 using std::cout;
@@ -66,12 +67,14 @@ Player::Player():Character()
 		attack_left.set_loop(false);
 		attack_left.set_achor_mode(Animation::AchorMode::BottomCentered);
 		attack_left.add_frame(ResourcesManager::instance()->find_image("player_attack_left"), 5);
+		attack_left.set_on_finished([&]() { is_attacking = false; });
 
 		Animation& attack_right = attack.right;
 		attack_right.set_interval(0.05f);
 		attack_right.set_loop(false);
 		attack_right.set_achor_mode(Animation::AchorMode::BottomCentered);
 		attack_right.add_frame(ResourcesManager::instance()->find_image("player_attack_right"), 5);
+		attack_right.set_on_finished([&]() { is_attacking = false; });
 	}
 	{
 		AnimationGroup& run = animation_pool["run"];
@@ -94,12 +97,14 @@ Player::Player():Character()
 		roll_left.set_loop(false);
 		roll_left.set_achor_mode(Animation::AchorMode::BottomCentered);
 		roll_left.add_frame(ResourcesManager::instance()->find_image("player_roll_left"), 7);
+		roll_left.set_on_finished([&]() { is_rolling = false; });
 
 		Animation& roll_right = roll.right;
 		roll_right.set_interval(0.05f);
 		roll_right.set_loop(false);
 		roll_right.set_achor_mode(Animation::AchorMode::BottomCentered);
 		roll_right.add_frame(ResourcesManager::instance()->find_image("player_roll_right"), 7);
+		roll_right.set_on_finished([&]() { is_rolling = false; });
 	}
 	{
 		AnimationGroup& jump = animation_pool["jump"];
@@ -179,10 +184,17 @@ Player::Player():Character()
 	}
 
 	{
-		// todo:状态机初始化...
+		// 状态机初始化
+		state_machine.register_state("idle", new PlayerIdleState);
+		state_machine.register_state("jump", new PlayerJumpState);
+		state_machine.register_state("fall", new PlayerFallState);
+		state_machine.register_state("run", new PlayerRunState);
+		state_machine.register_state("roll", new PlayerRollState);
+		state_machine.register_state("dead", new PlayerDeadState);
+		state_machine.register_state("attack", new PlayerAttackState);
 
-		// for test:
-		current_animation = &animation_pool["idle"];
+		// debug: 这里不能switch_to,不然调用的CharacterManager构造时调用Player构造,死循环
+		state_machine.set_entry("idle");
 	}
 }
 
@@ -271,6 +283,7 @@ void Player::on_update(float delta)
 
 	if (is_attacking)
 	{
+		timer_attack_cd.on_update(delta);
 		current_slash_animation->set_position(get_logic_center());
 		current_slash_animation->on_update(delta);
 	}
@@ -297,12 +310,11 @@ void Player::on_render()
 
 void Player::on_jump()
 {
-	velocity.y = -SPEED_JUMP;
+	velocity.y -= SPEED_JUMP;
 	is_vfx_jump_visiable = true;
 	animation_vfx_jump.reset();
-	animation_vfx_land.set_position(position);
+	animation_vfx_jump.set_position(position);
 }
-
 
 void Player::on_land()
 {
@@ -313,7 +325,6 @@ void Player::on_land()
 
 void Player::on_roll()
 {
-	//set_rolling(true);
 	timer_roll_cd.restart();
 	is_roll_cd_comp = false;
 	velocity.x = is_face_left ? -SPEED_ROLL : SPEED_ROLL;

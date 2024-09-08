@@ -6,6 +6,7 @@
 #include "resources_manager.h"
 #include "character_manager.h"
 #include "bullet_time_manager.h"
+#include "audio_manager.h"
 
 using std::cout;
 using std::endl;
@@ -14,8 +15,9 @@ const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
 const int FPS = 144;
 
-
 inline void render_background();
+
+
 
 int main()
 {
@@ -42,7 +44,7 @@ int main()
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 
-	play_audio(_T("bgm"), true);
+	AudioManager::instance()->play_audio_ex(_T("bgm"), true);
 
 	// Ö÷Ñ­»·
 	while (!is_quit)

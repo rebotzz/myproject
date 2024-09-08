@@ -54,8 +54,10 @@ void CollisionManager::process_collide()
 				- min(collision_box_src->position.y - collision_box_src->size.y / 2,
 					collision_box_dst->position.y - collision_box_dst->size.y / 2)) <= (collision_box_dst->size.y + collision_box_src->size.y);
 
-			if (x_can_collide && y_can_collide && collision_box_src->on_collision)
+			if (x_can_collide && y_can_collide && collision_box_dst->on_collision)
+			{
 				collision_box_dst->on_collision();
+			}
 		}
 	}
 }

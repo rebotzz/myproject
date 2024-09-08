@@ -90,7 +90,7 @@ void Character::on_update(float delta)
 	if (!current_animation)
 		return;
 
-	Animation& animation = (is_face_left ? current_animation->left : current_animation->right);
+	Animation& animation = (is_facing_left ? current_animation->left : current_animation->right);
 	animation.set_position(position);
 	animation.on_update(delta);
 }
@@ -100,5 +100,5 @@ void Character::on_render()
 	if (!current_animation || (is_invulnerable_status && is_blink_invisible))
 		return;
 
-	(is_face_left ? current_animation->left : current_animation->right).on_render();
+	(is_facing_left ? current_animation->left : current_animation->right).on_render();
 }

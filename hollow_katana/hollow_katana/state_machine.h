@@ -12,9 +12,10 @@ private:
 
 public:
 	StateMachine() = default;
-	~StateMachine() = default;
+	~StateMachine();
 	void set_entry(const std::string& id);
 	void register_state(const std::string& id, StateNode* state_node);
 	void switch_to(const std::string& id);
 	void on_update(float delta);	
 };
+

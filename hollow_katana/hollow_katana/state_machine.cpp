@@ -1,6 +1,15 @@
 #include "state_machine.h"
 
 
+StateMachine::~StateMachine()
+{
+	for (auto& iter : state_pool)
+	{
+		if (iter.second)
+			delete iter.second;
+	}
+}
+
 void StateMachine::set_entry(const std::string& id)
 {
 	current_state = state_pool[id];

@@ -28,34 +28,64 @@
     <Filter Include="头文件\kits">
       <UniqueIdentifier>{ae67b757-bb73-49d5-90c7-e5a33a8a88c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\character\enemy">
+      <UniqueIdentifier>{32fcb130-5576-4d94-9550-a83693da5091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\manager">
+      <UniqueIdentifier>{f73a5cc9-4abf-465c-9b36-70cab9e128c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\character">
+      <UniqueIdentifier>{ed09fe37-9c33-4165-af96-09a01a542b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager">
+      <UniqueIdentifier>{5c0ba1a2-f4e2-43b2-ae13-59d9d7721f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\property">
+      <UniqueIdentifier>{68356bf5-1979-41f5-a729-100e031e2ca4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\property">
+      <UniqueIdentifier>{928481b3-66f5-44eb-a8d9-7ed3a17bfc31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="resources_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="collision_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="state_machine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="character.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="character_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="player_state_node.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="audio_manager.cpp">
+      <Filter>源文件\manager</Filter>
     </ClCompile>
     <ClCompile Include="bullet_time_manager.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="character_manager.cpp">
+      <Filter>源文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_manager.cpp">
+      <Filter>源文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="resources_manager.cpp">
+      <Filter>源文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
+    <ClCompile Include="player_state_node.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
+    <ClCompile Include="character.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_hornet.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
+    <ClCompile Include="sword.cpp">
+      <Filter>源文件\property</Filter>
+    </ClCompile>
+    <ClCompile Include="barb.cpp">
+      <Filter>源文件\property</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -63,9 +93,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="atlas.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="resources_manager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="collision_box.h">
@@ -95,9 +122,6 @@
     <ClInclude Include="player_state_node.h">
       <Filter>头文件\character\player</Filter>
     </ClInclude>
-    <ClInclude Include="bullet_time_manager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="util.h">
       <Filter>头文件\kits</Filter>
     </ClInclude>
@@ -106,6 +130,24 @@
     </ClInclude>
     <ClInclude Include="vector2.h">
       <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_hornet.h">
+      <Filter>头文件\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet_time_manager.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="resources_manager.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="audio_manager.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="sword.h">
+      <Filter>头文件\property</Filter>
+    </ClInclude>
+    <ClInclude Include="barb.h">
+      <Filter>头文件\property</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #include "player_state_node.h"
 #include "character_manager.h"
 #include "player.h"
-
+#include "audio_manager.h"
 
 void PlayerAttackState::on_enter()
 {
@@ -16,13 +16,13 @@ void PlayerAttackState::on_enter()
 	switch (random_range(1, 3))
 	{
 	case 1:
-		 play_audio(_T("player_attack_1"));
+		 AudioManager::instance()->play_audio_ex(_T("player_attack_1"));
 		break;
 	case 2:
-		 play_audio(_T("player_attack_2"));
+		 AudioManager::instance()->play_audio_ex(_T("player_attack_2"));
 		break;
 	case 3:
-		 play_audio(_T("player_attack_3"));
+		 AudioManager::instance()->play_audio_ex(_T("player_attack_3"));
 		break;
 	}
 }
@@ -83,7 +83,7 @@ void PlayerRunState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("run");
 
-	 play_audio(_T("player_run"), true);
+	 AudioManager::instance()->play_audio_ex(_T("player_run"), true);
 }
 
 void PlayerRunState::on_update(float delta)
@@ -104,7 +104,7 @@ void PlayerRunState::on_update(float delta)
 
 void PlayerRunState::on_exit()
 {
-	stop_audio(_T("player_run"));
+	AudioManager::instance()->stop_audio_ex(_T("player_run"));
 }
 
 
@@ -117,7 +117,7 @@ void PlayerRollState::on_enter()
 	player->get_hurt_box()->set_enabled(false);
 	player->on_roll();
 
-	play_audio(_T("player_roll"));
+	AudioManager::instance()->play_audio_ex(_T("player_roll"));
 }
 
 void PlayerRollState::on_update(float delta)
@@ -148,7 +148,7 @@ void PlayerJumpState::on_enter()
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->on_jump();
 
-	play_audio(_T("player_jump"));
+	AudioManager::instance()->play_audio_ex(_T("player_jump"));
 }
 
 void PlayerJumpState::on_update(float delta)
@@ -174,15 +174,16 @@ void PlayerFallState::on_update(float delta)
 
 	if (player->get_hp() <= 0)
 		player->switch_state("dead");
+	else if (player->can_attack())
+		player->switch_state("attack");
 	else if (player->is_on_floor())
 	{
 		player->on_land();
 		player->switch_state("idle");
 
-		play_audio(_T("player_land"));
+		AudioManager::instance()->play_audio_ex(_T("player_land"));
 	}
-	else if (player->can_attack())
-		player->switch_state("attack");
+
 }
 
 
@@ -226,7 +227,7 @@ void PlayerDeadState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("dead");
 	timer.restart();
-	play_audio(_T("player_dead"));
+	AudioManager::instance()->play_audio_ex(_T("player_dead"));
 }
 void PlayerDeadState::on_update(float delta)
 {

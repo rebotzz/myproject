@@ -3,6 +3,7 @@
 #include "resources_manager.h"
 #include "player_state_node.h"
 #include "bullet_time_manager.h"
+#include "audio_manager.h"
 
 #include <iostream>
 using std::cout;
@@ -11,9 +12,9 @@ using std::endl;
 Player::Player():Character()
 {
 	// 角色朝向,位置,高度初始化
-	is_face_left = false;
-	position = { 500, 200 };
-	logic_height = 120.0f;
+	is_facing_left = false;
+	position = { 200, 300 };
+	logic_height = 90.0f;
 
 	// 角色碰撞箱初始化
 	hurt_box->set_enabled(true);
@@ -26,7 +27,7 @@ Player::Player():Character()
 		});
 
 	hit_box->set_enabled(false);
-	hit_box->set_size({ 150,150 });
+	hit_box->set_size({ 130,130 });
 	hit_box->set_layer_src(CollisionLayer::None);
 	hit_box->set_layer_dst(CollisionLayer::Enemy);
 	hit_box->set_position(get_logic_center());
@@ -249,13 +250,16 @@ void Player::on_input(const ExMessage& msg)
 			break;
 		}
 		break;
+	}
 
+	switch (msg.message)
+	{
 	case WM_LBUTTONDOWN:
 		is_attack_key_down = true;
 		update_attack_dir(msg.x, msg.y);
 		break;
 	case WM_RBUTTONDOWN:
-		play_audio(_T("bullet_time"));
+		AudioManager::instance()->play_audio_ex(_T("bullet_time"));
 		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
 		break;
 	case WM_LBUTTONUP:
@@ -273,7 +277,7 @@ void Player::on_update(float delta)
 	if(hp > 0 && !is_rolling)
 		velocity.x = get_move_axis() * SPEED_RUN;
 	if(get_move_axis() != 0)
-		is_face_left = get_move_axis() < 0;
+		is_facing_left = get_move_axis() < 0;
 
 	// 更新定时器
 	timer_attack_cd.on_update(delta);
@@ -302,12 +306,13 @@ void Player::on_render()
 	if (is_vfx_land_visiable)
 		animation_vfx_land.on_render();
 
-	// 玩家动画
-	Character::on_render();
-
 	// 攻击特效
 	if (is_attacking)
 		current_slash_animation->on_render();
+
+	// 玩家动画
+	Character::on_render();
+
 }
 
 void Player::on_jump()
@@ -329,12 +334,12 @@ void Player::on_roll()
 {
 	timer_roll_cd.restart();
 	is_roll_cd_comp = false;
-	velocity.x = is_face_left ? -SPEED_ROLL : SPEED_ROLL;
+	velocity.x = is_facing_left ? -SPEED_ROLL : SPEED_ROLL;
 }
 
 void Player::on_hurt()
 {
-	play_audio(_T("player_hurt"));
+	AudioManager::instance()->play_audio_ex(_T("player_hurt"));
 }
 
 void Player::on_attack()
@@ -368,7 +373,7 @@ void Player::update_attack_dir(float mouse_x, float mouse_y)
 	if (angle >= -PI / 4 && angle < PI / 4)
 	{
 		attack_dir = AttackDir::Right;
-		is_face_left = false;
+		is_facing_left = false;
 	}
 	else if (angle >= PI / 4 && angle < (PI * 3 / 4))
 		attack_dir = AttackDir::Down;
@@ -377,6 +382,6 @@ void Player::update_attack_dir(float mouse_x, float mouse_y)
 	else
 	{
 		attack_dir = AttackDir::Left;
-		is_face_left = true;
+		is_facing_left = true;
 	}
 }

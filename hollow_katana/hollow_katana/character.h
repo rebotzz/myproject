@@ -23,7 +23,7 @@ protected:
 protected:																
 	int hp = 10;														// 生命值
 	float logic_height = 0.0f;											// 逻辑高度
-	bool is_face_left = false;											// 角色朝向
+	bool is_facing_left = false;										// 角色朝向
 	bool enable_gravity = true;											// 是否开始重力
 	Vector2 position;													// 角色位置,底部中心锚点模式
 	Vector2 velocity;													// 速度

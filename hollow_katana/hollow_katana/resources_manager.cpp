@@ -1,6 +1,8 @@
 #include "resources_manager.h"
 #include "util.h"
 
+#include "audio_manager.h"
+
 struct ImageResInfo
 {
 	std::string id;
@@ -193,7 +195,8 @@ void ResourcesManager::load()
 	flip_atlas("enemy_dash_on_floor_left",		"enemy_dash_on_floor_right");		
 	flip_atlas("enemy_fall_left",				"enemy_fall_right");				
 
-	flip_atlas("enemy_jump_left",				"enemy_jump_right");				
+	flip_atlas("enemy_idle_left",				"enemy_idle_right");
+	flip_atlas("enemy_jump_left",				"enemy_jump_right");
 	flip_atlas("enemy_run_left",				"enemy_run_right");				
 	flip_atlas("enemy_squat_left",				"enemy_squat_right");				
 	flip_atlas("enemy_throw_barb_left",			"enemy_throw_barb_right");			
@@ -203,28 +206,30 @@ void ResourcesManager::load()
 	flip_atlas("enemy_vfx_dash_in_air_left",	"enemy_vfx_dash_in_air_right");	
 	flip_atlas("enemy_vfx_dash_on_floor_left",  "enemy_vfx_dash_on_floor_right");  
 
+
 	// ¼ÓÔØÒôÆµ
-	load_audio(_T(R"(resources\audio\bgm.mp3)"),		 _T("bgm"));
-	load_audio(_T(R"(resources\audio\barb_break.mp3)"),  _T("barb_break"));
-	load_audio(_T(R"(resources\audio\bullet_time.mp3)"), _T("bullet_time"));
+	AudioManager* audio_player = AudioManager::instance();
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm.mp3)"),				_T("bgm"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\barb_break.mp3)"),		_T("barb_break"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\bullet_time.mp3)"),		_T("bullet_time"));
 
-	load_audio(_T(R"(resources\audio\enemy_dash.mp3)"),        _T("enemy_dash"));
-	load_audio(_T(R"(resources\audio\enemy_run.mp3)"),         _T("enemy_run"));
-	load_audio(_T(R"(resources\audio\enemy_hurt_1.mp3)"),      _T("enemy_hurt_1"));
-	load_audio(_T(R"(resources\audio\enemy_hurt_2.mp3)"),      _T("enemy_hurt_2"));
-	load_audio(_T(R"(resources\audio\enemy_hurt_3.mp3)"),      _T("enemy_hurt_3"));
-	load_audio(_T(R"(resources\audio\enemy_throw_barbs.mp3)"), _T("enemy_throw_barbs"));
-	load_audio(_T(R"(resources\audio\enemy_throw_silk.mp3)"),  _T("enemy_throw_silk"));
-	load_audio(_T(R"(resources\audio\enemy_throw_sword.mp3)"), _T("enemy_throw_sword"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_dash.mp3)"),        _T("enemy_dash"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_run.mp3)"),         _T("enemy_run"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_1.mp3)"),      _T("enemy_hurt_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_2.mp3)"),      _T("enemy_hurt_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_3.mp3)"),      _T("enemy_hurt_3"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_barbs.mp3)"), _T("enemy_throw_barbs"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_silk.mp3)"),  _T("enemy_throw_silk"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_sword.mp3)"), _T("enemy_throw_sword"));
 
-	load_audio(_T(R"(resources\audio\player_attack_1.mp3)"),   _T("player_attack_1"));
-	load_audio(_T(R"(resources\audio\player_attack_2.mp3)"),   _T("player_attack_2"));
-	load_audio(_T(R"(resources\audio\player_attack_3.mp3)"),   _T("player_attack_3"));
-	load_audio(_T(R"(resources\audio\player_dead.mp3)"),       _T("player_dead"));
-	load_audio(_T(R"(resources\audio\player_hurt.mp3)"),       _T("player_hurt"));
-	load_audio(_T(R"(resources\audio\player_jump.mp3)"),       _T("player_jump"));
-	load_audio(_T(R"(resources\audio\player_land.mp3)"),       _T("player_land"));
-	load_audio(_T(R"(resources\audio\player_roll.mp3)"),       _T("player_roll"));
-	load_audio(_T(R"(resources\audio\player_run.mp3)"),        _T("player_run"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_1.mp3)"),   _T("player_attack_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_2.mp3)"),   _T("player_attack_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_3.mp3)"),   _T("player_attack_3"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_dead.mp3)"),       _T("player_dead"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_hurt.mp3)"),       _T("player_hurt"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_jump.mp3)"),       _T("player_jump"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_land.mp3)"),       _T("player_land"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_roll.mp3)"),       _T("player_roll"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_run.mp3)"),        _T("player_run"));
 
 }

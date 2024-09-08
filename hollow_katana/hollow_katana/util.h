@@ -38,6 +38,7 @@ inline void load_audio(LPCTSTR path, LPCTSTR id)
 
 inline void play_audio(LPCTSTR id, bool is_loop = false)
 {
+	// 为了避免延时,使用异步模式async
 	static TCHAR buff[256] = { 0 };
 	_stprintf_s(buff, _T("play %s %s from 0"), id, is_loop ? _T("repeat") : _T(""));
 	mciSendString(buff, nullptr, 0, nullptr);
@@ -49,6 +50,12 @@ inline void stop_audio(LPCTSTR id)
 	_stprintf_s(buff, _T("stop %s"), id);
 	mciSendString(buff, nullptr, 0, nullptr);
 }
+
+inline int random_range(int min_num, int max_num)
+{
+	return min_num + rand() % (max_num - min_num + 1);
+}
+
 
 // 生成角色白色剪影图片
 inline void sketch_image(IMAGE* src, IMAGE* dst)
@@ -63,12 +70,7 @@ inline void sketch_image(IMAGE* src, IMAGE* dst)
 		{
 			// 保持源透明通道不变,颜色改为白色
 			int idx = y * width + x;
-			img_dst_buffer[idx] = BGR(RGB(255, 255, 255)) | (img_src_buffer[idx] & 0xff000000);	
+			img_dst_buffer[idx] = BGR(RGB(255, 255, 255)) | (img_src_buffer[idx] & 0xff000000);
 		}
 	}
-}
-
-inline int random_range(int min_num, int max_num)
-{
-	return min_num + rand() % (max_num - min_num + 1);
 }

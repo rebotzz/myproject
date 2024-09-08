@@ -2,9 +2,10 @@
 #include <chrono>
 #include <thread>
 #include <easyx.h>
+#include "util.h"
 #include "resources_manager.h"
 #include "character_manager.h"
-#include "util.h"
+#include "bullet_time_manager.h"
 
 using std::cout;
 using std::endl;
@@ -56,7 +57,8 @@ int main()
 		duration<float> delta = duration<float>(frame_start - last_tick);
 
 		// 处理更新
-		CharacterManager::instance()->on_update(delta.count());
+		float scaled_delta = BulletTimeManager::instance()->on_update(delta.count());
+		CharacterManager::instance()->on_update(scaled_delta);
 		CollisionManager::instance()->process_collide();
 
 		// 处理绘图

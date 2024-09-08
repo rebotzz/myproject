@@ -25,6 +25,9 @@
     <Filter Include="头文件\character\player">
       <UniqueIdentifier>{021aa1d8-74e5-4766-a083-7970489ab140}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\kits">
+      <UniqueIdentifier>{ae67b757-bb73-49d5-90c7-e5a33a8a88c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,21 +54,15 @@
     <ClCompile Include="player_state_node.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="bullet_time_manager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vector2.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="timer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="animation.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="atlas.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="util.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="resources_manager.h">
@@ -97,6 +94,18 @@
     </ClInclude>
     <ClInclude Include="player_state_node.h">
       <Filter>头文件\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet_time_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.h">
+      <Filter>头文件\kits</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

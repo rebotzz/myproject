@@ -2,6 +2,7 @@
 #include "player.h"
 #include "resources_manager.h"
 #include "player_state_node.h"
+#include "bullet_time_manager.h"
 
 #include <iostream>
 using std::cout;
@@ -254,13 +255,14 @@ void Player::on_input(const ExMessage& msg)
 		update_attack_dir(msg.x, msg.y);
 		break;
 	case WM_RBUTTONDOWN:
-		// todo:进入子弹时间...
+		play_audio(_T("bullet_time"));
+		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
 		break;
 	case WM_LBUTTONUP:
 		is_attack_key_down = false;
 		break;
 	case WM_RBUTTONUP:
-		// todo:退出子弹时间...
+		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
 		break;
 	}
 }

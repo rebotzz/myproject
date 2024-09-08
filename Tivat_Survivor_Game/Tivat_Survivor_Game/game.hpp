@@ -196,6 +196,7 @@ public:
 				int idx = y * width + x;
 				DWORD color_ice_img = color_buff_ice_img[idx];
 				DWORD color_frame_img = color_buff_frame_img[idx];
+				// 对非透明像素点混叠
 				if ((color_frame_img & 0xff000000) >> 24) {
 					static const float RATIO = 0.25f;		// 混叠比率
 					static const float THRESHOLD = 0.69f;	// 高亮阈值 

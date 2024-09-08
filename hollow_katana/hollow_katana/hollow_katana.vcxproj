@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bullet_time_manager.cpp" />
     <ClCompile Include="character.cpp" />
     <ClCompile Include="character_manager.cpp" />
     <ClCompile Include="collision_manager.cpp" />
@@ -139,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="animation.h" />
     <ClInclude Include="atlas.h" />
+    <ClInclude Include="bullet_time_manager.h" />
     <ClInclude Include="character.h" />
     <ClInclude Include="character_manager.h" />
     <ClInclude Include="collision_box.h" />

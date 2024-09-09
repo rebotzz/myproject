@@ -90,6 +90,9 @@
     <ClCompile Include="enemy_hornet_state_node.cpp">
       <Filter>源文件\character</Filter>
     </ClCompile>
+    <ClCompile Include="status_bar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="enemy_hornet_state_node.h">
       <Filter>头文件\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="status_bar.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

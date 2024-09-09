@@ -19,7 +19,7 @@ void EnemyHornetIdleState::on_enter()
 	CharacterManager::instance()->get_enemy()->set_animation("idle");
 
 	timer.restart();
-	float rand_time = (float)random_range(1, 9) / 10.0f;
+	float rand_time = (float)random_range(1, 30) / 100.0f;
 	rand_time *= (random_range(1, 2) == 1 ? -1 : 1);
 	timer.set_wait_time(CD + rand_time);
 	can_switch_state = false;
@@ -45,29 +45,34 @@ void EnemyHornetIdleState::on_update(float delta)
 		if (distance > (float)getwidth() / 2)
 		{
 			// 这里利用随机数 + 概率区间确定下一个状态
-			int num = random_range(1, 10);
-			if (num <= 2)
+			int num = random_range(1, 100);
+			if (num <= 15)
 				hornet->switch_state("run");
-			else if (num <= 6)
+			else if (num <= 50)
 				hornet->switch_state("jump");
-			else if (num <= 8)
+			else if (num <= 60)
 				hornet->switch_state("throw_sword");
-			else if (num <= 9)
+			else if (num <= 85)
 				hornet->switch_state("aim");
-			else if (hornet->get_hp() < hornet->get_hp_max() / 2)
+			else 
 				hornet->switch_state("throw_barbs");
 		}
 		else
 		{
 			int num = random_range(1, 10);
-			if (num <= 5)
+			if (num <= 4)
 				hornet->switch_state("aim");
-			else if (num <= 7)
+			else if (num <= 6)
 				hornet->switch_state("throw_sword");
-			else if(num <= 9)
+			else if(num <= 8)
 				hornet->switch_state("jump");
 			else
-				hornet->switch_state("throw_silk");
+			{
+				if (random_range(1,2) == 1)
+					hornet->switch_state("throw_barbs");
+				else
+					hornet->switch_state("throw_silk");
+			}
 		}
 	}
 }
@@ -124,21 +129,23 @@ void EnemyHornetRunState::on_update(float delta)
 	float distance = (pos_player - pos_hornet).length();
 
 
-	// [奔跑]可跳转状态: 死亡 闲置 跳跃 瞄准 扔丝线	->可移动接近玩家
+	// [奔跑]可跳转状态: 死亡 闲置 跳跃 瞄准 扔剑 扔丝线	->可移动接近玩家
 	if (hornet->get_hp() <= 0)
 		hornet->switch_state("dead");
 	else if (distance <= (float)getwidth() / 2)
 	{
-		int num = random_range(1, 10);
-		if (num <= 1)
+		int num = random_range(1, 100);
+		if (num <= 15)
 			hornet->switch_state("jump");
-		else if(num <= 5)
+		else if (num <= 60)
 			hornet->switch_state("aim");
-		else if (num <= 7)
+		else if (num <= 75)
+			hornet->switch_state("throw_sword");
+		else if (num <= 90)
 		{
-			if(distance <= 300)
+			if(distance <= 260)
 				hornet->switch_state("throw_silk");
-			else
+			else 
 				hornet->switch_state("idle");
 		}
 	}
@@ -194,6 +201,7 @@ void EnemyHornetDashAirState::on_enter()
 	hornet->set_dashing_in_air(true);
 	hornet->on_dash();
 	hornet->set_gravity_enable(false);
+	hornet->set_facing_left(pos_player.x < pos_hornet.x);
 
 	AudioManager::instance()->play_audio_ex(_T("enemy_dash"));
 	AudioManager::instance()->play_audio_ex(_T("hornet_say_dash"));
@@ -281,19 +289,21 @@ void EnemyHornetAimState::on_enter()
 {
 	CharacterManager::instance()->get_enemy()->set_animation("aim");
 
-	float rand_time = random_range(1, 3) / 10.0f;
+	float rand_time = random_range(1, 10) / 100.0f;
 	rand_time *= random_range(1, 2) == 1 ? -1 : 1;
 	timer.set_wait_time(CD + rand_time);
 	timer.restart();
+
+	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
+	const Vector2& pos_hornet = hornet->get_position();
+	const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
+	hornet->set_facing_left(pos_player.x < pos_hornet.x);
 }
 
 void EnemyHornetAimState::on_update(float delta)
 {
 	timer.on_update(delta);
 	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
-	const Vector2& pos_hornet = hornet->get_position();
-	const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
-	hornet->set_facing_left(pos_player.x < pos_hornet.x);
 
 	// [瞄准]可跳转状态: 死亡 地面冲刺
 	if (hornet->get_hp() <= 0)
@@ -317,15 +327,17 @@ void EnemyHornetThrowSwordState::on_enter()
 	CharacterManager::instance()->get_enemy()->set_animation("throw_sword");
 
 	timer.restart();
+
+	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
+	const Vector2& pos_hornet = hornet->get_position();
+	const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
+	hornet->set_facing_left(pos_player.x < pos_hornet.x);
 }
 void EnemyHornetThrowSwordState::on_update(float delta)
 {
 	timer.on_update(delta);
 
 	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
-	const Vector2& pos_hornet = hornet->get_position();
-	const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
-	hornet->set_facing_left(pos_player.x < pos_hornet.x);
 
 	// [扔剑]可跳转状态: 死亡 闲置
 	if (hornet->get_hp() <= 0)
@@ -384,7 +396,7 @@ void EnemyHornetThrowBarbsState::on_exit()
 EnemyHornetThrowSilkState::EnemyHornetThrowSilkState()
 {
 	timer.set_one_shot(true);
-	timer.set_wait_time(2.0f);
+	timer.set_wait_time(1.35f);
 	timer.set_on_timeout([]
 		{
 			EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());

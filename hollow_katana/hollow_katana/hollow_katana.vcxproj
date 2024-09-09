@@ -138,6 +138,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="player_state_node.cpp" />
+    <ClCompile Include="status_bar.cpp" />
     <ClCompile Include="sword.cpp" />
     <ClCompile Include="resources_manager.cpp" />
     <ClCompile Include="state_machine.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="resources_manager.h" />
     <ClInclude Include="state_machine.h" />
     <ClInclude Include="state_node.h" />
+    <ClInclude Include="status_bar.h" />
     <ClInclude Include="sword.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />

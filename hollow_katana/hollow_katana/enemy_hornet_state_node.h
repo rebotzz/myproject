@@ -11,7 +11,7 @@ class EnemyHornetIdleState : public StateNode
 {
 private:
 	Timer timer;
-	const float CD = 1.0f;
+	const float CD = 0.75f;
 	bool can_switch_state = false;
 
 public:
@@ -35,7 +35,7 @@ public:
 	virtual void on_update(float delta) override;
 };
 
-// [±¼ÅÜ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏÐÖÃ ÌøÔ¾ Ãé×¼ ÈÓË¿Ïß	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
+// [±¼ÅÜ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏÐÖÃ ÌøÔ¾ Ãé×¼ ÈÓ½£ ÈÓË¿Ïß	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
 class EnemyHornetRunState : public StateNode
 {
 public:
@@ -89,7 +89,7 @@ class EnemyHornetAimState : public StateNode
 {
 private:
 	Timer timer;
-	const float CD = 0.6f;
+	const float CD = 0.55f;
 
 public:
 	EnemyHornetAimState();

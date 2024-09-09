@@ -1,5 +1,6 @@
 #pragma once
 #include "character.h"
+#include "status_bar.h"
 
 // 玩家类
 class Player : public Character
@@ -16,6 +17,7 @@ private:
 	const float SPEED_ROLL = 800.0f;
 	const float ROLL_CD = 0.95f;
 	const float ATTACK_CD = 0.7f;
+	const float BULLET_TIME_TOTAL = 2.0f;
 
 private:
 	Timer timer_roll_cd;									// 翻滚冷却时间定时器
@@ -44,6 +46,13 @@ private:
 	bool is_vfx_jump_visiable = false;						// 跳跃特效动画是否可见
 	bool is_vfx_land_visiable = false;						// 落地特效动画是否可见
 
+	Timer timer_bullet_time;
+	bool is_bullet_time = false;
+	float current_bullet_time = 2.0f;
+
+private:
+	StatusBar status_bar;
+
 public:
 	Player();
 	~Player();
@@ -52,6 +61,11 @@ public:
 	virtual void on_input(const ExMessage& msg) override;
 	virtual void on_update(float delta) override;
 	virtual void on_render() override;
+
+	void on_jump();
+	void on_land();
+	void on_roll();
+	void on_attack();
 
 	void set_rolling(bool flag) { is_rolling = flag; }
 	bool get_rolling() const { return is_rolling; }
@@ -65,10 +79,10 @@ public:
 	int get_move_axis() const { return is_right_key_down - is_left_key_down; }
 	AttackDir get_attack_dir() const { return attack_dir; }
 
-	void on_jump();
-	void on_land();
-	void on_roll();
-	void on_attack();
+	// my add
+	float get_total_bullet_time() const { return BULLET_TIME_TOTAL; }
+	float get_current_bullet_time() const { return current_bullet_time; }
+
 
 private:
 	void update_attack_dir(float mouse_x, float mouse_y);

@@ -55,13 +55,6 @@ public:
 	{
 		velocity = dash_dir_normalize.normalize() * SPEED_DASH;
 	}
-	//AnimationGroup& get_animation(const std::string& id)
-	//{
-	//	if (animation_pool.count(id) == 0)
-	//		throw "get_animation error, id:" + id;
-	//	return animation_pool[id];
-	//}
-
 
 	void set_facing_left(bool flag)
 	{

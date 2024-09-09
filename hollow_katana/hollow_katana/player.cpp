@@ -12,6 +12,7 @@ using std::endl;
 Player::Player() :Character()
 {
 	// 角色朝向,位置,高度初始化
+	hp = 7;
 	is_facing_left = false;
 	position = { 200, 300 };
 	logic_height = 90.0f;
@@ -44,6 +45,21 @@ Player::Player() :Character()
 	timer_roll_cd.set_on_timeout([&]()
 		{
 			is_roll_cd_comp = true;
+		});
+
+	timer_bullet_time.set_one_shot(false);
+	timer_bullet_time.set_wait_time(0.01f);
+	timer_bullet_time.set_on_timeout([&]()
+		{
+			if (is_bullet_time)
+				current_bullet_time -= 0.01f;
+			else
+				current_bullet_time += 0.01f;
+
+			if (current_bullet_time < 0) 
+				current_bullet_time = 0;
+			if (current_bullet_time > BULLET_TIME_TOTAL) 
+				current_bullet_time = BULLET_TIME_TOTAL;
 		});
 
 	// 动画初始化
@@ -290,14 +306,14 @@ void Player::on_input(const ExMessage& msg)
 		update_attack_dir(msg.x, msg.y);
 		break;
 	case WM_RBUTTONDOWN:
-		AudioManager::instance()->play_audio_ex(_T("bullet_time"));
-		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
+		if (current_bullet_time > 0)
+			is_bullet_time = true;
 		break;
 	case WM_LBUTTONUP:
 		//is_attack_key_down = false;			// debug:为了确保每次攻击能执行,这里不取消
 		break;
 	case WM_RBUTTONUP:
-		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
+		is_bullet_time = false;
 		break;
 	}
 }
@@ -307,12 +323,13 @@ void Player::on_update(float delta)
 	// 角色速度,方向更新
 	if (hp > 0 && !is_rolling)
 		velocity.x = get_move_axis() * SPEED_RUN;
-	if (get_move_axis() != 0)
+	if (get_move_axis() != 0 && !is_rolling)
 		is_facing_left = get_move_axis() < 0;
 
 	// 更新定时器
 	timer_attack_cd.on_update(delta);
 	timer_roll_cd.on_update(delta);
+	timer_bullet_time.on_update(delta);
 
 	// 更新动画
 	animation_vfx_jump.on_update(delta);
@@ -327,6 +344,18 @@ void Player::on_update(float delta)
 
 	// 基类更新,动画,物理模拟
 	Character::on_update(delta);
+
+	// 状态栏更新
+	status_bar.on_update(delta);
+
+	// 子弹时间更新逻辑
+	if (is_bullet_time && current_bullet_time > 0 && hp > 0)
+	{
+		AudioManager::instance()->play_audio_ex(_T("bullet_time"));
+		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
+	}
+	else
+		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
 }
 
 void Player::on_render()
@@ -344,6 +373,8 @@ void Player::on_render()
 	// 玩家动画
 	Character::on_render();
 
+	// 状态栏更新
+	status_bar.on_render();
 }
 
 void Player::on_jump()

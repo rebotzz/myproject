@@ -20,7 +20,8 @@ protected:
 	const float FLOOR_Y = 620;											// 地面竖直高度y坐标
 	const float GRAVITY = 980 * 2;										// 重力常数
 																		
-protected:																
+protected:						
+	int hp_max = 10;
 	int hp = 10;														// 生命值
 	float logic_height = 0.0f;											// 逻辑高度
 	bool is_facing_left = false;										// 角色朝向
@@ -52,6 +53,7 @@ public:
 	virtual void on_update(float delta);
 	virtual void on_render();
 
+	int get_hp_max() const { return hp_max; }
 	int get_hp() const { return hp; }
 	void set_gravity_enable(bool flag) { enable_gravity = flag; }
 	bool is_on_floor() const { return position.y >= FLOOR_Y; }

@@ -213,14 +213,17 @@ void ResourcesManager::load()
 	audio_player->load_audio_ex(_T(R"(resources\audio\barb_break.mp3)"),		_T("barb_break"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\bullet_time.mp3)"),		_T("bullet_time"));
 
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_dash.mp3)"),        _T("enemy_dash"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_run.mp3)"),         _T("enemy_run"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_1.mp3)"),      _T("enemy_hurt_1"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_2.mp3)"),      _T("enemy_hurt_2"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_3.mp3)"),      _T("enemy_hurt_3"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_barbs.mp3)"), _T("enemy_throw_barbs"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_silk.mp3)"),  _T("enemy_throw_silk"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_sword.mp3)"), _T("enemy_throw_sword"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_dash.mp3)"),			 _T("enemy_dash"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_run.mp3)"),				 _T("enemy_run"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_1.mp3)"),			 _T("enemy_hurt_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_2.mp3)"),			 _T("enemy_hurt_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_3.mp3)"),			 _T("enemy_hurt_3"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_barbs.mp3)"),		 _T("enemy_throw_barbs"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_silk.mp3)"),		 _T("enemy_throw_silk"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_sword.mp3)"),		 _T("enemy_throw_sword"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_dash.mp3)"),		 _T("hornet_say_dash"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_throw_sword.mp3)"), _T("hornet_say_throw_sword"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_throw_silk.mp3)"),  _T("hornet_say_throw_silk"));
 
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_1.mp3)"),   _T("player_attack_1"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_2.mp3)"),   _T("player_attack_2"));

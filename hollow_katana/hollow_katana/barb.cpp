@@ -4,9 +4,12 @@
 #include "character_manager.h"
 #include "audio_manager.h"
 
-Barb::Barb()
+
+Barb::Barb(const Vector2& position)
 {
 	diff_period = random_range(0, 6);
+	base_position = position;
+	current_position = position;
 
 	// 碰撞箱初始化
 	collision_box = CollisionManager::instance()->create_collision_box();
@@ -88,7 +91,7 @@ void Barb::on_update(float delta)
 		break;
 	}
 	collision_box->set_position(current_position);
-	
+
 	// 更新动画逻辑
 	current_animation = (status == Status::Break ? &animation_break : &animation_loose);
 	current_animation->set_position(current_position);

@@ -18,9 +18,9 @@ const int FPS = 144;
 inline void render_background();
 
 
-
 int main()
 {
+
 	// ≥ı ºªØ
 	HWND hwnd = initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, EX_SHOWCONSOLE);
 	SetWindowText(hwnd, _T("Hollow Katana"));

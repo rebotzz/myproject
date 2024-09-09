@@ -6,7 +6,7 @@
 class Sword
 {
 private:
-	Vector2 position;
+	Vector2 _position;
 	Vector2 velocity;
 	CollisionBox* collision_box = nullptr;
 	Animation animation;
@@ -16,7 +16,7 @@ private:
 	const float SPEED_MOVE = 1250.0f;
 
 public:
-	Sword(const Vector2& postion, bool move_left);
+	Sword(const Vector2& postion_src, bool move_left);
 	~Sword();
 	bool check_valid() const { return is_valid; }
 

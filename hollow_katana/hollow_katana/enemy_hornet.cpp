@@ -2,10 +2,12 @@
 #include "collision_manager.h"
 #include "resources_manager.h"
 #include "audio_manager.h"
+#include "enemy_hornet_state_node.h"
 
 EnemyHornet::EnemyHornet() :Character()
 {
 	// 角色初始化
+	hp = hp_max = 15;
 	is_facing_left = true;
 	position = { 1050, 400 };
 	logic_height = 150;
@@ -23,7 +25,7 @@ EnemyHornet::EnemyHornet() :Character()
 
 	collision_box_silk = CollisionManager::instance()->create_collision_box();
 	collision_box_silk->set_enabled(false);
-	collision_box_silk->set_size({ 225, 225 });
+	collision_box_silk->set_size({ 230, 230 });
 	collision_box_silk->set_layer_src(CollisionLayer::None);
 	collision_box_silk->set_layer_dst(CollisionLayer::Player);
 
@@ -142,7 +144,7 @@ EnemyHornet::EnemyHornet() :Character()
 			squat_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_squat_right"));
 		}
 		{
-			AnimationGroup& animation_throw_barb = animation_pool["throw_barb"];
+			AnimationGroup& animation_throw_barb = animation_pool["throw_barbs"];
 			Animation& throw_barb_left = animation_throw_barb.left;
 			throw_barb_left.set_interval(0.1f);
 			throw_barb_left.set_loop(false);
@@ -189,7 +191,7 @@ EnemyHornet::EnemyHornet() :Character()
 	{
 		animation_silk.set_interval(0.1f);
 		animation_silk.set_loop(true);
-		animation_silk.set_achor_mode(Animation::AchorMode::BottomCentered);
+		animation_silk.set_achor_mode(Animation::AchorMode::Centered);
 		animation_silk.add_frame(ResourcesManager::instance()->find_atlas("silk"));
 
 		Animation& animation_dash_in_air_left = animation_dash_in_air_vfx.left;
@@ -219,14 +221,30 @@ EnemyHornet::EnemyHornet() :Character()
 
 	// 状态机初始化
 	{
-		// for debug:
-		current_animation = &animation_pool["idle"];
+		state_machine.register_state("idle", new EnemyHornetIdleState);
+		state_machine.register_state("jump", new EnemyHornetJumpState);
+		state_machine.register_state("run", new EnemyHornetRunState);
+		state_machine.register_state("fall", new EnemyHornetFallState);
+		state_machine.register_state("dash_in_air", new EnemyHornetDashAirState);
+		state_machine.register_state("dash_on_floor", new EnemyHornetDashFloorState);
+		state_machine.register_state("aim", new EnemyHornetAimState);
+		state_machine.register_state("throw_sword", new EnemyHornetThrowSwordState);
+		state_machine.register_state("throw_barbs", new EnemyHornetThrowBarbsState);
+		state_machine.register_state("throw_silk", new EnemyHornetThrowSilkState);
+		state_machine.register_state("dead", new EnemyHornetDeadState);
+
+		state_machine.set_entry("idle");
 	}
 }
 
 EnemyHornet::~EnemyHornet()
 {
 	CollisionManager::instance()->destroy_collision_box(collision_box_silk);
+
+	for (Barb* barb : barb_list)
+		delete barb;
+	for (Sword* sword : sword_list)
+		delete sword;
 }
 
 void EnemyHornet::on_hurt()
@@ -245,9 +263,6 @@ void EnemyHornet::on_hurt()
 	}
 }
 
-void EnemyHornet::on_input(const ExMessage& msg)
-{}
-
 void EnemyHornet::on_update(float delta)
 {
 	if (velocity.x > 0.0001f)
@@ -262,14 +277,16 @@ void EnemyHornet::on_update(float delta)
 	if (is_throwing_silk)
 	{
 		animation_silk.on_update(delta);
-		animation_silk.set_position(position);
-		collision_box_silk->set_position(position);
+		animation_silk.set_position(get_logic_center());
+		collision_box_silk->set_position(get_logic_center());
 	}
+	else
+		collision_box_silk->set_enabled(false);
 
 	if (is_dashing_in_air || is_dashing_on_floor)
 	{
 		current_dash_animation->on_update(delta);
-		current_dash_animation->set_position(position);
+		current_dash_animation->set_position(position + (is_dashing_in_air ? Vector2(0, 150) : Vector2(0, 0)));
 	}
 
 	// 道具更新逻辑
@@ -282,7 +299,7 @@ void EnemyHornet::on_update(float delta)
 	barb_list.erase(std::remove_if(barb_list.begin(), barb_list.end(),
 		[](Barb* barb)
 		{
-			bool can_remove = barb->check_valid();
+			bool can_remove = !barb->check_valid();
 			if (can_remove) delete barb;
 			return can_remove;
 		}), barb_list.end());
@@ -290,7 +307,7 @@ void EnemyHornet::on_update(float delta)
 	sword_list.erase(std::remove_if(sword_list.begin(), sword_list.end(),
 		[](Sword* sword)
 		{
-			bool can_remove = sword->check_valid();
+			bool can_remove = !sword->check_valid();
 			if (can_remove) delete sword;
 			return can_remove;
 		}), sword_list.end());
@@ -314,7 +331,8 @@ void EnemyHornet::on_render()
 
 void EnemyHornet::throw_sword()
 {
-	sword_list.push_back(new Sword(position, is_facing_left));
+	Sword* sword = new Sword(get_logic_center(), is_facing_left);
+	sword_list.push_back(sword);
 }
 
 void EnemyHornet::throw_barbs()
@@ -325,10 +343,9 @@ void EnemyHornet::throw_barbs()
 	int width_grid = getwidth() / spawn_barb_num;
 	for (int i = 0; i < spawn_barb_num; ++i)
 	{
-		Barb* new_barb = new Barb;
 		int rand_x = random_range(i * width_grid, (i + 1) * width_grid);
 		int rand_y = random_range(250, 500);
-		new_barb->set_position({ (float)rand_x, (float)rand_y });
+		Barb* new_barb = new Barb({ (float)rand_x, (float)rand_y });
 		barb_list.push_back(new_barb);
 	}
 }
@@ -345,3 +362,5 @@ void EnemyHornet::on_throw_silk()
 	animation_silk.reset();
 	collision_box_silk->set_enabled(true);
 }
+
+

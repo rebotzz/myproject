@@ -63,13 +63,13 @@ public:
 		return Vector2(x / value, y / value);
 	}
 
-	float length()
+	float length() const
 	{
 		return sqrt(x * x + y * y);
 	}
 
 	// 标准化分量
-	Vector2 normalize()
+	Vector2 normalize() const 
 	{
 		float len = length();
 		if (len == 0) return Vector2(0, 0);

@@ -8,6 +8,11 @@
 class EnemyHornet : public Character
 {
 private:
+	const float SPEED_RUN = 400.0f;
+	const float SPEED_JUMP = 1200.0f;
+	const float SPEED_DASH = 1500.0f;
+
+private:
 	bool is_dashing_in_air = false;
 	bool is_dashing_on_floor = false;
 	bool is_throwing_silk = false;
@@ -21,12 +26,13 @@ private:
 	std::vector<Barb*> barb_list;
 	std::vector<Sword*> sword_list;
 
+
 public:
 	EnemyHornet();
 	~EnemyHornet();
 	virtual void on_hurt() override;
 
-	virtual void on_input(const ExMessage& msg) override;
+	virtual void on_input(const ExMessage& msg) override { };
 	virtual void on_update(float delta) override;
 	virtual void on_render() override;
 
@@ -35,6 +41,27 @@ public:
 
 	void on_dash();
 	void on_throw_silk();
+
+	// my add 
+	void on_jump()
+	{
+		velocity.y -= SPEED_JUMP;
+	}
+	void on_move_left(bool is_left)
+	{
+		velocity.x = is_left ? -SPEED_RUN : SPEED_RUN;
+	}
+	void set_dash_speed(const Vector2& dash_dir_normalize)
+	{
+		velocity = dash_dir_normalize.normalize() * SPEED_DASH;
+	}
+	//AnimationGroup& get_animation(const std::string& id)
+	//{
+	//	if (animation_pool.count(id) == 0)
+	//		throw "get_animation error, id:" + id;
+	//	return animation_pool[id];
+	//}
+
 
 	void set_facing_left(bool flag)
 	{

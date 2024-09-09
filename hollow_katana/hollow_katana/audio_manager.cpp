@@ -70,7 +70,7 @@ void AudioManager::load_audio_ex(LPCTSTR path, LPCTSTR id)
 void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 {
 	{
-		std::unique_lock<std::mutex> lock(mtx);
+		//std::unique_lock<std::mutex> lock(mtx);
 		play_queue.push({ id, is_loop });
 	}
 
@@ -80,7 +80,7 @@ void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 void AudioManager::stop_audio_ex(LPCTSTR id)
 {
 	{
-		std::unique_lock<std::mutex> lock(mtx);
+		//std::unique_lock<std::mutex> lock(mtx);
 		stop_queue.push(id);
 	}
 

@@ -9,7 +9,7 @@
 using std::cout;
 using std::endl;
 
-Player::Player():Character()
+Player::Player() :Character()
 {
 	// 角色朝向,位置,高度初始化
 	is_facing_left = false;
@@ -171,7 +171,7 @@ Player::Player():Character()
 		animation_vfx_slash_down.set_loop(false);
 		animation_vfx_slash_down.set_achor_mode(Animation::AchorMode::Centered);
 		animation_vfx_slash_down.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_down"), 5);
-	
+
 		animation_vfx_jump.set_interval(0.05f);
 		animation_vfx_jump.set_loop(false);
 		animation_vfx_jump.set_achor_mode(Animation::AchorMode::BottomCentered);
@@ -211,8 +211,20 @@ void Player::on_input(const ExMessage& msg)
 	static const int VK_W = 0x57;
 	static const int VK_S = 0x53;
 	static const int VK_D = 0x44;
+
+	static const int VK_J = 0x4A;
+	static const int VK_K = 0x4B;
+
 	static const int VK_F = 0x46;
 	static const int VK_G = 0x47;
+
+	// todo: 优化按键响应
+	// 按键松开判断会有遗漏
+
+	// 解决方案: 
+	// 1.更改按键映射,全部改为键盘操作					可以改为空洞骑士按键
+	// 2.更改别的接收键盘/鼠标消息的接口,不用EasyX的	用SDL? or window API?
+
 
 	switch (msg.message)
 	{
@@ -231,8 +243,21 @@ void Player::on_input(const ExMessage& msg)
 		case VK_D:
 			is_right_key_down = true;
 			break;
+
+			// 临时方案:
+		case VK_J:
+			is_attack_key_down = true;
+			attack_dir = (is_facing_left ? AttackDir::Left : AttackDir::Right);
+			if (is_jump_key_down) attack_dir = AttackDir::Up;
+			else if (is_roll_key_down) attack_dir = AttackDir::Down;
+			break;
+		case VK_K:
+			AudioManager::instance()->play_audio_ex(_T("bullet_time"));
+			BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
+			break;
 		}
 		break;
+
 	case WM_KEYUP:
 		switch (msg.vkcode)
 		{
@@ -248,12 +273,18 @@ void Player::on_input(const ExMessage& msg)
 		case VK_D:
 			is_right_key_down = false;
 			break;
+
+			// 临时方案:
+		case VK_J:
+			is_attack_key_down = false;
+			break;
+		case VK_K:
+			BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
+			break;
+
 		}
 		break;
-	}
 
-	switch (msg.message)
-	{
 	case WM_LBUTTONDOWN:
 		is_attack_key_down = true;
 		update_attack_dir(msg.x, msg.y);
@@ -263,7 +294,7 @@ void Player::on_input(const ExMessage& msg)
 		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
 		break;
 	case WM_LBUTTONUP:
-		is_attack_key_down = false;
+		//is_attack_key_down = false;			// debug:为了确保每次攻击能执行,这里不取消
 		break;
 	case WM_RBUTTONUP:
 		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
@@ -274,9 +305,9 @@ void Player::on_input(const ExMessage& msg)
 void Player::on_update(float delta)
 {
 	// 角色速度,方向更新
-	if(hp > 0 && !is_rolling)
+	if (hp > 0 && !is_rolling)
 		velocity.x = get_move_axis() * SPEED_RUN;
-	if(get_move_axis() != 0)
+	if (get_move_axis() != 0)
 		is_facing_left = get_move_axis() < 0;
 
 	// 更新定时器
@@ -344,6 +375,8 @@ void Player::on_hurt()
 
 void Player::on_attack()
 {
+	is_attack_key_down = false;
+
 	timer_attack_cd.restart();
 	is_attack_cd_comp = false;
 	switch (attack_dir)
@@ -368,7 +401,7 @@ void Player::on_attack()
 void Player::update_attack_dir(float mouse_x, float mouse_y)
 {
 	static const float PI = 3.1415926535f;
-	float angle = atan2(mouse_y - position.y, mouse_x - position.x);	
+	float angle = atan2(mouse_y - position.y, mouse_x - position.x);
 
 	if (angle >= -PI / 4 && angle < PI / 4)
 	{

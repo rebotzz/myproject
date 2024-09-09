@@ -87,6 +87,9 @@
     <ClCompile Include="barb.cpp">
       <Filter>源文件\property</Filter>
     </ClCompile>
+    <ClCompile Include="enemy_hornet_state_node.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="barb.h">
       <Filter>头文件\property</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_hornet_state_node.h">
+      <Filter>头文件\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

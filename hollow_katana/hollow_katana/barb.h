@@ -33,7 +33,7 @@ private:
 	Status status = Status::Idle;
 
 public:
-	Barb();
+	Barb(const Vector2& position);
 	~Barb();
 
 	void on_update(float delta);

@@ -33,30 +33,36 @@ void CollisionManager::destroy_collision_box(CollisionBox* collision_box)
 void CollisionManager::process_collide()
 {
 	// Ë«²ãforÑ­»·¼ì²âÅö×²  src (È¥Åö×²)--> dst
-	for (const auto& collision_box_src : collision_box_list)
+	for (const auto& collision_box_hit : collision_box_list)
 	{
-		if (!collision_box_src->enabled || (int)collision_box_src->layer_dst & (int)CollisionLayer::None)
+		if (!collision_box_hit->enabled || collision_box_hit->check_collision_layer_dst(CollisionLayer::None))
 			continue;
 
-		for (const auto& collision_box_dst : collision_box_list)
+		for (const auto& collision_box_hurt : collision_box_list)
 		{
-			if (!collision_box_dst->enabled || collision_box_src == collision_box_dst 
-				|| collision_box_src->layer_dst != collision_box_dst->layer_src)
+			if (!collision_box_hurt->enabled || collision_box_hit == collision_box_hurt 
+				|| !collision_box_hit->check_collision_layer_dst(collision_box_hurt->layer_src))
 				continue;
 
-			bool x_can_collide = (max(collision_box_src->position.x + collision_box_src->size.x / 2,
-				collision_box_dst->position.x + collision_box_dst->size.x / 2)
-				- min(collision_box_src->position.x - collision_box_src->size.x / 2,
-					collision_box_dst->position.x - collision_box_dst->size.x / 2)) <= (collision_box_dst->size.x + collision_box_src->size.x);
+			bool x_can_collide = (max(collision_box_hit->position.x + collision_box_hit->size.x / 2,
+				collision_box_hurt->position.x + collision_box_hurt->size.x / 2)
+				- min(collision_box_hit->position.x - collision_box_hit->size.x / 2,
+					collision_box_hurt->position.x - collision_box_hurt->size.x / 2)) <= (collision_box_hurt->size.x + collision_box_hit->size.x);
 
-			bool y_can_collide = (max(collision_box_src->position.y + collision_box_src->size.y / 2,
-				collision_box_dst->position.y + collision_box_dst->size.y / 2)
-				- min(collision_box_src->position.y - collision_box_src->size.y / 2,
-					collision_box_dst->position.y - collision_box_dst->size.y / 2)) <= (collision_box_dst->size.y + collision_box_src->size.y);
+			bool y_can_collide = (max(collision_box_hit->position.y + collision_box_hit->size.y / 2,
+				collision_box_hurt->position.y + collision_box_hurt->size.y / 2)
+				- min(collision_box_hit->position.y - collision_box_hit->size.y / 2,
+					collision_box_hurt->position.y - collision_box_hurt->size.y / 2)) <= (collision_box_hurt->size.y + collision_box_hit->size.y);
 
-			if (x_can_collide && y_can_collide && collision_box_dst->on_collision)
+			if (x_can_collide && y_can_collide)
 			{
-				collision_box_dst->on_collision();
+				collision_box_hit->set_dst_colliding(true);
+				collision_box_hurt->set_src_colliding(true);
+
+				if(collision_box_hit->on_collision)
+					collision_box_hit->on_collision();
+				if(collision_box_hurt->on_collision)
+					collision_box_hurt->on_collision();
 			}
 		}
 	}

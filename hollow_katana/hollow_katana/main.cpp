@@ -69,7 +69,7 @@ int main()
 
 		render_background();
 		CharacterManager::instance()->on_render();
-		//CollisionManager::instance()->on_debug_render();
+		CollisionManager::instance()->on_debug_render();
 
 		FlushBatchDraw();
 

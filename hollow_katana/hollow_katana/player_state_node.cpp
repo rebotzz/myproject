@@ -62,16 +62,16 @@ void PlayerAttackState::update_hit_box_position()
 
 	switch (player->get_attack_dir())
 	{
-	case Player::AttackDir::Up:
+	case Player::Direction::Up:
 		pos_hit_box = { pos_center.x, pos_center.y - size_hit_box.y / 2 };
 		break;
-	case Player::AttackDir::Down:
+	case Player::Direction::Down:
 		pos_hit_box = { pos_center.x, pos_center.y + size_hit_box.y / 2 };
 		break;
-	case Player::AttackDir::Left:
+	case Player::Direction::Left:
 		pos_hit_box = { pos_center.x - size_hit_box.x / 2, pos_center.y };
 		break;
-	case Player::AttackDir::Right:
+	case Player::Direction::Right:
 		pos_hit_box = { pos_center.x + size_hit_box.x / 2, pos_center.y };
 		break;
 	}

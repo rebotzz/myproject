@@ -4,6 +4,14 @@
 #pragma comment(lib, "WINmm.lib")		// mciSendString() 
 #pragma comment(lib, "MSIMG32.LIB")		// AlphaBlend()
 
+
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
+
+
 // ¾ØÐÎÇøÓò
 struct Rect
 {

@@ -30,8 +30,12 @@ Player::Player() :Character()
 	hit_box->set_enabled(false);
 	hit_box->set_size({ 130,130 });
 	hit_box->set_layer_src(CollisionLayer::None);
-	hit_box->set_layer_dst(CollisionLayer::Enemy);
+	hit_box->set_layer_dst(CollisionLayer::Enemy | CollisionLayer::Rebound);
 	hit_box->set_position(get_logic_center());
+	hit_box->set_on_collision([&]()
+		{
+			on_recoil();				// 武器后坐力
+		});
 
 	// 攻击,翻滚定时器初始化
 	timer_attack_cd.set_one_shot(true);
@@ -57,39 +61,51 @@ Player::Player() :Character()
 			else
 				current_bullet_time += 0.01f;
 
-			if (current_bullet_time < 0) 
+			if (current_bullet_time < 0)
 				current_bullet_time = 0;
-			if (current_bullet_time > BULLET_TIME_TOTAL) 
+			if (current_bullet_time > BULLET_TIME_TOTAL)
 				current_bullet_time = BULLET_TIME_TOTAL;
 		});
 
 	// 特殊位移定时器
-	timer_beating_displace.set_one_shot(false);
-	timer_beating_displace.set_wait_time(0.01f);
-	timer_beating_displace.set_on_timeout([&]
+	timer_displace_ex.set_one_shot(false);
+	timer_displace_ex.set_wait_time(0.01f);
+	timer_displace_ex.set_on_timeout([&]
 		{
-			if (!is_beating_displace)
+			if (!is_displace_ex)
 				return;
 
 			switch (beat_displace_dir)
 			{
-			case BeatDisplaceDir::Up:
-				position.y += 0.01f * SPEED_BEAT_DISPLACE;
+			case Direction::Up:
+				position.y -= 0.01f * SPEED_DISPLACE_UP;
 				break;
-			case BeatDisplaceDir::Left:
-				position.x -= 0.01f * SPEED_BEAT_DISPLACE;
+			case Direction::Left:
+				position.x -= 0.01f * SPEED_DISPLACE_AXIS;
 				break;
-			case BeatDisplaceDir::Right:
-				position.x += 0.01f * SPEED_BEAT_DISPLACE;
+			case Direction::Right:
+				position.x += 0.01f * SPEED_DISPLACE_AXIS;
 				break;
 			}
 		});
-	timer_enable_beat_displace.set_one_shot(true);
-	timer_enable_beat_displace.set_wait_time(beating_displace_time);
-	timer_enable_beat_displace.set_on_timeout([&]
+	timer_enable_displace_ex.set_one_shot(true);
+	timer_enable_displace_ex.set_wait_time(0.1f);
+	timer_enable_displace_ex.set_on_timeout([&]
 		{
-			is_beating_displace = false;
+			is_displace_ex = false;
 		});
+	timer_recoil_cd.set_one_shot(false);
+	timer_recoil_cd.set_wait_time(RECOIL_CD);
+	timer_recoil_cd.set_on_timeout([&]
+		{
+			is_recoil_cd_comp = true;
+		});
+	//timer_zero_gravity.set_one_shot(true);
+	//timer_zero_gravity.set_wait_time(TIME_ZERO_GRAVITY);
+	//timer_zero_gravity.set_on_timeout([&]
+	//	{
+	//		set_gravity_enable(true);
+	//	});
 
 
 	// 动画初始化
@@ -260,6 +276,7 @@ void Player::on_input(const ExMessage& msg)
 
 	static const int VK_J = 0x4A;
 	static const int VK_K = 0x4B;
+	static const int VK_L = 0x4C;
 
 	static const int VK_F = 0x46;
 	static const int VK_G = 0x47;
@@ -267,10 +284,9 @@ void Player::on_input(const ExMessage& msg)
 	// todo: 优化按键响应
 	// 按键松开判断会有遗漏
 
-	// 解决方案: 
+	// 猜测的解决方案: 
 	// 1.更改按键映射,全部改为键盘操作					可以改为空洞骑士按键
 	// 2.更改别的接收键盘/鼠标消息的接口,不用EasyX的	用SDL? or window API?
-
 
 	switch (msg.message)
 	{
@@ -294,11 +310,11 @@ void Player::on_input(const ExMessage& msg)
 		case VK_J:
 		{
 			is_attack_key_down = true;
-			attack_dir = (is_facing_left ? AttackDir::Left : AttackDir::Right);
-			if (is_jump_key_down) attack_dir = AttackDir::Up;
-			else if (is_roll_key_down) attack_dir = AttackDir::Down;
+			attack_dir = (is_facing_left ? Direction::Left : Direction::Right);
+			if (is_jump_key_down) attack_dir = Direction::Up;
+			else if (is_roll_key_down) attack_dir = Direction::Down;
 		}
-			break;
+		break;
 		case VK_K:
 			is_bullet_time = true;
 			break;
@@ -335,12 +351,14 @@ void Player::on_input(const ExMessage& msg)
 		is_attack_key_down = true;
 		update_attack_dir(msg.x, msg.y);
 		break;
+	case WM_LBUTTONUP:
+		//is_attack_key_down = false;			// debug:为了确保每次攻击能执行,这里不取消
+		break;
+
+	// 子弹时间键位2
 	case WM_RBUTTONDOWN:
 		if (current_bullet_time > 0)
 			is_bullet_time = true;
-		break;
-	case WM_LBUTTONUP:
-		//is_attack_key_down = false;			// debug:为了确保每次攻击能执行,这里不取消
 		break;
 	case WM_RBUTTONUP:
 		is_bullet_time = false;
@@ -360,9 +378,10 @@ void Player::on_update(float delta)
 	timer_attack_cd.on_update(delta);
 	timer_roll_cd.on_update(delta);
 	timer_bullet_time.on_update(delta);
-	timer_enable_beat_displace.on_update(delta);
-	timer_beating_displace.on_update(delta);
-
+	timer_enable_displace_ex.on_update(delta);
+	timer_displace_ex.on_update(delta);
+	timer_recoil_cd.on_update(delta);
+	//timer_zero_gravity.on_update(delta);
 
 	// 更新动画
 	animation_vfx_jump.on_update(delta);
@@ -441,25 +460,29 @@ void Player::on_attack()
 {
 	is_attack_key_down = false;
 
+	// 更新攻击CD,动画
 	timer_attack_cd.restart();
 	is_attack_cd_comp = false;
 	switch (attack_dir)
 	{
-	case AttackDir::Up:
+	case Direction::Up:
 		current_slash_animation = &animation_vfx_slash_up;
 		break;
-	case AttackDir::Down:
+	case Direction::Down:
 		current_slash_animation = &animation_vfx_slash_down;
 		break;
-	case AttackDir::Left:
+	case Direction::Left:
 		current_slash_animation = &animation_vfx_slash_left;
 		break;
-	case AttackDir::Right:
+	case Direction::Right:
 		current_slash_animation = &animation_vfx_slash_right;
 		break;
 	}
 	current_slash_animation->set_position(get_logic_center());
 	current_slash_animation->reset();
+
+	// 攻击冲刺位移
+	on_attack_displace_front();
 }
 
 void Player::update_attack_dir(float mouse_x, float mouse_y)
@@ -469,16 +492,16 @@ void Player::update_attack_dir(float mouse_x, float mouse_y)
 
 	if (angle >= -PI / 4 && angle < PI / 4)
 	{
-		attack_dir = AttackDir::Right;
+		attack_dir = Direction::Right;
 		is_facing_left = false;
 	}
 	else if (angle >= PI / 4 && angle < (PI * 3 / 4))
-		attack_dir = AttackDir::Down;
+		attack_dir = Direction::Down;
 	else if (angle >= (-PI * 3 / 4) && angle < -PI / 4)
-		attack_dir = AttackDir::Up;
+		attack_dir = Direction::Up;
 	else
 	{
-		attack_dir = AttackDir::Left;
+		attack_dir = Direction::Left;
 		is_facing_left = true;
 	}
 }

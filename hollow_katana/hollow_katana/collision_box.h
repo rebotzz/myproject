@@ -11,10 +11,14 @@ class CollisionBox
 private:
 	Vector2 size;
 	Vector2 position;
-	CollisionLayer layer_src = CollisionLayer::None;	// Κά»χ²γ
-	CollisionLayer layer_dst = CollisionLayer::None;	// Ή₯»χ²γ
+	CollisionLayer layer_src = CollisionLayer::None;				// Κά»χ²γ
+	CollisionLayer layer_dst = CollisionLayer::None;				// Ή₯»χ²γ
 	std::function<void()> on_collision;
 	bool enabled = true;
+
+	bool is_src_collision = false;
+	bool is_dst_collision = false;
+
 
 private:
 	CollisionBox() = default;
@@ -58,11 +62,27 @@ public:
 		enabled = flag;
 	}
 
-	bool check_hit_collision_layer(CollisionLayer target_layer)
+	// my add
+	bool check_collision_layer_dst(CollisionLayer target_layer) const
 	{
-		if ((int)layer_dst & (int)CollisionLayer::None)
-			return false;
-		
 		return (int)layer_dst & (int)target_layer;
 	}
+
+	void set_dst_colliding(bool flag)
+	{
+		is_dst_collision = flag;
+	}
+	bool get_dst_colliding() const
+	{
+		return is_dst_collision;
+	}
+	void set_src_colliding(bool flag)
+	{
+		is_src_collision = flag;
+	}
+	bool get_src_colliding()
+	{
+		return is_src_collision;
+	}
+
 };

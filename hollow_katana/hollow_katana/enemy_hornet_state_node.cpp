@@ -41,6 +41,10 @@ void EnemyHornetIdleState::on_update(float delta)
 		hornet->switch_state("dead");
 	else if(can_switch_state)
 	{
+		return;
+		hornet->switch_state("throw_sword");
+
+
 		// 通过与玩家距离判断是否要接近玩家
 		if (distance > (float)getwidth() / 2)
 		{

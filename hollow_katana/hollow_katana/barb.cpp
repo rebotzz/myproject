@@ -7,7 +7,7 @@
 
 Barb::Barb(const Vector2& position)
 {
-	diff_period = random_range(0, 6);
+	diff_period = (float)random_range(0, 6);
 	base_position = position;
 	current_position = position;
 

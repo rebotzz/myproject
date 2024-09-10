@@ -35,7 +35,7 @@ void CollisionManager::process_collide()
 	// Ë«²ãforÑ­»·¼ì²âÅö×²  src (È¥Åö×²)--> dst
 	for (const auto& collision_box_src : collision_box_list)
 	{
-		if (!collision_box_src->enabled || collision_box_src->layer_dst == CollisionLayer::None)
+		if (!collision_box_src->enabled || (int)collision_box_src->layer_dst & (int)CollisionLayer::None)
 			continue;
 
 		for (const auto& collision_box_dst : collision_box_list)

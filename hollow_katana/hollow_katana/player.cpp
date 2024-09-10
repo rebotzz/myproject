@@ -47,6 +47,7 @@ Player::Player() :Character()
 			is_roll_cd_comp = true;
 		});
 
+	// 子弹时间定时器
 	timer_bullet_time.set_one_shot(false);
 	timer_bullet_time.set_wait_time(0.01f);
 	timer_bullet_time.set_on_timeout([&]()
@@ -61,6 +62,35 @@ Player::Player() :Character()
 			if (current_bullet_time > BULLET_TIME_TOTAL) 
 				current_bullet_time = BULLET_TIME_TOTAL;
 		});
+
+	// 特殊位移定时器
+	timer_beating_displace.set_one_shot(false);
+	timer_beating_displace.set_wait_time(0.01f);
+	timer_beating_displace.set_on_timeout([&]
+		{
+			if (!is_beating_displace)
+				return;
+
+			switch (beat_displace_dir)
+			{
+			case BeatDisplaceDir::Up:
+				position.y += 0.01f * SPEED_BEAT_DISPLACE;
+				break;
+			case BeatDisplaceDir::Left:
+				position.x -= 0.01f * SPEED_BEAT_DISPLACE;
+				break;
+			case BeatDisplaceDir::Right:
+				position.x += 0.01f * SPEED_BEAT_DISPLACE;
+				break;
+			}
+		});
+	timer_enable_beat_displace.set_one_shot(true);
+	timer_enable_beat_displace.set_wait_time(beating_displace_time);
+	timer_enable_beat_displace.set_on_timeout([&]
+		{
+			is_beating_displace = false;
+		});
+
 
 	// 动画初始化
 	{
@@ -262,14 +292,15 @@ void Player::on_input(const ExMessage& msg)
 
 			// 临时方案:
 		case VK_J:
+		{
 			is_attack_key_down = true;
 			attack_dir = (is_facing_left ? AttackDir::Left : AttackDir::Right);
 			if (is_jump_key_down) attack_dir = AttackDir::Up;
 			else if (is_roll_key_down) attack_dir = AttackDir::Down;
+		}
 			break;
 		case VK_K:
-			AudioManager::instance()->play_audio_ex(_T("bullet_time"));
-			BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
+			is_bullet_time = true;
 			break;
 		}
 		break;
@@ -295,9 +326,8 @@ void Player::on_input(const ExMessage& msg)
 			is_attack_key_down = false;
 			break;
 		case VK_K:
-			BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
+			is_bullet_time = false;
 			break;
-
 		}
 		break;
 
@@ -330,6 +360,9 @@ void Player::on_update(float delta)
 	timer_attack_cd.on_update(delta);
 	timer_roll_cd.on_update(delta);
 	timer_bullet_time.on_update(delta);
+	timer_enable_beat_displace.on_update(delta);
+	timer_beating_displace.on_update(delta);
+
 
 	// 更新动画
 	animation_vfx_jump.on_update(delta);

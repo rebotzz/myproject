@@ -57,4 +57,12 @@ public:
 	{
 		enabled = flag;
 	}
+
+	bool check_hit_collision_layer(CollisionLayer target_layer)
+	{
+		if ((int)layer_dst & (int)CollisionLayer::None)
+			return false;
+		
+		return (int)layer_dst & (int)target_layer;
+	}
 };

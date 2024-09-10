@@ -46,25 +46,27 @@ void EnemyHornetIdleState::on_update(float delta)
 		{
 			// 这里利用随机数 + 概率区间确定下一个状态
 			int num = random_range(1, 100);
-			if (num <= 15)
+			if (num <= 20)
 				hornet->switch_state("run");
 			else if (num <= 50)
 				hornet->switch_state("jump");
-			else if (num <= 60)
+			else if (num <= 65)
 				hornet->switch_state("throw_sword");
 			else if (num <= 85)
 				hornet->switch_state("aim");
-			else 
+			else if (num <= 95)
 				hornet->switch_state("throw_barbs");
+			else
+				hornet->switch_state("throw_silk");
 		}
 		else
 		{
-			int num = random_range(1, 10);
-			if (num <= 4)
+			int num = random_range(1, 100);
+			if (num <= 50)
 				hornet->switch_state("aim");
-			else if (num <= 6)
+			else if (num <= 70)
 				hornet->switch_state("throw_sword");
-			else if(num <= 8)
+			else if(num <= 85)
 				hornet->switch_state("jump");
 			else
 			{
@@ -103,9 +105,9 @@ void EnemyHornetJumpState::on_update(float delta)
 	else if (hornet->get_velocity().y > 0)
 	{
 		int num = random_range(1, 10);
-		if (num <= 5)
+		if (num <= 7)
 			hornet->switch_state("dash_in_air");
-		else if (num <= 7)
+		else if (num <= 8)
 			hornet->switch_state("throw_silk");
 		else
 			hornet->switch_state("fall");
@@ -248,7 +250,7 @@ void EnemyHornetDashFloorState::on_enter()
 	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
 	const Vector2& pos_hornet = hornet->get_position();
 	const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
-	hornet->set_dash_speed({ (pos_player.x > pos_hornet.x ? 1.0f : -1.0f), 0 });
+	hornet->set_dash_speed({ (hornet->get_facing_left() ? -1.0f : 1.0f), 0});
 	hornet->set_dashing_on_floor(true);
 	hornet->on_dash();
 

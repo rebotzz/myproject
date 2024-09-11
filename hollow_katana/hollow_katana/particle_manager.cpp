@@ -28,5 +28,8 @@ void  ParticleManager::on_render()
 {
 	// äÖÈ¾Á£×Ó
 	for (std::shared_ptr<ParticleEffect>& particle : particle_list)
-		particle->on_render();
+	{
+		if (particle->check_valid())
+			particle->on_render();
+	}
 }

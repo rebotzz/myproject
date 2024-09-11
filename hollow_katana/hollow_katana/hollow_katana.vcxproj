@@ -140,6 +140,8 @@
     <ClCompile Include="particle_manager.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="player_state_node.cpp" />
+    <ClCompile Include="reverse_time_manager.cpp" />
+    <ClCompile Include="scene_manager.cpp" />
     <ClCompile Include="status_bar.cpp" />
     <ClCompile Include="sword.cpp" />
     <ClCompile Include="resources_manager.cpp" />
@@ -151,6 +153,7 @@
     <ClInclude Include="audio_manager.h" />
     <ClInclude Include="barb.h" />
     <ClInclude Include="bullet_time_manager.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="character.h" />
     <ClInclude Include="character_manager.h" />
     <ClInclude Include="collision_box.h" />
@@ -163,6 +166,15 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="player_state_node.h" />
     <ClInclude Include="resources_manager.h" />
+    <ClInclude Include="reverse_time_manager.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="scene_game_boss_dragon_king.h" />
+    <ClInclude Include="scene_game_boss_hornet.h" />
+    <ClInclude Include="scene_game_street.h" />
+    <ClInclude Include="scene_manager.h" />
+    <ClInclude Include="scene_menu.h" />
+    <ClInclude Include="scene_menu_introduce.h" />
+    <ClInclude Include="scene_game_reverse_time.h" />
     <ClInclude Include="state_machine.h" />
     <ClInclude Include="state_node.h" />
     <ClInclude Include="status_bar.h" />

@@ -13,8 +13,21 @@ AudioManager::AudioManager()
 			while (true)
 			{
 				// 为了避免性能消耗,加入同步互斥机制
-				std::unique_lock<std::mutex> lock(mtx);
-				cond.wait(lock);
+				{
+					// 只用在交换缓冲区加锁就行
+					std::unique_lock<std::mutex> lock(mtx);
+					cond.wait(lock);
+
+					if (load_queue.empty())
+						load_queue.swap(load_queue_buffer);
+
+					if (play_queue.empty())
+						play_queue.swap(play_queue_buffer);
+
+					if (stop_queue.empty())
+						stop_queue.swap(stop_queue_buffer);
+				}
+
 
 				while (!load_queue.empty())
 				{
@@ -61,7 +74,7 @@ void AudioManager::load_audio_ex(LPCTSTR path, LPCTSTR id)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);
-		load_queue.push({ path, id });
+		load_queue_buffer.push({ path, id });
 	}
 
 	cond.notify_one();
@@ -71,7 +84,7 @@ void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);
-		play_queue.push({ id, is_loop });
+		play_queue_buffer.push({ id, is_loop });
 	}
 
 	cond.notify_one();
@@ -81,7 +94,7 @@ void AudioManager::stop_audio_ex(LPCTSTR id)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);
-		stop_queue.push(id);
+		stop_queue_buffer.push(id);
 	}
 
 	cond.notify_one();

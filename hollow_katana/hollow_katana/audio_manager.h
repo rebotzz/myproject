@@ -26,9 +26,15 @@ private:
 	static AudioManager* manager;
 
 private:
+	// 任务队列
 	std::queue<AudioInfo> load_queue;
 	std::queue<AudioPlayOption> play_queue;
 	std::queue<LPCTSTR> stop_queue;
+	// 缓冲区
+	std::queue<AudioInfo> load_queue_buffer;
+	std::queue<AudioPlayOption> play_queue_buffer;
+	std::queue<LPCTSTR> stop_queue_buffer;
+	// 线程,锁,条件变量
 	std::thread* player = nullptr;
 	std::mutex mtx;
 	std::condition_variable cond;

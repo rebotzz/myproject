@@ -105,14 +105,14 @@
     <ClCompile Include="particle_manager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="reverse_time_manager.cpp">
+      <Filter>头文件\common_manager</Filter>
+    </ClCompile>
+    <ClCompile Include="scene_manager.cpp">
+      <Filter>头文件\scenery</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="animation.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="atlas.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="collision_box.h">
       <Filter>头文件\collision</Filter>
     </ClInclude>
@@ -170,9 +170,6 @@
     <ClInclude Include="enemy_hornet_state_node.h">
       <Filter>头文件\character\enemy</Filter>
     </ClInclude>
-    <ClInclude Include="status_bar.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="particle_effect.h">
       <Filter>头文件\particle</Filter>
     </ClInclude>
@@ -181,6 +178,45 @@
     </ClInclude>
     <ClInclude Include="effect.h">
       <Filter>头文件\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="reverse_time_manager.h">
+      <Filter>头文件\common_manager</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_manager.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="animation.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="atlas.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="status_bar.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_menu.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_menu_introduce.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_game_boss_hornet.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_game_boss_dragon_king.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_game_street.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_game_reverse_time.h">
+      <Filter>头文件\scenery</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

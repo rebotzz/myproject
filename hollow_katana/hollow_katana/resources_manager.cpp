@@ -18,9 +18,11 @@ struct AtlasResInfo
 
 static const std::vector<ImageResInfo> image_info_list =
 {
+	// UI
 	{"background",					_T(R"(resources\background.png)")},
 	{"ui_heart",					_T(R"(resources\ui_heart.png)")},
 
+	// 玩家素材
 	{"player_attack_right",			_T(R"(resources\player\attack.png)")},
 	{"player_dead_right",			_T(R"(resources\player\dead.png)")},
 	{"player_fall_right",			_T(R"(resources\player\fall.png)")},
@@ -46,6 +48,7 @@ static const std::vector<ImageResInfo> image_info_list =
 
 static const std::vector<AtlasResInfo> atlas_info_list =
 {
+	// 敌人:大黄蜂
 	{"barb_break",	_T(R"(resources\enemy\barb_break\%d.png)"), 3},
 	{"barb_loose",	_T(R"(resources\enemy\barb_loose\%d.png)"), 5},
 	{"silk",		_T(R"(resources\enemy\silk\%d.png)"),		9},
@@ -67,7 +70,11 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 	{"enemy_vfx_dash_in_air_left",	  _T(R"(resources\enemy\vfx_dash_in_air\%d.png)"),   5},
 	{"enemy_vfx_dash_on_floor_left",  _T(R"(resources\enemy\vfx_dash_on_floor\%d.png)"), 6},
 
+	// 角色新增动画 zero
 	{"player_dance_right",  _T(R"(resources\player\dance\%d.png)"), 12},
+
+	// 敌人:龙王
+	//{"enemy_long_idle_left",			       _T(R"(resources\dragon_king\attack\%d.png)"),15},
 
 
 	// 新加粒子特效
@@ -255,6 +262,9 @@ void ResourcesManager::load()
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_land.mp3)"), _T("player_land"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_roll.mp3)"), _T("player_roll"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_run.mp3)"), _T("player_run"));
+
+
+	// todo: 加载导入字体
 
 }
 

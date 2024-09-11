@@ -28,6 +28,9 @@ float BulletTimeManager::on_update(float delta)
 // 全屏变暗的后处理特效
 void BulletTimeManager::post_progress()
 {
+	if (progress < 0.001f)
+		return;
+
 	DWORD* img_buffer = GetImageBuffer();
 	int width = getwidth();
 	int height = getheight();

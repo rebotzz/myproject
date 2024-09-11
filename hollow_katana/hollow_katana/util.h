@@ -1,15 +1,16 @@
 #pragma once
-#include <easyx.h>
-
 #pragma comment(lib, "WINmm.lib")		// mciSendString() 
 #pragma comment(lib, "MSIMG32.LIB")		// AlphaBlend()
 
+#include <easyx.h>
+#include "camera.h"
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
-
+// 临时摄像机方案
+extern const Camera* main_camera;
 
 // 矩形区域
 struct Rect
@@ -18,14 +19,29 @@ struct Rect
 	int w, h;
 };
 
-// 从原图片裁剪指定绘制
+
 inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect_src = nullptr)
 {
+	// 临时摄像机方案
+	int x_dst = rect_dst->x - (main_camera ? (int)main_camera->get_position().x : 0);
+	int y_dst = rect_dst->y - (main_camera ? (int)main_camera->get_position().y : 0);
+
 	static BLENDFUNCTION blend_func = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
-	AlphaBlend(GetImageHDC(nullptr), rect_dst->x, rect_dst->y, rect_dst->w, rect_dst->h,
+	AlphaBlend(GetImageHDC(nullptr), x_dst, y_dst, rect_dst->w, rect_dst->h,
 		GetImageHDC(img), rect_src ? rect_src->x : 0, rect_src ? rect_src->y : 0,
 		rect_src ? rect_src->w : img->getwidth(), rect_src ? rect_src->h : img->getheight(), blend_func);
 }
+
+
+// 1.0
+//// 从原图片裁剪指定绘制
+//inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect_src = nullptr)
+//{
+//	static BLENDFUNCTION blend_func = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+//	AlphaBlend(GetImageHDC(nullptr), rect_dst->x, rect_dst->y, rect_dst->w, rect_dst->h,
+//		GetImageHDC(img), rect_src ? rect_src->x : 0, rect_src ? rect_src->y : 0,
+//		rect_src ? rect_src->w : img->getwidth(), rect_src ? rect_src->h : img->getheight(), blend_func);
+//}
 
 // 使用系统库实现透明通道图片加载, easyX的putimage不能实现
 inline void putimage_alpha(int x, int y, IMAGE* img)

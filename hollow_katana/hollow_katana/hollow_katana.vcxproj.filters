@@ -99,8 +99,11 @@
     <ClCompile Include="status_bar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="effect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="particle_manager.cpp">
-      <Filter>头文件\particle</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,10 +173,13 @@
     <ClInclude Include="status_bar.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="particle.h">
+    <ClInclude Include="particle_effect.h">
       <Filter>头文件\particle</Filter>
     </ClInclude>
     <ClInclude Include="particle_manager.h">
+      <Filter>头文件\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="effect.h">
       <Filter>头文件\particle</Filter>
     </ClInclude>
   </ItemGroup>

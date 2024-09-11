@@ -3,8 +3,6 @@
 #include "collision_manager.h"
 
 
-
-
 Sword::Sword(const Vector2& postion_src, bool move_left)
 {
 	this->_position = postion_src;
@@ -17,14 +15,6 @@ Sword::Sword(const Vector2& postion_src, bool move_left)
 	collision_box->set_layer_src(CollisionLayer::Rebound);
 	collision_box->set_layer_dst(CollisionLayer::Player);
 	collision_box->set_size({ 190, 10 });
-	collision_box->set_on_collision([&]()
-		{
-			if (collision_box->get_src_colliding())
-			{
-				// todo: 播放打击粒子特效
-				cout << "sword 被碰撞, 生成粒子特效" << endl;
-			}
-		});
 
 	// 初始动画
 	animation.add_frame(ResourcesManager::instance()->find_atlas(move_left ? "sword_left" : "sword_right"));

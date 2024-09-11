@@ -13,21 +13,20 @@ ParticleManager* ParticleManager::instance()
 void  ParticleManager::on_update(float delta)
 {
 	// 更新粒子
-	for (Particle* particle : particle_list)
+	for (auto& particle : particle_list)
 		particle->on_update(delta);
 	
-	// 清除无效粒子
+	// 清除无效粒子		debug: 还是智能指针好用,不容易内存泄露,访问出错
 	particle_list.erase(std::remove_if(particle_list.begin(), particle_list.end(),
-		[](Particle* particle)
+		[](std::shared_ptr<ParticleEffect>& particle)
 		{
 			bool can_remove = !particle->check_valid();
-			if (can_remove) delete particle;
 			return can_remove;
 		}), particle_list.end());
 }
 void  ParticleManager::on_render()
 {
 	// 渲染粒子
-	for (Particle* particle : particle_list)
+	for (std::shared_ptr<ParticleEffect>& particle : particle_list)
 		particle->on_render();
 }

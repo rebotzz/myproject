@@ -1,7 +1,7 @@
 #include "resources_manager.h"
 #include "util.h"
-
 #include "audio_manager.h"
+
 
 struct ImageResInfo
 {
@@ -15,7 +15,6 @@ struct AtlasResInfo
 	LPCTSTR path;
 	int num_frame = 0;
 };
-
 
 static const std::vector<ImageResInfo> image_info_list =
 {
@@ -35,7 +34,13 @@ static const std::vector<ImageResInfo> image_info_list =
 	{"player_vfx_attack_right",		_T(R"(resources\player\vfx_attack_right.png)")},
 	{"player_vfx_attack_up",		_T(R"(resources\player\vfx_attack_up.png)") },
 	{"player_vfx_jump",				_T(R"(resources\player\vfx_jump.png)")},
-	{"player_vfx_land",				_T(R"(resources\player\vfx_land.png)") }
+	{"player_vfx_land",				_T(R"(resources\player\vfx_land.png)") },
+
+	// 混叠图片
+	{ "effect_mixed_blue_1",		_T(R"(resources\effect\mixed_image\mixed_blue_1.png)") },
+	{ "effect_mixed_blue_2",		_T(R"(resources\effect\mixed_image\mixed_blue_2.png)") },
+	{ "effect_mixed_red",			_T(R"(resources\effect\mixed_image\red.png)") }
+
 };
 
 
@@ -46,21 +51,28 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 	{"silk",		_T(R"(resources\enemy\silk\%d.png)"),		9},
 	{"sword_left",	_T(R"(resources\enemy\sword\%d.png)"),		3},
 
-	{"enemy_aim_left",			  _T(R"(resources\enemy\aim\%d.png)"),			 9},
-	{"enemy_dash_in_air_left",	  _T(R"(resources\enemy\dash_in_air\%d.png)"),   2},
-	{"enemy_dash_on_floor_left",  _T(R"(resources\enemy\dash_on_floor\%d.png)"), 2},
-	{"enemy_fall_left",			  _T(R"(resources\enemy\fall\%d.png)"),			 4},
-	{"enemy_idle_left",			  _T(R"(resources\enemy\idle\%d.png)"),			 6},
-	{"enemy_jump_left",			  _T(R"(resources\enemy\jump\%d.png)"),			 8},
+	{"enemy_aim_left",			       _T(R"(resources\enemy\aim\%d.png)"),			     9},
+	{"enemy_dash_in_air_left",	       _T(R"(resources\enemy\dash_in_air\%d.png)"),      2},
+	{"enemy_dash_on_floor_left",       _T(R"(resources\enemy\dash_on_floor\%d.png)"),    2},
+	{"enemy_fall_left",			       _T(R"(resources\enemy\fall\%d.png)"),			 4},
+	{"enemy_idle_left",			       _T(R"(resources\enemy\idle\%d.png)"),			 6},
+	{"enemy_jump_left",			       _T(R"(resources\enemy\jump\%d.png)"),			 8},
 
-	{"enemy_run_left",			  _T(R"(resources\enemy\run\%d.png)"),			 8},
-	{"enemy_squat_left",		  _T(R"(resources\enemy\squat\%d.png)"),		10},
-	{"enemy_throw_barb_left",	  _T(R"(resources\enemy\throw_barb\%d.png)"),	 8},
-	{"enemy_throw_silk_left",	  _T(R"(resources\enemy\throw_silk\%d.png)"),	17},
-	{"enemy_throw_sword_left",	  _T(R"(resources\enemy\throw_sword\%d.png)"),  16},
+	{"enemy_run_left",			       _T(R"(resources\enemy\run\%d.png)"),			     8},
+	{"enemy_squat_left",		       _T(R"(resources\enemy\squat\%d.png)"),		    10},
+	{"enemy_throw_barb_left",	       _T(R"(resources\enemy\throw_barb\%d.png)"),	     8},
+	{"enemy_throw_silk_left",	       _T(R"(resources\enemy\throw_silk\%d.png)"),	    17},
+	{"enemy_throw_sword_left",	       _T(R"(resources\enemy\throw_sword\%d.png)"),     16},
 
-	{"enemy_vfx_dash_in_air_left",	  _T(R"(resources\enemy\vfx_dash_in_air\%d.png)"),    5},
-	{"enemy_vfx_dash_on_floor_left",  _T(R"(resources\enemy\vfx_dash_on_floor\%d.png)"),  6},
+	{"enemy_vfx_dash_in_air_left",	  _T(R"(resources\enemy\vfx_dash_in_air\%d.png)"),   5},
+	{"enemy_vfx_dash_on_floor_left",  _T(R"(resources\enemy\vfx_dash_on_floor\%d.png)"), 6},
+
+	{"player_dance_right",  _T(R"(resources\player\dance\%d.png)"), 12},
+
+
+	// 新加粒子特效
+	{"particle_vfx_hit_left",			  _T(R"(resources\effect\hit\%d.png)"),			 4},
+	{"particle_vfx_hurt_yellow_right",	  _T(R"(resources\effect\hurt\%d.png)"),		 6},
 };
 
 static inline bool check_image_valid(IMAGE* img)
@@ -182,57 +194,115 @@ void ResourcesManager::load()
 
 	// 增加翻转图片
 	flip_image("player_attack_right", "player_attack_left", 5);
-	flip_image("player_dead_right",   "player_dead_left",   6);
-	flip_image("player_fall_right",   "player_fall_left",   5);
-	flip_image("player_idle_right",   "player_idle_left",   5);
-	flip_image("player_jump_right",   "player_jump_left",   5);
-	flip_image("player_run_right",    "player_run_left",   10);
-	flip_image("player_roll_right",   "player_roll_left",   7);
+	flip_image("player_dead_right", "player_dead_left", 6);
+	flip_image("player_fall_right", "player_fall_left", 5);
+	flip_image("player_idle_right", "player_idle_left", 5);
+	flip_image("player_jump_right", "player_jump_left", 5);
+	flip_image("player_run_right", "player_run_left", 10);
+	flip_image("player_roll_right", "player_roll_left", 7);
+	flip_atlas("player_dance_right", "player_dance_left");
+	
+	flip_atlas("sword_left", "sword_right");
+	flip_atlas("enemy_aim_left", "enemy_aim_right");
+	flip_atlas("enemy_dash_in_air_left", "enemy_dash_in_air_right");
+	flip_atlas("enemy_dash_on_floor_left", "enemy_dash_on_floor_right");
+	flip_atlas("enemy_fall_left", "enemy_fall_right");
 
-	flip_atlas("sword_left",					"sword_right");					
-	flip_atlas("enemy_aim_left",				"enemy_aim_right");				
-	flip_atlas("enemy_dash_in_air_left",		"enemy_dash_in_air_right");		
-	flip_atlas("enemy_dash_on_floor_left",		"enemy_dash_on_floor_right");		
-	flip_atlas("enemy_fall_left",				"enemy_fall_right");				
+	flip_atlas("enemy_idle_left", "enemy_idle_right");
+	flip_atlas("enemy_jump_left", "enemy_jump_right");
+	flip_atlas("enemy_run_left", "enemy_run_right");
+	flip_atlas("enemy_squat_left", "enemy_squat_right");
+	flip_atlas("enemy_throw_barb_left", "enemy_throw_barb_right");
+	flip_atlas("enemy_throw_silk_left", "enemy_throw_silk_right");
+	flip_atlas("enemy_throw_sword_left", "enemy_throw_sword_right");
 
-	flip_atlas("enemy_idle_left",				"enemy_idle_right");
-	flip_atlas("enemy_jump_left",				"enemy_jump_right");
-	flip_atlas("enemy_run_left",				"enemy_run_right");				
-	flip_atlas("enemy_squat_left",				"enemy_squat_right");				
-	flip_atlas("enemy_throw_barb_left",			"enemy_throw_barb_right");			
-	flip_atlas("enemy_throw_silk_left",			"enemy_throw_silk_right");			
-	flip_atlas("enemy_throw_sword_left",		"enemy_throw_sword_right");		
+	flip_atlas("enemy_vfx_dash_in_air_left", "enemy_vfx_dash_in_air_right");
+	flip_atlas("enemy_vfx_dash_on_floor_left", "enemy_vfx_dash_on_floor_right");
 
-	flip_atlas("enemy_vfx_dash_in_air_left",	"enemy_vfx_dash_in_air_right");	
-	flip_atlas("enemy_vfx_dash_on_floor_left",  "enemy_vfx_dash_on_floor_right");  
+	flip_atlas("particle_vfx_hit_left", "particle_vfx_hit_right");
+	flip_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_yellow_left");
+
+	// 混叠图片,改变图片原有色彩
+	blend_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_red_right", "effect_mixed_red");
+	blend_atlas("particle_vfx_hurt_yellow_left", "particle_vfx_hurt_red_left", "effect_mixed_red");
+
 
 
 	// 加载音频
 	AudioManager* audio_player = AudioManager::instance();
-	audio_player->load_audio_ex(_T(R"(resources\audio\bgm.mp3)"),				_T("bgm"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\barb_break.mp3)"),		_T("barb_break"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\bullet_time.mp3)"),		_T("bullet_time"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm.mp3)"), _T("bgm"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\barb_break.mp3)"), _T("barb_break"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\bullet_time.mp3)"), _T("bullet_time"));
 
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_dash.mp3)"),			 _T("enemy_dash"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_run.mp3)"),				 _T("enemy_run"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_1.mp3)"),			 _T("enemy_hurt_1"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_2.mp3)"),			 _T("enemy_hurt_2"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_3.mp3)"),			 _T("enemy_hurt_3"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_barbs.mp3)"),		 _T("enemy_throw_barbs"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_silk.mp3)"),		 _T("enemy_throw_silk"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_sword.mp3)"),		 _T("enemy_throw_sword"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_dash.mp3)"),		 _T("hornet_say_dash"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_dash.mp3)"), _T("enemy_dash"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_run.mp3)"), _T("enemy_run"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_1.mp3)"), _T("enemy_hurt_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_2.mp3)"), _T("enemy_hurt_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_hurt_3.mp3)"), _T("enemy_hurt_3"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_barbs.mp3)"), _T("enemy_throw_barbs"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_silk.mp3)"), _T("enemy_throw_silk"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_throw_sword.mp3)"), _T("enemy_throw_sword"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_dash.mp3)"), _T("hornet_say_dash"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_throw_sword.mp3)"), _T("hornet_say_throw_sword"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_throw_silk.mp3)"),  _T("hornet_say_throw_silk"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_say_throw_silk.mp3)"), _T("hornet_say_throw_silk"));
 
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_1.mp3)"),   _T("player_attack_1"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_2.mp3)"),   _T("player_attack_2"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_3.mp3)"),   _T("player_attack_3"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_dead.mp3)"),       _T("player_dead"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_hurt.mp3)"),       _T("player_hurt"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_jump.mp3)"),       _T("player_jump"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_land.mp3)"),       _T("player_land"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_roll.mp3)"),       _T("player_roll"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\player_run.mp3)"),        _T("player_run"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_1.mp3)"), _T("player_attack_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_2.mp3)"), _T("player_attack_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_attack_3.mp3)"), _T("player_attack_3"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_dead.mp3)"), _T("player_dead"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_hurt.mp3)"), _T("player_hurt"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_jump.mp3)"), _T("player_jump"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_land.mp3)"), _T("player_land"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_roll.mp3)"), _T("player_roll"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\player_run.mp3)"), _T("player_run"));
 
+}
+
+
+void ResourcesManager::blend_atlas(const std::string& id_src, const std::string& id_dst, const std::string& base)
+{
+	IMAGE* image_base = image_pool[base];
+	Atlas* atlas_src = atlas_pool[id_src];
+	Atlas* atlas_dst = new Atlas;
+	for (int i = 0; i < atlas_pool[id_src]->get_size(); ++i)
+	{
+		IMAGE image_blended;
+		IMAGE* image_src = atlas_src->get_image(i);
+		bend_image(image_src, &image_blended, image_base, 0.0f);
+		atlas_dst->add_image(image_blended);
+	}
+	atlas_pool[id_dst] = atlas_dst;
+}
+
+void  ResourcesManager::bend_image(IMAGE* src, IMAGE* dst, IMAGE* base, float blend_ratio)
+{
+	int width = src->getwidth(), height = src->getheight();
+	dst->Resize(width, height);
+	DWORD* img_src_buffer = GetImageBuffer(src);
+	DWORD* img_dst_buffer = GetImageBuffer(dst);
+	DWORD* img_base_buffer = GetImageBuffer(base);
+
+	if (base->getwidth() < width || base->getheight() < height)
+		throw std::invalid_argument("base图片过小");
+
+	for (int y = 0; y < height; ++y)
+	{
+		for (int x = 0; x < width; ++x)
+		{
+			int idx = y * width + x;
+			DWORD color_base = img_base_buffer[idx];
+			DWORD color_src = img_src_buffer[idx];
+			// 对非透明像素点混叠
+			if ((color_src & 0xff000000) >> 24)
+			{
+				// colorbuff在内存存储顺序是B G R, 所以交换 R B
+				BYTE r = (BYTE)(BYTE(GetBValue(color_src)) * blend_ratio + BYTE(GetBValue(color_base)) * (1 - blend_ratio));
+				BYTE g = (BYTE)(BYTE(GetGValue(color_src)) * blend_ratio + BYTE(GetGValue(color_base)) * (1 - blend_ratio));
+				BYTE b = (BYTE)(BYTE(GetRValue(color_src)) * blend_ratio + BYTE(GetRValue(color_base)) * (1 - blend_ratio));
+
+				// 加上透明通道构成新的像素点	255(不透明)
+				img_dst_buffer[idx] = (DWORD)BGR(RGB(r, g, b)) | (DWORD)((BYTE)0xff << 24);
+			}
+		}
+	}
 }

@@ -17,13 +17,20 @@ private:
 	ResourcesManager();
 	~ResourcesManager();
 
+	// ×óÓÒ·­×ª
 	void flip_image(IMAGE* src, IMAGE* dst, int num = 1);
 	void flip_image(const std::string& id_src, const std::string& id_dst, int num = 1);
 	void flip_atlas(const std::string& id_src, const std::string& id_dst);
+
+	// »ìµþ
+	void blend_atlas(const std::string& id_src, const std::string& id_dst, const std::string& base);
 
 public:
 	static ResourcesManager* instance();
 	void load();
 	IMAGE* find_image(const std::string& id);
 	Atlas* find_atlas(const std::string& id);
+
+
+	static void bend_image(IMAGE* src, IMAGE* dst, IMAGE* base, float blend_ratio);
 };

@@ -15,6 +15,7 @@ public:
 		Centered,
 		BottomCentered
 	};
+
 private:
 	// 动画帧
 	struct Frame
@@ -24,9 +25,10 @@ private:
 
 		Frame() = default;
 		Frame(IMAGE* img, Rect rect)
-			:img(img), rect_src(rect){}
+			:img(img), rect_src(rect) {}
 		~Frame() = default;
 	};
+
 private:
 	Timer timer;										// 动画播放发计时器		
 	Vector2 position;
@@ -35,6 +37,9 @@ private:
 	std::vector<Frame> frame_list;						// 动画帧序列
 	std::function<void()> on_finished;					// 动画结束处理	
 	AchorMode achor_mode = AchorMode::Centered;			// 动画锚点
+
+	// 其余
+	IMAGE current_frame;								// 当前帧图片,用于生成粒子特效
 
 public:
 	Animation()
@@ -89,11 +94,15 @@ public:
 	void on_update(float delta)
 	{
 		timer.on_update(delta);
-	} 
+	}
 
 	void on_render() const
 	{
 		const Frame& frame = frame_list[idx_frame];
+
+		if (nullptr == frame.img)
+			throw std::invalid_argument("render frame img == nullptr");
+
 		Rect rect_dst;
 		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
 		rect_dst.x = (int)position.x - frame.rect_src.w / 2;
@@ -131,5 +140,39 @@ public:
 
 			frame_list.emplace_back(img, rect_src);
 		}
+	}
+
+	IMAGE& get_current_frame()
+	{
+		Frame frame = frame_list[idx_frame];
+		int w_total = frame.img->getwidth();
+		int w = frame.rect_src.w;
+		int h = frame.rect_src.h;
+		int x_pos = frame.rect_src.x;
+		int y_pos = frame.rect_src.y;
+		current_frame.Resize(w, h);
+
+		DWORD* src_buffer = GetImageBuffer(frame.img);
+		DWORD* dst_buffer = GetImageBuffer(&current_frame);
+
+		for (int y = y_pos; y < y_pos + h; ++y)
+		{
+			for (int x = x_pos; x < x_pos + w; ++x)
+			{
+				int idx_src = y * w_total + x;
+				int idx_dst = (y - y_pos) * w + (x - x_pos);
+				dst_buffer[idx_dst] = src_buffer[idx_src];
+			}
+		}
+
+		return current_frame;
+	}
+	void clear()
+	{
+		frame_list.clear();
+	}
+	bool empty()
+	{
+		return frame_list.empty();
 	}
 };

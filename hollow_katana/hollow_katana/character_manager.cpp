@@ -1,7 +1,9 @@
 #include "character_manager.h"
-#include "player.h"
 #include "bullet_time_manager.h"
+#include "particle_manager.h"
+#include "player.h"
 #include "enemy_hornet.h"
+
 
 CharacterManager* CharacterManager::manager = nullptr;
 
@@ -33,6 +35,7 @@ void CharacterManager::on_update(float delta)
 {
 	enemy->on_update(delta);
 	player->on_update(delta);
+	ParticleManager::instance()->on_update(delta);
 }
 
 void CharacterManager::on_render()
@@ -40,6 +43,7 @@ void CharacterManager::on_render()
 	enemy->on_render();
 	BulletTimeManager::instance()->post_progress();
 	player->on_render();
+	ParticleManager::instance()->on_render();
 }
 
 Character* CharacterManager::get_player()

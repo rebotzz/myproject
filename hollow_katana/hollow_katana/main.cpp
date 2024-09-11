@@ -21,6 +21,7 @@ inline void render_background();
 int main()
 {
 
+
 	// 初始化
 	HWND hwnd = initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, EX_SHOWCONSOLE);
 	SetWindowText(hwnd, _T("Hollow Katana"));
@@ -46,43 +47,52 @@ int main()
 
 	AudioManager::instance()->play_audio_ex(_T("bgm"), true);
 
-	// 主循环
-	while (!is_quit)
+
+	try
 	{
-		// 处理消息
-		if (peekmessage(&msg, EX_MOUSE | EX_KEY))
+		// 主循环
+		while (!is_quit)
 		{
-			CharacterManager::instance()->on_input(msg);
+			// 处理消息
+			if (peekmessage(&msg, EX_MOUSE | EX_KEY))
+			{
+				CharacterManager::instance()->on_input(msg);
+			}
+
+			steady_clock::time_point frame_start = steady_clock::now();
+			duration<float> delta = duration<float>(frame_start - last_tick);
+
+			// 处理更新
+			float scaled_delta = BulletTimeManager::instance()->on_update(delta.count());
+			CharacterManager::instance()->on_update(scaled_delta);
+			CollisionManager::instance()->process_collide();
+
+			// 处理绘图
+			cleardevice();
+
+			render_background();
+			CharacterManager::instance()->on_render();
+			//CollisionManager::instance()->on_debug_render();
+
+			FlushBatchDraw();
+
+
+			// 动态延时
+			last_tick = frame_start;
+			nanoseconds sleep_duration = frame_duration - (steady_clock::now() - frame_start);
+			if (sleep_duration > nanoseconds(0))
+				std::this_thread::sleep_for(sleep_duration);
 		}
 
-		steady_clock::time_point frame_start = steady_clock::now();
-		duration<float> delta = duration<float>(frame_start - last_tick);
-
-		// 处理更新
-		float scaled_delta = BulletTimeManager::instance()->on_update(delta.count());
-		CharacterManager::instance()->on_update(scaled_delta);
-		CollisionManager::instance()->process_collide();
-
-		// 处理绘图
-		setbkcolor(RGB(0, 0, 0));
-		cleardevice();	
-
-		render_background();
-		CharacterManager::instance()->on_render();
-		CollisionManager::instance()->on_debug_render();
-
-		FlushBatchDraw();
-
-
-		// 动态延时
-		last_tick = frame_start;
-		nanoseconds sleep_duration = frame_duration - (steady_clock::now() - frame_start);
-		if (sleep_duration > nanoseconds(0))
-			std::this_thread::sleep_for(sleep_duration);
+		closegraph();
+		EndBatchDraw();
+	}
+	catch (const std::exception& e)
+	{
+		cout << e.what() << endl;
 	}
 
-	closegraph();
-	EndBatchDraw();
+
 
 	return 0;
 }
@@ -96,5 +106,6 @@ inline void render_background()
 	rect_dst.y = (getheight() - rect_dst.h) / 2;
 	rect_dst.w = image->getwidth(), rect_dst.h = image->getheight();
 
+	setbkcolor(RGB(0, 0, 0));
 	putimage_alpha_ex(image, &rect_dst);
 }

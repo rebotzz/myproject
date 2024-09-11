@@ -133,6 +133,7 @@
     <ClCompile Include="character.cpp" />
     <ClCompile Include="character_manager.cpp" />
     <ClCompile Include="collision_manager.cpp" />
+    <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy_hornet.cpp" />
     <ClCompile Include="enemy_hornet_state_node.cpp" />
     <ClCompile Include="main.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="collision_box.h" />
     <ClInclude Include="collision_layer.h" />
     <ClInclude Include="collision_manager.h" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="enemy_hornet.h" />
     <ClInclude Include="enemy_hornet_state_node.h" />
     <ClInclude Include="particle_manager.h" />
@@ -168,7 +170,7 @@
     <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="vector2.h" />
-    <ClInclude Include="particle.h" />
+    <ClInclude Include="particle_effect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,30 +9,30 @@ void PlayerAttackState::on_enter()
 
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->set_attacking(true);
-	player->on_attack(); 
+	player->on_attack();
 	player->get_hit_box()->set_enabled(true);
-	update_hit_box_position();
+	player->update_hit_box_position();
 
 	switch (random_range(1, 3))
 	{
 	case 1:
-		 AudioManager::instance()->play_audio_ex(_T("player_attack_1"));
+		AudioManager::instance()->play_audio_ex(_T("player_attack_1"));
 		break;
 	case 2:
-		 AudioManager::instance()->play_audio_ex(_T("player_attack_2"));
+		AudioManager::instance()->play_audio_ex(_T("player_attack_2"));
 		break;
 	case 3:
-		 AudioManager::instance()->play_audio_ex(_T("player_attack_3"));
+		AudioManager::instance()->play_audio_ex(_T("player_attack_3"));
 		break;
 	}
 }
 
 void PlayerAttackState::on_update(float delta)
 {
-	update_hit_box_position();
-
 	// 更新过程中可能会状态跳转
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	player->update_hit_box_position();
+
 	if (player->get_hp() <= 0)
 		player->switch_state("dead");
 	else if (!player->get_attacking())
@@ -52,38 +52,13 @@ void PlayerAttackState::on_exit()
 	player->get_hit_box()->set_enabled(false);
 }
 
-void PlayerAttackState::update_hit_box_position()
-{
-	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
-	const Vector2& pos_center = player->get_logic_center();
-	CollisionBox* hit_box = player->get_hit_box();
-	const Vector2& size_hit_box = hit_box->get_size();
-	Vector2 pos_hit_box;
-
-	switch (player->get_attack_dir())
-	{
-	case Player::Direction::Up:
-		pos_hit_box = { pos_center.x, pos_center.y - size_hit_box.y / 2 };
-		break;
-	case Player::Direction::Down:
-		pos_hit_box = { pos_center.x, pos_center.y + size_hit_box.y / 2 };
-		break;
-	case Player::Direction::Left:
-		pos_hit_box = { pos_center.x - size_hit_box.x / 2, pos_center.y };
-		break;
-	case Player::Direction::Right:
-		pos_hit_box = { pos_center.x + size_hit_box.x / 2, pos_center.y };
-		break;
-	}
-	hit_box->set_position(pos_hit_box);
-}
 
 
 void PlayerRunState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("run");
 
-	 AudioManager::instance()->play_audio_ex(_T("player_run"), true);
+	AudioManager::instance()->play_audio_ex(_T("player_run"), true);
 }
 
 void PlayerRunState::on_update(float delta)
@@ -130,7 +105,7 @@ void PlayerRollState::on_update(float delta)
 			player->switch_state("run");
 		else if (player->can_jump())
 			player->switch_state("jump");
-		else 
+		else
 			player->switch_state("idle");
 	}
 }
@@ -208,6 +183,8 @@ void PlayerIdleState::on_update(float delta)
 		player->switch_state("roll");
 	else if (player->is_on_floor() && player->get_move_axis() != 0)
 		player->switch_state("run");
+	else if (player->can_dance())
+		player->switch_state("dance");
 
 }
 
@@ -228,7 +205,12 @@ void PlayerDeadState::on_enter()
 	CharacterManager::instance()->get_player()->set_animation("dead");
 	timer.restart();
 	AudioManager::instance()->play_audio_ex(_T("player_dead"));
+
+	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	player->on_jump(0.5f);
+	player->enable_displace_ex(player->get_facing_redir(), player->get_stay_air_time());
 }
+
 void PlayerDeadState::on_update(float delta)
 {
 	timer.on_update(delta);
@@ -236,4 +218,40 @@ void PlayerDeadState::on_update(float delta)
 void PlayerDeadState::on_exit()
 {
 	// todo: 时间逆流
+}
+
+
+
+void PlayerDanceState::on_enter()
+{
+	CharacterManager::instance()->get_player()->set_animation("dance");
+
+	// todo:或许可以播放特殊的BGM
+}
+void PlayerDanceState::on_update(float delta)
+{
+	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	player->set_velocity({ 0 , 0 });
+
+	if (player->get_hp() <= 0)
+		player->switch_state("dead");
+	else if (!player->can_dance())
+	{
+		if (player->can_attack())
+			player->switch_state("attack");
+		else if (player->can_roll())
+			player->switch_state("roll");
+		else if (player->get_move_axis() != 0)
+			player->switch_state("run");
+		else if (player->can_jump())
+			player->switch_state("jump");
+		else if (player->get_move_axis() == 0)
+			player->switch_state("idle");
+	}
+
+}
+void PlayerDanceState::on_exit()
+{
+	// 关闭播放特殊的BGM
+
 }

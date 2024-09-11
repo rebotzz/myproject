@@ -13,7 +13,6 @@ public:
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
-	void update_hit_box_position();
 };
 
 class PlayerRollState : public StateNode
@@ -75,3 +74,16 @@ public:
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
 };
+
+
+class PlayerDanceState : public StateNode
+{
+public:
+	PlayerDanceState() = default;
+	~PlayerDanceState() = default;
+	virtual void on_enter()  override;
+	virtual void on_update(float delta) override;
+	virtual void on_exit()  override;
+};
+
+

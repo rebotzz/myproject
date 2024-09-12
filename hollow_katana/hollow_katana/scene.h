@@ -8,9 +8,9 @@ class Scene
 public:
 	Scene() = default;
 	~Scene() = default;
-	virtual void on_enter() {}
-	virtual void on_input(const ExMessage& msg) {}
-	virtual void on_update(int delta_time) {}
-	virtual void on_render(const Camera& camera) {}
-	virtual void on_exit(){}
+	virtual void on_enter() = 0;
+	virtual void on_input(const ExMessage& msg) = 0;
+	virtual void on_update(float delta_time) = 0;
+	virtual void on_render() = 0;
+	virtual void on_exit() = 0;
 };

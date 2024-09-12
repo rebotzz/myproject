@@ -21,8 +21,8 @@ protected:
 	const float GRAVITY = 980 * 2;										// 重力常数
 																		
 protected:						
-	int hp_max = 10;
-	int hp = 10;														// 生命值
+	int hp_max = 1;														// 生命值上限
+	int hp = 1;															// 生命值
 	float logic_height = 0.0f;											// 逻辑高度
 	bool is_facing_left = false;										// 角色朝向
 	bool enable_gravity = true;											// 是否开始重力
@@ -47,6 +47,7 @@ public:
 	void set_animation(const std::string& id);
 	void decrease_hp();
 
+	virtual void reset() { hp = hp_max; }
 	virtual void on_hurt() { };
 
 	virtual void on_input(const ExMessage& msg) { };

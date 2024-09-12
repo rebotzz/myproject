@@ -111,6 +111,12 @@
     <ClCompile Include="scene_manager.cpp">
       <Filter>头文件\scenery</Filter>
     </ClCompile>
+    <ClCompile Include="enemy_dragon_king.cpp">
+      <Filter>头文件\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_dragon_king_state_node.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collision_box.h">
@@ -217,6 +223,12 @@
     </ClInclude>
     <ClInclude Include="scene_game_reverse_time.h">
       <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_dragon_king.h">
+      <Filter>头文件\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_dragon_king_state_node.h">
+      <Filter>头文件\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -58,3 +58,4 @@ float BulletTimeManager::lerp(float start, float end, float progress)
 {
 	return start + progress * (end - start);
 }
+

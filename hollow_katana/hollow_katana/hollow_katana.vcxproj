@@ -134,6 +134,8 @@
     <ClCompile Include="character_manager.cpp" />
     <ClCompile Include="collision_manager.cpp" />
     <ClCompile Include="effect.cpp" />
+    <ClCompile Include="enemy_dragon_king.cpp" />
+    <ClCompile Include="enemy_dragon_king_state_node.cpp" />
     <ClCompile Include="enemy_hornet.cpp" />
     <ClCompile Include="enemy_hornet_state_node.cpp" />
     <ClCompile Include="main.cpp" />
@@ -160,6 +162,8 @@
     <ClInclude Include="collision_layer.h" />
     <ClInclude Include="collision_manager.h" />
     <ClInclude Include="effect.h" />
+    <ClInclude Include="enemy_dragon_king.h" />
+    <ClInclude Include="enemy_dragon_king_state_node.h" />
     <ClInclude Include="enemy_hornet.h" />
     <ClInclude Include="enemy_hornet_state_node.h" />
     <ClInclude Include="particle_manager.h" />

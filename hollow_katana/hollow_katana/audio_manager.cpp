@@ -12,19 +12,19 @@ AudioManager::AudioManager()
 		{
 			while (true)
 			{
-				// 为了避免性能消耗,加入同步互斥机制
 				{
+					// 为了避免性能消耗,加入同步互斥机制
 					// 只用在交换缓冲区加锁就行
 					std::unique_lock<std::mutex> lock(mtx);
 					cond.wait(lock);
 
-					if (load_queue.empty())
+					if (load_queue.empty() && !load_queue_buffer.empty())
 						load_queue.swap(load_queue_buffer);
 
-					if (play_queue.empty())
+					if (play_queue.empty() && !play_queue_buffer.empty())
 						play_queue.swap(play_queue_buffer);
 
-					if (stop_queue.empty())
+					if (stop_queue.empty() && !stop_queue_buffer.empty())
 						stop_queue.swap(stop_queue_buffer);
 				}
 
@@ -70,6 +70,7 @@ AudioManager* AudioManager::instance()
 
 // 这里堵塞式申请锁会影响游戏, todo:无锁队列
 // 但是player线程大多数时候阻塞等待,就主线程频繁申请锁,有必要吗?
+// 或许,播放时不加锁也行,丢失音频总比游戏卡顿好
 void AudioManager::load_audio_ex(LPCTSTR path, LPCTSTR id)
 {
 	{
@@ -83,7 +84,7 @@ void AudioManager::load_audio_ex(LPCTSTR path, LPCTSTR id)
 void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 {
 	{
-		std::unique_lock<std::mutex> lock(mtx);
+		//std::unique_lock<std::mutex> lock(mtx);
 		play_queue_buffer.push({ id, is_loop });
 	}
 
@@ -93,7 +94,7 @@ void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 void AudioManager::stop_audio_ex(LPCTSTR id)
 {
 	{
-		std::unique_lock<std::mutex> lock(mtx);
+		//std::unique_lock<std::mutex> lock(mtx);
 		stop_queue_buffer.push(id);
 	}
 

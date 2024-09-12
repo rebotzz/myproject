@@ -16,9 +16,6 @@ using std::endl;
 const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
 const int FPS = 144;
-
-//inline void render_background();
-
 const Camera* main_camera = nullptr;
 
 int main()
@@ -58,7 +55,7 @@ int main()
 			// 处理消息
 			if (peekmessage(&msg, EX_MOUSE | EX_KEY))
 			{
-				CharacterManager::instance()->on_input(msg);
+				SceneManager::instance()->on_input(msg);
 			}
 
 			steady_clock::time_point frame_start = steady_clock::now();
@@ -66,15 +63,15 @@ int main()
 
 			// 处理更新
 			float scaled_delta = BulletTimeManager::instance()->on_update(delta.count());
-			CharacterManager::instance()->on_update(scaled_delta);
+
+			SceneManager::instance()->on_update(scaled_delta);
 			CollisionManager::instance()->process_collide();
 
 			// 处理绘图
 			cleardevice();
 
-			//render_background();
-			CharacterManager::instance()->on_render();
-			//CollisionManager::instance()->on_debug_render();
+			SceneManager::instance()->on_render();
+			CollisionManager::instance()->on_debug_render();
 
 			FlushBatchDraw();
 
@@ -96,16 +93,3 @@ int main()
 
 	return 0;
 }
-
-
-//inline void render_background()
-//{
-//	static IMAGE* image = ResourcesManager::instance()->find_image("background");
-//	static Rect rect_dst;
-//	rect_dst.x = (getwidth() - rect_dst.w) / 2;
-//	rect_dst.y = (getheight() - rect_dst.h) / 2;
-//	rect_dst.w = image->getwidth(), rect_dst.h = image->getheight();
-//
-//	setbkcolor(RGB(0, 0, 0));
-//	putimage_alpha_ex(image, &rect_dst);
-//}

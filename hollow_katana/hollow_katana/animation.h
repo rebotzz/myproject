@@ -98,10 +98,14 @@ public:
 
 	void on_render() const
 	{
-		const Frame& frame = frame_list[idx_frame];
+		if(idx_frame >= frame_list.size() || nullptr == frame_list[idx_frame].img)
+		{
+			return;
 
-		if (nullptr == frame.img)
-			throw std::invalid_argument("render frame img == nullptr");
+			// throw std::invalid_argument("render frame idx out of range, or is nullptr");
+		}
+
+		const Frame& frame = frame_list[idx_frame];
 
 		Rect rect_dst;
 		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
@@ -167,12 +171,22 @@ public:
 
 		return current_frame;
 	}
+
 	void clear()
 	{
+		idx_frame = 0;
 		frame_list.clear();
 	}
+
 	bool empty()
 	{
 		return frame_list.empty();
+	}
+
+
+	// todo: 可能没用
+	void finish()
+	{
+		timer.finish();
 	}
 };

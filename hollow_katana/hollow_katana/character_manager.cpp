@@ -82,11 +82,6 @@ void CharacterManager::create_enemy(const std::string& id, std::shared_ptr<Chara
 	enemy_list[id] = enemy;
 }
 
-void CharacterManager::create_enemy(const std::string& id, Character* enemy)
-{
-	enemy_list[id] = std::shared_ptr<Character>(enemy);
-}
-
 void CharacterManager::destroy_enemy(const std::string& id)
 {
 	auto iterator = enemy_list.find(id);

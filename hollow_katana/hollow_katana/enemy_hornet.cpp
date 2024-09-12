@@ -9,7 +9,7 @@ EnemyHornet::EnemyHornet() :Character()
 	// 角色初始化
 	hp = hp_max = 10;
 	is_facing_left = true;
-	position = { 1050, 400 };
+	position = { 1050, 500 };
 	logic_height = 150;
 
 	// 碰撞箱初始化		TODO:敌人不同状态动画对应的受击碰撞箱大小不同
@@ -37,13 +37,13 @@ EnemyHornet::EnemyHornet() :Character()
 			idle_left.set_interval(0.1f);
 			idle_left.set_loop(true);
 			idle_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			idle_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_idle_left"));
+			idle_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_idle_left"));
 
 			Animation& idle_right = animation_idle.right;
 			idle_right.set_interval(0.1f);
 			idle_right.set_loop(true);
 			idle_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			idle_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_idle_right"));
+			idle_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_idle_right"));
 		}
 		{
 			AnimationGroup& animation_jump = animation_pool["jump"];
@@ -51,13 +51,13 @@ EnemyHornet::EnemyHornet() :Character()
 			jump_left.set_interval(0.1f);
 			jump_left.set_loop(false);
 			jump_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			jump_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_jump_left"));
+			jump_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_jump_left"));
 
 			Animation& jump_right = animation_jump.right;
 			jump_right.set_interval(0.1f);
 			jump_right.set_loop(false);
 			jump_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			jump_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_jump_right"));
+			jump_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_jump_right"));
 		}
 		{
 			AnimationGroup& animation_fall = animation_pool["fall"];
@@ -65,13 +65,13 @@ EnemyHornet::EnemyHornet() :Character()
 			fall_left.set_interval(0.1f);
 			fall_left.set_loop(false);
 			fall_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			fall_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_fall_left"));
+			fall_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_fall_left"));
 
 			Animation& fall_right = animation_fall.right;
 			fall_right.set_interval(0.1f);
 			fall_right.set_loop(false);
 			fall_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			fall_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_fall_right"));
+			fall_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_fall_right"));
 		}
 		{
 			AnimationGroup& animation_aim = animation_pool["aim"];
@@ -79,13 +79,13 @@ EnemyHornet::EnemyHornet() :Character()
 			aim_left.set_interval(0.05f);
 			aim_left.set_loop(false);
 			aim_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			aim_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_aim_left"));
+			aim_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_aim_left"));
 
 			Animation& aim_right = animation_aim.right;
 			aim_right.set_interval(0.05f);
 			aim_right.set_loop(false);
 			aim_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			aim_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_aim_right"));
+			aim_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_aim_right"));
 		}
 		{
 			AnimationGroup& animation_dash_in_air = animation_pool["dash_in_air"];
@@ -93,13 +93,13 @@ EnemyHornet::EnemyHornet() :Character()
 			dash_in_air_left.set_interval(0.05f);
 			dash_in_air_left.set_loop(true);
 			dash_in_air_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			dash_in_air_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dash_in_air_left"));
+			dash_in_air_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_dash_in_air_left"));
 
 			Animation& dash_in_air_right = animation_dash_in_air.right;
 			dash_in_air_right.set_interval(0.05f);
 			dash_in_air_right.set_loop(true);
 			dash_in_air_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			dash_in_air_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dash_in_air_right"));
+			dash_in_air_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_dash_in_air_right"));
 		}
 		{
 			AnimationGroup& animation_dash_on_floor = animation_pool["dash_on_floor"];
@@ -107,13 +107,13 @@ EnemyHornet::EnemyHornet() :Character()
 			dash_on_floor_left.set_interval(0.05f);
 			dash_on_floor_left.set_loop(true);
 			dash_on_floor_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			dash_on_floor_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dash_on_floor_left"));
+			dash_on_floor_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_dash_on_floor_left"));
 
 			Animation& dash_on_floor_right = animation_dash_on_floor.right;
 			dash_on_floor_right.set_interval(0.05f);
 			dash_on_floor_right.set_loop(true);
 			dash_on_floor_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			dash_on_floor_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dash_on_floor_right"));
+			dash_on_floor_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_dash_on_floor_right"));
 		}
 		{
 			AnimationGroup& animation_run = animation_pool["run"];
@@ -121,13 +121,13 @@ EnemyHornet::EnemyHornet() :Character()
 			run_left.set_interval(0.05f);
 			run_left.set_loop(true);
 			run_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			run_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_run_left"));
+			run_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_run_left"));
 
 			Animation& run_right = animation_run.right;
 			run_right.set_interval(0.05f);
 			run_right.set_loop(true);
 			run_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			run_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_run_right"));
+			run_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_run_right"));
 		}
 		{
 			AnimationGroup& animation_squat = animation_pool["squat"];
@@ -135,13 +135,13 @@ EnemyHornet::EnemyHornet() :Character()
 			squat_left.set_interval(0.05f);
 			squat_left.set_loop(true);
 			squat_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			squat_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_squat_left"));
+			squat_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_squat_left"));
 
 			Animation& squat_right = animation_squat.right;
 			squat_right.set_interval(0.05f);
 			squat_right.set_loop(true);
 			squat_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			squat_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_squat_right"));
+			squat_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_squat_right"));
 		}
 		{
 			AnimationGroup& animation_throw_barb = animation_pool["throw_barbs"];
@@ -149,13 +149,13 @@ EnemyHornet::EnemyHornet() :Character()
 			throw_barb_left.set_interval(0.1f);
 			throw_barb_left.set_loop(false);
 			throw_barb_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			throw_barb_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_throw_barb_left"));
+			throw_barb_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_throw_barb_left"));
 
 			Animation& throw_barb_right = animation_throw_barb.right;
 			throw_barb_right.set_interval(0.1f);
 			throw_barb_right.set_loop(false);
 			throw_barb_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			throw_barb_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_throw_barb_right"));
+			throw_barb_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_throw_barb_right"));
 		}
 		{
 			AnimationGroup& animation_throw_silk = animation_pool["throw_silk"];
@@ -163,13 +163,13 @@ EnemyHornet::EnemyHornet() :Character()
 			throw_silk_left.set_interval(0.1f);
 			throw_silk_left.set_loop(false);
 			throw_silk_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			throw_silk_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_throw_silk_left"));
+			throw_silk_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_throw_silk_left"));
 
 			Animation& throw_silk_right = animation_throw_silk.right;
 			throw_silk_right.set_interval(0.1f);
 			throw_silk_right.set_loop(false);
 			throw_silk_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			throw_silk_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_throw_silk_right"));
+			throw_silk_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_throw_silk_right"));
 		}
 		{
 			AnimationGroup& animation_throw_sword = animation_pool["throw_sword"];
@@ -177,13 +177,13 @@ EnemyHornet::EnemyHornet() :Character()
 			throw_sword_left.set_interval(0.05f);
 			throw_sword_left.set_loop(false);
 			throw_sword_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			throw_sword_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_throw_sword_left"));
+			throw_sword_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_throw_sword_left"));
 
 			Animation& throw_sword_right = animation_throw_sword.right;
 			throw_sword_right.set_interval(0.05f);
 			throw_sword_right.set_loop(false);
 			throw_sword_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			throw_sword_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_throw_sword_right"));
+			throw_sword_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_throw_sword_right"));
 		}
 	}
 
@@ -198,25 +198,25 @@ EnemyHornet::EnemyHornet() :Character()
 		animation_dash_in_air_left.set_interval(0.1f);
 		animation_dash_in_air_left.set_loop(true);
 		animation_dash_in_air_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_dash_in_air_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_vfx_dash_in_air_left"));
+		animation_dash_in_air_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_vfx_dash_in_air_left"));
 
 		Animation& animation_dash_in_air_right = animation_dash_in_air_vfx.right;
 		animation_dash_in_air_right.set_interval(0.1f);
 		animation_dash_in_air_right.set_loop(true);
 		animation_dash_in_air_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_dash_in_air_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_vfx_dash_in_air_right"));
+		animation_dash_in_air_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_vfx_dash_in_air_right"));
 
 		Animation& animation_dash_on_floor_left = animation_dash_on_floor_vfx.left;
 		animation_dash_on_floor_left.set_interval(0.1f);
 		animation_dash_on_floor_left.set_loop(true);
 		animation_dash_on_floor_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_dash_on_floor_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_vfx_dash_on_floor_left"));
+		animation_dash_on_floor_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_vfx_dash_on_floor_left"));
 
 		Animation& animation_dash_on_floor_right = animation_dash_on_floor_vfx.right;
 		animation_dash_on_floor_right.set_interval(0.1f);
 		animation_dash_on_floor_right.set_loop(true);
 		animation_dash_on_floor_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_dash_on_floor_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_vfx_dash_on_floor_right"));
+		animation_dash_on_floor_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_vfx_dash_on_floor_right"));
 	}
 
 	// 状态机初始化
@@ -245,6 +245,9 @@ EnemyHornet::~EnemyHornet()
 		delete barb;
 	for (Sword* sword : sword_list)
 		delete sword;
+
+	AudioManager::instance()->stop_audio_ex(_T("enemy_run"));
+	AudioManager::instance()->stop_audio_ex(_T("enemy_throw_silk"));
 }
 
 void EnemyHornet::on_hurt()
@@ -362,5 +365,4 @@ void EnemyHornet::on_throw_silk()
 	animation_silk.reset();
 	collision_box_silk->set_enabled(true);
 }
-
 

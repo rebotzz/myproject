@@ -33,7 +33,6 @@ public:
 	Character* get_enemy(const std::string& id);
 
 	void create_enemy(const std::string& id, std::shared_ptr<Character> enemy);
-	void create_enemy(const std::string& id, Character* enemy);
 	void destroy_enemy(const std::string& id);
 	void set_enable(bool flag) { is_enable = flag; }
 };

@@ -63,4 +63,15 @@ public:
 		}
 	}
 
+
+	// 可能没有用的接口
+	void finish()
+	{
+		if (one_shot && !shotted)
+		{
+			shotted = true;
+			if (on_timeout)
+				on_timeout();
+		}
+	}
 };

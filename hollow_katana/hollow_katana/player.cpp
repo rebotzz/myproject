@@ -5,23 +5,16 @@
 #include "player_state_node.h"
 #include "bullet_time_manager.h"
 #include "audio_manager.h"
-
-
-
 #include "particle_manager.h"
 #include "effect.h"
 
 
 
-
-#include <iostream>
-using std::cout;
-using std::endl;
-
 Player::Player() :Character()
 {
 	// 角色朝向,位置,高度初始化
 	hp = 1;
+	hp_max = 3;
 	is_facing_left = false;
 	position = { 200, 300 };
 	logic_height = 90.0f;
@@ -90,6 +83,7 @@ Player::Player() :Character()
 			switch (beat_displace_dir)
 			{
 			case Direction::Up:
+				velocity.y -= 0.01f * GRAVITY * 2 / 3;
 				position.y -= 0.01f * SPEED_DISPLACE_UP;
 				break;
 			case Direction::Left:
@@ -302,7 +296,7 @@ Player::~Player() = default;
 
 void Player::on_input(const ExMessage& msg)
 {
-	if (hp < 0)
+	if (hp <= 0)
 		return;
 
 	static const int VK_A = 0x41;
@@ -316,6 +310,9 @@ void Player::on_input(const ExMessage& msg)
 
 	static const int VK_F = 0x46;
 	static const int VK_G = 0x47;
+	
+	static const int VK_R = 0x52;
+
 
 	// todo: 优化按键响应
 	// 按键松开判断会有遗漏
@@ -341,7 +338,7 @@ void Player::on_input(const ExMessage& msg)
 		case VK_D:
 			is_right_key_down = true;
 			break;
-		case VK_F:
+		case VK_R:
 			is_dance_key_down = true;
 			break;
 
@@ -372,7 +369,7 @@ void Player::on_input(const ExMessage& msg)
 		case VK_D:
 			is_right_key_down = false;
 			break;
-		case VK_F:
+		case VK_R:
 			is_dance_key_down = false;
 			break;
 
@@ -496,7 +493,6 @@ void Player::on_roll()
 void Player::on_hurt()
 {
 	AudioManager::instance()->play_audio_ex(_T("player_hurt"));
-
 	create_hurt_effect();
 }
 
@@ -671,6 +667,9 @@ void Player::create_hit_effect()
 
 void  Player::create_hurt_effect()
 {
+	static int cnt = 0;
+	cout << "生成粒子: " << ++cnt << endl;
+
 	std::shared_ptr<EffectHurt> particle(new EffectHurt(!is_facing_left));
 	Vector2 pos_particle = get_logic_center();
 	pos_particle.x += !is_facing_left ? -20 : 20;
@@ -689,3 +688,19 @@ void Player::create_bullet_time_effect()
 	ParticleManager::instance()->register_particle(particle);
 }
 
+
+void Player::reset()
+{
+	Character::reset();
+
+	is_left_key_down = false;
+	is_right_key_down = false;
+	is_jump_key_down = false;
+	is_roll_key_down = false;
+	is_attack_key_down = false;
+	is_dance_key_down = false;
+
+	is_attacking = false;
+	is_rolling = false;
+	current_animation = &animation_pool["idle"];
+}

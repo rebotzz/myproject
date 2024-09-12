@@ -1,46 +1,70 @@
 #pragma once
+#include <memory>
 #include "scene.h"
 #include "resources_manager.h"
 #include "character_manager.h"
 #include "particle_manager.h"
+#include "reverse_time_manager.h"
 #include "enemy_hornet.h"
+
 
 class SceneGameBossHornet : public Scene
 {
+private:
+	Vector2 pos_player = { 200, 620 };
+	Vector2 pos_hornet = { 1050, 620 };
+
 public:
 
-	void on_enter()
+	void on_enter() override
 	{
-		CharacterManager::instance()->create_enemy("hornet", new EnemyHornet);
+		cout << "进入: SceneGameBossHornet" << endl;
+
 		CharacterManager::instance()->set_enable(true);
+
+		// 改为智能指针,避免不能正确调用析构
+		std::shared_ptr<EnemyHornet> hornet(new EnemyHornet);
+		CharacterManager::instance()->create_enemy("hornet", hornet);
+		CharacterManager::instance()->get_enemy("hornet")->set_position(pos_hornet);
+
+		auto* player = CharacterManager::instance()->get_player();
+		player->reset();
+		player->switch_state("idle");
+		player->set_position(pos_player);
+
+		ReverseTimeManager::instance()->set_enable(true);
 	}
 
-	void on_input(const ExMessage& msg)  
+	void on_input(const ExMessage& msg) override
 	{
 		CharacterManager::instance()->on_input(msg);
 	}
 
-	void on_update(int delta)  
+	void on_update(float delta) override
 	{
 		CharacterManager::instance()->on_update(delta);
 		ParticleManager::instance()->on_update(delta);
+
+		ReverseTimeManager::instance()->on_update(delta);
 	}
-	void on_render()  
+	void on_render() override
 	{
 		render_background();
 		CharacterManager::instance()->on_render();
 		ParticleManager::instance()->on_render();
 	}
 
-	void on_exit() 
+	void on_exit() override
 	{
 		CharacterManager::instance()->destroy_enemy("hornet");
 		CharacterManager::instance()->set_enable(false);
+
+		ReverseTimeManager::instance()->set_enable(false);
 	}
 
 	void render_background()
 	{
-		static IMAGE* image = ResourcesManager::instance()->find_image("background");
+		static IMAGE* image = ResourcesManager::instance()->find_image("background_hollow");
 		static Rect rect_dst;
 		rect_dst.x = (getwidth() - rect_dst.w) / 2;
 		rect_dst.y = (getheight() - rect_dst.h) / 2;

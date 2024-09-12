@@ -19,7 +19,8 @@ struct AtlasResInfo
 static const std::vector<ImageResInfo> image_info_list =
 {
 	// UI
-	{"background",					_T(R"(resources\background.png)")},
+	{"background_katana",			_T(R"(resources\background_1.png)")},
+	{"background_hollow",			_T(R"(resources\background_2.png)")},
 	{"ui_heart",					_T(R"(resources\ui_heart.png)")},
 
 	// 玩家素材
@@ -49,26 +50,26 @@ static const std::vector<ImageResInfo> image_info_list =
 static const std::vector<AtlasResInfo> atlas_info_list =
 {
 	// 敌人:大黄蜂
-	{"barb_break",	_T(R"(resources\enemy\barb_break\%d.png)"), 3},
-	{"barb_loose",	_T(R"(resources\enemy\barb_loose\%d.png)"), 5},
-	{"silk",		_T(R"(resources\enemy\silk\%d.png)"),		9},
-	{"sword_left",	_T(R"(resources\enemy\sword\%d.png)"),		3},
+	{"barb_break",	_T(R"(resources\enemy\hornet\barb_break\%d.png)"), 3},
+	{"barb_loose",	_T(R"(resources\enemy\hornet\barb_loose\%d.png)"), 5},
+	{"silk",		_T(R"(resources\enemy\hornet\silk\%d.png)"),		9},
+	{"sword_left",	_T(R"(resources\enemy\hornet\sword\%d.png)"),		3},
 
-	{"enemy_aim_left",			       _T(R"(resources\enemy\aim\%d.png)"),			     9},
-	{"enemy_dash_in_air_left",	       _T(R"(resources\enemy\dash_in_air\%d.png)"),      2},
-	{"enemy_dash_on_floor_left",       _T(R"(resources\enemy\dash_on_floor\%d.png)"),    2},
-	{"enemy_fall_left",			       _T(R"(resources\enemy\fall\%d.png)"),			 4},
-	{"enemy_idle_left",			       _T(R"(resources\enemy\idle\%d.png)"),			 6},
-	{"enemy_jump_left",			       _T(R"(resources\enemy\jump\%d.png)"),			 8},
+	{"enemy_hornet_aim_left",			    _T(R"(resources\enemy\hornet\aim\%d.png)"),				9},
+	{"enemy_hornet_dash_in_air_left",	    _T(R"(resources\enemy\hornet\dash_in_air\%d.png)"),     2},
+	{"enemy_hornet_dash_on_floor_left",     _T(R"(resources\enemy\hornet\dash_on_floor\%d.png)"),   2},
+	{"enemy_hornet_fall_left",			    _T(R"(resources\enemy\hornet\fall\%d.png)"),			 4},
+	{"enemy_hornet_idle_left",			    _T(R"(resources\enemy\hornet\idle\%d.png)"),			 6},
+	{"enemy_hornet_jump_left",			    _T(R"(resources\enemy\hornet\jump\%d.png)"),			 8},
 
-	{"enemy_run_left",			       _T(R"(resources\enemy\run\%d.png)"),			     8},
-	{"enemy_squat_left",		       _T(R"(resources\enemy\squat\%d.png)"),		    10},
-	{"enemy_throw_barb_left",	       _T(R"(resources\enemy\throw_barb\%d.png)"),	     8},
-	{"enemy_throw_silk_left",	       _T(R"(resources\enemy\throw_silk\%d.png)"),	    17},
-	{"enemy_throw_sword_left",	       _T(R"(resources\enemy\throw_sword\%d.png)"),     16},
-
-	{"enemy_vfx_dash_in_air_left",	  _T(R"(resources\enemy\vfx_dash_in_air\%d.png)"),   5},
-	{"enemy_vfx_dash_on_floor_left",  _T(R"(resources\enemy\vfx_dash_on_floor\%d.png)"), 6},
+	{"enemy_hornet_run_left",			    _T(R"(resources\enemy\hornet\run\%d.png)"),				8},
+	{"enemy_hornet_squat_left",				_T(R"(resources\enemy\hornet\squat\%d.png)"),		    10},
+	{"enemy_hornet_throw_barb_left",	    _T(R"(resources\enemy\hornet\throw_barb\%d.png)"),	     8},
+	{"enemy_hornet_throw_silk_left",	    _T(R"(resources\enemy\hornet\throw_silk\%d.png)"),	    17},
+	{"enemy_hornet_throw_sword_left",	    _T(R"(resources\enemy\hornet\throw_sword\%d.png)"),    16},
+		   
+	{"enemy_hornet_vfx_dash_in_air_left",	_T(R"(resources\enemy\hornet\vfx_dash_in_air\%d.png)"),   5},
+	{"enemy_hornet_vfx_dash_on_floor_left", _T(R"(resources\enemy\hornet\vfx_dash_on_floor\%d.png)"), 6},
 
 	// 角色新增动画 zero
 	{"player_dance_right",  _T(R"(resources\player\dance\%d.png)"), 12},
@@ -210,21 +211,21 @@ void ResourcesManager::load()
 	flip_atlas("player_dance_right", "player_dance_left");
 	
 	flip_atlas("sword_left", "sword_right");
-	flip_atlas("enemy_aim_left", "enemy_aim_right");
-	flip_atlas("enemy_dash_in_air_left", "enemy_dash_in_air_right");
-	flip_atlas("enemy_dash_on_floor_left", "enemy_dash_on_floor_right");
-	flip_atlas("enemy_fall_left", "enemy_fall_right");
+	flip_atlas("enemy_hornet_aim_left", "enemy_hornet_aim_right");
+	flip_atlas("enemy_hornet_dash_in_air_left", "enemy_hornet_dash_in_air_right");
+	flip_atlas("enemy_hornet_dash_on_floor_left", "enemy_hornet_dash_on_floor_right");
+	flip_atlas("enemy_hornet_fall_left", "enemy_hornet_fall_right");
 
-	flip_atlas("enemy_idle_left", "enemy_idle_right");
-	flip_atlas("enemy_jump_left", "enemy_jump_right");
-	flip_atlas("enemy_run_left", "enemy_run_right");
-	flip_atlas("enemy_squat_left", "enemy_squat_right");
-	flip_atlas("enemy_throw_barb_left", "enemy_throw_barb_right");
-	flip_atlas("enemy_throw_silk_left", "enemy_throw_silk_right");
-	flip_atlas("enemy_throw_sword_left", "enemy_throw_sword_right");
+	flip_atlas("enemy_hornet_idle_left", "enemy_hornet_idle_right");
+	flip_atlas("enemy_hornet_jump_left", "enemy_hornet_jump_right");
+	flip_atlas("enemy_hornet_run_left", "enemy_hornet_run_right");
+	flip_atlas("enemy_hornet_squat_left", "enemy_hornet_squat_right");
+	flip_atlas("enemy_hornet_throw_barb_left", "enemy_hornet_throw_barb_right");
+	flip_atlas("enemy_hornet_throw_silk_left", "enemy_hornet_throw_silk_right");
+	flip_atlas("enemy_hornet_throw_sword_left", "enemy_hornet_throw_sword_right");
 
-	flip_atlas("enemy_vfx_dash_in_air_left", "enemy_vfx_dash_in_air_right");
-	flip_atlas("enemy_vfx_dash_on_floor_left", "enemy_vfx_dash_on_floor_right");
+	flip_atlas("enemy_hornet_vfx_dash_in_air_left", "enemy_hornet_vfx_dash_in_air_right");
+	flip_atlas("enemy_hornet_vfx_dash_on_floor_left", "enemy_hornet_vfx_dash_on_floor_right");
 
 	flip_atlas("particle_vfx_hit_left", "particle_vfx_hit_right");
 	flip_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_yellow_left");

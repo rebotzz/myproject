@@ -20,7 +20,7 @@ private:
 
 	const float BULLET_TIME_TOTAL = 2.0f;
 	const float SPEED_DISPLACE_AXIS = 300.0f;
-	const float SPEED_DISPLACE_UP = 670.0f;
+	const float SPEED_DISPLACE_UP = 780.0f;
 	const float HIT_CD = 0.4f;
 
 private:
@@ -109,7 +109,7 @@ public:
 	float get_stay_air_time() { return 2 * speed_jump / GRAVITY; }
 	void enable_displace_ex(Direction dir, float delta);
 	void update_hit_box_position();
-
+	void reset();
 
 
 private:

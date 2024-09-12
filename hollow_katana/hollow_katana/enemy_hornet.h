@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "character.h"
-#include "collision_box.h"
 #include "sword.h"
 #include "barb.h"
 

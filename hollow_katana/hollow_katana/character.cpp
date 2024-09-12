@@ -47,7 +47,7 @@ void Character::set_animation(const std::string& id)
 
 void Character::decrease_hp()
 {
-	if (is_invulnerable_status)
+	if (is_invulnerable_status || hp <= 0)
 		return;
 
 	hp -= 1;

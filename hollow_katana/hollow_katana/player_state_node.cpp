@@ -2,6 +2,7 @@
 #include "character_manager.h"
 #include "player.h"
 #include "audio_manager.h"
+#include "scene_manager.h"
 
 void PlayerAttackState::on_enter()
 {
@@ -193,32 +194,41 @@ PlayerDeadState::PlayerDeadState()
 {
 	timer.set_one_shot(true);
 	timer.set_wait_time(2.0f);
-	timer.set_on_timeout([]()
+	timer.set_on_timeout([&]()
 		{
-			MessageBox(GetHWnd(), _T("不对......\n这样不行"), _T("角色死亡"), MB_OK);
-			exit(0);
+			can_next = true;
 		});
 }
 
 void PlayerDeadState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("dead");
+
+	can_next = false;
 	timer.restart();
-	AudioManager::instance()->play_audio_ex(_T("player_dead"));
 
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	player->set_velocity({ 0, 0 });
 	player->on_jump(0.5f);
 	player->enable_displace_ex(player->get_facing_redir(), player->get_stay_air_time());
+
+	AudioManager::instance()->play_audio_ex(_T("player_dead"));
 }
 
 void PlayerDeadState::on_update(float delta)
 {
 	timer.on_update(delta);
+
+	if (can_next)
+	{
+		can_next = false;
+		MessageBox(GetHWnd(), _T("不对......\n这样不行"), _T("角色死亡"), MB_OK);
+
+		// 场景切换: 回溯时间
+		SceneManager::instance()->switch_scene("game_reverse_time");
+	}
 }
-void PlayerDeadState::on_exit()
-{
-	// todo: 时间逆流
-}
+
 
 
 

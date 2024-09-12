@@ -66,13 +66,13 @@ class PlayerDeadState : public StateNode
 {
 private:
 	Timer timer;
+	bool can_next = false;
 
 public:
 	PlayerDeadState();
 	~PlayerDeadState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
 };
 
 

@@ -451,13 +451,13 @@ void Player::on_update(float delta)
 void Player::on_render()
 {
 	// 跳跃,落地特效
-	if (is_vfx_jump_visiable)
+	if (is_vfx_jump_visiable && hp > 0)
 		animation_vfx_jump.on_render();
 	if (is_vfx_land_visiable)
 		animation_vfx_land.on_render();
 
 	// 攻击特效
-	if (is_attacking)
+	if (is_attacking && hp > 0)
 		current_slash_animation->on_render();
 
 	// 玩家动画

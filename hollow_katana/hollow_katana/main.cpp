@@ -1,13 +1,11 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include <easyx.h>
 #include "util.h"
 #include "resources_manager.h"
 #include "character_manager.h"
 #include "bullet_time_manager.h"
 #include "audio_manager.h"
-
 #include "scene_manager.h"
 
 using std::cout;
@@ -16,7 +14,7 @@ using std::endl;
 const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
 const int FPS = 144;
-const Camera* main_camera = nullptr;
+const Camera* main_camera = nullptr;		// const * 指向地址的内容不能改变,指针本身能改变
 
 int main()
 {
@@ -39,13 +37,17 @@ int main()
 		MessageBox(hwnd, error_msg, _T("资源加载失败"), MB_OK | MB_ICONERROR);
 		return -1;
 	}
+	catch (const std::exception& e)
+	{
+		cout << e.what() << endl;
+	}
 
 	using namespace std::chrono;
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 
 	main_camera = &(SceneManager::instance()->get_camera());
-	SceneManager::instance()->set_entry_scene("game_scene_boss_hornet");
+	SceneManager::instance()->set_entry_scene("game_scene_boss_dragon_king");
 
 	try
 	{
@@ -71,7 +73,7 @@ int main()
 			cleardevice();
 
 			SceneManager::instance()->on_render();
-			//CollisionManager::instance()->on_debug_render();
+			CollisionManager::instance()->on_debug_render();
 
 			FlushBatchDraw();
 

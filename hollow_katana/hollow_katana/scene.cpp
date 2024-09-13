@@ -1,13 +1,10 @@
 #include <memory>
 #include "scene.h"
-#include "resources_manager.h"
 #include "character_manager.h"
 #include "particle_manager.h"
 #include "reverse_time_manager.h"
 #include "audio_manager.h"
 #include "bullet_time_manager.h"
-
-
 
 
 void GameScene::on_enter()

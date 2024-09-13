@@ -14,73 +14,39 @@ class SceneGameBossDragonKing : public Scene
 private:
 	Vector2 pos_player = { 200, 620 };
 	Vector2 pos_enemy = { 1050, 620 };
+	GameScene game_scene;
 
 public:
+	SceneGameBossDragonKing()
+		:game_scene(ResourcesManager::instance()->find_image("background_katana"), _T("bgm_1"))
+	{}
 
 	void on_enter() override
 	{
-		cout << "进入: SceneGameBossDragonKing" << endl;
+		game_scene.on_enter();
 
-		CharacterManager::instance()->set_enable(true);
-
-		// 改为智能指针,避免不能正确调用析构
 		std::shared_ptr<EnemyDragonKing> dragon_king(new EnemyDragonKing);
 		CharacterManager::instance()->create_enemy("dragon_king", dragon_king);
 		CharacterManager::instance()->get_enemy("dragon_king")->set_position(pos_enemy);
-
-		auto* player = CharacterManager::instance()->get_player();
-		player->reset();
-		player->switch_state("idle");
-		player->set_position(pos_player);
-
-		ReverseTimeManager::instance()->set_enable(true);
+		CharacterManager::instance()->get_player()->set_position(pos_player);
+		cout << "进入: SceneGameBossDragonKing" << endl;
 	}
-
-	void on_input(const ExMessage& msg) override
+	void on_input(const ExMessage& msg)
 	{
-		CharacterManager::instance()->on_input(msg);
+		game_scene.on_input(msg);
 	}
-
 	void on_update(float delta) override
 	{
-		CharacterManager::instance()->on_update(delta);
-		ParticleManager::instance()->on_update(delta);
-
-		if (CharacterManager::instance()->get_player()->get_hp() <= 0)
-			ReverseTimeManager::instance()->set_record(false);
-		else
-			ReverseTimeManager::instance()->set_record(true);
-		ReverseTimeManager::instance()->on_update(delta);
-
-		if (BulletTimeManager::instance()->is_enable())
-			AudioManager::instance()->pause_audio_ex(_T("bgm_1"));
-		else
-			AudioManager::instance()->resume_audio_ex(_T("bgm_1"));
+		game_scene.on_update(delta);
 	}
 	void on_render() override
 	{
-		render_background();
-		CharacterManager::instance()->on_render();
-		ParticleManager::instance()->on_render();
+		game_scene.on_render();
 	}
-
 	void on_exit() override
 	{
 		CharacterManager::instance()->destroy_enemy("dragon_king");
-		CharacterManager::instance()->set_enable(false);
-
-		ReverseTimeManager::instance()->set_enable(false);
+		game_scene.on_exit();
 	}
 
-	void render_background()
-	{
-		static IMAGE* image = ResourcesManager::instance()->find_image("background_katana");
-		static Rect rect_dst;
-		rect_dst.x = (getwidth() - rect_dst.w) / 2;
-		rect_dst.y = (getheight() - rect_dst.h) / 2;
-		rect_dst.w = image->getwidth(), rect_dst.h = image->getheight();
-
-		setbkcolor(RGB(0, 0, 0));
-		putimage_alpha_ex(image, &rect_dst);
-	}
 };

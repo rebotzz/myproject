@@ -524,7 +524,6 @@ void EnemyHornetIdleState::on_update(float delta)
 	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
 	const Vector2& pos_hornet = hornet->get_position();
 	const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
-	float distance = (pos_hornet - pos_player).length();
 	hornet->set_facing_left(pos_player.x < pos_hornet.x);
 
 	// [ÏÐÖÃ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÌøÔ¾ ±¼ÅÜ ÏÂ¶× ÈÓ½£ ÈÓ´ÌÇò ÈÓË¿Ïß

@@ -143,6 +143,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="player_state_node.cpp" />
     <ClCompile Include="reverse_time_manager.cpp" />
+    <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene_manager.cpp" />
     <ClCompile Include="status_bar.cpp" />
     <ClCompile Include="sword.cpp" />

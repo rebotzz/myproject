@@ -19,7 +19,7 @@ class EnemyDragonKingIdleState : public StateNode
 {
 private:
 	Timer timer;
-	const float MIN_DIS = 400.0f;
+	const float MIN_DIS = 300.f;
 
 public:
 	EnemyDragonKingIdleState();
@@ -33,7 +33,8 @@ public:
 class EnemyDragonKingJumpState : public StateNode
 {
 private:
-	const float SPEED_MOVE_AXIS = 300.0f;
+	const float SPEED_MOVE_SLOW = 150.f;
+	const float SPEED_MOVE_FAST = 430.f;
 	const float MIN_DIS = 400.0f;
 
 public:
@@ -66,4 +67,20 @@ public:
 	~EnemyDragonKingFallState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
+};
+
+// [ÆÕ¹¥]
+class EnemyDragonKingAttackState : public StateNode
+{
+private:
+	Timer timer_attack;
+	Timer timer_attack_duration;
+	Timer timer_exit;
+	const float SPEED_MOVE_AXIS = 500.f;
+public:
+	EnemyDragonKingAttackState();
+	~EnemyDragonKingAttackState() = default;
+	virtual void on_enter()  override;
+	virtual void on_update(float delta) override;
+	virtual void on_exit()  override;
 };

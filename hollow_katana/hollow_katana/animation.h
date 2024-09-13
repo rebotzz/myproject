@@ -101,7 +101,6 @@ public:
 		if(idx_frame >= frame_list.size() || nullptr == frame_list[idx_frame].img)
 		{
 			return;
-
 			// throw std::invalid_argument("render frame idx out of range, or is nullptr");
 		}
 

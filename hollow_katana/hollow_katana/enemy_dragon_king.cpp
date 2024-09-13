@@ -20,6 +20,7 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 	hit_box->set_layer_src(CollisionLayer::None);
 	hit_box->set_layer_dst(CollisionLayer::Player);
 	hurt_box->set_on_collision([&] { decrease_hp(); });
+	hit_box->set_enabled(true);
 
 	collision_box_katana = CollisionManager::instance()->create_collision_box();
 	collision_box_katana->set_enabled(false);
@@ -46,13 +47,13 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 		{
 			AnimationGroup& animation_attack = animation_pool["attack"];
 			Animation& attack_left = animation_attack.left;
-			attack_left.set_interval(0.75f);
+			attack_left.set_interval(0.065f);
 			attack_left.set_loop(false);
 			attack_left.set_achor_mode(Animation::AchorMode::BottomCentered);
 			attack_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_attack_left"));
 
 			Animation& attack_right = animation_attack.right;
-			attack_right.set_interval(0.75f);
+			attack_right.set_interval(0.065f);
 			attack_right.set_loop(false);
 			attack_right.set_achor_mode(Animation::AchorMode::BottomCentered);
 			attack_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_attack_right"));
@@ -143,26 +144,32 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 		animation_vfx_slash_left.set_interval(0.07f);
 		animation_vfx_slash_left.set_loop(false);
 		animation_vfx_slash_left.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_left.add_frame(ResourcesManager::instance()->find_image("enemy_vfx_attack_left"), 5);
+		animation_vfx_slash_left.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_left"), 5);
 
 		animation_vfx_slash_right.set_interval(0.07f);
 		animation_vfx_slash_right.set_loop(false);
 		animation_vfx_slash_right.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_right.add_frame(ResourcesManager::instance()->find_image("enemy_vfx_attack_right"), 5);
+		animation_vfx_slash_right.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_right"), 5);
 
 		animation_vfx_slash_up.set_interval(0.07f);
 		animation_vfx_slash_up.set_loop(false);
 		animation_vfx_slash_up.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_up.add_frame(ResourcesManager::instance()->find_image("enemy_vfx_attack_up"), 5);
+		animation_vfx_slash_up.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_up"), 5);
 
 		animation_vfx_slash_down.set_interval(0.07f);
 		animation_vfx_slash_down.set_loop(false);
 		animation_vfx_slash_down.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_down.add_frame(ResourcesManager::instance()->find_image("enemy_vfx_attack_down"), 5);
+		animation_vfx_slash_down.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_down"), 5);
 	}
 
 	// 状态机初始化
 	{
+		state_machine.register_state("idle", new EnemyDragonKingIdleState);
+		state_machine.register_state("jump", new EnemyDragonKingJumpState);
+		state_machine.register_state("fall", new EnemyDragonKingFallState);
+		state_machine.register_state("run", new EnemyDragonKingRunState);
+		state_machine.register_state("attack", new EnemyDragonKingAttackState);
+
 
 		state_machine.set_entry("idle");
 	}
@@ -194,15 +201,65 @@ void EnemyDragonKing::on_update(float delta)
 	{
 		current_slash_animation->set_position(get_logic_center());
 		current_slash_animation->on_update(delta);
+		update_attack_box_position();
 	}
+	else
+		collision_box_katana->set_enabled(false);
 }
 
 void EnemyDragonKing::on_render()
 {
-	Character::on_render();
-
 	// 攻击刀光特效
 	if (is_attacking && hp > 0)
 		current_slash_animation->on_render();
+
+	Character::on_render();
 }
 
+void EnemyDragonKing::update_attack_box_position()
+{
+	const Vector2& pos_center = get_logic_center();
+	const Vector2& size_hit_box = hit_box->get_size();
+	Vector2 pos_hit_box;
+
+	switch (attack_dir)
+	{
+	case Direction::Up:
+		pos_hit_box = { pos_center.x, pos_center.y - size_hit_box.y / 2 };
+		break;
+	case Direction::Down:
+		pos_hit_box = { pos_center.x, pos_center.y + size_hit_box.y / 2 };
+		break;
+	case Direction::Left:
+		pos_hit_box = { pos_center.x - size_hit_box.x / 2, pos_center.y};
+		break;
+	case Direction::Right:
+		pos_hit_box = { pos_center.x + size_hit_box.x / 2, pos_center.y};
+		break;
+	}
+	collision_box_katana->set_position(pos_hit_box);
+}
+
+void EnemyDragonKing::on_attack()
+{
+	switch (attack_dir)
+	{
+	case Direction::Up:
+		current_slash_animation = &animation_vfx_slash_up;
+		break;
+	case Direction::Down:
+		current_slash_animation = &animation_vfx_slash_down;
+		break;
+	case Direction::Left:
+		current_slash_animation = &animation_vfx_slash_left;
+		break;
+	case Direction::Right:
+		current_slash_animation = &animation_vfx_slash_right;
+		break;
+	}
+	const Vector2& pos_center = get_logic_center();
+	current_slash_animation->set_position({pos_center.x, pos_center.y - 50});
+	current_slash_animation->reset();
+
+	collision_box_katana->set_enabled(true);
+}

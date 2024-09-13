@@ -117,6 +117,9 @@
     <ClCompile Include="enemy_dragon_king_state_node.cpp">
       <Filter>头文件\character\enemy</Filter>
     </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>头文件\scenery</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collision_box.h">

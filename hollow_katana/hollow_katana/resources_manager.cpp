@@ -78,14 +78,28 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 	{"player_dance_right",  _T(R"(resources\player\dance\%d.png)"), 12},
 
 	// 敌人:龙王
-	{"enemy_dragon_king_idle_right",			_T(R"(resources\enemy\dragon_king\fall\%d.png)"),	12},
+	{"enemy_dragon_king_idle_right",			_T(R"(resources\enemy\dragon_king\idle\%d.png)"),	12},
 	{"enemy_dragon_king_attack_right",		_T(R"(resources\enemy\dragon_king\attack\%d.png)"),	15},
 	{"enemy_dragon_king_jump_right",			_T(R"(resources\enemy\dragon_king\jump\%d.png)"),	3},
 	{"enemy_dragon_king_roll_right",			_T(R"(resources\enemy\dragon_king\roll\%d.png)"),	5},
-	{"enemy_dragon_king_run_right",			_T(R"(resources\enemy\dragon_king\roll\%d.png)"),	10},
-	{"enemy_dragon_king_run_stop_right",		_T(R"(resources\enemy\dragon_king\roll\%d.png)"),	 4},
+	{"enemy_dragon_king_run_right",			_T(R"(resources\enemy\dragon_king\run\%d.png)"),	10},
+	{"enemy_dragon_king_run_stop_right",		_T(R"(resources\enemy\dragon_king\run_stop\%d.png)"),	 4},
 	{"enemy_dragon_king_fall_1_right",		_T(R"(resources\enemy\dragon_king\fall_1\%d.png)"),	 14},
 	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
+
+
+
+	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
+	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
+	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
+	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
+
+
+	// todo: 龙王刀光
+	 //"enemy_vfx_attack_down",
+	 //"enemy_vfx_attack_left",
+	 //"enemy_vfx_attack_right",
+	 //"enemy_vfx_attack_up",
 
 
 	// 新加粒子特效
@@ -220,7 +234,7 @@ void ResourcesManager::load()
 	flip_image("player_run_right", "player_run_left", 10);
 	flip_image("player_roll_right", "player_roll_left", 7);
 	flip_atlas("player_dance_right", "player_dance_left");
-	
+
 	// 敌人:大黄蜂
 	flip_atlas("sword_left", "sword_right");
 	flip_atlas("enemy_hornet_aim_left", "enemy_hornet_aim_right");
@@ -253,16 +267,9 @@ void ResourcesManager::load()
 	flip_atlas("particle_vfx_hit_left", "particle_vfx_hit_right");
 	flip_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_yellow_left");
 
-	// 混叠图片,改变图片原有色彩
+	// 混叠图片,改变图片原有色彩(注意图片大小别越界)
 	blend_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_red_right", "effect_mixed_red");
 	blend_atlas("particle_vfx_hurt_yellow_left", "particle_vfx_hurt_red_left", "effect_mixed_red");
-
-	// todo: 混叠刀光特效
-	blend_atlas("player_vfx_attack_down", "enemy_vfx_attack_down", "effect_mixed_blue_3", 0.5f);
-	blend_atlas("player_vfx_attack_left", "enemy_vfx_attack_left", "effect_mixed_blue_3", 0.5f);
-	blend_atlas("player_vfx_attack_right", "enemy_vfx_attack_right", "effect_mixed_blue_3", 0.5f);
-	blend_atlas("player_vfx_attack_up", "enemy_vfx_attack_up", "effect_mixed_blue_3", 0.5f);
-
 
 
 

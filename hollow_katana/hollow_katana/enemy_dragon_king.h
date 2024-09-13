@@ -12,7 +12,7 @@ public:
 
 private:
 	const float SPEED_JUMP_BIG = 1300.0f;
-	const float SPEED_JUMP_SMALL = 800.0f;
+	const float SPEED_JUMP_SMALL = 880.0f;
 
 private:
 	// 状态标志
@@ -32,11 +32,13 @@ private:
 public:
 	EnemyDragonKing();
 	~EnemyDragonKing();
-	virtual void on_hurt() override;
 
 	virtual void on_input(const ExMessage& msg) override { };
 	virtual void on_update(float delta) override;
 	virtual void on_render() override;
+
+	virtual void on_hurt() override;
+	void on_attack();
 
 	void set_rolling(bool flag) { is_rolling = flag; }
 	bool get_rolling() const { return is_rolling; }
@@ -46,7 +48,10 @@ public:
 	bool get_big_jump() const { return is_big_jump; }
 	float get_speed_jump_big() const { return SPEED_JUMP_BIG; }
 	float get_speed_jump_small() const { return SPEED_JUMP_SMALL; }
+	
 
 	// 其他:可能有用,也可能没用
+	void update_attack_box_position();
+	void set_attack_dir(Direction dir) { attack_dir = dir; }
 
 };

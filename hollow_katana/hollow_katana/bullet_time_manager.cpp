@@ -1,7 +1,19 @@
 #include "bullet_time_manager.h"
+#include "audio_manager.h"
 
 
 BulletTimeManager* BulletTimeManager::manager = nullptr;
+
+BulletTimeManager::BulletTimeManager()
+{
+	timer_play_audio.set_one_shot(true);
+	timer_play_audio.set_wait_time(3.0f);
+	timer_play_audio.set_on_timeout([&]
+		{
+			is_play_cd_comp = true;
+		});
+}
+
 
 BulletTimeManager* BulletTimeManager::instance()
 {
@@ -21,6 +33,8 @@ float BulletTimeManager::on_update(float delta)
 		progress = 0.0;
 	else if (progress > 1.0)
 		progress = 1.0;
+
+	timer_play_audio.on_update(delta);
 
 	return delta * lerp(1.0f, DST_DELTA_FACTOR, progress);
 }
@@ -49,9 +63,23 @@ void BulletTimeManager::post_progress()
 	}
 }
 
+
+
+#include <iostream>
 void BulletTimeManager::set_status(Status status)
 {
 	this->status = status;
+
+	if (status == Status::Enter && !is_play_audio && is_play_cd_comp)
+	{
+		std::cout << "播放子弹时间音效" << std::endl;
+		is_play_audio = true;
+		is_play_cd_comp = false;
+		timer_play_audio.restart();
+		AudioManager::instance()->play_audio_ex(_T("bullet_time"));
+	}
+	else
+		is_play_audio = false;
 }
 
 float BulletTimeManager::lerp(float start, float end, float progress)

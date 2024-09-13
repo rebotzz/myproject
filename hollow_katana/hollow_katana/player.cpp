@@ -58,6 +58,9 @@ Player::Player() :Character()
 	timer_bullet_time.set_wait_time(0.01f);
 	timer_bullet_time.set_on_timeout([&]()
 		{
+			if (hp <= 0)
+				is_bullet_time_key_down = false;
+
 			// 子弹时间更新逻辑
 			if (is_bullet_time_key_down)
 				current_bullet_time -= 0.01f;
@@ -78,13 +81,14 @@ Player::Player() :Character()
 			if (!is_displace_ex)
 				return;
 			
+			// 死亡时的快速击退位移
 			float ratio = hp > 0 ? 1.0f : 3.0f;
 
 			switch (beat_displace_dir)
 			{
 			case Direction::Up:
 				velocity.y -= 0.01f * GRAVITY * 2 / 3;
-				position.y -= 0.01f * SPEED_DISPLACE_UP;
+				position.y -= 0.01f * speed_displace_up;
 				break;
 			case Direction::Left:
 				position.x -= 0.01f * SPEED_DISPLACE_AXIS * ratio;
@@ -100,25 +104,23 @@ Player::Player() :Character()
 		{
 			is_displace_ex = false;
 		});
-	timer_recoiling.set_one_shot(true);
-	timer_recoiling.set_wait_time(recoil_delta);
-	timer_recoiling.set_on_timeout([&]()
+	timer_hit_effect.set_one_shot(true);
+	timer_hit_effect.set_wait_time(ATTACK_CD * 0.9f);
+	timer_hit_effect.set_on_timeout([&]
 		{
-			is_hitting_collide = false;
-		});
-	timer_hit_collide_cd.set_one_shot(true);
-	timer_hit_collide_cd.set_wait_time(HIT_CD);
-	timer_hit_collide_cd.set_on_timeout([&]
-		{
-			is_hit_collide_cd_comp = true;
+			is_hit_cd_comp = true;
 		});
 
+
 	// 粒子特效发射器
-	timer_create_bullet_time_effect.set_one_shot(false);
-	timer_create_bullet_time_effect.set_wait_time(0.03f);
-	timer_create_bullet_time_effect.set_on_timeout([&]
+	timer_create_particle_effect.set_one_shot(false);
+	timer_create_particle_effect.set_wait_time(0.06f);
+	timer_create_particle_effect.set_on_timeout([&]
 		{
-			create_bullet_time_effect();
+			if (is_bullet_time_key_down)
+				create_bullet_time_effect();
+			else
+				create_roll_effect();
 		});
 
 
@@ -145,14 +147,20 @@ Player::Player() :Character()
 		attack_left.set_loop(false);
 		attack_left.set_achor_mode(Animation::AchorMode::BottomCentered);
 		attack_left.add_frame(ResourcesManager::instance()->find_image("player_attack_left"), 5);
-		attack_left.set_on_finished([&]() { is_attacking = false; });
+		attack_left.set_on_finished([&]() { 
+			is_attacking = false; 
+			is_hitting = false;
+			});
 
 		Animation& attack_right = attack.right;
 		attack_right.set_interval(0.05f);
 		attack_right.set_loop(false);
 		attack_right.set_achor_mode(Animation::AchorMode::BottomCentered);
 		attack_right.add_frame(ResourcesManager::instance()->find_image("player_attack_right"), 5);
-		attack_right.set_on_finished([&]() { is_attacking = false; });
+		attack_right.set_on_finished([&]() { 
+			is_attacking = false; 
+			is_hitting = false;
+			});
 	}
 	{
 		AnimationGroup& run = animation_pool["run"];
@@ -275,7 +283,6 @@ Player::Player() :Character()
 		animation_vfx_land.set_on_finished([&]() { is_vfx_land_visiable = false; });
 	}
 
-
 	{
 		// 状态机初始化
 		state_machine.register_state("idle", new PlayerIdleState);
@@ -296,9 +303,6 @@ Player::~Player() = default;
 
 void Player::on_input(const ExMessage& msg)
 {
-	if (hp <= 0)
-		return;
-
 	static const int VK_A = 0x41;
 	static const int VK_W = 0x57;
 	static const int VK_S = 0x53;
@@ -310,9 +314,13 @@ void Player::on_input(const ExMessage& msg)
 
 	static const int VK_F = 0x46;
 	static const int VK_G = 0x47;
-	
 	static const int VK_R = 0x52;
 
+	// 当角色死亡时,只能按下R键
+	if (msg.message == WM_KEYDOWN && msg.vkcode == VK_R)
+		is_dance_key_down = true;
+	if (hp <= 0)
+		return;
 
 	// todo: 优化按键响应
 	// 按键松开判断会有遗漏
@@ -415,8 +423,7 @@ void Player::on_update(float delta)
 	timer_attack_cd.on_update(delta);
 	timer_roll_cd.on_update(delta);
 	timer_bullet_time.on_update(delta);
-	timer_recoiling.on_update(delta);
-	timer_hit_collide_cd.on_update(delta);
+	timer_hit_effect.on_update(delta);
 	timer_enable_displace_ex.on_update(delta);
 	timer_displace_ex.on_update(delta);
 
@@ -440,12 +447,15 @@ void Player::on_update(float delta)
 	// 子弹时间更新逻辑
 	if (is_bullet_time_key_down && current_bullet_time > 0.05f && hp > 0)
 	{
-		timer_create_bullet_time_effect.on_update(delta);
-		AudioManager::instance()->play_audio_ex(_T("bullet_time"));
+		timer_create_particle_effect.on_update(delta);
 		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Enter);
 	}
 	else
 		BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
+
+	// 翻滚特效
+	if(is_rolling)
+		timer_create_particle_effect.on_update(delta);
 }
 
 void Player::on_render()
@@ -456,7 +466,7 @@ void Player::on_render()
 	if (is_vfx_land_visiable)
 		animation_vfx_land.on_render();
 
-	// 攻击特效
+	// 攻击刀光特效
 	if (is_attacking && hp > 0)
 		current_slash_animation->on_render();
 
@@ -525,7 +535,7 @@ void Player::on_attack()
 	on_attack_displace_front();
 }
 
-
+// [鼠标]攻击方向更新
 void Player::update_attack_dir(float mouse_x, float mouse_y)
 {
 	static const float PI = 3.1415926535f;
@@ -547,6 +557,7 @@ void Player::update_attack_dir(float mouse_x, float mouse_y)
 	}
 }
 
+// [键盘]攻击方向更新
 void Player::update_attack_dir()
 {
 	attack_dir = (is_facing_left ? Direction::Left : Direction::Right);
@@ -590,21 +601,22 @@ void Player::enable_displace_ex(Direction dir, float delta)
 
 void Player::on_hit_collide()
 {
-	if (!is_hit_collide_cd_comp)
+	// 怎样做才能在碰撞箱体开启期间只碰撞一次
+	if (is_hitting || !is_hit_cd_comp)
 		return;
 
-	is_hitting_collide = true;
-	is_hit_collide_cd_comp = false;
-	timer_hit_collide_cd.restart();
+	is_hitting = true;
+	is_hit_cd_comp = false;
 
+	timer_hit_effect.restart();
 	on_recoil();
 	create_hit_effect();
 }
 
 void Player::on_recoil(float delta)
 {
-	timer_recoiling.restart();
-	recoil_delta = 0.1f;
+	// 后坐力位移持续时间
+	float recoil_delta = 0.1f;
 
 	switch (attack_dir)
 	{
@@ -621,14 +633,16 @@ void Player::on_recoil(float delta)
 	}
 	recoil_delta += delta;
 
-	timer_recoiling.set_wait_time(recoil_delta);
+	speed_displace_up = SPEED_DISPLACE_UP_MAX;
 	enable_displace_ex(beat_displace_dir, recoil_delta);
 }
 
 void Player::on_attack_displace_front()
 {
-	if (is_displace_ex || is_hitting_collide || attack_dir == Direction::Down)
+	if (is_displace_ex || attack_dir == Direction::Down)
 		return;
+
+	speed_displace_up = SPEED_DISPLACE_UP_MAX * 0.6f;
 
 	if (is_on_floor())
 		enable_displace_ex(attack_dir, 0.08f);
@@ -662,14 +676,13 @@ void Player::create_hit_effect()
 	}
 	particle->set_position(pos_particle);
 	
+	cout << "产生一次攻击特效" << endl;
+
 	ParticleManager::instance()->register_particle(particle);
 }
 
 void  Player::create_hurt_effect()
 {
-	static int cnt = 0;
-	cout << "生成粒子: " << ++cnt << endl;
-
 	std::shared_ptr<EffectHurt> particle(new EffectHurt(!is_facing_left));
 	Vector2 pos_particle = get_logic_center();
 	pos_particle.x += !is_facing_left ? -20 : 20;
@@ -680,7 +693,7 @@ void  Player::create_hurt_effect()
 
 void Player::create_bullet_time_effect()
 {
-	std::shared_ptr<EffectTimeRun> particle(new EffectTimeRun);
+	std::shared_ptr<EffectBulletTime> particle(new EffectBulletTime);
 	IMAGE& frame = (is_facing_left ? current_animation->left : current_animation->right).get_current_frame();
 	particle->add_image(frame);
 	particle->set_position(position);
@@ -688,6 +701,15 @@ void Player::create_bullet_time_effect()
 	ParticleManager::instance()->register_particle(particle);
 }
 
+void Player::create_roll_effect()
+{
+	std::shared_ptr<EffectRoll> particle(new EffectRoll);
+	IMAGE& frame = (is_facing_left ? current_animation->left : current_animation->right).get_current_frame();
+	particle->add_image(frame);
+	particle->set_position(position);
+
+	ParticleManager::instance()->register_particle(particle);
+}
 
 void Player::reset()
 {
@@ -702,5 +724,9 @@ void Player::reset()
 
 	is_attacking = false;
 	is_rolling = false;
+	is_hitting = false;
 	current_animation = &animation_pool["idle"];
+
+	hurt_box->set_enabled(true);
+	hit_box->set_enabled(false);
 }

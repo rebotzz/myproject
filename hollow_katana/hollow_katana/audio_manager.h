@@ -3,6 +3,8 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <unordered_map>
+#include <string>
 #include <Windows.h>
 
 // 为了避免mciSendString()可能的阻塞,使用单独线程播放
@@ -30,12 +32,16 @@ private:
 	std::queue<AudioInfo> load_queue;
 	std::queue<AudioPlayOption> play_queue;
 	std::queue<LPCTSTR> stop_queue;
+	std::queue<LPCTSTR> resume_queue;
+	std::queue<LPCTSTR> pause_queue;
 	// 缓冲区
 	std::queue<AudioInfo> load_queue_buffer;
 	std::queue<AudioPlayOption> play_queue_buffer;
 	std::queue<LPCTSTR> stop_queue_buffer;
+	std::queue<LPCTSTR> resume_queue_buffer;
+	std::queue<LPCTSTR> pause_queue_buffer;
 	// 线程,锁,条件变量
-	std::thread* player = nullptr;
+	std::thread* audio_player = nullptr;
 	std::mutex mtx;
 	std::condition_variable cond;
 
@@ -48,5 +54,7 @@ public:
 	void load_audio_ex(LPCTSTR path, LPCTSTR id);
 	void play_audio_ex(LPCTSTR id, bool is_loop = false);
 	void stop_audio_ex(LPCTSTR id);
+	void pause_audio_ex(LPCTSTR id);
+	void resume_audio_ex(LPCTSTR id);
 };
 

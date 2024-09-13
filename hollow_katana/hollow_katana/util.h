@@ -74,6 +74,20 @@ static inline void stop_audio(LPCTSTR id)
 	mciSendString(buff, nullptr, 0, nullptr);
 }
 
+static inline void pause_audio(LPCTSTR id)
+{
+	static TCHAR buff[256] = { 0 };
+	_stprintf_s(buff, _T("pause %s"), id);
+	mciSendString(buff, nullptr, 0, nullptr);
+}
+
+static inline void resume_audio(LPCTSTR id)
+{
+	static TCHAR buff[256] = { 0 };
+	_stprintf_s(buff, _T("resume %s"), id);
+	mciSendString(buff, nullptr, 0, nullptr);
+}
+
 static inline int random_range(int min_num, int max_num)
 {
 	return min_num + rand() % (max_num - min_num + 1);

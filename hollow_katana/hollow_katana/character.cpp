@@ -6,7 +6,7 @@ Character::Character()
 	hurt_box = CollisionManager::instance()->create_collision_box();
 
 	timer_invulnerable_status.set_one_shot(true);
-	timer_invulnerable_status.set_wait_time(1.0f);
+	timer_invulnerable_status.set_wait_time(TIME_INVULNERABLE);
 	timer_invulnerable_blink.set_one_shot(false);
 	timer_invulnerable_blink.set_wait_time(0.075f);
 	timer_invulnerable_status.set_on_timeout([&]()
@@ -30,11 +30,13 @@ void Character::switch_state(const std::string& id)
 	state_machine.switch_to(id);
 }
 
-void Character::make_invulnerable()
+void Character::make_invulnerable(bool is_blink, float delta_ratio)
 {
 	is_invulnerable_status = true;
+	timer_invulnerable_status.set_wait_time(TIME_INVULNERABLE * delta_ratio);
 	timer_invulnerable_status.restart();
-	timer_invulnerable_blink.restart();
+	if(is_blink) 
+		timer_invulnerable_blink.restart();
 }
 
 void Character::set_animation(const std::string& id)

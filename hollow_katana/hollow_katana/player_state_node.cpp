@@ -1,8 +1,10 @@
 #include "player_state_node.h"
-#include "character_manager.h"
 #include "player.h"
+#include "character_manager.h"
 #include "audio_manager.h"
 #include "scene_manager.h"
+#include "particle_manager.h"
+#include "effect.h"
 
 void PlayerAttackState::on_enter()
 {
@@ -190,48 +192,6 @@ void PlayerIdleState::on_update(float delta)
 }
 
 
-PlayerDeadState::PlayerDeadState()
-{
-	timer.set_one_shot(true);
-	timer.set_wait_time(2.0f);
-	timer.set_on_timeout([&]()
-		{
-			can_next = true;
-		});
-}
-
-void PlayerDeadState::on_enter()
-{
-	CharacterManager::instance()->get_player()->set_animation("dead");
-
-	can_next = false;
-	timer.restart();
-
-	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
-	player->set_velocity({ 0, 0 });
-	player->on_jump(0.5f);
-	player->enable_displace_ex(player->get_facing_redir(), player->get_stay_air_time());
-
-	AudioManager::instance()->play_audio_ex(_T("player_dead"));
-}
-
-void PlayerDeadState::on_update(float delta)
-{
-	timer.on_update(delta);
-
-	if (can_next)
-	{
-		can_next = false;
-		MessageBox(GetHWnd(), _T("不对......\n这样不行"), _T("角色死亡"), MB_OK);
-
-		// 场景切换: 回溯时间
-		SceneManager::instance()->switch_scene("game_reverse_time");
-	}
-}
-
-
-
-
 void PlayerDanceState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("dance");
@@ -263,5 +223,65 @@ void PlayerDanceState::on_update(float delta)
 void PlayerDanceState::on_exit()
 {
 	// 关闭播放特殊的BGM
-
 }
+
+
+PlayerDeadState::PlayerDeadState()
+{
+	timer_cd.set_one_shot(true);
+	timer_cd.set_wait_time(2.0f);
+	timer_cd.set_on_timeout([&]()
+		{
+			can_next = true;
+		});
+
+	timer_text.set_one_shot(false);
+	timer_text.set_wait_time(0.49f);
+	timer_text.set_on_timeout([]
+		{
+			// 死亡文本提示
+			std::shared_ptr<EffectText> text_1 = std::make_shared<EffectText>(_T("不对......这样不行"),
+				0.5f, RGB(0, 255, 255));
+			std::shared_ptr<EffectText> text_2 = std::make_shared<EffectText>(_T("按[R]回溯时间"),
+				0.5f, RGB(0, 255, 255));
+			text_1->set_position({ (float)getwidth() / 2, (float)getheight() / 2 - 20 });
+			text_1->set_text_offset(0, -20);
+			text_2->set_position({ (float)getwidth() / 2, (float)getheight() / 2 + 20 });
+			text_2->set_enable_background(false);
+			ParticleManager::instance()->register_particle(text_1);
+			ParticleManager::instance()->register_particle(text_2);
+		});
+}
+
+void PlayerDeadState::on_enter()
+{
+	CharacterManager::instance()->get_player()->set_animation("dead");
+	AudioManager::instance()->play_audio_ex(_T("player_dead"));
+
+	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	player->set_velocity({ 0, 0 });
+	player->on_jump(0.5f);
+	player->enable_displace_ex(player->get_facing_redir(), player->get_stay_air_time());
+	player->get_hurt_box()->set_enabled(false);
+	timer_cd.restart();
+}
+
+void PlayerDeadState::on_update(float delta)
+{
+	timer_cd.on_update(delta);
+
+	// 按R键盘继续
+	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	if (can_next && player->can_dance())
+	{
+		// 场景切换: 回溯时间
+		SceneManager::instance()->switch_scene("game_reverse_time");
+		player->get_hurt_box()->set_enabled(true);
+	}
+	else
+		timer_text.on_update(delta);
+}
+
+
+
+

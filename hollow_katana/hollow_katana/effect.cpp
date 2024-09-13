@@ -20,7 +20,10 @@ EffectHurt::EffectHurt(bool is_left)
 	animation_vfx.set_interval(0.03f);
 }
 
-EffectTimeRun::EffectTimeRun()
+
+
+
+EffectBlend::EffectBlend()
 {
 	// 加载动画资源
 	animation_vfx.set_achor_mode(Animation::AchorMode::BottomCentered);
@@ -33,12 +36,57 @@ EffectTimeRun::EffectTimeRun()
 
 	base = ResourcesManager::instance()->find_image("effect_mixed_blue_1");
 }
-EffectTimeRun::~EffectTimeRun()
-{}
 
-void EffectTimeRun::add_image(IMAGE& image)
+
+void EffectBlend::add_image(IMAGE& image)
 {
-	ResourcesManager::bend_image(&image, &frame, base, 0.55f);
+	ResourcesManager::bend_image(&image, &frame, base, blend_ratio);
 
 	animation_vfx.add_frame(&frame, 1);
+}
+
+EffectBulletTime::EffectBulletTime()
+{
+	animation_vfx.set_interval(0.15f);
+	base = ResourcesManager::instance()->find_image("effect_mixed_blue_1");
+	blend_ratio = 0.55f;
+}
+
+EffectRoll::EffectRoll()
+{
+	base = ResourcesManager::instance()->find_image("effect_mixed_blue_2");
+	animation_vfx.set_interval(0.07f);
+	blend_ratio = 0.35f;
+}
+
+
+
+EffectText::EffectText(LPCTSTR text, float delta, COLORREF color)
+{
+	this->text = text;
+
+	text_color = color;
+	timer.set_one_shot(true);
+	timer.set_wait_time(delta);
+	timer.set_on_timeout([&]
+		{
+			is_valid = false;
+		});
+
+	background = ResourcesManager::instance()->find_image("test_background_black");
+}
+void EffectText::on_update(float delta)
+{
+	timer.on_update(delta);
+}
+void EffectText::on_render()
+{
+	// 居中绘制
+	if (enable_background)
+	{
+		putimage_alpha((int)position.x - background->getwidth() / 2,
+			(int)position.y - background->getheight() / 2, background);
+	}
+	settextcolor(text_color);
+	outtextxy((int)position.x - textwidth(text) / 2 + offset_x, (int)position.y - textheight(text) / 2 + offset_y, text);
 }

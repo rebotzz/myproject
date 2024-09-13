@@ -8,7 +8,7 @@ AudioManager* AudioManager::manager = new AudioManager;
 
 AudioManager::AudioManager()
 {
-	player = new std::thread([&]()
+	audio_player = new std::thread([&]()
 		{
 			while (true)
 			{
@@ -26,6 +26,12 @@ AudioManager::AudioManager()
 
 					if (stop_queue.empty() && !stop_queue_buffer.empty())
 						stop_queue.swap(stop_queue_buffer);
+
+					if (resume_queue.empty() && !resume_queue_buffer.empty())
+						resume_queue.swap(resume_queue_buffer);
+
+					if (pause_queue.empty() && !pause_queue_buffer.empty())
+						pause_queue.swap(pause_queue_buffer);
 				}
 
 
@@ -49,17 +55,31 @@ AudioManager::AudioManager()
 					stop_queue.pop();
 					stop_audio(front);
 				}
+
+				while (!resume_queue.empty())
+				{
+					auto front = resume_queue.front();
+					resume_queue.pop();
+					resume_audio(front);
+				}
+
+				while (!pause_queue.empty())
+				{
+					auto front = pause_queue.front();
+					pause_queue.pop();
+					pause_audio(front);
+				}
 			}
 		});
 }
 
-// 单例生命周期随进程,所有析构不会调用
+// 单例生命周期随进程,析构不会调用
 AudioManager::~AudioManager()
 {
-	if (player)
+	if (audio_player)
 	{
-		player->join();
-		delete player;
+		audio_player->join();
+		delete audio_player;
 	}
 }
 
@@ -84,7 +104,7 @@ void AudioManager::load_audio_ex(LPCTSTR path, LPCTSTR id)
 void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 {
 	{
-		//std::unique_lock<std::mutex> lock(mtx);
+		std::unique_lock<std::mutex> lock(mtx);
 		play_queue_buffer.push({ id, is_loop });
 	}
 
@@ -94,10 +114,29 @@ void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 void AudioManager::stop_audio_ex(LPCTSTR id)
 {
 	{
-		//std::unique_lock<std::mutex> lock(mtx);
+		std::unique_lock<std::mutex> lock(mtx);
 		stop_queue_buffer.push(id);
 	}
 
 	cond.notify_one();
 }
 
+void AudioManager::pause_audio_ex(LPCTSTR id)
+{
+	{
+		std::unique_lock<std::mutex> lock(mtx);
+		pause_queue_buffer.push(id);
+	}
+
+	cond.notify_one();
+}
+
+void AudioManager::resume_audio_ex(LPCTSTR id)
+{
+	{
+		std::unique_lock<std::mutex> lock(mtx);
+		resume_queue_buffer.push(id);
+	}
+
+	cond.notify_one();
+}

@@ -10,7 +10,7 @@ CharacterManager* CharacterManager::manager = nullptr;
 
 CharacterManager::CharacterManager()
 {
-	player = std::shared_ptr<Character>(new Player);
+	player = std::shared_ptr<Player>(new Player);
 }
 CharacterManager::~CharacterManager()
 {}

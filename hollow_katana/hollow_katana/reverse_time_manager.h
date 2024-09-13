@@ -13,15 +13,16 @@ private:
 
 private:
 	// 缓慢进入效果控制
-	const float FRAME_CD = 0.1f;							// 捕获屏幕画面cd
-	const float SPEED_PROGRESS = 0.5f;						// 进入加速播放速度,2s
-	const float DST_DELTA_FACTOR = 3.0f;					// 最终播放系数,3倍数
+	const float FRAME_CD = 0.35f;							// 捕获屏幕画面cd,不能太大,才几分钟内存就用了1G
+	const float SPEED_PROGRESS = 0.3f;						// 进入加速播放速度
+	const float DST_DELTA_FACTOR = 5.0f;					// 最终播放速度倍数
 
 private:
 	Animation animation;									// 回放播放器
 	std::vector<IMAGE> history_frame_list;					// 记录历史画面
 	Timer timer_record_frame;								// 记录的时间间隔
 	bool is_reverse = false;
+	bool is_record = true;
 	bool is_enable = true;
 	float progress = 0.0f;									// 进度[0, 1]
 
@@ -39,6 +40,10 @@ public:
 	void set_enable(bool flag)
 	{
 		is_enable = true;
+	}
+	void set_record(bool flag)
+	{
+		is_record = flag;
 	}
 
 	bool check_over() const

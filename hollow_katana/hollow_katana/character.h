@@ -19,7 +19,8 @@ protected:
 protected:																
 	const float FLOOR_Y = 620;											// 地面竖直高度y坐标
 	const float GRAVITY = 980 * 2;										// 重力常数
-																		
+	const float TIME_INVULNERABLE = 1.0f;								// 无敌帧时长
+
 protected:						
 	int hp_max = 1;														// 生命值上限
 	int hp = 1;															// 生命值
@@ -43,7 +44,7 @@ public:
 	~Character();
 
 	void switch_state(const std::string& id);
-	void make_invulnerable();
+	void make_invulnerable(bool is_blink = true, float delta_ratio = 1.0f);
 	void set_animation(const std::string& id);
 	void decrease_hp();
 
@@ -54,11 +55,13 @@ public:
 	virtual void on_update(float delta);
 	virtual void on_render();
 
+	bool is_on_floor() const { return position.y >= FLOOR_Y; }
+	float get_floor_y() const { return FLOOR_Y; }
 	int get_hp_max() const { return hp_max; }
 	int get_hp() const { return hp; }
 	void set_gravity_enable(bool flag) { enable_gravity = flag; }
-	bool is_on_floor() const { return position.y >= FLOOR_Y; }
-	float get_floor_y() const { return FLOOR_Y; }
+	void set_facing_left(bool flag) { is_facing_left = flag; }
+	bool get_facing_left() const { return is_facing_left; }
 
 	Vector2 get_logic_center() const { return { position.x, position.y - logic_height / 2 }; }
 	void set_position(const Vector2& position) { this->position = position; }

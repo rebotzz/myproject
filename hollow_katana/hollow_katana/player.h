@@ -18,10 +18,9 @@ private:
 	const float ROLL_CD = 0.95f;
 	const float ATTACK_CD = 0.7f;
 
-	const float BULLET_TIME_TOTAL = 2.0f;
-	const float SPEED_DISPLACE_AXIS = 300.0f;
-	const float SPEED_DISPLACE_UP = 780.0f;
-	const float HIT_CD = 0.4f;
+	const float BULLET_TIME_TOTAL = 2.0f;							// 子弹时间最大值
+	const float SPEED_DISPLACE_AXIS = 300.0f;						// 特殊位移(水平)速度
+	const float SPEED_DISPLACE_UP_MAX = 780.0f;						// 特殊位移(上)速度最大值
 
 private:
 	Timer timer_roll_cd;											// 翻滚冷却时间定时器
@@ -60,17 +59,18 @@ private:
 	bool is_displace_ex = false;									// 是否特殊位移
 	Timer timer_enable_displace_ex;
 	Timer timer_displace_ex;										// 角色特殊位移(攻击)定时器
+	float speed_displace_up = 780.0f;								// 特殊位移(上)速度
+
 
 	// 武器击中后坐力
-	Timer timer_hit_collide_cd;
-	Timer timer_recoiling;
-	bool is_hitting_collide = false;
-	bool is_hit_collide_cd_comp = true;
-	float recoil_delta = 0.2f;
+	Timer timer_recoiling;											// 后坐力计时器
 	float speed_jump = 780.0f;										// 跳跃高度控制
 
-	Timer timer_create_bullet_time_effect;
+	Timer timer_hit_effect;											// 击中效果定时器
+	bool is_hitting = false;										// 击中效果状态
+	bool is_hit_cd_comp = true;										// 击中效果CD
 
+	Timer timer_create_particle_effect;
 
 private:
 	StatusBar status_bar;
@@ -102,7 +102,7 @@ public:
 	int get_move_axis() const { return is_right_key_down - is_left_key_down; }
 	Direction get_attack_dir() const { return attack_dir; }
 
-	// my add
+	// add
 	float get_total_bullet_time() const { return BULLET_TIME_TOTAL; }
 	float get_current_bullet_time() const { return current_bullet_time; }
 	Direction get_facing_redir() const { return is_facing_left ? Direction::Right : Direction::Left; }
@@ -121,6 +121,7 @@ private:
 	void create_hit_effect();
 	void create_hurt_effect();
 	void create_bullet_time_effect();
+	void create_roll_effect();
 
 private:
 	void update_attack_dir(float mouse_x, float mouse_y);

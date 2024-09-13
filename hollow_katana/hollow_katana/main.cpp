@@ -20,6 +20,7 @@ const Camera* main_camera = nullptr;
 
 int main()
 {
+
 	// ³õÊ¼»¯
 	HWND hwnd = initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, EX_SHOWCONSOLE);
 	SetWindowText(hwnd, _T("Hollow Katana"));
@@ -43,7 +44,6 @@ int main()
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 
-	AudioManager::instance()->play_audio_ex(_T("bgm"), true);
 	main_camera = &(SceneManager::instance()->get_camera());
 	SceneManager::instance()->set_entry_scene("game_scene_boss_hornet");
 
@@ -71,7 +71,7 @@ int main()
 			cleardevice();
 
 			SceneManager::instance()->on_render();
-			CollisionManager::instance()->on_debug_render();
+			//CollisionManager::instance()->on_debug_render();
 
 			FlushBatchDraw();
 

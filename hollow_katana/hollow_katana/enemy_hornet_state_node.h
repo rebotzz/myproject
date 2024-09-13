@@ -10,178 +10,180 @@
 // ´ó»Æ·äAIÂß¼­×´Ì¬½Úµã 1.0
 #if 0
 
-//// [ÏĞÖÃ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÌøÔ¾ ±¼ÅÜ Ãé×¼ ÈÓ½£ ÈÓ´ÌÇò ÈÓË¿Ïß
-//class EnemyHornetIdleState : public StateNode
-//{
-//private:
-//	Timer timer;
-//	const float CD = 0.75f;
-//	bool can_switch_state = false;
-//
-//public:
-//	EnemyHornetIdleState();
-//	~EnemyHornetIdleState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//};
-//
-//
-//// [ÌøÔ¾]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏÂÂä ¿ÕÖĞ³å´Ì ÈÓË¿Ïß  ->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
-//class EnemyHornetJumpState : public StateNode
-//{
-//private:
-//	bool is_jump_left = false;
-//
-//public:
-//	EnemyHornetJumpState() = default;
-//	~EnemyHornetJumpState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//};
-//
-//// [±¼ÅÜ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ ÌøÔ¾ Ãé×¼ ÈÓ½£ ÈÓË¿Ïß	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
-//class EnemyHornetRunState : public StateNode
-//{
-//public:
-//	EnemyHornetRunState() = default;
-//	~EnemyHornetRunState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//	virtual void on_exit()  override;
-//};
-//
-//// [ÏÂÂä]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ 	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
-//class EnemyHornetFallState : public StateNode
-//{
-//public:
-//	EnemyHornetFallState() = default;
-//	~EnemyHornetFallState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//};
-//
-//// [¿ÕÖĞ³å´Ì]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-//class EnemyHornetDashAirState : public StateNode
-//{
-//private:
-//	Timer timer;
-//
-//public:
-//	EnemyHornetDashAirState();
-//	~EnemyHornetDashAirState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//	virtual void on_exit()  override;
-//};
-//
-//// [µØÃæ³å´Ì]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-//class EnemyHornetDashFloorState : public StateNode
-//{
-//private:
-//	Timer timer;
-//
-//public:
-//	EnemyHornetDashFloorState();
-//	~EnemyHornetDashFloorState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//	virtual void on_exit()  override;
-//};
-//
-//// [Ãé×¼]¿ÉÌø×ª×´Ì¬: ËÀÍö µØÃæ³å´Ì
-//class EnemyHornetAimState : public StateNode
-//{
-//private:
-//	Timer timer;
-//	const float CD = 0.55f;
-//
-//public:
-//	EnemyHornetAimState();
-//	~EnemyHornetAimState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//};
-//
-//
-//// [ÈÓ½£]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-//class EnemyHornetThrowSwordState : public StateNode
-//{
-//private:
-//	Timer timer;
-//
-//public:
-//	EnemyHornetThrowSwordState();
-//	~EnemyHornetThrowSwordState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//	virtual void on_exit()  override;
-//};
-//
-//// [ÈÓ´ÌÇò]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-//class EnemyHornetThrowBarbsState : public StateNode
-//{
-//private:
-//	Timer timer;
-//
-//public:
-//	EnemyHornetThrowBarbsState();
-//	~EnemyHornetThrowBarbsState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//	virtual void on_exit()  override;
-//};
-//
-//// [ÈÓË¿Ïß]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-//class EnemyHornetThrowSilkState : public StateNode
-//{
-//private:
-//	Timer timer;
-//
-//public:
-//	EnemyHornetThrowSilkState();
-//	~EnemyHornetThrowSilkState() = default;
-//	virtual void on_enter()  override;
-//	virtual void on_update(float delta) override;
-//	virtual void on_exit()  override;
-//};
-//
-//// [ËÀÍö]: ½áÊøÕ½¶·
-//class EnemyHornetDeadState : public StateNode
-//{
-//public:
-//	EnemyHornetDeadState() = default;
-//	~EnemyHornetDeadState() = default;
-//	virtual void on_enter()  override;
-//};
-//
+namespace hornet_state_version_1
+{
+	// [ÏĞÖÃ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÌøÔ¾ ±¼ÅÜ Ãé×¼ ÈÓ½£ ÈÓ´ÌÇò ÈÓË¿Ïß
+	class EnemyHornetIdleState : public StateNode
+	{
+	private:
+		Timer timer;
+		const float CD = 0.75f;
+		bool can_switch_state = false;
+
+	public:
+		EnemyHornetIdleState();
+		~EnemyHornetIdleState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
+
+
+	// [ÌøÔ¾]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏÂÂä ¿ÕÖĞ³å´Ì ÈÓË¿Ïß  ->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
+	class EnemyHornetJumpState : public StateNode
+	{
+	private:
+		bool is_jump_left = false;
+
+	public:
+		EnemyHornetJumpState() = default;
+		~EnemyHornetJumpState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
+
+	// [±¼ÅÜ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ ÌøÔ¾ Ãé×¼ ÈÓ½£ ÈÓË¿Ïß	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
+	class EnemyHornetRunState : public StateNode
+	{
+	public:
+		EnemyHornetRunState() = default;
+		~EnemyHornetRunState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit()  override;
+	};
+
+	// [ÏÂÂä]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ 	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
+	class EnemyHornetFallState : public StateNode
+	{
+	public:
+		EnemyHornetFallState() = default;
+		~EnemyHornetFallState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
+
+	// [¿ÕÖĞ³å´Ì]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
+	class EnemyHornetDashAirState : public StateNode
+	{
+	private:
+		Timer timer;
+
+	public:
+		EnemyHornetDashAirState();
+		~EnemyHornetDashAirState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit()  override;
+	};
+
+	// [µØÃæ³å´Ì]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
+	class EnemyHornetDashFloorState : public StateNode
+	{
+	private:
+		Timer timer;
+
+	public:
+		EnemyHornetDashFloorState();
+		~EnemyHornetDashFloorState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit()  override;
+	};
+
+	// [Ãé×¼]¿ÉÌø×ª×´Ì¬: ËÀÍö µØÃæ³å´Ì
+	class EnemyHornetAimState : public StateNode
+	{
+	private:
+		Timer timer;
+		const float CD = 0.55f;
+
+	public:
+		EnemyHornetAimState();
+		~EnemyHornetAimState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
+
+
+	// [ÈÓ½£]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
+	class EnemyHornetThrowSwordState : public StateNode
+	{
+	private:
+		Timer timer;
+
+	public:
+		EnemyHornetThrowSwordState();
+		~EnemyHornetThrowSwordState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit()  override;
+	};
+
+	// [ÈÓ´ÌÇò]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
+	class EnemyHornetThrowBarbsState : public StateNode
+	{
+	private:
+		Timer timer;
+
+	public:
+		EnemyHornetThrowBarbsState();
+		~EnemyHornetThrowBarbsState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit()  override;
+	};
+
+	// [ÈÓË¿Ïß]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
+	class EnemyHornetThrowSilkState : public StateNode
+	{
+	private:
+		Timer timer;
+
+	public:
+		EnemyHornetThrowSilkState();
+		~EnemyHornetThrowSilkState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit()  override;
+	};
+
+	// [ËÀÍö]: ½áÊøÕ½¶·
+	class EnemyHornetDeadState : public StateNode
+	{
+	public:
+		EnemyHornetDeadState() = default;
+		~EnemyHornetDeadState() = default;
+		virtual void on_enter()  override;
+	};
+}
 
 #endif
 
 
 
 // ´ó»Æ·äAIÂß¼­×´Ì¬½Úµã 2.0
+// ²ßÂÔ: 1.°ëÑªÒÔÉÏ[²àÖØ½üÕ½¹¥»÷] 2.°ëÑªÒÔÏÂ[²àÖØÔ¶³Ì¹¥»÷] 
 
-// [ÏĞÖÃ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÌøÔ¾ ±¼ÅÜ Ãé×¼ ÈÓ½£ ÈÓ´ÌÇò ÈÓË¿Ïß
+// [ÏĞÖÃ]
 class EnemyHornetIdleState : public StateNode
 {
 private:
 	Timer timer;
-	const float CD = 0.75f;
-	bool can_switch_state = false;
 
 public:
 	EnemyHornetIdleState();
 	~EnemyHornetIdleState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
+	virtual void on_exit() override;
 };
 
-
-// [ÌøÔ¾]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏÂÂä ¿ÕÖĞ³å´Ì ÈÓË¿Ïß  ->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
+// [ÌøÔ¾]
 class EnemyHornetJumpState : public StateNode
 {
 private:
 	bool is_jump_left = false;
+	const float SPEED_JUMP = 1300.0f;
 
 public:
 	EnemyHornetJumpState() = default;
@@ -190,9 +192,13 @@ public:
 	virtual void on_update(float delta) override;
 };
 
-// [±¼ÅÜ]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ ÌøÔ¾ Ãé×¼ ÈÓ½£ ÈÓË¿Ïß	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
+// [±¼ÅÜ]
 class EnemyHornetRunState : public StateNode
 {
+private:
+	const float SPEED_RUN = 400.0f;
+	const float MIN_DISTANCE = 250.0f;
+
 public:
 	EnemyHornetRunState() = default;
 	~EnemyHornetRunState() = default;
@@ -201,7 +207,7 @@ public:
 	virtual void on_exit()  override;
 };
 
-// [ÏÂÂä]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ 	->¿ÉÒÆ¶¯½Ó½üÍæ¼Ò
+// [ÏÂÂä]
 class EnemyHornetFallState : public StateNode
 {
 public:
@@ -211,40 +217,41 @@ public:
 	virtual void on_update(float delta) override;
 };
 
-// [¿ÕÖĞ³å´Ì]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-class EnemyHornetDashAirState : public StateNode
+// [¿ÕÖĞ³å´Ì]
+class EnemyHornetDashInAirState : public StateNode
 {
 private:
 	Timer timer;
+	const float SPEED_DASH = 1500.0f;
 
 public:
-	EnemyHornetDashAirState();
-	~EnemyHornetDashAirState() = default;
+	EnemyHornetDashInAirState();
+	~EnemyHornetDashInAirState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
 };
 
-// [µØÃæ³å´Ì]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-class EnemyHornetDashFloorState : public StateNode
+// [µØÃæ³å´Ì]
+class EnemyHornetOnDashFloorState : public StateNode
 {
 private:
 	Timer timer;
+	const float SPEED_DASH = 1500.0f;
 
 public:
-	EnemyHornetDashFloorState();
-	~EnemyHornetDashFloorState() = default;
+	EnemyHornetOnDashFloorState();
+	~EnemyHornetOnDashFloorState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;
 };
 
-// [Ãé×¼]¿ÉÌø×ª×´Ì¬: ËÀÍö ¿ÕÖĞ³å´Ì(¿ÕÖĞ³å´ÌÇ°ÖÃ×´Ì¬)
+// [Ãé×¼]¿ÕÖĞ³å´ÌÇ°ÖÃ×´Ì¬
 class EnemyHornetAimState : public StateNode
 {
 private:
 	Timer timer;
-	const float CD = 0.5f;
 
 public:
 	EnemyHornetAimState();
@@ -253,22 +260,34 @@ public:
 	virtual void on_update(float delta) override;
 };
 
-
-// [ÈÓ½£]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
-class EnemyHornetThrowSwordState : public StateNode
+// [ÏÂ¶×]µØÃæ³å´ÌÇ°ÖÃ×´Ì¬
+class EnemyHornetSquatState : public StateNode
 {
 private:
 	Timer timer;
+
+public:
+	EnemyHornetSquatState();
+	~EnemyHornetSquatState() = default;
+	virtual void on_enter()  override;
+	virtual void on_update(float delta) override;
+};
+
+// [ÈÓ½£]
+class EnemyHornetThrowSwordState : public StateNode
+{
+private:
+	Timer timer_throw;
+	Timer timer_switch;
 
 public:
 	EnemyHornetThrowSwordState();
 	~EnemyHornetThrowSwordState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
 };
 
-// [ÈÓ´ÌÇò]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
+// [ÈÓ´ÌÇò]
 class EnemyHornetThrowBarbsState : public StateNode
 {
 private:
@@ -282,7 +301,7 @@ public:
 	virtual void on_exit()  override;
 };
 
-// [ÈÓË¿Ïß]¿ÉÌø×ª×´Ì¬: ËÀÍö ÏĞÖÃ
+// [ÈÓË¿Ïß]
 class EnemyHornetThrowSilkState : public StateNode
 {
 private:
@@ -293,10 +312,9 @@ public:
 	~EnemyHornetThrowSilkState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
 };
 
-// [ËÀÍö]: ½áÊøÕ½¶·
+// [ËÀÍö]
 class EnemyHornetDeadState : public StateNode
 {
 public:

@@ -1,5 +1,4 @@
 #include "enemy_dragon_king.h"
-
 #include "resources_manager.h"
 #include "audio_manager.h"
 #include "enemy_dragon_king_state_node.h"
@@ -105,17 +104,18 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 	{
 		// todo: 武器刀光特效
 
-		Animation& animation_dash_in_air_left = animation_dash_in_air_vfx.left;
-		animation_dash_in_air_left.set_interval(0.1f);
-		animation_dash_in_air_left.set_loop(true);
-		animation_dash_in_air_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_dash_in_air_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_vfx_dash_left"));
+		//Animation& animation_dash_in_air_left = animation_dash_in_air_vfx.left;
+		//animation_dash_in_air_left.set_interval(0.1f);
+		//animation_dash_in_air_left.set_loop(true);
+		//animation_dash_in_air_left.set_achor_mode(Animation::AchorMode::BottomCentered);
+		//animation_dash_in_air_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_vfx_dash_left"));
 
-		Animation& animation_dash_in_air_right = animation_dash_in_air_vfx.right;
-		animation_dash_in_air_right.set_interval(0.1f);
-		animation_dash_in_air_right.set_loop(true);
-		animation_dash_in_air_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_dash_in_air_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_vfx_dash_right"));
+		//Animation& animation_dash_in_air_right = animation_dash_in_air_vfx.right;
+		//animation_dash_in_air_right.set_interval(0.1f);
+		//animation_dash_in_air_right.set_loop(true);
+		//animation_dash_in_air_right.set_achor_mode(Animation::AchorMode::BottomCentered);
+		//animation_dash_in_air_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_vfx_dash_right"));
+	
 	}
 
 	// 状态机初始化
@@ -134,7 +134,5 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 
 EnemyDragonKing::~EnemyDragonKing()
 {
-	CollisionManager::instance()->destroy_collision_box(collision_box_silk);
-
-	AudioManager::instance()->stop_audio_ex(_T("enemy_dragon_kingrun"));
+	//AudioManager::instance()->stop_audio_ex(_T("enemy_dragon_kingrun"));
 }

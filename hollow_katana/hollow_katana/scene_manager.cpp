@@ -8,7 +8,7 @@
 
 #include "scene_game_boss_hornet.h"
 #include "scene_game_reverse_time.h"
-#include "scene_game_boss_dragon_king.h"
+//#include "scene_game_boss_dragon_king.h"
 
 SceneManager* SceneManager::manager = nullptr;
 
@@ -22,7 +22,7 @@ SceneManager::SceneManager()
 
 	scene_pool["game_scene_boss_hornet"] = std::shared_ptr<SceneGameBossHornet>(new SceneGameBossHornet);
 	scene_pool["game_reverse_time"] = std::shared_ptr<SceneGameReverseTime>(new SceneGameReverseTime);
-	scene_pool["game_scene_boss_dragon_king"] = std::shared_ptr<SceneGameBossDragonKing>(new SceneGameBossDragonKing);
+	//scene_pool["game_scene_boss_dragon_king"] = std::shared_ptr<SceneGameBossDragonKing>(new SceneGameBossDragonKing);
 }
 
 SceneManager::~SceneManager()

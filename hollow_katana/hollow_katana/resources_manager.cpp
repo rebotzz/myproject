@@ -40,10 +40,12 @@ static const std::vector<ImageResInfo> image_info_list =
 	{"player_vfx_land",				_T(R"(resources\player\vfx_land.png)") },
 
 	// 混叠图片
-	{ "effect_mixed_blue_1",		_T(R"(resources\effect\mixed_image\mixed_blue_1.png)") },
-	{ "effect_mixed_blue_2",		_T(R"(resources\effect\mixed_image\mixed_blue_2.png)") },
-	{ "effect_mixed_red",			_T(R"(resources\effect\mixed_image\red.png)") }
+	{ "effect_mixed_blue_1",		_T(R"(resources\effect\mixed_image\blue_1.png)") },
+	{ "effect_mixed_blue_2",		_T(R"(resources\effect\mixed_image\blue_2.png)") },
+	{ "effect_mixed_red",			_T(R"(resources\effect\mixed_image\red.png)") },
 
+	// 文本底色
+	{ "test_background_black",		_T(R"(resources\effect\mixed_image\test_background_black.png)") }
 };
 
 
@@ -75,7 +77,7 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 	{"player_dance_right",  _T(R"(resources\player\dance\%d.png)"), 12},
 
 	// 敌人:龙王
-	//{"enemy_long_idle_left",			       _T(R"(resources\dragon_king\attack\%d.png)"),15},
+	//{"enemy_long_idle_left",			       _T(R"(resources\enemy\dragon_king\attack\%d.png)"),15},
 
 
 	// 新加粒子特效
@@ -235,12 +237,12 @@ void ResourcesManager::load()
 	blend_atlas("particle_vfx_hurt_yellow_left", "particle_vfx_hurt_red_left", "effect_mixed_red");
 
 
-
 	// 加载音频
 	AudioManager* audio_player = AudioManager::instance();
-	audio_player->load_audio_ex(_T(R"(resources\audio\bgm.mp3)"), _T("bgm"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm.mp3)"), _T("bgm_1"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\barb_break.mp3)"), _T("barb_break"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\bullet_time.mp3)"), _T("bullet_time"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\reverse_time.mp3)"), _T("reverse_time"));
 
 	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_dash.mp3)"), _T("enemy_dash"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\enemy_run.mp3)"), _T("enemy_run"));
@@ -265,8 +267,10 @@ void ResourcesManager::load()
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_run.mp3)"), _T("player_run"));
 
 
-	// todo: 加载导入字体
-
+	// 加载导入字体
+	AddFontResourceEx(_T("resources/font/IPix.ttf"), FR_PRIVATE, nullptr);
+	settextstyle(25, 0, _T("IPix"));
+	setbkmode(TRANSPARENT);
 }
 
 
@@ -294,7 +298,7 @@ void  ResourcesManager::bend_image(IMAGE* src, IMAGE* dst, IMAGE* base, float bl
 	DWORD* img_base_buffer = GetImageBuffer(base);
 
 	if (base->getwidth() < width || base->getheight() < height)
-		throw std::invalid_argument("base图片过小");
+		throw std::invalid_argument("bend_image base图片过小");
 
 	for (int y = 0; y < height; ++y)
 	{

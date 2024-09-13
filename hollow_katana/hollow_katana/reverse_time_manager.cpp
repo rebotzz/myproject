@@ -44,11 +44,10 @@ void ReverseTimeManager::on_update(float delta)
 			animation.on_update(delta);
 
 			// todo:
-			// 播放时间逆流音效
 			// 生成黑色斑驳粒子特效, 粒子发生器
 		}
 
-		if (!is_reverse)
+		if (!is_reverse && is_record)
 			timer_record_frame.on_update(delta);
 	}
 }
@@ -121,6 +120,6 @@ void ReverseTimeManager::update_player_speed(float delta)
 		};
 
 	float speed_ratio = lerp(1.0, DST_DELTA_FACTOR, progress);
-	float current_frame_cd = delta * FRAME_CD / speed_ratio;
+	float current_frame_cd = FRAME_CD / speed_ratio;
 	animation.set_interval(current_frame_cd);
 }

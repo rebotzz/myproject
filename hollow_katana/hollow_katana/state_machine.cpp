@@ -10,6 +10,7 @@ StateMachine::~StateMachine()
 	}
 }
 
+// 为了避免用switch_to,调用的CharacterManager构造时调用Player构造,死循环
 void StateMachine::set_entry(const std::string& id)
 {
 	current_state = state_pool[id];

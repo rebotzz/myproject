@@ -225,9 +225,10 @@ EnemyHornet::EnemyHornet() :Character()
 		state_machine.register_state("jump", new EnemyHornetJumpState);
 		state_machine.register_state("run", new EnemyHornetRunState);
 		state_machine.register_state("fall", new EnemyHornetFallState);
-		state_machine.register_state("dash_in_air", new EnemyHornetDashAirState);
-		state_machine.register_state("dash_on_floor", new EnemyHornetDashFloorState);
+		state_machine.register_state("dash_in_air", new EnemyHornetDashInAirState);
+		state_machine.register_state("dash_on_floor", new EnemyHornetOnDashFloorState);
 		state_machine.register_state("aim", new EnemyHornetAimState);
+		state_machine.register_state("squat", new EnemyHornetSquatState);
 		state_machine.register_state("throw_sword", new EnemyHornetThrowSwordState);
 		state_machine.register_state("throw_barbs", new EnemyHornetThrowBarbsState);
 		state_machine.register_state("throw_silk", new EnemyHornetThrowSilkState);

@@ -188,7 +188,6 @@ private:
 		Fall, Aim, ThrowSilk
 	};
 private:
-	bool is_jump_left = false;
 	const float SPEED_JUMP = 1300.0f;
 	const float SPEED_MOVE_AXIS = 300.0f;
 	const float MIN_DIS = 400.0f;

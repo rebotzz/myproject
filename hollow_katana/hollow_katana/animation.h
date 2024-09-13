@@ -183,7 +183,6 @@ public:
 		return frame_list.empty();
 	}
 
-
 	// todo: 可能没用
 	void finish()
 	{

@@ -248,7 +248,6 @@ EnemyHornet::~EnemyHornet()
 		delete sword;
 
 	AudioManager::instance()->stop_audio_ex(_T("enemy_run"));
-	AudioManager::instance()->stop_audio_ex(_T("enemy_throw_silk"));
 }
 
 void EnemyHornet::on_hurt()

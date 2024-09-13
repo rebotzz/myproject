@@ -59,6 +59,7 @@ public:
 	float get_floor_y() const { return FLOOR_Y; }
 	int get_hp_max() const { return hp_max; }
 	int get_hp() const { return hp; }
+	float get_gravity() const { return GRAVITY; }
 	void set_gravity_enable(bool flag) { enable_gravity = flag; }
 	void set_facing_left(bool flag) { is_facing_left = flag; }
 	bool get_facing_left() const { return is_facing_left; }

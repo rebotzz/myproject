@@ -23,7 +23,7 @@ private:
 	void flip_atlas(const std::string& id_src, const std::string& id_dst);
 
 	// »ìµş
-	void blend_atlas(const std::string& id_src, const std::string& id_dst, const std::string& base);
+	void blend_atlas(const std::string& id_src, const std::string& id_dst, const std::string& base, float ratio = 0.0f);
 
 public:
 	static ResourcesManager* instance();

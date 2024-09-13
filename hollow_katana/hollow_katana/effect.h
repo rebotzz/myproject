@@ -57,3 +57,15 @@ public:
 	void set_enable_background(bool flag) { enable_background = flag; }
 	void set_text_offset(int x, int y) { offset_x = x, offset_y = y; }
 };
+
+class EffectJump : public ParticleEffect
+{
+public:
+	EffectJump();
+};
+
+class EffectLand : public ParticleEffect
+{
+public:
+	EffectLand();
+};

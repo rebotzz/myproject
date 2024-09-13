@@ -463,10 +463,6 @@ EnemyHornetIdleState::EnemyHornetIdleState()
 	timer.set_wait_time(1.5);
 	timer.set_on_timeout([&]
 		{
-			//for debug
-			return;
-
-
 			// 玩家死亡后,不再跳转状态
 			Character* player = dynamic_cast<Character*>(CharacterManager::instance()->get_player());
 			if (player->get_hp() <= 0)
@@ -563,7 +559,7 @@ void EnemyHornetJumpState::on_enter()
 	// 远离玩家
 	if (distance <= MIN_DIS)
 	{
-		x_speed = (pos_hornet.x < pos_player.x ? -MIN_DIS : MIN_DIS);
+		x_speed = (pos_hornet.x < pos_player.x ? -SPEED_MOVE_AXIS : SPEED_MOVE_AXIS);
 		hornet->set_facing_left(x_speed > 0);
 
 		if (hornet->get_hp() >= hornet->get_hp_max() / 2)
@@ -588,7 +584,7 @@ void EnemyHornetJumpState::on_enter()
 	// 接近玩家
 	else
 	{
-		x_speed = (pos_hornet.x < pos_player.x ? MIN_DIS : -MIN_DIS);
+		x_speed = (pos_hornet.x < pos_player.x ? SPEED_MOVE_AXIS : -SPEED_MOVE_AXIS);
 		hornet->set_facing_left(x_speed < 0);
 
 		if (hornet->get_hp() >= hornet->get_hp_max() / 2)

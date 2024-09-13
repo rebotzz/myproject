@@ -391,22 +391,22 @@ void Player::on_input(const ExMessage& msg)
 		break;
 
 	// 鼠标攻击方案现在还有bug,暂时弃用
-	//case WM_LBUTTONDOWN:
-	//	is_attack_key_down = true;
-	//	update_attack_dir(msg.x, msg.y);
-	//	break;
-	//case WM_LBUTTONUP:
-	//	//is_attack_key_down = false;			// debug:为了确保每次攻击能执行,这里不取消
-	//	break;
+	case WM_LBUTTONDOWN:
+		is_attack_key_down = true;
+		update_attack_dir(msg.x, msg.y);
+		break;
+	case WM_LBUTTONUP:
+		//is_attack_key_down = false;			// debug:为了确保每次攻击必定触发,这里不取消
+		break;
 
-	//// 子弹时间键位2
-	//case WM_RBUTTONDOWN:
-	//	if (current_bullet_time > 0)
-	//		is_bullet_time_key_down = true;
-	//	break;
-	//case WM_RBUTTONUP:
-	//	is_bullet_time_key_down = false;
-	//	break;
+	// 子弹时间键位2
+	case WM_RBUTTONDOWN:
+		if (current_bullet_time > 0)
+			is_bullet_time_key_down = true;
+		break;
+	case WM_RBUTTONUP:
+		is_bullet_time_key_down = false;
+		break;
 	}
 
 }

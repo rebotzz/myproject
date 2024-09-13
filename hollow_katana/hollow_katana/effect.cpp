@@ -22,7 +22,6 @@ EffectHurt::EffectHurt(bool is_left)
 
 
 
-
 EffectBlend::EffectBlend()
 {
 	// 加载动画资源
@@ -89,4 +88,20 @@ void EffectText::on_render()
 	}
 	settextcolor(text_color);
 	outtextxy((int)position.x - textwidth(text) / 2 + offset_x, (int)position.y - textheight(text) / 2 + offset_y, text);
+}
+
+EffectJump::EffectJump()
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.05f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::BottomCentered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_image("player_vfx_jump"), 5);
+}
+
+EffectLand::EffectLand()
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.1f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::BottomCentered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_image("player_vfx_land"), 2);
 }

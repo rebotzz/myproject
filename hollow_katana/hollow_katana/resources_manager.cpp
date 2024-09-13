@@ -42,6 +42,7 @@ static const std::vector<ImageResInfo> image_info_list =
 	// 混叠图片
 	{ "effect_mixed_blue_1",		_T(R"(resources\effect\mixed_image\blue_1.png)") },
 	{ "effect_mixed_blue_2",		_T(R"(resources\effect\mixed_image\blue_2.png)") },
+	{ "effect_mixed_blue_3",		_T(R"(resources\effect\mixed_image\blue_3.png)") },
 	{ "effect_mixed_red",			_T(R"(resources\effect\mixed_image\red.png)") },
 
 	// 文本底色
@@ -52,33 +53,39 @@ static const std::vector<ImageResInfo> image_info_list =
 static const std::vector<AtlasResInfo> atlas_info_list =
 {
 	// 敌人:大黄蜂
-	{"barb_break",	_T(R"(resources\enemy\hornet\barb_break\%d.png)"), 3},
-	{"barb_loose",	_T(R"(resources\enemy\hornet\barb_loose\%d.png)"), 5},
+	{"barb_break",	_T(R"(resources\enemy\hornet\barb_break\%d.png)"),  3},
+	{"barb_loose",	_T(R"(resources\enemy\hornet\barb_loose\%d.png)"),  5},
 	{"silk",		_T(R"(resources\enemy\hornet\silk\%d.png)"),		9},
 	{"sword_left",	_T(R"(resources\enemy\hornet\sword\%d.png)"),		3},
 
 	{"enemy_hornet_aim_left",			    _T(R"(resources\enemy\hornet\aim\%d.png)"),				9},
 	{"enemy_hornet_dash_in_air_left",	    _T(R"(resources\enemy\hornet\dash_in_air\%d.png)"),     2},
 	{"enemy_hornet_dash_on_floor_left",     _T(R"(resources\enemy\hornet\dash_on_floor\%d.png)"),   2},
-	{"enemy_hornet_fall_left",			    _T(R"(resources\enemy\hornet\fall\%d.png)"),			 4},
-	{"enemy_hornet_idle_left",			    _T(R"(resources\enemy\hornet\idle\%d.png)"),			 6},
-	{"enemy_hornet_jump_left",			    _T(R"(resources\enemy\hornet\jump\%d.png)"),			 8},
+	{"enemy_hornet_fall_left",			    _T(R"(resources\enemy\hornet\fall\%d.png)"),			4},
+	{"enemy_hornet_idle_left",			    _T(R"(resources\enemy\hornet\idle\%d.png)"),			6},
+	{"enemy_hornet_jump_left",			    _T(R"(resources\enemy\hornet\jump\%d.png)"),			8},
 
-	{"enemy_hornet_run_left",			    _T(R"(resources\enemy\hornet\run\%d.png)"),				8},
+	{"enemy_hornet_run_left",			    _T(R"(resources\enemy\hornet\run\%d.png)"),				 8},
 	{"enemy_hornet_squat_left",				_T(R"(resources\enemy\hornet\squat\%d.png)"),		    10},
 	{"enemy_hornet_throw_barb_left",	    _T(R"(resources\enemy\hornet\throw_barb\%d.png)"),	     8},
 	{"enemy_hornet_throw_silk_left",	    _T(R"(resources\enemy\hornet\throw_silk\%d.png)"),	    17},
-	{"enemy_hornet_throw_sword_left",	    _T(R"(resources\enemy\hornet\throw_sword\%d.png)"),    16},
+	{"enemy_hornet_throw_sword_left",	    _T(R"(resources\enemy\hornet\throw_sword\%d.png)"),     16},
 		   
-	{"enemy_hornet_vfx_dash_in_air_left",	_T(R"(resources\enemy\hornet\vfx_dash_in_air\%d.png)"),   5},
-	{"enemy_hornet_vfx_dash_on_floor_left", _T(R"(resources\enemy\hornet\vfx_dash_on_floor\%d.png)"), 6},
+	{"enemy_hornet_vfx_dash_in_air_left",	_T(R"(resources\enemy\hornet\vfx_dash_in_air\%d.png)"),  5},
+	{"enemy_hornet_vfx_dash_on_floor_left", _T(R"(resources\enemy\hornet\vfx_dash_on_floor\%d.png)"),6},
 
-	// 角色新增动画 zero
+	// 角色新增动画 zero跳舞
 	{"player_dance_right",  _T(R"(resources\player\dance\%d.png)"), 12},
 
 	// 敌人:龙王
-	//{"enemy_long_idle_left",			       _T(R"(resources\enemy\dragon_king\attack\%d.png)"),15},
-	{"enemy_hornet_idle_left",			    _T(R"(resources\enemy\dragon_king\attack\%d.png)"),			 15},
+	{"enemy_dragon_king_idle_right",			_T(R"(resources\enemy\dragon_king\fall\%d.png)"),	12},
+	{"enemy_dragon_king_attack_right",		_T(R"(resources\enemy\dragon_king\attack\%d.png)"),	15},
+	{"enemy_dragon_king_jump_right",			_T(R"(resources\enemy\dragon_king\jump\%d.png)"),	3},
+	{"enemy_dragon_king_roll_right",			_T(R"(resources\enemy\dragon_king\roll\%d.png)"),	5},
+	{"enemy_dragon_king_run_right",			_T(R"(resources\enemy\dragon_king\roll\%d.png)"),	10},
+	{"enemy_dragon_king_run_stop_right",		_T(R"(resources\enemy\dragon_king\roll\%d.png)"),	 4},
+	{"enemy_dragon_king_fall_1_right",		_T(R"(resources\enemy\dragon_king\fall_1\%d.png)"),	 14},
+	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
 
 
 	// 新加粒子特效
@@ -204,6 +211,7 @@ void ResourcesManager::load()
 	}
 
 	// 增加翻转图片
+	// 玩家
 	flip_image("player_attack_right", "player_attack_left", 5);
 	flip_image("player_dead_right", "player_dead_left", 6);
 	flip_image("player_fall_right", "player_fall_left", 5);
@@ -213,6 +221,7 @@ void ResourcesManager::load()
 	flip_image("player_roll_right", "player_roll_left", 7);
 	flip_atlas("player_dance_right", "player_dance_left");
 	
+	// 敌人:大黄蜂
 	flip_atlas("sword_left", "sword_right");
 	flip_atlas("enemy_hornet_aim_left", "enemy_hornet_aim_right");
 	flip_atlas("enemy_hornet_dash_in_air_left", "enemy_hornet_dash_in_air_right");
@@ -230,12 +239,31 @@ void ResourcesManager::load()
 	flip_atlas("enemy_hornet_vfx_dash_in_air_left", "enemy_hornet_vfx_dash_in_air_right");
 	flip_atlas("enemy_hornet_vfx_dash_on_floor_left", "enemy_hornet_vfx_dash_on_floor_right");
 
+	// 敌人:龙王
+	flip_atlas("enemy_dragon_king_idle_right", "enemy_dragon_king_idle_left");
+	flip_atlas("enemy_dragon_king_attack_right", "enemy_dragon_king_attack_left");
+	flip_atlas("enemy_dragon_king_jump_right", "enemy_dragon_king_jump_left");
+	flip_atlas("enemy_dragon_king_roll_right", "enemy_dragon_king_roll_left");
+	flip_atlas("enemy_dragon_king_run_right", "enemy_dragon_king_run_left");
+	flip_atlas("enemy_dragon_king_run_stop_right", "enemy_dragon_king_run_stop_left");
+	flip_atlas("enemy_dragon_king_fall_1_right", "enemy_dragon_king_fall_1_left");
+	flip_atlas("enemy_dragon_king_fall_2_right", "enemy_dragon_king_fall_2_left");
+
+	// 特效
 	flip_atlas("particle_vfx_hit_left", "particle_vfx_hit_right");
 	flip_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_yellow_left");
 
 	// 混叠图片,改变图片原有色彩
 	blend_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_red_right", "effect_mixed_red");
 	blend_atlas("particle_vfx_hurt_yellow_left", "particle_vfx_hurt_red_left", "effect_mixed_red");
+
+	// todo: 混叠刀光特效
+	blend_atlas("player_vfx_attack_down", "enemy_vfx_attack_down", "effect_mixed_blue_3", 0.5f);
+	blend_atlas("player_vfx_attack_left", "enemy_vfx_attack_left", "effect_mixed_blue_3", 0.5f);
+	blend_atlas("player_vfx_attack_right", "enemy_vfx_attack_right", "effect_mixed_blue_3", 0.5f);
+	blend_atlas("player_vfx_attack_up", "enemy_vfx_attack_up", "effect_mixed_blue_3", 0.5f);
+
+
 
 
 	// 加载音频
@@ -275,7 +303,7 @@ void ResourcesManager::load()
 }
 
 
-void ResourcesManager::blend_atlas(const std::string& id_src, const std::string& id_dst, const std::string& base)
+void ResourcesManager::blend_atlas(const std::string& id_src, const std::string& id_dst, const std::string& base, float ratio)
 {
 	IMAGE* image_base = image_pool[base];
 	Atlas* atlas_src = atlas_pool[id_src];
@@ -284,7 +312,7 @@ void ResourcesManager::blend_atlas(const std::string& id_src, const std::string&
 	{
 		IMAGE image_blended;
 		IMAGE* image_src = atlas_src->get_image(i);
-		bend_image(image_src, &image_blended, image_base, 0.0f);
+		bend_image(image_src, &image_blended, image_base, ratio);
 		atlas_dst->add_image(image_blended);
 	}
 	atlas_pool[id_dst] = atlas_dst;

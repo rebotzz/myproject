@@ -39,35 +39,35 @@ AudioManager::AudioManager()
 				{
 					auto front = load_queue.front();
 					load_queue.pop();
-					load_audio(front.path, front.id);
+					load_audio(front.path.c_str(), front.id.c_str());
 				}
 
 				while (!play_queue.empty())
 				{
 					auto front = play_queue.front();
 					play_queue.pop();
-					play_audio(front.id, front.is_loop);
+					play_audio(front.id.c_str(), front.is_loop);
 				}
 
 				while (!stop_queue.empty())
 				{
 					auto front = stop_queue.front();
 					stop_queue.pop();
-					stop_audio(front);
+					stop_audio(front.c_str());
 				}
 
 				while (!resume_queue.empty())
 				{
 					auto front = resume_queue.front();
 					resume_queue.pop();
-					resume_audio(front);
+					resume_audio(front.c_str());
 				}
 
 				while (!pause_queue.empty())
 				{
 					auto front = pause_queue.front();
 					pause_queue.pop();
-					pause_audio(front);
+					pause_audio(front.c_str());
 				}
 			}
 		});
@@ -91,7 +91,7 @@ AudioManager* AudioManager::instance()
 // 这里堵塞式申请锁会影响游戏, todo:无锁队列
 // 但是player线程大多数时候阻塞等待,就主线程频繁申请锁,有必要吗?
 // 或许,播放时不加锁也行,丢失音频总比游戏卡顿好
-void AudioManager::load_audio_ex(LPCTSTR path, LPCTSTR id)
+void AudioManager::load_audio_ex(const std::wstring path, const std::wstring id)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);
@@ -101,7 +101,7 @@ void AudioManager::load_audio_ex(LPCTSTR path, LPCTSTR id)
 	cond.notify_one();
 }
 
-void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
+void AudioManager::play_audio_ex(const std::wstring id, bool is_loop)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);
@@ -111,7 +111,7 @@ void AudioManager::play_audio_ex(LPCTSTR id, bool is_loop)
 	cond.notify_one();
 }
 
-void AudioManager::stop_audio_ex(LPCTSTR id)
+void AudioManager::stop_audio_ex(const std::wstring id)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);
@@ -121,7 +121,7 @@ void AudioManager::stop_audio_ex(LPCTSTR id)
 	cond.notify_one();
 }
 
-void AudioManager::pause_audio_ex(LPCTSTR id)
+void AudioManager::pause_audio_ex(const std::wstring id)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);
@@ -131,7 +131,7 @@ void AudioManager::pause_audio_ex(LPCTSTR id)
 	cond.notify_one();
 }
 
-void AudioManager::resume_audio_ex(LPCTSTR id)
+void AudioManager::resume_audio_ex(const std::wstring id)
 {
 	{
 		std::unique_lock<std::mutex> lock(mtx);

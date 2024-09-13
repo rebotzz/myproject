@@ -15,17 +15,8 @@ class SceneGameBossHornet : public Scene
 private:
 	Vector2 pos_player = { 200, 620 };
 	Vector2 pos_hornet = { 1050, 620 };
-	IMAGE* background = nullptr;
-	Rect rect_dst;
 
 public:
-	SceneGameBossHornet()
-	{
-		background = ResourcesManager::instance()->find_image("background_hollow");
-		rect_dst.x = (getwidth() - rect_dst.w) / 2;
-		rect_dst.y = (getheight() - rect_dst.h) / 2;
-		rect_dst.w = background->getwidth(), rect_dst.h = background->getheight();
-	}
 
 	void on_enter() override
 	{
@@ -80,10 +71,17 @@ public:
 		ReverseTimeManager::instance()->set_enable(false);
 
 		AudioManager::instance()->stop_audio_ex(_T("bgm_1"));
+		AudioManager::instance()->play_audio_ex(_T("reverse_time"), true);	// debug:为了确保成功播放,所以两次
 	}
 
 	void render_background()
 	{
+		static IMAGE* background = ResourcesManager::instance()->find_image("background_hollow");
+		static Rect rect_dst;
+		rect_dst.x = (getwidth() - rect_dst.w) / 2;
+		rect_dst.y = (getheight() - rect_dst.h) / 2;
+		rect_dst.w = background->getwidth(), rect_dst.h = background->getheight();
+
 		setbkcolor(RGB(0, 0, 0));
 		putimage_alpha_ex(background, &rect_dst);
 	}

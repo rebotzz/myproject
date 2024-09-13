@@ -601,7 +601,7 @@ void Player::enable_displace_ex(Direction dir, float delta)
 
 void Player::on_hit_collide()
 {
-	// 怎样做才能在碰撞箱体开启期间只碰撞一次
+	// 在碰撞箱体开启期间只碰撞一次
 	if (is_hitting || !is_hit_cd_comp)
 		return;
 
@@ -722,6 +722,7 @@ void Player::reset()
 	is_attack_key_down = false;
 	is_dance_key_down = false;
 
+	is_facing_left = false;
 	is_attacking = false;
 	is_rolling = false;
 	is_hitting = false;

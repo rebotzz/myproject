@@ -169,6 +169,7 @@ class EnemyHornetIdleState : public StateNode
 {
 private:
 	Timer timer;
+	const float MIN_DIS = 300.0f;
 
 public:
 	EnemyHornetIdleState();
@@ -182,8 +183,16 @@ public:
 class EnemyHornetJumpState : public StateNode
 {
 private:
+	enum class NextState
+	{
+		Fall, Aim, ThrowSilk
+	};
+private:
 	bool is_jump_left = false;
 	const float SPEED_JUMP = 1300.0f;
+	const float SPEED_MOVE_AXIS = 300.0f;
+	const float MIN_DIS = 400.0f;
+	NextState next_state = NextState::Fall;
 
 public:
 	EnemyHornetJumpState() = default;
@@ -233,15 +242,15 @@ public:
 };
 
 // [µÿ√Ê≥Â¥Ã]
-class EnemyHornetOnDashFloorState : public StateNode
+class EnemyHornetDashOnFloorState : public StateNode
 {
 private:
-	Timer timer;
+	Timer timer_dash;
 	const float SPEED_DASH = 1500.0f;
 
 public:
-	EnemyHornetOnDashFloorState();
-	~EnemyHornetOnDashFloorState() = default;
+	EnemyHornetDashOnFloorState();
+	~EnemyHornetDashOnFloorState() = default;
 	virtual void on_enter()  override;
 	virtual void on_update(float delta) override;
 	virtual void on_exit()  override;

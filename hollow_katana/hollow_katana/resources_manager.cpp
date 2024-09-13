@@ -78,6 +78,7 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 
 	// 敌人:龙王
 	//{"enemy_long_idle_left",			       _T(R"(resources\enemy\dragon_king\attack\%d.png)"),15},
+	{"enemy_hornet_idle_left",			    _T(R"(resources\enemy\dragon_king\attack\%d.png)"),			 15},
 
 
 	// 新加粒子特效

@@ -14,13 +14,13 @@ class AudioManager
 private:
 	struct AudioInfo
 	{
-		LPCTSTR path;
-		LPCTSTR id;
+		std::wstring path;
+		std::wstring id;
 	};
 
 	struct AudioPlayOption
 	{
-		LPCTSTR id;
+		std::wstring id;
 		bool is_loop;
 	};
 
@@ -31,15 +31,15 @@ private:
 	// 任务队列
 	std::queue<AudioInfo> load_queue;
 	std::queue<AudioPlayOption> play_queue;
-	std::queue<LPCTSTR> stop_queue;
-	std::queue<LPCTSTR> resume_queue;
-	std::queue<LPCTSTR> pause_queue;
+	std::queue<std::wstring> stop_queue;
+	std::queue<std::wstring> resume_queue;
+	std::queue<std::wstring> pause_queue;
 	// 缓冲区
 	std::queue<AudioInfo> load_queue_buffer;
 	std::queue<AudioPlayOption> play_queue_buffer;
-	std::queue<LPCTSTR> stop_queue_buffer;
-	std::queue<LPCTSTR> resume_queue_buffer;
-	std::queue<LPCTSTR> pause_queue_buffer;
+	std::queue<std::wstring> stop_queue_buffer;
+	std::queue<std::wstring> resume_queue_buffer;
+	std::queue<std::wstring> pause_queue_buffer;
 	// 线程,锁,条件变量
 	std::thread* audio_player = nullptr;
 	std::mutex mtx;
@@ -51,10 +51,10 @@ private:
 
 public:
 	static AudioManager* instance();
-	void load_audio_ex(LPCTSTR path, LPCTSTR id);
-	void play_audio_ex(LPCTSTR id, bool is_loop = false);
-	void stop_audio_ex(LPCTSTR id);
-	void pause_audio_ex(LPCTSTR id);
-	void resume_audio_ex(LPCTSTR id);
+	void load_audio_ex(const std::wstring path, const std::wstring id);
+	void play_audio_ex(const std::wstring id, bool is_loop = false);
+	void stop_audio_ex(const std::wstring id);
+	void pause_audio_ex(const std::wstring id);
+	void resume_audio_ex(const std::wstring id);
 };
 

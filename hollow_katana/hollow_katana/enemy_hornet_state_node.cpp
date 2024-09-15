@@ -2,6 +2,9 @@
 #include "enemy_hornet.h"
 #include "character_manager.h"
 #include "audio_manager.h"
+#include "scene_manager.h"
+#include "particle_manager.h"
+#include "effect.h"
 
 
 // 大黄蜂AI逻辑1.0	攻击策略不随着生命改变,攻击没有后摇,后摇全靠idle状态
@@ -933,6 +936,7 @@ void EnemyHornetThrowBarbsState::on_enter()
 	timer.restart();
 
 	AudioManager::instance()->play_audio_ex(_T("enemy_throw_barbs"));
+	AudioManager::instance()->play_audio_ex(_T("hornet_final_yell"));
 }
 void EnemyHornetThrowBarbsState::on_update(float delta)
 {
@@ -1002,9 +1006,41 @@ void EnemyHornetThrowSilkState::on_update(float delta)
 		hornet->switch_state("dead");
 }
 
+EnemyHornetDeadState::EnemyHornetDeadState()
+{
+	timer_exit.set_one_shot(true);
+	timer_exit.set_wait_time(15.f);
+	timer_exit.set_on_timeout([]
+		{
+			SceneManager::instance()->switch_scene("game_scene_boss_dragon_king");
+		});
+
+	timer_dialogue.set_one_shot(true);
+	timer_dialogue.set_wait_time(5.f);
+	timer_dialogue.set_on_timeout([]
+		{
+			AudioManager::instance()->pause_audio_ex(_T("hornet_dialogue"));
+		});
+}
 
 void EnemyHornetDeadState::on_enter()
 {
-	MessageBox(GetHWnd(), _T("很好...\n这样能行"), _T("挑战成功"), MB_OK);
-	exit(0);
+	CharacterManager::instance()->get_enemy()->set_animation("idle");
+	timer_dialogue.restart();
+
+	std::shared_ptr<EffectText> text(new EffectText(
+		_T("很好,这样能行"), 5.0f, RGB(0, 255, 255)));
+	text->set_position({ (float)getwidth() / 2, 100 });
+	ParticleManager::instance()->register_particle(text);
+
+	std::shared_ptr<EffectText> particle(new EffectText(
+		_T("你是容器,你是空洞骑士"), 10.0f));
+	particle->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
+	ParticleManager::instance()->register_particle(particle);
+}
+
+void EnemyHornetDeadState::on_update(float delta)
+{
+	timer_exit.on_update(delta);
+	timer_dialogue.on_update(delta);
 }

@@ -11,14 +11,12 @@ class CollisionBox
 private:
 	Vector2 size;
 	Vector2 position;
-	CollisionLayer layer_src = CollisionLayer::None;				// 受击层
-	CollisionLayer layer_dst = CollisionLayer::None;				// 攻击层
+	CollisionLayer layer_src = CollisionLayer::None;		// 受击层
+	CollisionLayer layer_dst = CollisionLayer::None;		// 攻击层
 	std::function<void()> on_collision;
 	bool enabled = true;
 
-	bool is_src_collision = false;
-	bool is_dst_collision = false;
-
+	CollisionLayer trigger_layer = CollisionLayer::None;	// 记录发生碰撞的层,用于拼刀判定等
 
 private:
 	CollisionBox() = default;
@@ -62,27 +60,15 @@ public:
 		enabled = flag;
 	}
 
-	// my add
+	// add
 	bool check_collision_layer_dst(CollisionLayer target_layer) const
 	{
 		return (int)layer_dst & (int)target_layer;
 	}
-
-	void set_dst_colliding(bool flag)
-	{
-		is_dst_collision = flag;
-	}
-	bool get_dst_colliding() const
-	{
-		return is_dst_collision;
-	}
-	void set_src_colliding(bool flag)
-	{
-		is_src_collision = flag;
-	}
-	bool get_src_colliding()
-	{
-		return is_src_collision;
+	CollisionLayer get_trigger_layer() const { return trigger_layer; }
+	void set_trigger_layer(CollisionLayer layer) 
+	{ 
+		trigger_layer = CollisionLayer::None | layer;
 	}
 
 };

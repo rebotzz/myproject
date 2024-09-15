@@ -105,3 +105,55 @@ EffectLand::EffectLand()
 	animation_vfx.set_achor_mode(Animation::AchorMode::BottomCentered);
 	animation_vfx.add_frame(ResourcesManager::instance()->find_image("player_vfx_land"), 2);
 }
+
+EffectLeaves::EffectLeaves()
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.075f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_atlas("particle_vfx_leaves"));
+}
+
+EffectElectric::EffectElectric()
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.075f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_atlas("particle_vfx_electric"));
+}
+
+EffectElectricAxis::EffectElectricAxis(bool is_left)
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.075f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_atlas(
+		is_left ? "particle_vfx_electric_left" : "particle_vfx_electric_right"));
+}
+
+EffectFire::EffectFire(bool is_left)
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.075f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_atlas(is_left ? 
+		"particle_vfx_fire_left" : "particle_vfx_fire_right"));
+}
+
+EffectDashLine::EffectDashLine(bool is_left)
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.02f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_image(
+		is_left ? "dragon_vfx_dash_line_left" : "dragon_vfx_dash_line_right"), 11);
+}
+
+EffectSwordHit::EffectSwordHit(bool is_left)
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.05f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_image(
+		is_left ? "sword_hit_left" : "sword_hit_right"), 6);
+}

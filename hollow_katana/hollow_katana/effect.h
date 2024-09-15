@@ -69,3 +69,40 @@ class EffectLand : public ParticleEffect
 public:
 	EffectLand();
 };
+
+
+class EffectLeaves : public ParticleEffect
+{
+public:
+	EffectLeaves();
+};
+
+class EffectElectric : public ParticleEffect
+{
+public:
+	EffectElectric();
+};
+
+class EffectElectricAxis : public ParticleEffect
+{
+public:
+	EffectElectricAxis(bool is_left);
+};
+
+class EffectFire : public ParticleEffect
+{
+public:
+	EffectFire(bool is_left);
+};
+
+class EffectDashLine : public ParticleEffect
+{
+public:
+	EffectDashLine(bool is_left);
+};
+
+class EffectSwordHit : public ParticleEffect
+{
+public:
+	EffectSwordHit(bool is_left);
+};

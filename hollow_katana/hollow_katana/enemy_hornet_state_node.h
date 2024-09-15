@@ -325,8 +325,13 @@ public:
 // [ËÀÍö]
 class EnemyHornetDeadState : public StateNode
 {
+private:
+	Timer timer_exit;
+	Timer timer_dialogue;
+
 public:
-	EnemyHornetDeadState() = default;
+	EnemyHornetDeadState();
 	~EnemyHornetDeadState() = default;
 	virtual void on_enter()  override;
+	virtual void on_update(float delta);
 };

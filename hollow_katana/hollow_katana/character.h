@@ -36,6 +36,8 @@ protected:
 	Timer timer_invulnerable_blink;										// 无敌时间闪烁计时器
 	bool is_invulnerable_status = false;								// 是否无敌状态
 	bool is_blink_invisible = false;									// 是否无敌闪烁的不可见状态
+	bool not_blink = false;												// 不闪烁
+	bool is_invisible = false;											// 是否可见,播放特效,隐藏本体
 	AnimationGroup* current_animation = nullptr;						// 当前动画组
 	std::unordered_map<std::string, AnimationGroup> animation_pool;		// 角色动画池
 
@@ -44,7 +46,7 @@ public:
 	~Character();
 
 	void switch_state(const std::string& id);
-	void make_invulnerable(bool is_blink = true, float delta_ratio = 1.0f);
+	void make_invulnerable(bool not_blink_ = false, float delta_ratio = 1.0f);
 	void set_animation(const std::string& id);
 	void decrease_hp();
 
@@ -63,6 +65,7 @@ public:
 	void set_gravity_enable(bool flag) { enable_gravity = flag; }
 	void set_facing_left(bool flag) { is_facing_left = flag; }
 	bool get_facing_left() const { return is_facing_left; }
+	void set_invisible(bool flag) { is_invisible = flag; }
 
 	Vector2 get_logic_center() const { return { position.x, position.y - logic_height / 2 }; }
 	void set_position(const Vector2& position) { this->position = position; }

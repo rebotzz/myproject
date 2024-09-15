@@ -30,13 +30,13 @@ void Character::switch_state(const std::string& id)
 	state_machine.switch_to(id);
 }
 
-void Character::make_invulnerable(bool is_blink, float delta_ratio)
+void Character::make_invulnerable(bool not_blink_, float delta_ratio)
 {
+	not_blink = not_blink_;
 	is_invulnerable_status = true;
 	timer_invulnerable_status.set_wait_time(TIME_INVULNERABLE * delta_ratio);
 	timer_invulnerable_status.restart();
-	if(is_blink) 
-		timer_invulnerable_blink.restart();
+	timer_invulnerable_blink.restart();
 }
 
 void Character::set_animation(const std::string& id)
@@ -85,7 +85,7 @@ void Character::on_update(float delta)
 
 	// 更新无敌状态计时器
 	timer_invulnerable_status.on_update(delta);
-	if (is_invulnerable_status)
+	if (is_invulnerable_status && !not_blink)
 		timer_invulnerable_blink.on_update(delta);
 
 	// 更新角色动画
@@ -99,7 +99,7 @@ void Character::on_update(float delta)
 
 void Character::on_render()
 {
-	if (!current_animation || (is_invulnerable_status && is_blink_invisible))
+	if (!current_animation || (is_invulnerable_status && is_blink_invisible) || is_invisible)
 		return;
 
 	(is_facing_left ? current_animation->left : current_animation->right).on_render();

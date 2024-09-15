@@ -29,7 +29,8 @@ public:
 		CharacterManager::instance()->create_enemy("dragon_king", dragon_king);
 		CharacterManager::instance()->get_enemy("dragon_king")->set_position(pos_enemy);
 		CharacterManager::instance()->get_player()->set_position(pos_player);
-		cout << "½øÈë: SceneGameBossDragonKing" << endl;
+
+		AudioManager::instance()->play_audio_ex(_T("bgm2"), true);
 	}
 	void on_input(const ExMessage& msg)
 	{
@@ -47,6 +48,8 @@ public:
 	{
 		CharacterManager::instance()->destroy_enemy("dragon_king");
 		game_scene.on_exit();
+
+		AudioManager::instance()->stop_audio_ex(_T("bgm2"));
 	}
 
 };

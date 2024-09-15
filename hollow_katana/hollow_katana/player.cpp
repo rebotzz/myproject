@@ -26,16 +26,18 @@ Player::Player() :Character()
 	hurt_box->set_layer_dst(CollisionLayer::None);
 	hurt_box->set_position(get_logic_center());
 	hurt_box->set_on_collision([&] {
-		decrease_hp();
+		// 改用延时扣血,便于检测拼刀无敌状态
+		timer_delay_decrease_hp.restart();
+		//decrease_hp();
 		});
 
 	hit_box->set_enabled(false);
 	hit_box->set_size({ 130,130 });
 	hit_box->set_layer_src(CollisionLayer::None);
-	hit_box->set_layer_dst(CollisionLayer::Enemy | CollisionLayer::Rebound);
+	hit_box->set_layer_dst(CollisionLayer::Enemy | CollisionLayer::Rebound | CollisionLayer::Sword);
 	hit_box->set_position(get_logic_center());
 	hit_box->set_on_collision([&](){
-			// 武器击中后坐力,粒子特效
+			// 武器击中后坐力,粒子特效,拼刀
 			on_hit_collide();
 		});
 
@@ -45,6 +47,7 @@ Player::Player() :Character()
 	timer_attack_cd.set_on_timeout([&]()
 		{
 			is_attack_cd_comp = true;
+			is_down_slash = false;
 		});
 	timer_roll_cd.set_one_shot(true);
 	timer_roll_cd.set_wait_time(ROLL_CD);
@@ -87,7 +90,10 @@ Player::Player() :Character()
 			switch (beat_displace_dir)
 			{
 			case Direction::Up:
-				velocity.y -= 0.01f * GRAVITY * 2 / 3;
+				if(is_down_slash)
+					velocity.y -= 0.01f * GRAVITY * 5 / 6;
+				else
+					velocity.y -= 0.01f * GRAVITY * 2 / 3;
 				position.y -= 0.01f * speed_displace_up;
 				break;
 			case Direction::Left:
@@ -111,7 +117,6 @@ Player::Player() :Character()
 			is_hit_cd_comp = true;
 		});
 
-
 	// 粒子特效发射器
 	timer_create_particle_effect.set_one_shot(false);
 	timer_create_particle_effect.set_wait_time(0.06f);
@@ -123,6 +128,16 @@ Player::Player() :Character()
 				create_roll_effect();
 		});
 
+	timer_delay_decrease_hp.set_one_shot(true);
+	timer_delay_decrease_hp.set_wait_time(0.01f);
+	timer_delay_decrease_hp.set_on_timeout([&]
+		{
+			static bool init = true;
+			if (init)
+				init = false;
+			else
+				decrease_hp();
+		});
 
 	// 动画初始化
 	{
@@ -426,6 +441,7 @@ void Player::on_update(float delta)
 	timer_hit_effect.on_update(delta);
 	timer_enable_displace_ex.on_update(delta);
 	timer_displace_ex.on_update(delta);
+	timer_delay_decrease_hp.on_update(delta);
 
 	// 更新动画
 	animation_vfx_jump.on_update(delta);
@@ -607,10 +623,38 @@ void Player::on_hit_collide()
 
 	is_hitting = true;
 	is_hit_cd_comp = false;
+	if (attack_dir == Direction::Down)
+		is_down_slash = true;
 
 	timer_hit_effect.restart();
 	on_recoil();
 	create_hit_effect();
+
+	// 拼刀无敌帧
+	if ((int)(CollisionLayer::Sword & hit_box->get_trigger_layer()))
+	{
+		make_invulnerable(true, 0.45f);
+		std::shared_ptr<EffectSwordHit> particle(new EffectSwordHit(is_facing_left));
+		Vector2 pos_spark = get_logic_center();
+		switch (attack_dir)
+		{
+		case Player::Direction::Up: pos_spark.y -= 100;
+			break;
+		case Player::Direction::Down:  pos_spark.y += 100;
+			break;
+		case Player::Direction::Left:  pos_spark.x -= 100;
+			break;
+		case Player::Direction::Right:  pos_spark.x += 100;
+			break;
+		}
+		particle->set_position(pos_spark);
+		ParticleManager::instance()->register_particle(particle);
+
+		if(random_range(0, 1))
+			AudioManager::instance()->play_audio_ex(_T("sword_hit_1"));
+		else
+			AudioManager::instance()->play_audio_ex(_T("sword_hit_2"));
+	}
 }
 
 void Player::on_recoil(float delta)
@@ -676,8 +720,6 @@ void Player::create_hit_effect()
 	}
 	particle->set_position(pos_particle);
 	
-	cout << "产生一次攻击特效" << endl;
-
 	ParticleManager::instance()->register_particle(particle);
 }
 

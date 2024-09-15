@@ -1,6 +1,8 @@
 #pragma once
+#include <string>
 #include "state_node.h"
 #include "timer.h"
+
 
 // ÁúÍõ ×´Ì¬½Úµã:
 // ²ßÂÔ: 1.°ëÑªÒÔÉÏ[¹¥»÷ÆµÂÊµÍ,Ã»ÓĞ´óÕĞ] 2.°ëÑªÒÔÏÂ[¹¥»÷ÆµÂÊ¸ß,´óÕĞ] 
@@ -14,73 +16,152 @@
 // 10.ÈıÁªÕĞÊ½ ÉÁÏÖ
 // 12.ËÀÍö
 
-// [ÏĞÖÃ]
-class EnemyDragonKingIdleState : public StateNode
+namespace EnemyDragonKingState
 {
-private:
-	Timer timer;
-	const float MIN_DIS = 300.f;
+	// [ÏĞÖÃ]
+	class IdleState : public StateNode
+	{
+	private:
+		Timer timer;
+		const float MIN_DIS = 350.f;
 
-public:
-	EnemyDragonKingIdleState();
-	~EnemyDragonKingIdleState() = default;
-	virtual void on_enter()  override;
-	virtual void on_update(float delta) override;
-	virtual void on_exit() override;
-};
+	public:
+		IdleState();
+		~IdleState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit() override;
+	};
 
-// [ÌøÔ¾]
-class EnemyDragonKingJumpState : public StateNode
-{
-private:
-	const float SPEED_MOVE_SLOW = 150.f;
-	const float SPEED_MOVE_FAST = 430.f;
-	const float MIN_DIS = 400.0f;
+	// [ÌøÔ¾]
+	class JumpState : public StateNode
+	{
+	private:
+		const float SPEED_MOVE = 260.f;
+		const float MIN_DIS = 400.0f;
 
-public:
-	EnemyDragonKingJumpState() = default;
-	~EnemyDragonKingJumpState() = default;
-	virtual void on_enter()  override;
-	virtual void on_update(float delta) override;
-};
+	public:
+		JumpState() = default;
+		~JumpState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
 
-// [±¼ÅÜ]
-class EnemyDragonKingRunState : public StateNode
-{
-private:
-	const float SPEED_RUN = 400.0f;
-	const float MIN_DISTANCE = 250.0f;
+	// [±¼ÅÜ]
+	class RunState : public StateNode
+	{
+	private:
+		const float SPEED_RUN = 400.0f;
+		const float MIN_DISTANCE = 350.f;
+		std::string next_state;
 
-public:
-	EnemyDragonKingRunState() = default;
-	~EnemyDragonKingRunState() = default;
-	virtual void on_enter()  override;
-	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
-};
+	public:
+		RunState() = default;
+		~RunState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit()  override;
+	};
 
-// [ÏÂÂä]
-class EnemyDragonKingFallState : public StateNode
-{
-public:
-	EnemyDragonKingFallState() = default;
-	~EnemyDragonKingFallState() = default;
-	virtual void on_enter()  override;
-	virtual void on_update(float delta) override;
-};
+	// [ÏÂÂä]
+	class FallState : public StateNode
+	{
+	public:
+		FallState() = default;
+		~FallState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
 
-// [ÆÕ¹¥]
-class EnemyDragonKingAttackState : public StateNode
-{
-private:
-	Timer timer_attack;
-	Timer timer_attack_duration;
-	Timer timer_exit;
-	const float SPEED_MOVE_AXIS = 500.f;
-public:
-	EnemyDragonKingAttackState();
-	~EnemyDragonKingAttackState() = default;
-	virtual void on_enter()  override;
-	virtual void on_update(float delta) override;
-	virtual void on_exit()  override;
-};
+	// [×¼±¸]
+	class PrepareState : public StateNode
+	{
+	private:
+		Timer timer_effect;
+		Timer timer_prepare;
+		std::string next_state;
+
+	public:
+		PrepareState();
+		~PrepareState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
+
+
+	// [ÆÕÍ¨Ò»µ¶]
+	class AttackNormalState : public StateNode
+	{
+	private:
+		Timer timer_attack;
+		Timer timer_duration;
+		Timer timer_exit;
+		const float SPEED_MOVE_AXIS = 500.f;
+	public:
+		AttackNormalState();
+		~AttackNormalState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
+
+
+
+	// [À×ÉÁÒ»µ¶]
+	class ElectricState : public StateNode
+	{
+	private:
+		Timer timer_duration;
+		Timer timer_slow;
+		Timer timer_effect_line;
+
+	public:
+		ElectricState();
+		~ElectricState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit() override;
+	};
+
+	// [»ğÑæ³åµ¯]
+	class FireDashState : public StateNode
+	{
+	private:
+		Timer timer_over;
+		Timer timer_exit;
+		Timer timer_max_time;
+		Timer timer_min_time;
+		bool min_can_finish = true;
+		bool can_finish = false;
+
+	public:
+		FireDashState();
+		~FireDashState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit() override;
+	};
+
+	// [»ğÑæµ¯]
+	class FireBulletState : public StateNode
+	{
+	public:
+		FireBulletState() = default;
+		~FireBulletState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+		virtual void on_exit() override;
+	};
+
+	// [ËÀÍö]
+	class DeadState : public StateNode
+	{
+		Timer timer;
+		Timer timer_text1;
+		Timer timer_text2;
+	public:
+		DeadState() = default;
+		~DeadState() = default;
+		virtual void on_enter()  override;
+		virtual void on_update(float delta) override;
+	};
+}

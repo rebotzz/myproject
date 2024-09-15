@@ -63,16 +63,12 @@ void BulletTimeManager::post_progress()
 	}
 }
 
-
-
-#include <iostream>
 void BulletTimeManager::set_status(Status status)
 {
 	this->status = status;
 
 	if (status == Status::Enter && !is_play_audio && is_play_cd_comp)
 	{
-		std::cout << "播放子弹时间音效" << std::endl;
 		is_play_audio = true;
 		is_play_cd_comp = false;
 		timer_play_audio.restart();

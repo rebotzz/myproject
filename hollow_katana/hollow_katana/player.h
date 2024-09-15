@@ -60,7 +60,9 @@ private:
 	Timer timer_enable_displace_ex;
 	Timer timer_displace_ex;										// 角色特殊位移(攻击)定时器
 	float speed_displace_up = 780.0f;								// 特殊位移(上)速度
-
+	bool is_down_slash = false;										// 是否下劈
+	bool is_sword_hit = false;										// 是否拼刀
+	Timer timer_delay_decrease_hp;									// 延时扣血用于检测是否在拼刀
 
 	// 武器击中后坐力
 	Timer timer_recoiling;											// 后坐力计时器

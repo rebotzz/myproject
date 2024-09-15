@@ -120,6 +120,9 @@
     <ClCompile Include="scene.cpp">
       <Filter>头文件\scenery</Filter>
     </ClCompile>
+    <ClCompile Include="fire_bullet.cpp">
+      <Filter>头文件\property</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collision_box.h">
@@ -232,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="enemy_dragon_king_state_node.h">
       <Filter>头文件\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="fire_bullet.h">
+      <Filter>头文件\property</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

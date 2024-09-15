@@ -20,13 +20,20 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 	hit_box->set_layer_src(CollisionLayer::None);
 	hit_box->set_layer_dst(CollisionLayer::Player);
 	hurt_box->set_on_collision([&] { decrease_hp(); });
-	hit_box->set_enabled(true);
+	hit_box->set_enabled(false);	// 关闭龙王接触伤害,就该玩刀
 
 	collision_box_katana = CollisionManager::instance()->create_collision_box();
 	collision_box_katana->set_enabled(false);
-	collision_box_katana->set_size({ 130,130 });
-	collision_box_katana->set_layer_src(CollisionLayer::None);
+	collision_box_katana->set_size({ 150,110 });
+	// 武士刀可被剑受击碰撞,拼刀机制
+	collision_box_katana->set_layer_src(CollisionLayer::None | CollisionLayer::Sword);
 	collision_box_katana->set_layer_dst(CollisionLayer::Player | CollisionLayer::Rebound);
+
+	collision_box_fire_dash = CollisionManager::instance()->create_collision_box();
+	collision_box_fire_dash->set_enabled(false);
+	collision_box_fire_dash->set_size({ 130,40 });
+	collision_box_fire_dash->set_layer_src(CollisionLayer::None);
+	collision_box_fire_dash->set_layer_dst(CollisionLayer::Player);
 
 	// 角色动画初始化
 	{
@@ -45,18 +52,34 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 			idle_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_idle_right"));
 		}
 		{
+			AnimationGroup& animation_prepare = animation_pool["prepare"];
+			Animation& prepare_left = animation_prepare.left;
+			prepare_left.set_interval(0.1f);
+			prepare_left.set_loop(true);
+			prepare_left.set_achor_mode(Animation::AchorMode::BottomCentered);
+			prepare_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_prepare_left"));
+
+			Animation& prepare_right = animation_prepare.right;
+			prepare_right.set_interval(0.1f);
+			prepare_right.set_loop(true);
+			prepare_right.set_achor_mode(Animation::AchorMode::BottomCentered);
+			prepare_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_prepare_right"));
+		}
+		{
 			AnimationGroup& animation_attack = animation_pool["attack"];
 			Animation& attack_left = animation_attack.left;
-			attack_left.set_interval(0.065f);
+			attack_left.set_interval(0.075f);
 			attack_left.set_loop(false);
 			attack_left.set_achor_mode(Animation::AchorMode::BottomCentered);
 			attack_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_attack_left"));
+			attack_left.set_on_finished([&]() { is_attacking = false; });
 
 			Animation& attack_right = animation_attack.right;
-			attack_right.set_interval(0.065f);
+			attack_right.set_interval(0.075f);
 			attack_right.set_loop(false);
 			attack_right.set_achor_mode(Animation::AchorMode::BottomCentered);
 			attack_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_attack_right"));
+			attack_right.set_on_finished([&]() { is_attacking = false; });
 		}
 		{
 			AnimationGroup& run = animation_pool["run"];
@@ -71,21 +94,6 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 			run_right.set_loop(true);
 			run_right.set_achor_mode(Animation::AchorMode::BottomCentered);
 			run_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_run_right"));
-		}
-
-		{
-			AnimationGroup& roll = animation_pool["roll"];
-			Animation& roll_left = roll.left;
-			roll_left.set_interval(0.05f);
-			roll_left.set_loop(false);
-			roll_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			roll_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_roll_left"));
-
-			Animation& roll_right = roll.right;
-			roll_right.set_interval(0.05f);
-			roll_right.set_loop(false);
-			roll_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			roll_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_roll_right"));
 		}
 		{
 			AnimationGroup& jump = animation_pool["jump"];
@@ -103,39 +111,23 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 		}
 		{
 			// 依据角色速度和重力计算下落时间,确定帧间隔
-			int frame_count = ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_1_left")->get_size();
-			float interval = (SPEED_JUMP_BIG / GRAVITY) / (float)frame_count;
+			int frame_count = ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_left")->get_size();
+			float interval = (SPEED_JUMP / GRAVITY) / (float)frame_count;
 
-			AnimationGroup& fall = animation_pool["fall_big"];
+			AnimationGroup& fall = animation_pool["fall"];
 			Animation& fall_left = fall.left;
 			fall_left.set_interval(interval);
 			fall_left.set_loop(false);
 			fall_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			fall_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_1_left"));
+			fall_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_left"));
 
 			Animation& fall_right = fall.right;
 			fall_right.set_interval(interval);
 			fall_right.set_loop(false);
 			fall_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			fall_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_1_right"));
+			fall_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_right"));
 		}
-		{
-			int frame_count = ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_2_left")->get_size();
-			float interval = (SPEED_JUMP_SMALL / GRAVITY) / (float)frame_count;
 
-			AnimationGroup& fall = animation_pool["fall_small"];
-			Animation& fall_left = fall.left;
-			fall_left.set_interval(interval);
-			fall_left.set_loop(false);
-			fall_left.set_achor_mode(Animation::AchorMode::BottomCentered);
-			fall_left.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_2_left"));
-
-			Animation& fall_right = fall.right;
-			fall_right.set_interval(interval);
-			fall_right.set_loop(false);
-			fall_right.set_achor_mode(Animation::AchorMode::BottomCentered);
-			fall_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_dragon_king_fall_2_right"));
-		}
 	}
 
 	// 特效动画初始化
@@ -144,32 +136,47 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 		animation_vfx_slash_left.set_interval(0.07f);
 		animation_vfx_slash_left.set_loop(false);
 		animation_vfx_slash_left.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_left.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_left"), 5);
+		animation_vfx_slash_left.add_frame(ResourcesManager::instance()->find_image("dragon_vfx_attack_left"), 5);
 
 		animation_vfx_slash_right.set_interval(0.07f);
 		animation_vfx_slash_right.set_loop(false);
 		animation_vfx_slash_right.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_right.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_right"), 5);
+		animation_vfx_slash_right.add_frame(ResourcesManager::instance()->find_image("dragon_vfx_attack_right"), 5);
 
 		animation_vfx_slash_up.set_interval(0.07f);
 		animation_vfx_slash_up.set_loop(false);
 		animation_vfx_slash_up.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_up.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_up"), 5);
+		animation_vfx_slash_up.add_frame(ResourcesManager::instance()->find_image("dragon_vfx_attack_up"), 5);
 
 		animation_vfx_slash_down.set_interval(0.07f);
 		animation_vfx_slash_down.set_loop(false);
 		animation_vfx_slash_down.set_achor_mode(Animation::AchorMode::Centered);
-		animation_vfx_slash_down.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_down"), 5);
+		animation_vfx_slash_down.add_frame(ResourcesManager::instance()->find_image("dragon_vfx_attack_down"), 5);
+
+
+		animation_fire_dash_left.set_interval(0.07f);
+		animation_fire_dash_left.set_loop(true);
+		animation_fire_dash_left.set_achor_mode(Animation::AchorMode::Centered);
+		animation_fire_dash_left.add_frame(ResourcesManager::instance()->find_atlas("fire_dash_left"));
+
+		animation_fire_dash_right.set_interval(0.07f);
+		animation_fire_dash_right.set_loop(true);
+		animation_fire_dash_right.set_achor_mode(Animation::AchorMode::Centered);
+		animation_fire_dash_right.add_frame(ResourcesManager::instance()->find_atlas("fire_dash_right"));
+
 	}
 
 	// 状态机初始化
 	{
-		state_machine.register_state("idle", new EnemyDragonKingIdleState);
-		state_machine.register_state("jump", new EnemyDragonKingJumpState);
-		state_machine.register_state("fall", new EnemyDragonKingFallState);
-		state_machine.register_state("run", new EnemyDragonKingRunState);
-		state_machine.register_state("attack", new EnemyDragonKingAttackState);
-
+		state_machine.register_state("idle", new EnemyDragonKingState::IdleState);
+		state_machine.register_state("prepare", new EnemyDragonKingState::PrepareState);
+		state_machine.register_state("jump", new EnemyDragonKingState::JumpState);
+		state_machine.register_state("fall", new EnemyDragonKingState::FallState);
+		state_machine.register_state("run", new EnemyDragonKingState::RunState);
+		state_machine.register_state("normal_attack", new EnemyDragonKingState::AttackNormalState);
+		state_machine.register_state("electric", new EnemyDragonKingState::ElectricState);
+		state_machine.register_state("fire_dash", new EnemyDragonKingState::FireDashState);
+		state_machine.register_state("fire_bullet", new EnemyDragonKingState::FireBulletState);
 
 		state_machine.set_entry("idle");
 	}
@@ -177,8 +184,9 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 
 EnemyDragonKing::~EnemyDragonKing()
 {
-	AudioManager::instance()->stop_audio_ex(_T("player_run"));
+	AudioManager::instance()->stop_audio_ex(_T("run_loop"));
 	CollisionManager::instance()->destroy_collision_box(collision_box_katana);
+	CollisionManager::instance()->destroy_collision_box(collision_box_fire_dash);
 }
 
 void EnemyDragonKing::on_hurt()
@@ -205,6 +213,24 @@ void EnemyDragonKing::on_update(float delta)
 	}
 	else
 		collision_box_katana->set_enabled(false);
+
+	if (is_fire_dash)
+	{
+		current_fire_dash_animation->set_position(get_logic_center());
+		current_fire_dash_animation->on_update(delta);
+		collision_box_fire_dash->set_position(get_logic_center());
+	}
+	else
+		collision_box_fire_dash->set_enabled(false);
+
+	update_bullet_position(delta);
+	for (auto& fire_bullet : fire_bullet_list)
+		fire_bullet->on_update(delta);
+	fire_bullet_list.erase(std::remove_if(fire_bullet_list.begin(), fire_bullet_list.end(),
+		[](std::shared_ptr< FireBullet>& bullet)
+		{
+			return !bullet->check_valid();
+		}), fire_bullet_list.end());
 }
 
 void EnemyDragonKing::on_render()
@@ -214,6 +240,12 @@ void EnemyDragonKing::on_render()
 		current_slash_animation->on_render();
 
 	Character::on_render();
+
+	if (is_fire_dash)
+		current_fire_dash_animation->on_render();
+
+	for (auto& fire_bullet : fire_bullet_list)
+		fire_bullet->on_render();
 }
 
 void EnemyDragonKing::update_attack_box_position()
@@ -231,10 +263,10 @@ void EnemyDragonKing::update_attack_box_position()
 		pos_hit_box = { pos_center.x, pos_center.y + size_hit_box.y / 2 };
 		break;
 	case Direction::Left:
-		pos_hit_box = { pos_center.x - size_hit_box.x / 2, pos_center.y};
+		pos_hit_box = { pos_center.x - size_hit_box.x, pos_center.y };
 		break;
 	case Direction::Right:
-		pos_hit_box = { pos_center.x + size_hit_box.x / 2, pos_center.y};
+		pos_hit_box = { pos_center.x + size_hit_box.x, pos_center.y };
 		break;
 	}
 	collision_box_katana->set_position(pos_hit_box);
@@ -258,8 +290,55 @@ void EnemyDragonKing::on_attack()
 		break;
 	}
 	const Vector2& pos_center = get_logic_center();
-	current_slash_animation->set_position({pos_center.x, pos_center.y - 50});
+	current_slash_animation->set_position({ pos_center.x, pos_center.y - 50 });
 	current_slash_animation->reset();
 
 	collision_box_katana->set_enabled(true);
+}
+
+void EnemyDragonKing::on_fire_dash()
+{
+	// 碰撞
+	is_fire_dash = true;
+	collision_box_fire_dash->set_enabled(true);
+	collision_box_fire_dash->set_position(get_logic_center());
+
+	// 动画
+	current_fire_dash_animation = &(is_facing_left ?
+		animation_fire_dash_left : animation_fire_dash_right);
+}
+
+
+void EnemyDragonKing::on_fire_bullet()
+{
+	int spawn_fire_bullet_num = random_range(3, 4);
+	if (fire_bullet_list.size() > 6)
+		spawn_fire_bullet_num = 0;
+	for (int i = 0; i < spawn_fire_bullet_num; ++i)
+	{
+		std::shared_ptr<FireBullet> new_fire_bullet(new FireBullet);
+		new_fire_bullet->set_trigger_time(4.f + (float)random_range(0, 30) * 0.1f);
+		fire_bullet_list.push_back(new_fire_bullet);
+	}
+}
+void EnemyDragonKing::update_bullet_position(float delta)
+{
+	if (fire_bullet_list.empty())
+		return;
+
+	float angle_interval = 2 * 3.1415926f / fire_bullet_list.size();
+	const static float RADIAL_SPEED = 3.f;						// 子弹的径向波动速度
+	const static float TANGENT_SPEED = 5.f;					// 子弹的切向旋转速度
+
+	static float pass_time = 0.f;
+	pass_time += delta;
+	float radius = 100.f + sin(pass_time * RADIAL_SPEED) * 35;		// 子弹到玩家半径
+	for (int i = 0; i < fire_bullet_list.size(); ++i) {
+		if (!fire_bullet_list[i]->get_trigger())
+		{
+			float radians = pass_time * TANGENT_SPEED + angle_interval * i;	// 子弹与玩家间角度
+			fire_bullet_list[i]->set_position(get_logic_center()
+				+ Vector2(float(cos(radians) * radius), float(sin(radians) * radius)));
+		}
+	}
 }

@@ -38,15 +38,27 @@ static const std::vector<ImageResInfo> image_info_list =
 	{"player_vfx_attack_up",		_T(R"(resources\player\vfx_attack_up.png)") },
 	{"player_vfx_jump",				_T(R"(resources\player\vfx_jump.png)")},
 	{"player_vfx_land",				_T(R"(resources\player\vfx_land.png)") },
+	{"sword_hit_right",				_T(R"(resources\effect\sword_hit.png)") },
 
 	// 混叠图片
 	{ "effect_mixed_blue_1",		_T(R"(resources\effect\mixed_image\blue_1.png)") },
 	{ "effect_mixed_blue_2",		_T(R"(resources\effect\mixed_image\blue_2.png)") },
-	{ "effect_mixed_blue_3",		_T(R"(resources\effect\mixed_image\blue_3.png)") },
 	{ "effect_mixed_red",			_T(R"(resources\effect\mixed_image\red.png)") },
 
 	// 文本底色
-	{ "test_background_black",		_T(R"(resources\effect\mixed_image\test_background_black.png)") }
+	{ "test_background_black",		_T(R"(resources\effect\mixed_image\test_background_black.png)") },
+
+	// 龙王特效:刀光,冲刺,
+	{"dragon_vfx_attack_up",			_T(R"(resources\enemy\dragon_king\vfx\vfx_attack_up.png)")},
+	{"dragon_vfx_attack_down",			_T(R"(resources\enemy\dragon_king\vfx\vfx_attack_down.png)")},
+	{"dragon_vfx_attack_left",		_T(R"(resources\enemy\dragon_king\vfx\vfx_attack_left.png)")},
+	{"dragon_vfx_attack_right",		_T(R"(resources\enemy\dragon_king\vfx\vfx_attack_right.png)")},
+	
+	{"dragon_vfx_dash_tail_left",				_T(R"(resources\enemy\dragon_king\vfx\dash_tail.png)") },
+	{"dragon_vfx_dash_line_right",				_T(R"(resources\enemy\dragon_king\vfx\dash_line.png)") },
+
+	{"menu",				_T(R"(resources\menu.png)") },
+	{"menu_introduce",				_T(R"(resources\menu_introduce.png)") },
 };
 
 
@@ -78,33 +90,27 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 	{"player_dance_right",  _T(R"(resources\player\dance\%d.png)"), 12},
 
 	// 敌人:龙王
-	{"enemy_dragon_king_idle_right",			_T(R"(resources\enemy\dragon_king\idle\%d.png)"),	12},
-	{"enemy_dragon_king_attack_right",		_T(R"(resources\enemy\dragon_king\attack\%d.png)"),	15},
-	{"enemy_dragon_king_jump_right",			_T(R"(resources\enemy\dragon_king\jump\%d.png)"),	3},
-	{"enemy_dragon_king_roll_right",			_T(R"(resources\enemy\dragon_king\roll\%d.png)"),	5},
+	{"enemy_dragon_king_idle_right",		_T(R"(resources\enemy\dragon_king\idle\%d.png)"),	12},
+	{"enemy_dragon_king_prepare_right",		_T(R"(resources\enemy\dragon_king\prepare\%d.png)"),2},
+	{"enemy_dragon_king_attack_right",		_T(R"(resources\enemy\dragon_king\attack\%d.png)"),	9},
+	{"enemy_dragon_king_jump_right",		_T(R"(resources\enemy\dragon_king\jump\%d.png)"),	2},
 	{"enemy_dragon_king_run_right",			_T(R"(resources\enemy\dragon_king\run\%d.png)"),	10},
-	{"enemy_dragon_king_run_stop_right",		_T(R"(resources\enemy\dragon_king\run_stop\%d.png)"),	 4},
-	{"enemy_dragon_king_fall_1_right",		_T(R"(resources\enemy\dragon_king\fall_1\%d.png)"),	 14},
-	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
+	{"enemy_dragon_king_fall_right",		_T(R"(resources\enemy\dragon_king\fall\%d.png)"),	13},
 
-
-
-	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
-	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
-	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
-	{"enemy_dragon_king_fall_2_right",		_T(R"(resources\enemy\dragon_king\fall_2\%d.png)"),	 8},
-
-
-	// todo: 龙王刀光
-	 //"enemy_vfx_attack_down",
-	 //"enemy_vfx_attack_left",
-	 //"enemy_vfx_attack_right",
-	 //"enemy_vfx_attack_up",
-
+	{"fire_dash_left",  _T(R"(resources\effect\fire_dash\%d.png)"),		10},
+	{"fire_dash_down",  _T(R"(resources\effect\fire_dash_down\%d.png)"),		10},
+	{"fire_bullet",_T(R"(resources\effect\fire_bullet\%d.png)"),	13},
 
 	// 新加粒子特效
-	{"particle_vfx_hit_left",			  _T(R"(resources\effect\hit\%d.png)"),			 4},
-	{"particle_vfx_hurt_yellow_right",	  _T(R"(resources\effect\hurt\%d.png)"),		 6},
+	{"particle_vfx_hit_left",			  _T(R"(resources\effect\hit\%d.png)"),			4},
+	{"particle_vfx_hurt_yellow_right",	  _T(R"(resources\effect\watercolor\%d.png)"),	6},
+
+	{"particle_vfx_hurt",	  _T(R"(resources\effect\hurt\%d.png)"),		18},
+	{"particle_vfx_electric",	  _T(R"(resources\effect\electric\%d.png)"), 10},
+	{"particle_vfx_electric_right",	  _T(R"(resources\effect\electric_right\%d.png)"), 5},
+	{"particle_vfx_fire_left",		  _T(R"(resources\effect\fire\%d.png)"),	6},
+	{"particle_vfx_leaves",  _T(R"(resources\effect\leaves\%d.png)"),		 19},
+
 };
 
 static inline bool check_image_valid(IMAGE* img)
@@ -234,7 +240,8 @@ void ResourcesManager::load()
 	flip_image("player_run_right", "player_run_left", 10);
 	flip_image("player_roll_right", "player_roll_left", 7);
 	flip_atlas("player_dance_right", "player_dance_left");
-
+	flip_image("sword_hit_right", "sword_hit_left", 6);
+	
 	// 敌人:大黄蜂
 	flip_atlas("sword_left", "sword_right");
 	flip_atlas("enemy_hornet_aim_left", "enemy_hornet_aim_right");
@@ -255,13 +262,17 @@ void ResourcesManager::load()
 
 	// 敌人:龙王
 	flip_atlas("enemy_dragon_king_idle_right", "enemy_dragon_king_idle_left");
+	flip_atlas("enemy_dragon_king_prepare_right", "enemy_dragon_king_prepare_left");
 	flip_atlas("enemy_dragon_king_attack_right", "enemy_dragon_king_attack_left");
 	flip_atlas("enemy_dragon_king_jump_right", "enemy_dragon_king_jump_left");
-	flip_atlas("enemy_dragon_king_roll_right", "enemy_dragon_king_roll_left");
 	flip_atlas("enemy_dragon_king_run_right", "enemy_dragon_king_run_left");
-	flip_atlas("enemy_dragon_king_run_stop_right", "enemy_dragon_king_run_stop_left");
-	flip_atlas("enemy_dragon_king_fall_1_right", "enemy_dragon_king_fall_1_left");
-	flip_atlas("enemy_dragon_king_fall_2_right", "enemy_dragon_king_fall_2_left");
+	flip_atlas("enemy_dragon_king_fall_right", "enemy_dragon_king_fall_left");
+
+	flip_image("dragon_vfx_dash_tail_left", "dragon_vfx_dash_tail_right", 11);
+	flip_image("dragon_vfx_dash_line_right", "dragon_vfx_dash_line_left", 11);
+	flip_atlas("fire_dash_left", "fire_dash_right");
+	flip_atlas("particle_vfx_electric_right", "particle_vfx_electric_left");
+	flip_atlas("particle_vfx_fire_left", "particle_vfx_fire_right");
 
 	// 特效
 	flip_atlas("particle_vfx_hit_left", "particle_vfx_hit_right");
@@ -302,6 +313,22 @@ void ResourcesManager::load()
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_roll.mp3)"), _T("player_roll"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_run.mp3)"), _T("player_run"));
 
+	audio_player->load_audio_ex(_T(R"(resources\audio\sword_hit_1.wav)"), _T("sword_hit_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\sword_hit_2.wav)"), _T("sword_hit_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\attack_1.wav)"), _T("attack_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\attack_2.wav)"), _T("attack_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\attack_3.wav)"), _T("attack_3"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\run_loop.wav)"), _T("run_loop"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\jump.wav)"), _T("jump"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\land.wav)"), _T("land"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\fire_loop.wav)"), _T("fire_loop"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\dash.wav)"), _T("dash"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\fall.wav)"), _T("fall"));
+
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm1.mp3)"), _T("bgm1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm2.mp3)"), _T("bgm2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_dialogue.wav)"), _T("hornet_dialogue"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_final_yell.wav)"), _T("hornet_final_yell"));
 
 	// 加载导入字体
 	AddFontResourceEx(_T("resources/font/IPix.ttf"), FR_PRIVATE, nullptr);

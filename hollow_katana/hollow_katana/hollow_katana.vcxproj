@@ -149,6 +149,7 @@
     <ClCompile Include="sword.cpp" />
     <ClCompile Include="resources_manager.cpp" />
     <ClCompile Include="state_machine.cpp" />
+    <ClCompile Include="fire_bullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="util.h" />
     <ClInclude Include="vector2.h" />
     <ClInclude Include="particle_effect.h" />
+    <ClInclude Include="fire_bullet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

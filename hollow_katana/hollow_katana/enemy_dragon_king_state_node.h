@@ -4,17 +4,15 @@
 #include "timer.h"
 
 
-// 龙王 状态节点:
-// 策略: 1.半血以上[攻击频率低,没有大招] 2.半血以下[攻击频率高,大招] 
-// 
+// [龙王]状态节点:
+// 策略: 半血以上[攻击频率低,没有大招] 半血以下[攻击频率高,大招] (加入拼刀机制,0.45s无敌帧)
 // 1.闲置, 2.跳跃, 3.奔跑, 4.下落 
-// 5.冲刺(地面冲刺,空中冲刺都用同一个逻辑处理,加上特效就行,本质还是身体撞人)
-// 8.普通攻击(似乎可以加入拼刀机制,0.3s无敌帧[加一个半无敌],
-// 然后取消闪烁特效,在进入无敌帧的接口处,加一个缺省值)
-// 9.地面冲击波  
-// 7.子弹(无论空中地面, 像hornet silk, 但是不取消重力)
-// 10.三联招式 闪现
-// 12.死亡
+// 5.准备 6.普通攻击 7.雷闪一刀 8.火焰冲弹 
+// 9.空中火焰弹 10.死亡
+// 
+// 废弃方案:
+// 1.三联招式+闪现 2.地面冲击波 3.天降剑雨
+
 
 namespace EnemyDragonKingState
 {
@@ -24,6 +22,7 @@ namespace EnemyDragonKingState
 	private:
 		Timer timer;
 		const float MIN_DIS = 350.f;
+		bool is_first_half_hp = true;
 
 	public:
 		IdleState();
@@ -37,7 +36,7 @@ namespace EnemyDragonKingState
 	class JumpState : public StateNode
 	{
 	private:
-		const float SPEED_MOVE = 260.f;
+		const float SPEED_MOVE = 420.f;
 		const float MIN_DIS = 400.0f;
 
 	public:
@@ -96,6 +95,7 @@ namespace EnemyDragonKingState
 		Timer timer_attack;
 		Timer timer_duration;
 		Timer timer_exit;
+		bool is_start = false;
 		const float SPEED_MOVE_AXIS = 500.f;
 	public:
 		AttackNormalState();
@@ -141,11 +141,13 @@ namespace EnemyDragonKingState
 		virtual void on_exit() override;
 	};
 
-	// [火焰弹]
+	// [火焰弹]空中
 	class FireBulletState : public StateNode
 	{
+	private:
+
 	public:
-		FireBulletState() = default;
+		FireBulletState();
 		~FireBulletState() = default;
 		virtual void on_enter()  override;
 		virtual void on_update(float delta) override;
@@ -155,11 +157,10 @@ namespace EnemyDragonKingState
 	// [死亡]
 	class DeadState : public StateNode
 	{
-		Timer timer;
 		Timer timer_text1;
 		Timer timer_text2;
 	public:
-		DeadState() = default;
+		DeadState();
 		~DeadState() = default;
 		virtual void on_enter()  override;
 		virtual void on_update(float delta) override;

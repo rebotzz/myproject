@@ -112,6 +112,7 @@ public:
 	void enable_displace_ex(Direction dir, float delta);
 	void update_hit_box_position();
 	void reset();
+	void set_hp_max(int val) { hp_max = val; }
 
 
 private:

@@ -474,6 +474,14 @@ EnemyHornetIdleState::EnemyHornetIdleState()
 			// 策略: 1.半血以上[侧重近战攻击] 2.半血以下[侧重远程攻击] 
 			EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
 			float distance = abs(hornet->get_position().x - player->get_position().x);
+
+			if (hornet->get_hp() == hornet->get_hp_max() / 2 && is_first_half_hp)
+			{
+				is_first_half_hp = false;
+				hornet->switch_state("throw_barbs");
+				return;
+			}
+
 			int rand_num = random_range(0, 100);
 			if (hornet->get_hp() >= hornet->get_hp_max() / 2)
 			{
@@ -1003,23 +1011,22 @@ void EnemyHornetThrowSilkState::on_update(float delta)
 	// [扔丝线]可跳转状态: 死亡 下落 闲置 瞄准
 	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
 	if (hornet->get_hp() <= 0)
+	{
 		hornet->switch_state("dead");
+	}
 }
 
 EnemyHornetDeadState::EnemyHornetDeadState()
 {
-	timer_exit.set_one_shot(true);
-	timer_exit.set_wait_time(15.f);
-	timer_exit.set_on_timeout([]
-		{
-			SceneManager::instance()->switch_scene("game_scene_boss_dragon_king");
-		});
-
 	timer_dialogue.set_one_shot(true);
-	timer_dialogue.set_wait_time(5.f);
+	timer_dialogue.set_wait_time(4.f);
 	timer_dialogue.set_on_timeout([]
 		{
-			AudioManager::instance()->pause_audio_ex(_T("hornet_dialogue"));
+			std::shared_ptr<EffectText> particle(new EffectText(
+				_T("你是容器...你是空洞骑士"), 6.0f));
+			particle->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
+			ParticleManager::instance()->register_particle(particle);
+			AudioManager::instance()->play_audio_ex(_T("hornet_dialogue"));
 		});
 }
 
@@ -1029,18 +1036,14 @@ void EnemyHornetDeadState::on_enter()
 	timer_dialogue.restart();
 
 	std::shared_ptr<EffectText> text(new EffectText(
-		_T("很好,这样能行"), 5.0f, RGB(0, 255, 255)));
-	text->set_position({ (float)getwidth() / 2, 100 });
+		_T("很好...这样能行"), 3.0f, RGB(0, 255, 255)));
+	text->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
 	ParticleManager::instance()->register_particle(text);
 
-	std::shared_ptr<EffectText> particle(new EffectText(
-		_T("你是容器,你是空洞骑士"), 10.0f));
-	particle->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
-	ParticleManager::instance()->register_particle(particle);
+	AudioManager::instance()->play_audio_ex(_T("hornet_dead"));
 }
 
 void EnemyHornetDeadState::on_update(float delta)
 {
-	timer_exit.on_update(delta);
 	timer_dialogue.on_update(delta);
 }

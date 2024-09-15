@@ -228,31 +228,7 @@ void PlayerDanceState::on_exit()
 
 PlayerDeadState::PlayerDeadState()
 {
-	timer_cd.set_one_shot(true);
-	timer_cd.set_wait_time(2.0f);
-	timer_cd.set_on_timeout([&]()
-		{
-			can_next = true;
-		});
-
-	timer_text.set_one_shot(false);
-	timer_text.set_wait_time(0.49f);
-	timer_text.set_on_timeout([]
-		{
-			// 死亡文本提示
-			std::shared_ptr<EffectText> text_1 = std::make_shared<EffectText>(_T("不对......这样不行"),
-				0.5f, RGB(0, 255, 255));
-			std::shared_ptr<EffectText> text_2 = std::make_shared<EffectText>(_T("按[R]回溯时间"),
-				0.5f, RGB(0, 255, 255));
-			text_1->set_position({ (float)getwidth() / 2, (float)getheight() / 2 - 20 });
-			text_1->set_text_offset(0, -20);
-			text_2->set_position({ (float)getwidth() / 2, (float)getheight() / 2 + 20 });
-			text_2->set_enable_background(false);
-			ParticleManager::instance()->register_particle(text_1);
-			ParticleManager::instance()->register_particle(text_2);
-		});
 }
-
 void PlayerDeadState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("dead");
@@ -263,23 +239,16 @@ void PlayerDeadState::on_enter()
 	player->on_jump(0.5f);
 	player->enable_displace_ex(player->get_facing_redir(), player->get_stay_air_time());
 	player->get_hurt_box()->set_enabled(false);
-	timer_cd.restart();
 }
 
 void PlayerDeadState::on_update(float delta)
 {
-	timer_cd.on_update(delta);
 
-	// 按R键盘继续
+}
+void PlayerDeadState::on_exit()
+{
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
-	if (can_next && player->can_dance())
-	{
-		// 场景切换: 回溯时间
-		SceneManager::instance()->switch_scene("game_reverse_time");
-		player->get_hurt_box()->set_enabled(true);
-	}
-	else
-		timer_text.on_update(delta);
+	player->get_hurt_box()->set_enabled(true);
 }
 
 

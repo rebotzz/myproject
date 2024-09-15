@@ -5,8 +5,6 @@
 #include "scene_game_reverse_time.h"
 #include "scene_game_boss_dragon_king.h"
 
-//#include "scene_game_street.h"
-
 
 SceneManager* SceneManager::manager = nullptr;
 
@@ -18,8 +16,10 @@ SceneManager::SceneManager()
 	scene_pool["game_scene_boss_dragon_king"] = std::shared_ptr<SceneGameBossDragonKing>(new SceneGameBossDragonKing);
 
 	scene_pool["menu_scene"] = std::shared_ptr<Scene>(new SceneMenu);
-	scene_pool["menu_scene_introduce"] = std::shared_ptr<Scene>(new SceneMunuInctroduce);
-	//scene_pool["game_scene_street"] = std::shared_ptr<Scene>(new SceneGameStreet);
+	scene_pool["menu_scene_introduce"] = std::shared_ptr<Scene>(new SceneMenuInctroduce);
+
+	scene_pool["transition_scene"] = std::shared_ptr<Scene>(new SceneTransition);
+	scene_pool["begin_scene"] = std::shared_ptr<Scene>(new SceneBegin);
 }
 
 SceneManager::~SceneManager()

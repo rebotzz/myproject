@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "character.h"
 #include "fire_bullet.h"
 
@@ -36,6 +37,7 @@ private:
 	CollisionBox* collision_box_fire_dash = nullptr;				// »ğÑæ³å´ÌÅö×²ÏäÌå
 
 	// Ô¶³Ì¹¥»÷
+	Vector2 position_fire_bullet;
 	std::vector <std::shared_ptr<FireBullet>> fire_bullet_list;
 
 public:

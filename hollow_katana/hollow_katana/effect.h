@@ -106,3 +106,15 @@ class EffectSwordHit : public ParticleEffect
 public:
 	EffectSwordHit(bool is_left);
 };
+
+class EffectUiChoose : public ParticleEffect
+{
+public:
+	EffectUiChoose(bool is_left);
+};
+
+class EffectHurt2 : public ParticleEffect
+{
+public:
+	EffectHurt2();
+};

@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include "scene.h"
-
+#include "camera.h"
 
 
 // 场景管理器: 单例
@@ -59,21 +59,24 @@ public:
 		return prev_scene_id;
 	}
 
+	Scene* get_transition_scene()
+	{
+		return scene_pool["transition_scene"].get();
+	}
+
+	// 暂时没用的接口
 	void set_camera_position(const Vector2& position)
 	{
 		camera.set_position(position);
 	}
-
 	const Vector2& get_camera_position() const
 	{
 		return camera.get_position();
 	}
-
 	void camera_shake(float strength, float duration)
 	{
 		camera.shake(strength, duration);
 	}
-
 	// 可以在状态节点里面调用这个摄像机震动
 	// 只需要使用管理器 instance ...
 	const Camera& get_camera() const

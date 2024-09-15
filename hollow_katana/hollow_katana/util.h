@@ -5,9 +5,6 @@
 #include <easyx.h>
 #include "camera.h"
 
-#include <iostream>
-using std::cout;
-using std::endl;
 
 // 临时摄像机方案
 extern const Camera* main_camera;

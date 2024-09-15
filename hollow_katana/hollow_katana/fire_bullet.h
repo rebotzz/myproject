@@ -3,42 +3,18 @@
 #include "animation.h"
 #include "collision_box.h"
 
-//class Bullet
-//{
-//private:
-//	Vector2 _position;
-//	Vector2 velocity;
-//	CollisionBox* collision_box = nullptr;
-//	Animation animation;
-//	bool is_valid = true;
-//
-//private:
-//	const float SPEED_MOVE = 1250.0f;
-//
-//public:
-//	Bullet(const Vector2& postion_src, bool move_left);
-//	~Bullet();
-//	bool check_valid() const { return is_valid; }
-//
-//	void on_update(float delta);
-//	void on_render();
-//};
-
 
 class FireBullet
 {
 private:
 	Vector2 _position;
 	Vector2 velocity;
-	const float SPEED = 1500.f;
+	const float SPEED = 1200.f;
 	Timer timer_trigger;
 	bool is_trigger = false;
 	CollisionBox* collision_box = nullptr;
 	Animation animation;
 	bool is_valid = true;
-
-private:
-	const float SPEED_MOVE = 1250.0f;
 
 public:
 	FireBullet();
@@ -53,24 +29,3 @@ public:
 	bool get_trigger() const { return is_trigger; }
 };
 
-
-class FireDash
-{
-private:
-	Vector2 _position;
-	Vector2 velocity;
-	CollisionBox* collision_box = nullptr;
-	Animation animation;
-	bool is_valid = true;
-
-private:
-	const float SPEED_MOVE = 1250.0f;
-
-public:
-	FireDash(const Vector2& postion_src, bool move_left);
-	~FireDash();
-	bool check_valid() const { return is_valid; }
-
-	void on_update(float delta);
-	void on_render();
-};

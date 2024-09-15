@@ -93,23 +93,25 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 	{"enemy_dragon_king_idle_right",		_T(R"(resources\enemy\dragon_king\idle\%d.png)"),	12},
 	{"enemy_dragon_king_prepare_right",		_T(R"(resources\enemy\dragon_king\prepare\%d.png)"),2},
 	{"enemy_dragon_king_attack_right",		_T(R"(resources\enemy\dragon_king\attack\%d.png)"),	9},
-	{"enemy_dragon_king_jump_right",		_T(R"(resources\enemy\dragon_king\jump\%d.png)"),	2},
+	{"enemy_dragon_king_jump_right",		_T(R"(resources\enemy\dragon_king\jump\%d.png)"),	4},
 	{"enemy_dragon_king_run_right",			_T(R"(resources\enemy\dragon_king\run\%d.png)"),	10},
 	{"enemy_dragon_king_fall_right",		_T(R"(resources\enemy\dragon_king\fall\%d.png)"),	13},
-
 	{"fire_dash_left",  _T(R"(resources\effect\fire_dash\%d.png)"),		10},
-	{"fire_dash_down",  _T(R"(resources\effect\fire_dash_down\%d.png)"),		10},
+	{"fire_dash_down",  _T(R"(resources\effect\fire_dash_down\%d.png)"),10},
 	{"fire_bullet",_T(R"(resources\effect\fire_bullet\%d.png)"),	13},
 
 	// 新加粒子特效
 	{"particle_vfx_hit_left",			  _T(R"(resources\effect\hit\%d.png)"),			4},
 	{"particle_vfx_hurt_yellow_right",	  _T(R"(resources\effect\watercolor\%d.png)"),	6},
-
 	{"particle_vfx_hurt",	  _T(R"(resources\effect\hurt\%d.png)"),		18},
 	{"particle_vfx_electric",	  _T(R"(resources\effect\electric\%d.png)"), 10},
 	{"particle_vfx_electric_right",	  _T(R"(resources\effect\electric_right\%d.png)"), 5},
 	{"particle_vfx_fire_left",		  _T(R"(resources\effect\fire\%d.png)"),	6},
 	{"particle_vfx_leaves",  _T(R"(resources\effect\leaves\%d.png)"),		 19},
+	{"ui_choose_left",  _T(R"(resources\effect\ui_choose\%d.png)"),		 11},
+	{"light_bug",  _T(R"(resources\effect\other\bug\%d.png)"),		 8},
+	{"light",  _T(R"(resources\effect\other\light\%d.png)"),		 16},
+	{"little_knight",  _T(R"(resources\effect\other\little_knight\%d.png)"), 5},
 
 };
 
@@ -277,6 +279,7 @@ void ResourcesManager::load()
 	// 特效
 	flip_atlas("particle_vfx_hit_left", "particle_vfx_hit_right");
 	flip_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_yellow_left");
+	flip_atlas("ui_choose_left", "ui_choose_right");
 
 	// 混叠图片,改变图片原有色彩(注意图片大小别越界)
 	blend_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_red_right", "effect_mixed_red");
@@ -286,7 +289,6 @@ void ResourcesManager::load()
 
 	// 加载音频
 	AudioManager* audio_player = AudioManager::instance();
-	audio_player->load_audio_ex(_T(R"(resources\audio\bgm.mp3)"), _T("bgm_1"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\barb_break.mp3)"), _T("barb_break"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\bullet_time.mp3)"), _T("bullet_time"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\reverse_time.mp3)"), _T("reverse_time"));
@@ -313,22 +315,31 @@ void ResourcesManager::load()
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_roll.mp3)"), _T("player_roll"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\player_run.mp3)"), _T("player_run"));
 
-	audio_player->load_audio_ex(_T(R"(resources\audio\sword_hit_1.wav)"), _T("sword_hit_1"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\sword_hit_2.wav)"), _T("sword_hit_2"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\attack_1.wav)"), _T("attack_1"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\attack_2.wav)"), _T("attack_2"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\attack_3.wav)"), _T("attack_3"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\sword_hit_1.mp3)"), _T("sword_hit_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\sword_hit_2.mp3)"), _T("sword_hit_2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\sword_hit_2.mp3)"), _T("sword_hit_2"));
+
 	audio_player->load_audio_ex(_T(R"(resources\audio\run_loop.wav)"), _T("run_loop"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\jump.wav)"), _T("jump"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\land.wav)"), _T("land"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\fire_loop.wav)"), _T("fire_loop"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\dash.wav)"), _T("dash"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\fall.wav)"), _T("fall"));
 
-	audio_player->load_audio_ex(_T(R"(resources\audio\bgm1.mp3)"), _T("bgm1"));
-	audio_player->load_audio_ex(_T(R"(resources\audio\bgm2.mp3)"), _T("bgm2"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\dash.wav)"), _T("dash"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\fall.mp3)"), _T("fall"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\fire.mp3)"), _T("fire_loop"));
+
+	audio_player->load_audio_ex(_T(R"(resources\audio\electric.mp3)"), _T("electric"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\wind.mp3)"), _T("wind"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\fire_bullet.mp3)"), _T("fire_bullet"));
+
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm_0.mp3)"), _T("bgm_0"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm_1.mp3)"), _T("bgm_1"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\bgm_2.mp3)"), _T("bgm_2"));
+
+	audio_player->load_audio_ex(_T(R"(resources\audio\ui_confirm.wav)"), _T("ui_confirm"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\ui_switch.wav)"), _T("ui_switch"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_dialogue.wav)"), _T("hornet_dialogue"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_final_yell.wav)"), _T("hornet_final_yell"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_dead.wav)"), _T("hornet_dead"));
 
 	// 加载导入字体
 	AddFontResourceEx(_T("resources/font/IPix.ttf"), FR_PRIVATE, nullptr);

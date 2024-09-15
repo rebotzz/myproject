@@ -170,6 +170,7 @@ class EnemyHornetIdleState : public StateNode
 private:
 	Timer timer;
 	const float MIN_DIS = 300.0f;
+	bool is_first_half_hp = true;
 
 public:
 	EnemyHornetIdleState();

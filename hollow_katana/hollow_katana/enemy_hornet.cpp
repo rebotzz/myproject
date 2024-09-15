@@ -277,7 +277,7 @@ void EnemyHornet::on_update(float delta)
 	// 更新特效动画和碰撞箱逻辑
 	hit_box->set_position(get_logic_center());
 
-	if (is_throwing_silk)
+	if (is_throwing_silk && hp >= 0)
 	{
 		animation_silk.on_update(delta);
 		animation_silk.set_position(get_logic_center());

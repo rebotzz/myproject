@@ -143,7 +143,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="player_state_node.cpp" />
     <ClCompile Include="reverse_time_manager.cpp" />
-    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="scene_game.cpp" />
     <ClCompile Include="scene_manager.cpp" />
     <ClCompile Include="status_bar.cpp" />
     <ClCompile Include="sword.cpp" />
@@ -174,12 +174,11 @@
     <ClInclude Include="resources_manager.h" />
     <ClInclude Include="reverse_time_manager.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="scene_game.h" />
     <ClInclude Include="scene_game_boss_dragon_king.h" />
     <ClInclude Include="scene_game_boss_hornet.h" />
-    <ClInclude Include="scene_game_street.h" />
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="scene_menu.h" />
-    <ClInclude Include="scene_menu_introduce.h" />
     <ClInclude Include="scene_game_reverse_time.h" />
     <ClInclude Include="state_machine.h" />
     <ClInclude Include="state_node.h" />

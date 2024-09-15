@@ -111,17 +111,17 @@
     <ClCompile Include="scene_manager.cpp">
       <Filter>头文件\scenery</Filter>
     </ClCompile>
-    <ClCompile Include="enemy_dragon_king.cpp">
-      <Filter>头文件\character\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_dragon_king_state_node.cpp">
-      <Filter>头文件\character\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>头文件\scenery</Filter>
-    </ClCompile>
     <ClCompile Include="fire_bullet.cpp">
       <Filter>头文件\property</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_dragon_king.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_dragon_king_state_node.cpp">
+      <Filter>源文件\character</Filter>
+    </ClCompile>
+    <ClCompile Include="scene_game.cpp">
+      <Filter>头文件\scenery</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,16 +215,10 @@
     <ClInclude Include="scene_menu.h">
       <Filter>头文件\scenery</Filter>
     </ClInclude>
-    <ClInclude Include="scene_menu_introduce.h">
-      <Filter>头文件\scenery</Filter>
-    </ClInclude>
     <ClInclude Include="scene_game_boss_hornet.h">
       <Filter>头文件\scenery</Filter>
     </ClInclude>
     <ClInclude Include="scene_game_boss_dragon_king.h">
-      <Filter>头文件\scenery</Filter>
-    </ClInclude>
-    <ClInclude Include="scene_game_street.h">
       <Filter>头文件\scenery</Filter>
     </ClInclude>
     <ClInclude Include="scene_game_reverse_time.h">
@@ -238,6 +232,9 @@
     </ClInclude>
     <ClInclude Include="fire_bullet.h">
       <Filter>头文件\property</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_game.h">
+      <Filter>头文件\scenery</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -13,8 +13,7 @@
 Player::Player() :Character()
 {
 	// 角色朝向,位置,高度初始化
-	hp = 1;
-	hp_max = 3;
+	hp = hp_max = 5;
 	is_facing_left = false;
 	position = { 200, 300 };
 	logic_height = 90.0f;
@@ -128,8 +127,9 @@ Player::Player() :Character()
 				create_roll_effect();
 		});
 
+	// 为了拼刀机制加入的延时受伤定时器,效果未知
 	timer_delay_decrease_hp.set_one_shot(true);
-	timer_delay_decrease_hp.set_wait_time(0.01f);
+	timer_delay_decrease_hp.set_wait_time(0.001f);
 	timer_delay_decrease_hp.set_on_timeout([&]
 		{
 			static bool init = true;
@@ -331,7 +331,7 @@ void Player::on_input(const ExMessage& msg)
 	static const int VK_G = 0x47;
 	static const int VK_R = 0x52;
 
-	// 当角色死亡时,只能按下R键
+	// 当角色死亡时,只能按下R键,死了都要跳舞
 	if (msg.message == WM_KEYDOWN && msg.vkcode == VK_R)
 		is_dance_key_down = true;
 	if (hp <= 0)
@@ -650,10 +650,18 @@ void Player::on_hit_collide()
 		particle->set_position(pos_spark);
 		ParticleManager::instance()->register_particle(particle);
 
-		if(random_range(0, 1))
+		switch (random_range(1, 3))
+		{
+		case 1: 
 			AudioManager::instance()->play_audio_ex(_T("sword_hit_1"));
-		else
+			break;
+		case 2:
 			AudioManager::instance()->play_audio_ex(_T("sword_hit_2"));
+			break;
+		case 3:
+			AudioManager::instance()->play_audio_ex(_T("sword_hit_3"));
+			break;
+		}
 	}
 }
 

@@ -61,7 +61,7 @@ Character* CharacterManager::get_player()
 Character* CharacterManager::get_enemy()
 {
 	if (enemy_list.empty())
-		throw std::invalid_argument("enemy_list is empty.");
+		return nullptr;
 
 	auto first_enemy = enemy_list.begin();
 	Character* enemy = first_enemy->second.get();

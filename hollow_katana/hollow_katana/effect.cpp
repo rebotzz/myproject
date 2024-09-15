@@ -125,7 +125,7 @@ EffectElectric::EffectElectric()
 EffectElectricAxis::EffectElectricAxis(bool is_left)
 {
 	// 加载动画资源
-	animation_vfx.set_interval(0.075f);
+	animation_vfx.set_interval(0.04f);
 	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
 	animation_vfx.add_frame(ResourcesManager::instance()->find_atlas(
 		is_left ? "particle_vfx_electric_left" : "particle_vfx_electric_right"));
@@ -157,3 +157,20 @@ EffectSwordHit::EffectSwordHit(bool is_left)
 	animation_vfx.add_frame(ResourcesManager::instance()->find_image(
 		is_left ? "sword_hit_left" : "sword_hit_right"), 6);
 }
+
+EffectUiChoose::EffectUiChoose(bool is_left)
+{
+	// 加载动画资源
+	animation_vfx.set_interval(0.05f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_image(
+		is_left ? "sword_hit_left" : "sword_hit_right"), 6);
+}
+
+EffectHurt2::EffectHurt2()
+{
+	animation_vfx.set_interval(0.04f);
+	animation_vfx.set_achor_mode(Animation::AchorMode::Centered);
+	animation_vfx.add_frame(ResourcesManager::instance()->find_atlas("particle_vfx_hurt"));
+}
+

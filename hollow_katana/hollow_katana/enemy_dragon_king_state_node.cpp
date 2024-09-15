@@ -24,17 +24,25 @@ namespace EnemyDragonKingState
 				// 策略: 龙王擅长近战,习惯追击玩家,血量低时加入天空火焰
 				EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 				float distance = abs(enemy->get_position().x - player->get_position().x);
-				int rand_num = random_range(0, 100);
-				if (enemy->get_hp() >= enemy->get_hp_max() / 2)
+
+				if (enemy->get_hp() == enemy->get_hp_max() / 2 && is_first_half_hp)
 				{
-					if (distance >= MIN_DIS)
+					is_first_half_hp = false;
+					enemy->switch_state("jump");
+					return;
+				}
+
+				int rand_num = random_range(0, 100);
+				if (enemy->get_hp() >= enemy->get_hp_max() / 3)
+				{
+					if (distance >= MIN_DIS && rand_num <= 50)
 						enemy->switch_state("run");
 					else
 						enemy->switch_state("prepare");
 				}
 				else
 				{
-					if (rand_num <= 30)
+					if (rand_num <= 20)
 						enemy->switch_state("jump");
 					else if (rand_num <= 70)
 						enemy->switch_state("prepare");
@@ -97,8 +105,8 @@ namespace EnemyDragonKingState
 		// 或者大跳之后可以放[光剑天降], fall 节点通过角色位置高度判断是大跳,小跳,决定招式
 		int rand_num = random_range(0, 100);
 		enemy->set_velocity({ pos_player.x < pos_enemy.x ? -SPEED_MOVE : SPEED_MOVE, -enemy->get_speed_jump() });
-	
-		AudioManager::instance()->pause_audio_ex(_T("jump"));
+
+		AudioManager::instance()->play_audio_ex(_T("jump"));
 
 		std::shared_ptr<EffectJump> particle = std::make_shared<EffectJump>();
 		particle->set_position(enemy->get_position());
@@ -117,7 +125,10 @@ namespace EnemyDragonKingState
 			int rand_num = random_range(0, 100);
 			// 后续动作: [天空火焰]... 其他的暂时没有
 			// 跳起一定是有[目的],不会单纯下落,所以[fall]是技能之后的状态
-			enemy->switch_state("fire_bullet");
+			if (rand_num <= 80)
+				enemy->switch_state("fire_bullet");
+			else
+				enemy->switch_state("fall");
 		}
 	}
 
@@ -174,9 +185,9 @@ namespace EnemyDragonKingState
 		CharacterManager::instance()->get_enemy()->set_animation("fall");
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		// 加入微小的速度
-		enemy->set_velocity({ enemy->get_facing_left() ? -50.f : 50.f , 0 });
+		enemy->set_velocity({ enemy->get_facing_left() ? -150.f : 150.f , 0 });
 
-		AudioManager::instance()->stop_audio_ex(_T("fall"));
+		AudioManager::instance()->play_audio_ex(_T("fall"));
 	}
 
 	void FallState::on_update(float delta)
@@ -189,8 +200,8 @@ namespace EnemyDragonKingState
 		else if (enemy->is_on_floor())
 		{
 			enemy->switch_state("idle");
-			AudioManager::instance()->pause_audio_ex(_T("land"));
 
+			AudioManager::instance()->play_audio_ex(_T("land"));
 			std::shared_ptr<EffectLand> particle = std::make_shared<EffectLand>();
 			particle->set_position(enemy->get_position());
 			ParticleManager::instance()->register_particle(particle);
@@ -231,6 +242,7 @@ namespace EnemyDragonKingState
 				std::shared_ptr<EffectLeaves> particle = std::make_shared<EffectLeaves>();
 				particle->set_position(enemy->get_logic_center());
 				ParticleManager::instance()->register_particle(particle);
+				AudioManager::instance()->play_audio_ex(_T("wind"));
 			}
 			else
 			{
@@ -241,34 +253,32 @@ namespace EnemyDragonKingState
 				std::shared_ptr<EffectElectric> particle = std::make_shared<EffectElectric>();
 				particle->set_position(enemy->get_logic_center() + Vector2(-5, -20));
 				ParticleManager::instance()->register_particle(particle);
+				AudioManager::instance()->play_audio_ex(_T("electric"));
 			}
 		}
 		else
 		{
-			if (rand_num <= 60)
-			{
-				next_state = "electric";
-				wait_time += 0.6 + random_range(0, 10) * 0.01f;
-				timer_effect.set_wait_time(0.1f);
-
-				std::shared_ptr<EffectElectric> particle = std::make_shared<EffectElectric>();
-				particle->set_position(enemy->get_logic_center() + Vector2(-5, -20));
-				ParticleManager::instance()->register_particle(particle);
-			}
-			else if(distance <= 500.f)
+			if (distance <= 500.f)
 			{
 				next_state = "normal_attack";
-				wait_time = 0.3 + random_range(0, 5) * 0.01f;
+				wait_time = 0.3f + random_range(0, 5) * 0.01f;
 				timer_effect.set_wait_time(1.0f);
 
 				std::shared_ptr<EffectLeaves> particle = std::make_shared<EffectLeaves>();
 				particle->set_position(enemy->get_logic_center());
 				ParticleManager::instance()->register_particle(particle);
+				AudioManager::instance()->play_audio_ex(_T("wind"));
 			}
 			else
 			{
-				next_state = "jump";
-				wait_time = 0.3 + random_range(0, 5) * 0.01f;
+				next_state = "electric";
+				wait_time += 0.6f + random_range(0, 10) * 0.01f;
+				timer_effect.set_wait_time(0.1f);
+
+				std::shared_ptr<EffectElectric> particle = std::make_shared<EffectElectric>();
+				particle->set_position(enemy->get_logic_center() + Vector2(-5, -20));
+				ParticleManager::instance()->register_particle(particle);
+				AudioManager::instance()->play_audio_ex(_T("electric"));
 			}
 		}
 
@@ -300,25 +310,12 @@ namespace EnemyDragonKingState
 		timer_attack.set_wait_time(0.075f * 2);
 		timer_attack.set_on_timeout([&]
 			{
-				timer_duration.restart();
+				is_start = true;
 
 				EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 				enemy->set_attacking(true);
 				enemy->on_attack();
 				enemy->update_attack_box_position();
-
-				switch (random_range(1, 3))
-				{
-				case 1:
-					AudioManager::instance()->play_audio_ex(_T("player_attack_1"));
-					break;
-				case 2:
-					AudioManager::instance()->play_audio_ex(_T("player_attack_2"));
-					break;
-				case 3:
-					AudioManager::instance()->play_audio_ex(_T("player_attack_3"));
-					break;
-				}
 			});
 
 		timer_exit.set_one_shot(true);
@@ -334,6 +331,8 @@ namespace EnemyDragonKingState
 		CharacterManager::instance()->get_enemy()->set_animation("attack");
 		timer_attack.restart();
 		timer_exit.restart();
+		timer_duration.restart();
+		is_start = false;
 
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		Character* player = dynamic_cast<Character*>(CharacterManager::instance()->get_player());
@@ -341,13 +340,13 @@ namespace EnemyDragonKingState
 		enemy->set_facing_left(is_left);
 		enemy->set_velocity({ is_left ? -SPEED_MOVE_AXIS : SPEED_MOVE_AXIS, 0 });
 		enemy->set_attack_dir(is_left ? EnemyDragonKing::Direction::Left : EnemyDragonKing::Direction::Right);
-	
-		AudioManager::instance()->pause_audio_ex(_T("attack_1"));
+
 	}
 	void AttackNormalState::on_update(float delta)
 	{
 		timer_attack.on_update(delta);
-		timer_duration.on_update(delta);
+		if(is_start)
+			timer_duration.on_update(delta);
 		timer_exit.on_update(delta);
 
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
@@ -388,6 +387,10 @@ namespace EnemyDragonKingState
 				std::shared_ptr<EffectDashLine> particle(new EffectDashLine(enemy->get_facing_left()));
 				particle->set_position(enemy->get_position() + Vector2(0.f, -40.f));
 				ParticleManager::instance()->register_particle(particle);
+
+				std::shared_ptr<EffectElectricAxis> electric(new EffectElectricAxis(enemy->get_facing_left()));
+				electric->set_position(enemy->get_position() + Vector2(0.f, -40.f));
+				ParticleManager::instance()->register_particle(electric);
 			});
 	}
 	void ElectricState::on_enter()
@@ -402,7 +405,6 @@ namespace EnemyDragonKingState
 		enemy->set_attacking(true);
 		enemy->on_attack();
 
-		AudioManager::instance()->pause_audio_ex(_T("attack_2"));
 	}
 	void ElectricState::on_update(float delta)
 	{
@@ -436,16 +438,34 @@ namespace EnemyDragonKingState
 		timer_exit.set_on_timeout([]
 			{
 				EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
-				enemy->switch_state("idle");
+				int rand_num = random_range(0, 100);
+				if (enemy->get_hp() >= enemy->get_hp_max() / 2)
+				{
+					if (rand_num <= 70)
+						enemy->switch_state("idle");
+					else
+					{
+						enemy->set_velocity({ 0, 0 });
+						enemy->switch_state("prepare");
+					}
+				}
+				else
+				{
+					if (rand_num <= 30)
+						enemy->switch_state("idle");
+					else
+					{
+						enemy->set_velocity({ 0, 0 });
+						enemy->switch_state("prepare");
+					}
+				}
 			});
 
 		timer_max_time.set_one_shot(true);
-		timer_max_time.set_wait_time(3.f);
-		timer_max_time.set_on_timeout([]
+		timer_max_time.set_wait_time(0.9f);
+		timer_max_time.set_on_timeout([&]
 			{
-				EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
-				enemy->switch_state("idle");
-				enemy->set_invisible(false);
+				can_finish = true;
 			});
 
 		timer_min_time.set_one_shot(true);
@@ -470,10 +490,8 @@ namespace EnemyDragonKingState
 		enemy->on_fire_dash();
 		enemy->set_invisible(true);
 		enemy->get_hurt_box()->set_enabled(false);
-	
-		AudioManager::instance()->pause_audio_ex(_T("attack_3"));
-		AudioManager::instance()->pause_audio_ex(_T("fire_loop"));
 
+		AudioManager::instance()->play_audio_ex(_T("fire_loop"));
 	}
 	void FireDashState::on_update(float delta)
 	{
@@ -489,7 +507,7 @@ namespace EnemyDragonKingState
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		Character* player = CharacterManager::instance()->get_player();
 		float distance = abs(enemy->get_position().x - player->get_position().x);
-		if (distance <= 10 && min_can_finish)
+		if (distance <= 50 && min_can_finish)
 			can_finish = true;
 
 		if (enemy->get_hp() <= 0)
@@ -504,45 +522,58 @@ namespace EnemyDragonKingState
 	}
 
 
+	FireBulletState::FireBulletState()
+	{
+	}
 	void FireBulletState::on_enter()
 	{
 		// 这里不要动画了,加一个特效就行
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		enemy->on_fire_bullet();
 
-		AudioManager::instance()->stop_audio_ex(_T("fire_loop"));
+		AudioManager::instance()->play_audio_ex(_T("fire_loop"));
 	}
 	void FireBulletState::on_update(float delta)
 	{
-		// 一直冲刺,直到路过玩家
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 
 		if (enemy->get_hp() <= 0)
 			enemy->switch_state("dead");
-		else if (enemy->get_velocity().y > 0)
+		else if(enemy->get_velocity().y > 0)
 			enemy->switch_state("fall");
 	}
 	void FireBulletState::on_exit()
-	{}
+	{
+	}
 
 
 	DeadState::DeadState()
 	{
-		timer.set_one_shot(true);
-		timer.set_wait_time(10.f);
-		timer.set_on_timeout([]()
-			{
-				SceneManager::instance()->switch_scene("menu_scene");
-			});
-
 		timer_text1.set_one_shot(true);
-		timer_text1.set_wait_time(5.f);
+		timer_text1.set_wait_time(4.f);
 		timer_text1.set_on_timeout([]()
 			{
 				std::shared_ptr<EffectText> particle(new EffectText(
-					_T("接下来,让我们去把这座城烧成灰烬吧"), 5.0f));
-				particle->set_position({ (float)getwidth() / 2, (float)getheight() / 2});
+					_T("零号...歧途之心..."), 4.0f, RGB(50, 255, 255)));
+				particle->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
 				ParticleManager::instance()->register_particle(particle);
+			});
+
+		timer_text2.set_one_shot(true);
+		timer_text2.set_wait_time(8.5f);
+		timer_text2.set_on_timeout([]()
+			{
+				std::shared_ptr<EffectText> text1(new EffectText(
+					_T("接下来,"), 5.0f, RGB(255, 50, 50)));
+				text1->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
+				text1->set_text_offset(0, -40);
+				std::shared_ptr<EffectText> text2(new EffectText(
+					_T("让我们去把这座城烧成灰烬吧..."), 5.0f, RGB(255, 50, 50)));
+				text2->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
+				text2->set_text_offset(0, 40);
+				text2->set_enable_background(false);
+				ParticleManager::instance()->register_particle(text1);
+				ParticleManager::instance()->register_particle(text2);
 			});
 	}
 
@@ -551,19 +582,16 @@ namespace EnemyDragonKingState
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		enemy->set_animation("idle");
 		timer_text1.restart();
+		timer_text2.restart();
 
 		std::shared_ptr<EffectText> text(new EffectText(
-			_T("很好,这样能行"), 5.0f));
-		text->set_position({ (float)getwidth() / 2, 100 });
+			_T("很好...这样能行"), 3.f, RGB(0, 255, 255)));
+		text->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
 		ParticleManager::instance()->register_particle(text);
-
-		std::shared_ptr<EffectText> particle(new EffectText(
-			_T("零号,力量就是你为王的气量"), 5.0f));
-		particle->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
-		ParticleManager::instance()->register_particle(particle);
 	}
 	void DeadState::on_update(float delta)
 	{
 		timer_text1.on_update(delta);
+		timer_text2.on_update(delta);
 	}
 }

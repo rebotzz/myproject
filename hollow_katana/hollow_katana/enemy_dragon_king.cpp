@@ -1,7 +1,10 @@
 #include "enemy_dragon_king.h"
+#include <memory>
 #include "resources_manager.h"
 #include "audio_manager.h"
 #include "enemy_dragon_king_state_node.h"
+#include "particle_manager.h"
+#include "effect.h"
 
 EnemyDragonKing::EnemyDragonKing() :Character()
 {
@@ -177,6 +180,7 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 		state_machine.register_state("electric", new EnemyDragonKingState::ElectricState);
 		state_machine.register_state("fire_dash", new EnemyDragonKingState::FireDashState);
 		state_machine.register_state("fire_bullet", new EnemyDragonKingState::FireBulletState);
+		state_machine.register_state("dead", new EnemyDragonKingState::DeadState);
 
 		state_machine.set_entry("idle");
 	}
@@ -187,11 +191,16 @@ EnemyDragonKing::~EnemyDragonKing()
 	AudioManager::instance()->stop_audio_ex(_T("run_loop"));
 	CollisionManager::instance()->destroy_collision_box(collision_box_katana);
 	CollisionManager::instance()->destroy_collision_box(collision_box_fire_dash);
+	fire_bullet_list.clear();
 }
 
 void EnemyDragonKing::on_hurt()
 {
 	AudioManager::instance()->play_audio_ex(_T("player_hurt"));
+
+	std::shared_ptr<EffectHurt2> particle(new EffectHurt2);
+	particle->set_position(get_logic_center() - Vector2(0, +20.f));
+	ParticleManager::instance()->register_particle(particle);
 }
 
 void EnemyDragonKing::on_update(float delta)
@@ -311,9 +320,10 @@ void EnemyDragonKing::on_fire_dash()
 
 void EnemyDragonKing::on_fire_bullet()
 {
-	int spawn_fire_bullet_num = random_range(3, 4);
-	if (fire_bullet_list.size() > 6)
-		spawn_fire_bullet_num = 0;
+	position_fire_bullet = position;
+	int spawn_fire_bullet_num = random_range(3,6);
+	if (fire_bullet_list.size() + spawn_fire_bullet_num >= 6)
+		spawn_fire_bullet_num = 1;
 	for (int i = 0; i < spawn_fire_bullet_num; ++i)
 	{
 		std::shared_ptr<FireBullet> new_fire_bullet(new FireBullet);
@@ -327,17 +337,17 @@ void EnemyDragonKing::update_bullet_position(float delta)
 		return;
 
 	float angle_interval = 2 * 3.1415926f / fire_bullet_list.size();
-	const static float RADIAL_SPEED = 3.f;						// 子弹的径向波动速度
-	const static float TANGENT_SPEED = 5.f;					// 子弹的切向旋转速度
+	const static float RADIAL_SPEED = 3.2f;									// 子弹的径向波动速度
+	const static float TANGENT_SPEED = 5.5f;								// 子弹的切向旋转速度
 
 	static float pass_time = 0.f;
 	pass_time += delta;
-	float radius = 100.f + sin(pass_time * RADIAL_SPEED) * 35;		// 子弹到玩家半径
+	float radius = 120.f + sin(pass_time * RADIAL_SPEED) * 15;				// 子弹到角色半径
 	for (int i = 0; i < fire_bullet_list.size(); ++i) {
 		if (!fire_bullet_list[i]->get_trigger())
 		{
-			float radians = pass_time * TANGENT_SPEED + angle_interval * i;	// 子弹与玩家间角度
-			fire_bullet_list[i]->set_position(get_logic_center()
+			float radians = pass_time * TANGENT_SPEED + angle_interval * i;	// 子弹与角色间角度
+			fire_bullet_list[i]->set_position( position_fire_bullet
 				+ Vector2(float(cos(radians) * radius), float(sin(radians) * radius)));
 		}
 	}

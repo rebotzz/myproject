@@ -1,4 +1,5 @@
-#include <iostream>
+#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
+
 #include <chrono>
 #include <thread>
 #include "util.h"
@@ -8,8 +9,6 @@
 #include "audio_manager.h"
 #include "scene_manager.h"
 
-using std::cout;
-using std::endl;
 
 const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
@@ -20,7 +19,7 @@ int main()
 {
 
 	// 初始化
-	HWND hwnd = initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, EX_SHOWCONSOLE);
+	HWND hwnd = initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);
 	SetWindowText(hwnd, _T("Hollow Katana"));
 	BeginBatchDraw();
 	ExMessage msg;
@@ -37,58 +36,45 @@ int main()
 		MessageBox(hwnd, error_msg, _T("资源加载失败"), MB_OK | MB_ICONERROR);
 		return -1;
 	}
-	catch (const std::exception& e)
-	{
-		cout << e.what() << endl;
-	}
+
 
 	using namespace std::chrono;
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 
-	main_camera = &(SceneManager::instance()->get_camera());
-	SceneManager::instance()->set_entry_scene("game_scene_boss_dragon_king");
+	main_camera = &(SceneManager::instance()->get_camera());	// 暂时不弄了,下次再说
+	SceneManager::instance()->set_entry_scene("menu_scene");
 
-	try
+	// 主循环
+	while (!is_quit)
 	{
-		// 主循环
-		while (!is_quit)
+		// 处理消息
+		if (peekmessage(&msg, EX_MOUSE | EX_KEY))
 		{
-			// 处理消息
-			if (peekmessage(&msg, EX_MOUSE | EX_KEY))
-			{
-				SceneManager::instance()->on_input(msg);
-			}
-
-			steady_clock::time_point frame_start = steady_clock::now();
-			duration<float> delta = duration<float>(frame_start - last_tick);
-
-			// 处理更新
-			float scaled_delta = BulletTimeManager::instance()->on_update(delta.count());
-
-			SceneManager::instance()->on_update(scaled_delta);
-			CollisionManager::instance()->process_collide();
-
-			// 处理绘图
-			cleardevice();
-
-			SceneManager::instance()->on_render();
-			CollisionManager::instance()->on_debug_render();
-
-			FlushBatchDraw();
-
-
-			// 动态延时
-			last_tick = frame_start;
-			nanoseconds sleep_duration = frame_duration - (steady_clock::now() - frame_start);
-			if (sleep_duration > nanoseconds(0))
-				std::this_thread::sleep_for(sleep_duration);
+			SceneManager::instance()->on_input(msg);
 		}
+
+		steady_clock::time_point frame_start = steady_clock::now();
+		duration<float> delta = duration<float>(frame_start - last_tick);
+
+		// 处理更新
+		float scaled_delta = BulletTimeManager::instance()->on_update(delta.count());
+		SceneManager::instance()->on_update(scaled_delta);
+		CollisionManager::instance()->process_collide();
+
+		// 处理绘图
+		cleardevice();
+		SceneManager::instance()->on_render();
+		//CollisionManager::instance()->on_debug_render();
+		FlushBatchDraw();
+
+		// 动态延时
+		last_tick = frame_start;
+		nanoseconds sleep_duration = frame_duration - (steady_clock::now() - frame_start);
+		if (sleep_duration > nanoseconds(0))
+			std::this_thread::sleep_for(sleep_duration);
 	}
-	catch (const std::exception& e)
-	{
-		cout << e.what() << endl;
-	}
+
 
 	closegraph();
 	EndBatchDraw();

@@ -51,7 +51,6 @@ namespace EnemyDragonKingState
 	{
 	private:
 		const float SPEED_RUN = 400.0f;
-		const float MIN_DISTANCE = 350.f;
 		std::string next_state;
 
 	public:

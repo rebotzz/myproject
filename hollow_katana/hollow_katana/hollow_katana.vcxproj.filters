@@ -102,9 +102,6 @@
     <ClCompile Include="effect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="particle_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="reverse_time_manager.cpp">
       <Filter>头文件\common_manager</Filter>
     </ClCompile>
@@ -122,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="scene_game.cpp">
       <Filter>头文件\scenery</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_manager.cpp">
+      <Filter>源文件\manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

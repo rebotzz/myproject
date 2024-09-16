@@ -63,5 +63,4 @@ public:
 	void update_attack_box_position();
 	void set_attack_dir(Direction dir) { attack_dir = dir; }
 	void set_fire_dash(bool flag) { is_fire_dash = flag; }
-	void update_bullet_position(float delta);
 };

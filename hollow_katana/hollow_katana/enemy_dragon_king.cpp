@@ -9,7 +9,7 @@
 EnemyDragonKing::EnemyDragonKing() :Character()
 {
 	// 角色初始化
-	hp = hp_max = 10;
+	hp = hp_max = 15;
 	is_facing_left = true;
 	position = { 1050, 500 };
 	logic_height = 90;
@@ -30,7 +30,7 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 	collision_box_katana->set_size({ 150,110 });
 	// 武士刀可被剑受击碰撞,拼刀机制
 	collision_box_katana->set_layer_src(CollisionLayer::None | CollisionLayer::Sword);
-	collision_box_katana->set_layer_dst(CollisionLayer::Player | CollisionLayer::Rebound);
+	collision_box_katana->set_layer_dst(CollisionLayer::Player);
 
 	collision_box_fire_dash = CollisionManager::instance()->create_collision_box();
 	collision_box_fire_dash->set_enabled(false);
@@ -232,7 +232,6 @@ void EnemyDragonKing::on_update(float delta)
 	else
 		collision_box_fire_dash->set_enabled(false);
 
-	update_bullet_position(delta);
 	for (auto& fire_bullet : fire_bullet_list)
 		fire_bullet->on_update(delta);
 	fire_bullet_list.erase(std::remove_if(fire_bullet_list.begin(), fire_bullet_list.end(),
@@ -322,33 +321,12 @@ void EnemyDragonKing::on_fire_bullet()
 {
 	position_fire_bullet = position;
 	int spawn_fire_bullet_num = random_range(3,6);
-	if (fire_bullet_list.size() + spawn_fire_bullet_num >= 6)
-		spawn_fire_bullet_num = 1;
 	for (int i = 0; i < spawn_fire_bullet_num; ++i)
 	{
 		std::shared_ptr<FireBullet> new_fire_bullet(new FireBullet);
-		new_fire_bullet->set_trigger_time(4.f + (float)random_range(0, 30) * 0.1f);
+		new_fire_bullet->set_trigger_time(2.1f + i * 0.4f + (float)random_range(0, 30) * 0.1f);
+		new_fire_bullet->set_base_position(get_logic_center());
+		new_fire_bullet->set_init_angle(2 * 3.1415926f / (float)spawn_fire_bullet_num * (float)i);
 		fire_bullet_list.push_back(new_fire_bullet);
-	}
-}
-void EnemyDragonKing::update_bullet_position(float delta)
-{
-	if (fire_bullet_list.empty())
-		return;
-
-	float angle_interval = 2 * 3.1415926f / fire_bullet_list.size();
-	const static float RADIAL_SPEED = 3.2f;									// 子弹的径向波动速度
-	const static float TANGENT_SPEED = 5.5f;								// 子弹的切向旋转速度
-
-	static float pass_time = 0.f;
-	pass_time += delta;
-	float radius = 120.f + sin(pass_time * RADIAL_SPEED) * 15;				// 子弹到角色半径
-	for (int i = 0; i < fire_bullet_list.size(); ++i) {
-		if (!fire_bullet_list[i]->get_trigger())
-		{
-			float radians = pass_time * TANGENT_SPEED + angle_interval * i;	// 子弹与角色间角度
-			fire_bullet_list[i]->set_position( position_fire_bullet
-				+ Vector2(float(cos(radians) * radius), float(sin(radians) * radius)));
-		}
 	}
 }

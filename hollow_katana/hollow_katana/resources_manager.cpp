@@ -58,7 +58,7 @@ static const std::vector<ImageResInfo> image_info_list =
 	{"dragon_vfx_dash_line_right",				_T(R"(resources\enemy\dragon_king\vfx\dash_line.png)") },
 
 	{"menu",				_T(R"(resources\menu.png)") },
-	{"menu_introduce",				_T(R"(resources\menu_introduce.png)") },
+	{"menu_introduce",		_T(R"(resources\menu_introduce.png)") },
 };
 
 
@@ -340,6 +340,7 @@ void ResourcesManager::load()
 	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_dialogue.wav)"), _T("hornet_dialogue"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_final_yell.wav)"), _T("hornet_final_yell"));
 	audio_player->load_audio_ex(_T(R"(resources\audio\hornet_dead.wav)"), _T("hornet_dead"));
+	audio_player->load_audio_ex(_T(R"(resources\audio\play_tape.mp3)"), _T("play_tape"));
 
 	// 加载导入字体
 	AddFontResourceEx(_T("resources/font/IPix.ttf"), FR_PRIVATE, nullptr);

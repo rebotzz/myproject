@@ -33,21 +33,33 @@ namespace EnemyDragonKingState
 				}
 
 				int rand_num = random_range(0, 100);
-				if (enemy->get_hp() >= enemy->get_hp_max() / 3)
+				if (enemy->get_hp() >= enemy->get_hp_max() / 2)
 				{
-					if (distance >= MIN_DIS && rand_num <= 50)
-						enemy->switch_state("run");
-					else
+					if (distance >= 500.f)
+					{
+						if(rand_num <= 50)
+							enemy->switch_state("run");
+						else
+							enemy->switch_state("fire_dash");
+					}
+					else if (rand_num <= 95)
 						enemy->switch_state("prepare");
+					else
+						enemy->switch_state("jump");
 				}
 				else
 				{
-					if (rand_num <= 20)
-						enemy->switch_state("jump");
-					else if (rand_num <= 70)
+					if (distance >= 500.f)
+					{
+						if (rand_num <= 40)
+							enemy->switch_state("run");
+						else
+							enemy->switch_state("fire_dash");
+					}
+					else if (rand_num <= 90)
 						enemy->switch_state("prepare");
 					else
-						enemy->switch_state("run");
+						enemy->switch_state("jump");
 				}
 			});
 	}
@@ -58,7 +70,7 @@ namespace EnemyDragonKingState
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		enemy->set_velocity({ 0, 0 });
 
-		float wait_time = 0.4f;
+		float wait_time = 0.25f;
 		if (enemy->get_hp() >= enemy->get_hp_max() / 2)
 			wait_time += (float)random_range(0, 50) * 0.01f;
 		else
@@ -121,38 +133,16 @@ namespace EnemyDragonKingState
 		if (enemy->get_hp() <= 0)
 			enemy->switch_state("dead");
 		else if (enemy->get_velocity().y > 0)
-		{
-			int rand_num = random_range(0, 100);
-			// 后续动作: [天空火焰]... 其他的暂时没有
-			// 跳起一定是有[目的],不会单纯下落,所以[fall]是技能之后的状态
-			if (rand_num <= 80)
-				enemy->switch_state("fire_bullet");
-			else
-				enemy->switch_state("fall");
-		}
+			enemy->switch_state("fire_bullet");
 	}
-
 
 	void RunState::on_enter()
 	{
 		CharacterManager::instance()->get_enemy()->set_animation("run");
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
-
-		int rand_num = random_range(0, 100);
-		if (enemy->get_hp() > enemy->get_hp_max() / 2)
-		{
-			if (rand_num <= 50)
-				next_state = "fire_dash";
-			else
-				next_state = "prepare";
-		}
-		else
-		{
-			if (rand_num <= 70)
-				next_state = "fire_dash";
-			else
-				next_state = "prepare";
-		}
+		const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
+		enemy->set_velocity({ pos_player.x < enemy->get_position().x ? -SPEED_RUN : SPEED_RUN, 0 });
+		enemy->set_facing_left(pos_player.x < enemy->get_position().x);
 
 		AudioManager::instance()->play_audio_ex(_T("run_loop"), true);
 	}
@@ -161,17 +151,55 @@ namespace EnemyDragonKingState
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		const Vector2& pos_enemy = enemy->get_position();
 		const Vector2& pos_player = CharacterManager::instance()->get_player()->get_position();
-		enemy->set_facing_left(pos_player.x < pos_enemy.x);
-		enemy->set_velocity({ pos_player.x < pos_enemy.x ? -SPEED_RUN : SPEED_RUN, 0 });
 		float distance = abs(pos_player.x - pos_enemy.x);
 
 		// [奔跑]可跳转状态: 死亡 
 		if (enemy->get_hp() <= 0)
 			enemy->switch_state("dead");
-		else if (next_state == "fire_dash" && distance <= MIN_DISTANCE * 2.5f)
-			enemy->switch_state("fire_dash");
-		else if (distance <= MIN_DISTANCE)
-			enemy->switch_state("prepare");
+		else if (distance <= 400.f)
+		{
+			int rand_num = random_range(0, 100);
+			if (enemy->get_hp() >= enemy->get_hp_max() / 2)
+			{
+				if (rand_num <= 10)
+					next_state = "fire_dash";
+				else
+				{
+					std::shared_ptr<EffectLeaves> particle = std::make_shared<EffectLeaves>();
+					particle->set_position(enemy->get_logic_center());
+					ParticleManager::instance()->register_particle(particle);
+					AudioManager::instance()->play_audio_ex(_T("wind"));
+
+					enemy->switch_state("normal_attack");
+				}
+			}
+			else
+			{
+				if (rand_num <= 15)
+					enemy->switch_state("fire_dash");
+				else if (rand_num <= 60)
+				{
+					std::shared_ptr<EffectLeaves> particle = std::make_shared<EffectLeaves>();
+					particle->set_position(enemy->get_logic_center());
+					ParticleManager::instance()->register_particle(particle);
+					AudioManager::instance()->play_audio_ex(_T("wind"));
+
+					enemy->switch_state("normal_attack");
+				}
+				else if (rand_num <= 80)
+				{
+					std::shared_ptr<EffectElectric> particle = std::make_shared<EffectElectric>();
+					particle->set_position(enemy->get_logic_center() + Vector2(-5, -20));
+					ParticleManager::instance()->register_particle(particle);
+					AudioManager::instance()->play_audio_ex(_T("electric"));
+
+					enemy->switch_state("electric");
+				}
+				else
+					next_state = "jump";
+			}
+		}
+
 	}
 	void RunState::on_exit()
 	{
@@ -232,11 +260,11 @@ namespace EnemyDragonKingState
 		// 初步方案,之后加入距离,血量判断
 		if (enemy->get_hp() > enemy->get_hp_max() / 2)
 		{
-			if (rand_num <= 60 && distance <= 500.f)
+			if (rand_num <= 60 && distance <= 400.f)
 			{
 				// 生成特效,标识出招前摇
 				next_state = "normal_attack";
-				wait_time = 0.4f + random_range(0, 5) * 0.01f;
+				wait_time = 0.3f + random_range(0, 15) * 0.01f;
 				timer_effect.set_wait_time(1.0f);
 
 				std::shared_ptr<EffectLeaves> particle = std::make_shared<EffectLeaves>();
@@ -247,7 +275,7 @@ namespace EnemyDragonKingState
 			else
 			{
 				next_state = "electric";
-				wait_time += 0.7f + random_range(0, 10) * 0.01f;
+				wait_time += 0.6f + random_range(0, 15) * 0.01f;
 				timer_effect.set_wait_time(0.1f);
 
 				std::shared_ptr<EffectElectric> particle = std::make_shared<EffectElectric>();
@@ -258,10 +286,10 @@ namespace EnemyDragonKingState
 		}
 		else
 		{
-			if (distance <= 500.f)
+			if (distance <= 400.f)
 			{
 				next_state = "normal_attack";
-				wait_time = 0.3f + random_range(0, 5) * 0.01f;
+				wait_time = 0.25f + random_range(0, 15) * 0.01f;
 				timer_effect.set_wait_time(1.0f);
 
 				std::shared_ptr<EffectLeaves> particle = std::make_shared<EffectLeaves>();
@@ -272,7 +300,7 @@ namespace EnemyDragonKingState
 			else
 			{
 				next_state = "electric";
-				wait_time += 0.6f + random_range(0, 10) * 0.01f;
+				wait_time += 0.5f + random_range(0, 10) * 0.01f;
 				timer_effect.set_wait_time(0.1f);
 
 				std::shared_ptr<EffectElectric> particle = std::make_shared<EffectElectric>();
@@ -462,7 +490,7 @@ namespace EnemyDragonKingState
 			});
 
 		timer_max_time.set_one_shot(true);
-		timer_max_time.set_wait_time(0.9f);
+		timer_max_time.set_wait_time(1.3f);
 		timer_max_time.set_on_timeout([&]
 			{
 				can_finish = true;
@@ -564,13 +592,13 @@ namespace EnemyDragonKingState
 		timer_text2.set_on_timeout([]()
 			{
 				std::shared_ptr<EffectText> text1(new EffectText(
-					_T("接下来,"), 5.0f, RGB(255, 50, 50)));
+					_T("醒了吗...?"), 5.0f, RGB(255, 255, 255)));
 				text1->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
-				text1->set_text_offset(0, -40);
+				text1->set_text_offset(0, -20);
 				std::shared_ptr<EffectText> text2(new EffectText(
-					_T("让我们去把这座城烧成灰烬吧..."), 5.0f, RGB(255, 50, 50)));
+					_T("让我们去把这座城烧成灰烬吧..."), 5.0f, RGB(255, 255, 255)));
 				text2->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
-				text2->set_text_offset(0, 40);
+				text2->set_text_offset(0, 20);
 				text2->set_enable_background(false);
 				ParticleManager::instance()->register_particle(text1);
 				ParticleManager::instance()->register_particle(text2);
@@ -581,6 +609,8 @@ namespace EnemyDragonKingState
 	{
 		EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 		enemy->set_animation("idle");
+		enemy->set_velocity({ 0,0 });
+		enemy->set_facing_left(CharacterManager::instance()->get_player()->get_position().x < enemy->get_position().x);
 		timer_text1.restart();
 		timer_text2.restart();
 

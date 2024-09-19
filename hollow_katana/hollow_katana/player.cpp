@@ -447,7 +447,7 @@ void Player::on_update(float delta)
 	animation_vfx_jump.on_update(delta);
 	animation_vfx_land.on_update(delta);
 
-	if (is_attacking)
+	if (is_attacking && hp > 0)
 	{
 		timer_attack_cd.on_update(delta);
 		current_slash_animation->set_position(get_logic_center());

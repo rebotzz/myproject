@@ -214,7 +214,7 @@ void EnemyDragonKing::on_update(float delta)
 	// 更新特效动画和碰撞箱逻辑
 	hit_box->set_position(get_logic_center());
 
-	if (is_attacking)
+	if (is_attacking && hp > 0)
 	{
 		current_slash_animation->set_position(get_logic_center());
 		current_slash_animation->on_update(delta);

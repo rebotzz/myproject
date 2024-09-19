@@ -596,7 +596,7 @@ namespace EnemyDragonKingState
 				text1->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
 				text1->set_text_offset(0, -20);
 				std::shared_ptr<EffectText> text2(new EffectText(
-					_T("让我们去把这座城烧成灰烬吧..."), 5.0f, RGB(255, 255, 255)));
+					_T("让我们去把这座城烧成灰吧..."), 5.0f, RGB(255, 255, 255)));
 				text2->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
 				text2->set_text_offset(0, 20);
 				text2->set_enable_background(false);

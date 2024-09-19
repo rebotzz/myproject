@@ -286,6 +286,9 @@ void EnemyHornet::on_update(float delta)
 	else
 		collision_box_silk->set_enabled(false);
 
+	if (hp <= 0)
+		hit_box->set_enabled(false);
+
 	if (is_dashing_in_air || is_dashing_on_floor)
 	{
 		current_dash_animation->on_update(delta);

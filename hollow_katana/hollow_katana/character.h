@@ -75,4 +75,10 @@ public:
 
 	CollisionBox* get_hurt_box() const { return hurt_box; }
 	CollisionBox* get_hit_box() const { return hit_box; }
+
+	// 时间回溯2.0特供接口
+	HistoryStatus get_current_status() const 
+	{ 
+		return (is_facing_left ? current_animation->left : current_animation->right).get_current_status();
+	}
 };

@@ -1,5 +1,7 @@
 #include "character.h"
 
+extern Camera* main_camera;
+
 Character::Character()
 {
 	hit_box = CollisionManager::instance()->create_collision_box();

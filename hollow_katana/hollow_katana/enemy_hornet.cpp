@@ -4,6 +4,7 @@
 #include "audio_manager.h"
 #include "enemy_hornet_state_node.h"
 
+
 EnemyHornet::EnemyHornet() :Character()
 {
 	// ½ÇÉ«³õÊ¼»¯
@@ -367,5 +368,7 @@ void EnemyHornet::on_throw_silk()
 {
 	animation_silk.reset();
 	collision_box_silk->set_enabled(true);
+
+	main_camera->shake(8, 0.9f);
 }
 

@@ -9,7 +9,6 @@
 #include "effect.h"
 
 
-
 Player::Player() :Character()
 {
 	// 角色朝向,位置,高度初始化
@@ -520,6 +519,7 @@ void Player::on_hurt()
 {
 	AudioManager::instance()->play_audio_ex(_T("player_hurt"));
 	create_hurt_effect();
+	main_camera->shake(4, 0.5);
 }
 
 void Player::on_attack()

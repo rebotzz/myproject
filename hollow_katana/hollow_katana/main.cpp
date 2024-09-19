@@ -13,7 +13,7 @@
 const int WINDOW_WIDTH = 1270;
 const int WINDOW_HEIGHT = 720;
 const int FPS = 144;
-const Camera* main_camera = nullptr;		// const * 指向地址的内容不能改变,指针本身能改变
+Camera* main_camera = nullptr;
 
 int main()
 {
@@ -41,8 +41,7 @@ int main()
 	using namespace std::chrono;
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
-
-	main_camera = &(SceneManager::instance()->get_camera());	// 暂时不弄了,下次再说
+	main_camera = SceneManager::instance()->get_camera();
 	SceneManager::instance()->set_entry_scene("menu_scene");
 
 	// 主循环

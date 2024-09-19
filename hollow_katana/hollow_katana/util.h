@@ -2,12 +2,12 @@
 #pragma comment(lib, "WINmm.lib")		// mciSendString() 
 #pragma comment(lib, "MSIMG32.LIB")		// AlphaBlend()
 
+#include <vector>
 #include <easyx.h>
 #include "camera.h"
 
-
 // 临时摄像机方案
-extern const Camera* main_camera;
+extern Camera* main_camera;
 
 // 矩形区域
 struct Rect
@@ -16,6 +16,16 @@ struct Rect
 	int w, h;
 };
 
+// 临时记录历史信息方案
+struct HistoryStatus
+{
+public:
+	IMAGE* img;
+	Rect rect_dst;
+	Rect rect_src;
+};
+
+
 
 inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect_src = nullptr)
 {
@@ -23,6 +33,7 @@ inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect
 	int x_dst = rect_dst->x - (main_camera ? (int)main_camera->get_position().x : 0);
 	int y_dst = rect_dst->y - (main_camera ? (int)main_camera->get_position().y : 0);
 
+	// 渲染逻辑
 	static BLENDFUNCTION blend_func = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
 	AlphaBlend(GetImageHDC(nullptr), x_dst, y_dst, rect_dst->w, rect_dst->h,
 		GetImageHDC(img), rect_src ? rect_src->x : 0, rect_src ? rect_src->y : 0,

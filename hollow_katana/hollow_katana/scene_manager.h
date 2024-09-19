@@ -13,8 +13,8 @@ private:
 	static SceneManager* manager;											// 单例
 	std::unordered_map <std::string, std::shared_ptr<Scene>> scene_pool;	// 场景池
 	std::shared_ptr<Scene> current_scene;									// 当前场景
-	std::string cur_scene_id;
-	std::string prev_scene_id;												// 上一个场景
+	std::string cur_scene_id;												// 当前场景id
+	std::string prev_scene_id;												// 上一个场景id
 	bool need_init = true;													// 是否需要初始化
 	Camera camera;															// 主摄像机
 
@@ -64,24 +64,9 @@ public:
 		return scene_pool["transition_scene"].get();
 	}
 
-	// 暂时没用的接口
-	void set_camera_position(const Vector2& position)
+	Camera* get_camera() 
 	{
-		camera.set_position(position);
-	}
-	const Vector2& get_camera_position() const
-	{
-		return camera.get_position();
-	}
-	void camera_shake(float strength, float duration)
-	{
-		camera.shake(strength, duration);
-	}
-	// 可以在状态节点里面调用这个摄像机震动
-	// 只需要使用管理器 instance ...
-	const Camera& get_camera() const
-	{
-		return camera;
+		return &camera;
 	}
 
 };

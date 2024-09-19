@@ -37,14 +37,8 @@
     <Filter Include="源文件\character">
       <UniqueIdentifier>{ed09fe37-9c33-4165-af96-09a01a542b42}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\property">
-      <UniqueIdentifier>{928481b3-66f5-44eb-a8d9-7ed3a17bfc31}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\scenery">
       <UniqueIdentifier>{3d685c93-04c4-4ddb-a5a4-5400f201945d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\common_manager">
-      <UniqueIdentifier>{5c0ba1a2-f4e2-43b2-ae13-59d9d7721f93}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\property">
       <UniqueIdentifier>{68356bf5-1979-41f5-a729-100e031e2ca4}</UniqueIdentifier>
@@ -52,12 +46,12 @@
     <Filter Include="头文件\particle_effect">
       <UniqueIdentifier>{e123d085-b8b6-4392-9f9e-899653ea8f1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\manager">
+      <UniqueIdentifier>{5c0ba1a2-f4e2-43b2-ae13-59d9d7721f93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="state_machine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="audio_manager.cpp">
@@ -87,23 +81,14 @@
     <ClCompile Include="enemy_hornet.cpp">
       <Filter>源文件\character</Filter>
     </ClCompile>
-    <ClCompile Include="sword.cpp">
-      <Filter>源文件\property</Filter>
-    </ClCompile>
-    <ClCompile Include="barb.cpp">
-      <Filter>源文件\property</Filter>
-    </ClCompile>
     <ClCompile Include="enemy_hornet_state_node.cpp">
       <Filter>源文件\character</Filter>
     </ClCompile>
     <ClCompile Include="status_bar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="effect.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="reverse_time_manager.cpp">
-      <Filter>头文件\common_manager</Filter>
+      <Filter>头文件\manager</Filter>
     </ClCompile>
     <ClCompile Include="scene_manager.cpp">
       <Filter>头文件\scenery</Filter>
@@ -122,6 +107,18 @@
     </ClCompile>
     <ClCompile Include="particle_manager.cpp">
       <Filter>源文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="state_machine.cpp">
+      <Filter>头文件\state_machine</Filter>
+    </ClCompile>
+    <ClCompile Include="barb.cpp">
+      <Filter>头文件\property</Filter>
+    </ClCompile>
+    <ClCompile Include="sword.cpp">
+      <Filter>头文件\property</Filter>
+    </ClCompile>
+    <ClCompile Include="effect.cpp">
+      <Filter>头文件\particle_effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -143,9 +140,6 @@
     <ClInclude Include="character.h">
       <Filter>头文件\character</Filter>
     </ClInclude>
-    <ClInclude Include="character_manager.h">
-      <Filter>头文件\character</Filter>
-    </ClInclude>
     <ClInclude Include="player.h">
       <Filter>头文件\character\player</Filter>
     </ClInclude>
@@ -165,13 +159,13 @@
       <Filter>头文件\character\enemy</Filter>
     </ClInclude>
     <ClInclude Include="bullet_time_manager.h">
-      <Filter>头文件\common_manager</Filter>
+      <Filter>头文件\manager</Filter>
     </ClInclude>
     <ClInclude Include="resources_manager.h">
-      <Filter>头文件\common_manager</Filter>
+      <Filter>头文件\manager</Filter>
     </ClInclude>
     <ClInclude Include="audio_manager.h">
-      <Filter>头文件\common_manager</Filter>
+      <Filter>头文件\manager</Filter>
     </ClInclude>
     <ClInclude Include="sword.h">
       <Filter>头文件\property</Filter>
@@ -192,7 +186,7 @@
       <Filter>头文件\particle_effect</Filter>
     </ClInclude>
     <ClInclude Include="reverse_time_manager.h">
-      <Filter>头文件\common_manager</Filter>
+      <Filter>头文件\manager</Filter>
     </ClInclude>
     <ClInclude Include="scene.h">
       <Filter>头文件\scenery</Filter>
@@ -235,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="scene_game.h">
       <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="character_manager.h">
+      <Filter>头文件\manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

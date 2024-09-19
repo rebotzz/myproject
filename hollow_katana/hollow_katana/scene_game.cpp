@@ -59,10 +59,20 @@ void GameScene::on_input(const ExMessage& msg)
 {
 	CharacterManager::instance()->on_input(msg);
 
-	// 如果玩家死亡
 	static const int VK_R = 0x52;
+	switch (msg.message)
+	{
+	case WM_KEYDOWN:
+		if (msg.vkcode == VK_R) is_reverse_key_down = true;
+		break;
+	case WM_KEYUP:
+		if (msg.vkcode == VK_R) is_reverse_key_down = false;
+		break;
+	}
+
+	// 如果玩家死亡
 	if (CharacterManager::instance()->get_player()->get_hp() <= 0
-		&& can_reverse_time && msg.message == WM_KEYDOWN && msg.vkcode == VK_R)
+		&& can_reverse_time && is_reverse_key_down)
 		is_reverse_time = true;
 }
 
@@ -109,8 +119,14 @@ void GameScene::on_exit()
 	ReverseTimeManager::instance()->set_enable(false);
 
 	AudioManager::instance()->stop_audio_ex(bgm);
-	if(CharacterManager::instance()->get_player()->get_hp() <= 0)
+	if (CharacterManager::instance()->get_player()->get_hp() <= 0)
+	{
 		AudioManager::instance()->play_audio_ex(_T("reverse_time"), true);		// debug:为了确保成功播放,所以两次
+
+#ifdef REVERSE_TIME_VERSION_2
+		ReverseTimeManager::instance()->set_background(background);
+#endif
+	}
 }
 
 void GameScene::render_background()

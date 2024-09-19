@@ -14,6 +14,7 @@ protected:
 	Timer timer_cd;
 	bool can_reverse_time = false;
 	bool is_reverse_time = false;
+	bool is_reverse_key_down = false;
 
 public:
 	GameScene(IMAGE* background, const std::wstring bgm);

@@ -145,6 +145,7 @@ public:
 		}
 	}
 
+	// 为了粒子特效提供的接口
 	IMAGE& get_current_frame()
 	{
 		Frame frame = frame_list[idx_frame];
@@ -171,6 +172,7 @@ public:
 		return current_frame;
 	}
 
+	// 为了时间回溯提供的接口
 	void clear()
 	{
 		idx_frame = 0;
@@ -182,9 +184,22 @@ public:
 		return frame_list.empty();
 	}
 
-	// todo: 可能没用
-	void finish()
+	// 为了时间回溯2.0提供的接口
+	HistoryStatus get_current_status()
 	{
-		timer.finish();
+		const Frame& frame = frame_list[idx_frame];
+
+		Rect rect_dst;
+		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
+		rect_dst.x = (int)position.x - frame.rect_src.w / 2;
+		rect_dst.y = (achor_mode == AchorMode::BottomCentered ?
+			(int)position.y - frame.rect_src.h :
+			(int)position.y - frame.rect_src.h / 2);
+
+		return { frame.img, rect_dst, frame.rect_src };
+	}
+	void add_frame(IMAGE* img, const Rect& rect_src)
+	{
+		frame_list.push_back({ img, rect_src });
 	}
 };

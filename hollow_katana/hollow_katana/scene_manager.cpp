@@ -82,4 +82,5 @@ void SceneManager::on_update(float delta)
 	}
 
 	current_scene->on_update(delta);
+	camera.on_update(delta);
 }

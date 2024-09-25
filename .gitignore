@@ -1,21 +1,16 @@
 # 我的忽略
 
-# 空洞武士 hollow_katana
+# 空洞武士
 hollow_katana/hollow_katana/resources
 
-# turb项目
-indata
-outdata
-*.ini
-turbExtra/turbExtra/configure
-turbExtra/turbExtra/python/data
-turbExtra/turbExtra/python/image
-turbExtra/turbExtra/python/model
+# 植物明星大乱斗
+plant_star_battle/plant_star_battle/resources
 
-# 临时忽略
-# test_torch测试项目代码
+# 提瓦特幸存者
+Tivat_Survivor_Game/Tivat_Survivor_Game/resource
+
+# 一些测试文件,忽略
 test_torch
-# 临时使用DLL的项目
 learn_DLL
 
 # Document

@@ -97,6 +97,7 @@ public:
 				choice = (Choice)(((int)choice + 1 + (int)Choice::None) % (int)Choice::None);
 				break;
 			case VK_RETURN:
+			case VK_SPACE:
 				switch (choice)
 				{
 				case Choice::Game:
@@ -152,9 +153,11 @@ public:
 		}
 		animation_ui_choose_left.on_render();
 		animation_ui_choose_right.on_render();
+		settextcolor(RGB(255, 255, 255));
+		outtextxy((getwidth() - textwidth(_T("[enter]"))) / 2, getheight() - 30, _T("[enter]"));
 
-		for (auto& bug : animation_bug)
-			bug.on_render();
+		for (auto& light_bug : animation_bug)
+			light_bug.on_render();
 	}
 	virtual void on_exit() override 
 	{
@@ -192,6 +195,7 @@ public:
 		setbkcolor(RGB(0, 0, 0));
 		putimage_alpha_ex(background, &rect_dst);
 
+		settextcolor(RGB(255, 255, 255));
 		outtextxy(30, 30, _T("ESCÍË³ö"));
 	}
 	virtual void on_exit() override 

@@ -20,7 +20,7 @@ private:
 
 	const float BULLET_TIME_TOTAL = 2.0f;							// 子弹时间最大值
 	const float SPEED_DISPLACE_AXIS = 300.0f;						// 特殊位移(水平)速度
-	const float SPEED_DISPLACE_UP_MAX = 780.0f;						// 特殊位移(上)速度最大值
+	const float SPEED_DISPLACE_UP = 780.0f;						// 特殊位移(上)速度
 
 private:
 	Timer timer_roll_cd;											// 翻滚冷却时间定时器
@@ -59,7 +59,6 @@ private:
 	bool is_displace_ex = false;									// 是否特殊位移
 	Timer timer_enable_displace_ex;
 	Timer timer_displace_ex;										// 角色特殊位移(攻击)定时器
-	float speed_displace_up = 780.0f;								// 特殊位移(上)速度
 	bool is_down_slash = false;										// 是否下劈
 	bool is_sword_hit = false;										// 是否拼刀
 	Timer timer_delay_decrease_hp;									// 延时扣血用于检测是否在拼刀

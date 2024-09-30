@@ -18,7 +18,6 @@ private:
 	bool need_init = true;													// 是否需要初始化
 	Camera camera;															// 主摄像机
 
-
 private:
 	SceneManager();
 	~SceneManager();

@@ -46,7 +46,7 @@ void EffectBlend::add_image(IMAGE& image)
 
 EffectBulletTime::EffectBulletTime()
 {
-	animation_vfx.set_interval(0.15f);
+	animation_vfx.set_interval(0.3f);
 	base = ResourcesManager::instance()->find_image("effect_mixed_blue_1");
 	blend_ratio = 0.55f;
 }
@@ -57,7 +57,6 @@ EffectRoll::EffectRoll()
 	animation_vfx.set_interval(0.07f);
 	blend_ratio = 0.35f;
 }
-
 
 
 EffectText::EffectText(LPCTSTR text, float delta, COLORREF color)

@@ -63,10 +63,22 @@ void GameScene::on_input(const ExMessage& msg)
 	switch (msg.message)
 	{
 	case WM_KEYDOWN:
-		if (msg.vkcode == VK_R) is_reverse_key_down = true;
+		switch (msg.vkcode)
+		{
+		case VK_R:
+		case VK_SPACE:
+			is_reverse_key_down = true;
+			break;
+		}
 		break;
 	case WM_KEYUP:
-		if (msg.vkcode == VK_R) is_reverse_key_down = false;
+		switch (msg.vkcode)
+		{
+		case VK_R:
+		case VK_SPACE:
+			is_reverse_key_down = false;
+			break;
+		}
 		break;
 	}
 

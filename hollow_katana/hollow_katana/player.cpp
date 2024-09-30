@@ -88,11 +88,8 @@ Player::Player() :Character()
 			switch (beat_displace_dir)
 			{
 			case Direction::Up:
-				if(is_down_slash)
-					velocity.y -= 0.01f * GRAVITY * 5 / 6;
-				else
-					velocity.y -= 0.01f * GRAVITY * 2 / 3;
-				position.y -= 0.01f * speed_displace_up;
+				velocity.y -= 0.01f * GRAVITY * 1 / 2;
+				position.y -= 0.01f * SPEED_DISPLACE_UP;
 				break;
 			case Direction::Left:
 				position.x -= 0.01f * SPEED_DISPLACE_AXIS * ratio;
@@ -330,6 +327,11 @@ void Player::on_input(const ExMessage& msg)
 	static const int VK_G = 0x47;
 	static const int VK_R = 0x52;
 
+	static const int VK_Z = 0x5A;
+	static const int VK_X = 0x58;
+	static const int VK_C = 0x43;
+	static const int VK_V = 0x56;
+
 	// 当角色死亡时,只能按下R键,死了都要跳舞
 	if (msg.message == WM_KEYDOWN && msg.vkcode == VK_R)
 		is_dance_key_down = true;
@@ -340,8 +342,9 @@ void Player::on_input(const ExMessage& msg)
 	// 按键松开判断会有遗漏
 
 	// 猜测的解决方案: 
-	// 1.更改按键映射,全部改为键盘操作					可以改为空洞骑士按键
+	// 1.更改按键映射,全部改为键盘操作
 	// 2.更改别的接收键盘/鼠标消息的接口,不用EasyX的	用SDL? or window API?
+	// 3.使用了几个按键都可触发消息的方式, 似乎也避免不了按键遗漏...毕竟每次只会选取一个分支
 
 	switch (msg.message)
 	{
@@ -349,70 +352,81 @@ void Player::on_input(const ExMessage& msg)
 		switch (msg.vkcode)
 		{
 		case VK_A:
+		case VK_LEFT:
 			is_left_key_down = true;
 			break;
 		case VK_W:
+		case VK_UP:
+		case VK_SPACE:
 			is_jump_key_down = true;
 			break;
 		case VK_S:
+		case VK_X:
+		case VK_DOWN:
 			is_roll_key_down = true;
 			break;
 		case VK_D:
+		case VK_RIGHT:
 			is_right_key_down = true;
 			break;
 		case VK_R:
+		case VK_V:
 			is_dance_key_down = true;
 			break;
-
 		case VK_J:
-		{			
+		case VK_Z:
 			is_attack_key_down = true;
 			update_attack_dir();
-		}
-		break;
+			break;
 		case VK_K:
+		case VK_C:
 			is_bullet_time_key_down = true;
 			break;
 		}
 		break;
-
 	case WM_KEYUP:
 		switch (msg.vkcode)
 		{
 		case VK_A:
+		case VK_LEFT:
 			is_left_key_down = false;
 			break;
 		case VK_W:
+		case VK_UP:
+		case VK_SPACE:
 			is_jump_key_down = false;
 			break;
 		case VK_S:
+		case VK_X:
+		case VK_DOWN:
 			is_roll_key_down = false;
 			break;
 		case VK_D:
+		case VK_RIGHT:
 			is_right_key_down = false;
 			break;
-		case VK_R:
-			is_dance_key_down = false;
-			break;
-
 		case VK_J:
+		case VK_Z:
 			is_attack_key_down = false;
 			break;
 		case VK_K:
+		case VK_C:
 			is_bullet_time_key_down = false;
+			break;
+		case VK_R:
+		case VK_V:
+			is_dance_key_down = false;
 			break;
 		}
 		break;
-
 	// 鼠标攻击方案现在还有bug,暂时弃用
 	case WM_LBUTTONDOWN:
 		is_attack_key_down = true;
 		update_attack_dir(msg.x, msg.y);
 		break;
 	case WM_LBUTTONUP:
-		//is_attack_key_down = false;			// debug:为了确保每次攻击必定触发,这里不取消
+		is_attack_key_down = false;
 		break;
-
 	// 子弹时间键位2
 	case WM_RBUTTONDOWN:
 		if (current_bullet_time > 0)
@@ -494,7 +508,7 @@ void Player::on_render()
 
 void Player::on_jump(float ratio)
 {
-	speed_jump = ratio * SPEED_JUMP_MAX;
+	speed_jump = ratio * SPEED_JUMP_MAX; 
 	velocity.y -= speed_jump;
 	is_vfx_jump_visiable = true;
 	animation_vfx_jump.reset();
@@ -524,8 +538,6 @@ void Player::on_hurt()
 
 void Player::on_attack()
 {
-	is_attack_key_down = false;
-
 	// 更新攻击CD,动画
 	timer_attack_cd.restart();
 	is_attack_cd_comp = false;
@@ -668,25 +680,23 @@ void Player::on_hit_collide()
 void Player::on_recoil(float delta)
 {
 	// 后坐力位移持续时间
-	float recoil_delta = 0.1f;
+	float recoil_delta = delta == 0.0f ? 0.1f : delta;
 
 	switch (attack_dir)
 	{
 	case Direction::Left:
 		beat_displace_dir = Direction::Right;
+		enable_displace_ex(beat_displace_dir, recoil_delta);
 		break;
 	case Direction::Right:
 		beat_displace_dir = Direction::Left;
+		enable_displace_ex(beat_displace_dir, recoil_delta);
 		break;
 	case Direction::Down:
 		beat_displace_dir = Direction::Up;
-		recoil_delta = 0.15f;
+		velocity.y = -SPEED_JUMP_MAX;
 		break;
 	}
-	recoil_delta += delta;
-
-	speed_displace_up = SPEED_DISPLACE_UP_MAX;
-	enable_displace_ex(beat_displace_dir, recoil_delta);
 }
 
 void Player::on_attack_displace_front()
@@ -694,12 +704,18 @@ void Player::on_attack_displace_front()
 	if (is_displace_ex || attack_dir == Direction::Down)
 		return;
 
-	speed_displace_up = SPEED_DISPLACE_UP_MAX * 0.6f;
-
 	if (is_on_floor())
-		enable_displace_ex(attack_dir, 0.08f);
+	{
+		if(attack_dir == Direction::Left || attack_dir == Direction::Right)
+			enable_displace_ex(attack_dir, 0.08f);
+	}
 	else
-		enable_displace_ex(attack_dir, 0.15f);
+	{
+		if (attack_dir == Direction::Left || attack_dir == Direction::Right)
+			enable_displace_ex(attack_dir, 0.15f);
+		else if(attack_dir == Direction::Up)
+			enable_displace_ex(attack_dir, 0.13f);	// 只是跳跃没有速度,力量感,需要快速突进
+	}
 }
 
 

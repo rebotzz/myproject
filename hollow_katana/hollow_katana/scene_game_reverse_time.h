@@ -18,7 +18,7 @@ public:
 		timer_text.set_wait_time(0.49f);
 		timer_text.set_on_timeout([&]
 			{
-				std::shared_ptr<EffectText> text = std::make_shared<EffectText>(_T("按[K]跳过"), 0.5f);
+				std::shared_ptr<EffectText> text = std::make_shared<EffectText>(_T("按[任意键]跳过"), 0.5f);
 				text->set_position({ (float)getwidth() / 2 + 430, (float)getheight() / 2 + 280 });
 				text->set_enable_background(false);
 				ParticleManager::instance()->register_particle(text);
@@ -33,13 +33,10 @@ public:
 
 	virtual void on_input(const ExMessage& msg) override 
 	{
-		static const int VK_K = 0x4B;
-
 		switch (msg.message)
 		{
 		case WM_KEYDOWN:
-			if (msg.vkcode == VK_K)
-				ReverseTimeManager::instance()->skip();
+			ReverseTimeManager::instance()->skip();
 			break;
 		}
 	}

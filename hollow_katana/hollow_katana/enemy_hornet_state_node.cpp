@@ -556,7 +556,6 @@ void EnemyHornetJumpState::on_enter()
 {
 	CharacterManager::instance()->get_enemy()->set_animation("jump");
 
-
 	EnemyHornet* hornet = dynamic_cast<EnemyHornet*>(CharacterManager::instance()->get_enemy());
 	Character* player = dynamic_cast<Character*>(CharacterManager::instance()->get_player());
 	const Vector2& pos_hornet = hornet->get_position();

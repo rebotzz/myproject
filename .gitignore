@@ -9,9 +9,6 @@ plant_star_battle/plant_star_battle/resources
 # 提瓦特幸存者
 Tivat_Survivor_Game/Tivat_Survivor_Game/resource
 
-# 一些测试文件,忽略
-test_torch
-learn_DLL
 
 # Document
 .vscode

@@ -37,12 +37,11 @@ int main()
 		return -1;
 	}
 
-
 	using namespace std::chrono;
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 	main_camera = SceneManager::instance()->get_camera();
-	SceneManager::instance()->set_entry_scene("menu_scene");
+	SceneManager::instance()->set_entry_scene("menu_scene");	//menu_scene game_scene_boss_dragon_king
 
 	// Ö÷Ñ­»·
 	while (!is_quit)

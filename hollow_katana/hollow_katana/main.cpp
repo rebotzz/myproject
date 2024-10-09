@@ -17,7 +17,6 @@ Camera* main_camera = nullptr;
 
 int main()
 {
-
 	// 初始化
 	HWND hwnd = initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);
 	SetWindowText(hwnd, _T("Hollow Katana"));
@@ -41,7 +40,7 @@ int main()
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 	main_camera = SceneManager::instance()->get_camera();
-	SceneManager::instance()->set_entry_scene("menu_scene");	//menu_scene game_scene_boss_dragon_king
+	SceneManager::instance()->set_entry_scene("game_scene_boss_dragon_king");	//menu_scene game_scene_boss_dragon_king
 
 	// 主循环
 	while (!is_quit)

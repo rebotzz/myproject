@@ -314,6 +314,9 @@ Player::~Player() = default;
 
 void Player::on_input(const ExMessage& msg)
 {
+	if (hp <= 0)
+		return;
+
 	static const int VK_A = 0x41;
 	static const int VK_W = 0x57;
 	static const int VK_S = 0x53;
@@ -332,19 +335,13 @@ void Player::on_input(const ExMessage& msg)
 	static const int VK_C = 0x43;
 	static const int VK_V = 0x56;
 
-	// 当角色死亡时,只能按下R键,死了都要跳舞
-	if (msg.message == WM_KEYDOWN && msg.vkcode == VK_R)
-		is_dance_key_down = true;
-	if (hp <= 0)
-		return;
-
 	// todo: 优化按键响应
-	// 按键松开判断会有遗漏
+	// 鼠标点击后,键盘按键松开判断会有遗漏	我很好奇,为什么别人的不会? 
+	// 奇怪的一点是:将easyx.h改为老版的graphics.h后,按键遗漏似乎好了一点
 
 	// 猜测的解决方案: 
-	// 1.更改按键映射,全部改为键盘操作
-	// 2.更改别的接收键盘/鼠标消息的接口,不用EasyX的	用SDL? or window API?
-	// 3.使用了几个按键都可触发消息的方式, 似乎也避免不了按键遗漏...毕竟每次只会选取一个分支
+	// 1.更改按键映射,全部改为键盘操作	-->效果不错
+	// 2.更改别的接收键盘/鼠标消息的接口,不用EasyX的,用SDL? or windows API?	-->未实践
 
 	switch (msg.message)
 	{
@@ -435,8 +432,9 @@ void Player::on_input(const ExMessage& msg)
 	case WM_RBUTTONUP:
 		is_bullet_time_key_down = false;
 		break;
+	default:
+		break;
 	}
-
 }
 
 void Player::on_update(float delta)

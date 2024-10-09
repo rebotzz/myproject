@@ -3,7 +3,8 @@
 #pragma comment(lib, "MSIMG32.LIB")		// AlphaBlend()
 
 #include <vector>
-#include <easyx.h>
+#include <graphics.h>		//老版easyx图形库
+//#include <easyx.h>
 #include "camera.h"
 
 // 临时摄像机方案

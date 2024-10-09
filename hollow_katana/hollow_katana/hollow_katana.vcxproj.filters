@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\collision">
-      <UniqueIdentifier>{3a70a9c8-2268-4375-bb7f-e4fcb208a768}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\state_machine">
       <UniqueIdentifier>{b9ecfd3c-e44f-4be5-867c-8ea59f3c286b}</UniqueIdentifier>
     </Filter>
@@ -31,64 +28,49 @@
     <Filter Include="头文件\character\enemy">
       <UniqueIdentifier>{32fcb130-5576-4d94-9550-a83693da5091}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\manager">
-      <UniqueIdentifier>{f73a5cc9-4abf-465c-9b36-70cab9e128c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\character">
-      <UniqueIdentifier>{ed09fe37-9c33-4165-af96-09a01a542b42}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\scenery">
       <UniqueIdentifier>{3d685c93-04c4-4ddb-a5a4-5400f201945d}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\property">
       <UniqueIdentifier>{68356bf5-1979-41f5-a729-100e031e2ca4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\particle_effect">
-      <UniqueIdentifier>{e123d085-b8b6-4392-9f9e-899653ea8f1c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\manager">
       <UniqueIdentifier>{5c0ba1a2-f4e2-43b2-ae13-59d9d7721f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\character\character">
+      <UniqueIdentifier>{5cdc51cb-460e-4f91-bb52-623eced2bd1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\audio">
+      <UniqueIdentifier>{b2c3fbfc-999e-4b83-a4ed-b34e633c3c71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\character">
+      <UniqueIdentifier>{46989054-59a5-488c-859d-d7de17c6c4e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\resources">
+      <UniqueIdentifier>{4b8b3a75-1fb3-4ba8-a835-b32146d612fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\bullet_time">
+      <UniqueIdentifier>{343cd29a-8cf2-47c1-a9fa-902cb2c7fd14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\reverse_time">
+      <UniqueIdentifier>{1228ebe7-e22e-4496-a033-5719935080b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\collision">
+      <UniqueIdentifier>{3a70a9c8-2268-4375-bb7f-e4fcb208a768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\character\enemy\hornet">
+      <UniqueIdentifier>{22ff68f0-05a1-43f7-ba57-2c9f9f9438bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\character\enemy\dragon_king">
+      <UniqueIdentifier>{4d7a6295-ae7f-4ad9-8e11-45973212d47b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\particle_effect">
+      <UniqueIdentifier>{e123d085-b8b6-4392-9f9e-899653ea8f1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="audio_manager.cpp">
-      <Filter>源文件\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet_time_manager.cpp">
-      <Filter>源文件\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="character_manager.cpp">
-      <Filter>源文件\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="collision_manager.cpp">
-      <Filter>源文件\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="resources_manager.cpp">
-      <Filter>源文件\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>源文件\character</Filter>
-    </ClCompile>
-    <ClCompile Include="player_state_node.cpp">
-      <Filter>源文件\character</Filter>
-    </ClCompile>
-    <ClCompile Include="character.cpp">
-      <Filter>源文件\character</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_hornet.cpp">
-      <Filter>源文件\character</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_hornet_state_node.cpp">
-      <Filter>源文件\character</Filter>
-    </ClCompile>
-    <ClCompile Include="status_bar.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="reverse_time_manager.cpp">
-      <Filter>头文件\manager</Filter>
     </ClCompile>
     <ClCompile Include="scene_manager.cpp">
       <Filter>头文件\scenery</Filter>
@@ -96,17 +78,8 @@
     <ClCompile Include="fire_bullet.cpp">
       <Filter>头文件\property</Filter>
     </ClCompile>
-    <ClCompile Include="enemy_dragon_king.cpp">
-      <Filter>源文件\character</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_dragon_king_state_node.cpp">
-      <Filter>源文件\character</Filter>
-    </ClCompile>
     <ClCompile Include="scene_game.cpp">
       <Filter>头文件\scenery</Filter>
-    </ClCompile>
-    <ClCompile Include="particle_manager.cpp">
-      <Filter>源文件\manager</Filter>
     </ClCompile>
     <ClCompile Include="state_machine.cpp">
       <Filter>头文件\state_machine</Filter>
@@ -118,30 +91,69 @@
       <Filter>头文件\property</Filter>
     </ClCompile>
     <ClCompile Include="effect.cpp">
-      <Filter>头文件\particle_effect</Filter>
+      <Filter>头文件\manager\particle_effect</Filter>
+    </ClCompile>
+    <ClCompile Include="character.cpp">
+      <Filter>头文件\character\character</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>头文件\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="player_state_node.cpp">
+      <Filter>头文件\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="status_bar.cpp">
+      <Filter>头文件\kits</Filter>
+    </ClCompile>
+    <ClCompile Include="audio_manager.cpp">
+      <Filter>头文件\manager\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="character_manager.cpp">
+      <Filter>头文件\manager\character</Filter>
+    </ClCompile>
+    <ClCompile Include="resources_manager.cpp">
+      <Filter>头文件\manager\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet_time_manager.cpp">
+      <Filter>头文件\manager\bullet_time</Filter>
+    </ClCompile>
+    <ClCompile Include="reverse_time_manager.cpp">
+      <Filter>头文件\manager\reverse_time</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_manager.cpp">
+      <Filter>头文件\manager\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_dragon_king.cpp">
+      <Filter>头文件\character\enemy\dragon_king</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_dragon_king_state_node.cpp">
+      <Filter>头文件\character\enemy\dragon_king</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_hornet.cpp">
+      <Filter>头文件\character\enemy\hornet</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_hornet_state_node.cpp">
+      <Filter>头文件\character\enemy\hornet</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_manager.cpp">
+      <Filter>头文件\manager\particle_effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collision_box.h">
-      <Filter>头文件\collision</Filter>
+      <Filter>头文件\manager\collision</Filter>
     </ClInclude>
     <ClInclude Include="collision_layer.h">
-      <Filter>头文件\collision</Filter>
+      <Filter>头文件\manager\collision</Filter>
     </ClInclude>
     <ClInclude Include="collision_manager.h">
-      <Filter>头文件\collision</Filter>
+      <Filter>头文件\manager\collision</Filter>
     </ClInclude>
     <ClInclude Include="state_node.h">
       <Filter>头文件\state_machine</Filter>
     </ClInclude>
     <ClInclude Include="state_machine.h">
       <Filter>头文件\state_machine</Filter>
-    </ClInclude>
-    <ClInclude Include="character.h">
-      <Filter>头文件\character</Filter>
-    </ClInclude>
-    <ClInclude Include="player.h">
-      <Filter>头文件\character\player</Filter>
     </ClInclude>
     <ClInclude Include="player_state_node.h">
       <Filter>头文件\character\player</Filter>
@@ -155,38 +167,20 @@
     <ClInclude Include="vector2.h">
       <Filter>头文件\kits</Filter>
     </ClInclude>
-    <ClInclude Include="enemy_hornet.h">
-      <Filter>头文件\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet_time_manager.h">
-      <Filter>头文件\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="resources_manager.h">
-      <Filter>头文件\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="audio_manager.h">
-      <Filter>头文件\manager</Filter>
-    </ClInclude>
     <ClInclude Include="sword.h">
       <Filter>头文件\property</Filter>
     </ClInclude>
     <ClInclude Include="barb.h">
       <Filter>头文件\property</Filter>
     </ClInclude>
-    <ClInclude Include="enemy_hornet_state_node.h">
-      <Filter>头文件\character\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="particle_effect.h">
-      <Filter>头文件\particle_effect</Filter>
+      <Filter>头文件\manager\particle_effect</Filter>
     </ClInclude>
     <ClInclude Include="particle_manager.h">
-      <Filter>头文件\particle_effect</Filter>
+      <Filter>头文件\manager\particle_effect</Filter>
     </ClInclude>
     <ClInclude Include="effect.h">
-      <Filter>头文件\particle_effect</Filter>
-    </ClInclude>
-    <ClInclude Include="reverse_time_manager.h">
-      <Filter>头文件\manager</Filter>
+      <Filter>头文件\manager\particle_effect</Filter>
     </ClInclude>
     <ClInclude Include="scene.h">
       <Filter>头文件\scenery</Filter>
@@ -218,20 +212,44 @@
     <ClInclude Include="scene_game_reverse_time.h">
       <Filter>头文件\scenery</Filter>
     </ClInclude>
-    <ClInclude Include="enemy_dragon_king.h">
-      <Filter>头文件\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_dragon_king_state_node.h">
-      <Filter>头文件\character\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="fire_bullet.h">
       <Filter>头文件\property</Filter>
     </ClInclude>
     <ClInclude Include="scene_game.h">
       <Filter>头文件\scenery</Filter>
     </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>头文件\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="character.h">
+      <Filter>头文件\character\character</Filter>
+    </ClInclude>
+    <ClInclude Include="audio_manager.h">
+      <Filter>头文件\manager\audio</Filter>
+    </ClInclude>
     <ClInclude Include="character_manager.h">
-      <Filter>头文件\manager</Filter>
+      <Filter>头文件\manager\character</Filter>
+    </ClInclude>
+    <ClInclude Include="resources_manager.h">
+      <Filter>头文件\manager\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet_time_manager.h">
+      <Filter>头文件\manager\bullet_time</Filter>
+    </ClInclude>
+    <ClInclude Include="reverse_time_manager.h">
+      <Filter>头文件\manager\reverse_time</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_dragon_king.h">
+      <Filter>头文件\character\enemy\dragon_king</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_dragon_king_state_node.h">
+      <Filter>头文件\character\enemy\dragon_king</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_hornet.h">
+      <Filter>头文件\character\enemy\hornet</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_hornet_state_node.h">
+      <Filter>头文件\character\enemy\hornet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #pragma once
-#include <easyx.h>
+//#include <easyx.h>
+#include <graphics.h>		//м╪пн©Б
 #include "vector2.h"
 #include "timer.h"
 #include "animation.h"

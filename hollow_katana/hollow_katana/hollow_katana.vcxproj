@@ -180,6 +180,8 @@
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="scene_menu.h" />
     <ClInclude Include="scene_game_reverse_time.h" />
+    <ClInclude Include="scene_game_test.h" />
+    <ClInclude Include="scene_transition.h" />
     <ClInclude Include="state_machine.h" />
     <ClInclude Include="state_node.h" />
     <ClInclude Include="status_bar.h" />

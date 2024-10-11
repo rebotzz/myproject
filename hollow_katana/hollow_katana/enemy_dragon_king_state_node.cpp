@@ -21,8 +21,6 @@ namespace EnemyDragonKingState
 				if (player->get_hp() <= 0)
 					return;
 
-				return;
-
 				// 策略: 龙王擅长近战,习惯追击玩家,血量低时加入天空火焰
 				EnemyDragonKing* enemy = dynamic_cast<EnemyDragonKing*>(CharacterManager::instance()->get_enemy());
 				float distance = abs(enemy->get_position().x - player->get_position().x);

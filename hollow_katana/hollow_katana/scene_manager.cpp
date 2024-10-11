@@ -1,25 +1,26 @@
 #include <stdexcept>
 #include "scene_manager.h"
 #include "scene_menu.h"
+#include "scene_transition.h"
 #include "scene_game_boss_hornet.h"
 #include "scene_game_reverse_time.h"
 #include "scene_game_boss_dragon_king.h"
-
+#include "scene_game_test.h"
 
 SceneManager* SceneManager::manager = nullptr;
 
 SceneManager::SceneManager()
 {
 	// 方案1:加载全部场景		todo:或许之后可以按需加载
-	scene_pool["game_scene_boss_hornet"] = std::shared_ptr<SceneGameBossHornet>(new SceneGameBossHornet);
-	scene_pool["game_reverse_time"] = std::shared_ptr<SceneGameReverseTime>(new SceneGameReverseTime);
-	scene_pool["game_scene_boss_dragon_king"] = std::shared_ptr<SceneGameBossDragonKing>(new SceneGameBossDragonKing);
-
 	scene_pool["menu_scene"] = std::shared_ptr<Scene>(new SceneMenu);
 	scene_pool["menu_scene_introduce"] = std::shared_ptr<Scene>(new SceneMenuInctroduce);
-
-	scene_pool["transition_scene"] = std::shared_ptr<Scene>(new SceneTransition);
 	scene_pool["begin_scene"] = std::shared_ptr<Scene>(new SceneBegin);
+	scene_pool["transition_scene"] = std::shared_ptr<Scene>(new SceneTransition);
+
+	scene_pool["game_reverse_time"] = std::shared_ptr<SceneGameReverseTime>(new SceneGameReverseTime);
+	scene_pool["game_scene_boss_hornet"] = std::shared_ptr<SceneGameBossHornet>(new SceneGameBossHornet);
+	scene_pool["game_scene_boss_dragon_king"] = std::shared_ptr<SceneGameBossDragonKing>(new SceneGameBossDragonKing);
+	scene_pool["game_scene_test"] = std::shared_ptr<SceneGameTest>(new SceneGameTest);
 }
 
 SceneManager::~SceneManager()
@@ -83,4 +84,10 @@ void SceneManager::on_update(float delta)
 
 	current_scene->on_update(delta);
 	camera.on_update(delta);
+}
+
+void SceneManager::set_transition_next_scene(const std::string& id)
+{
+	SceneTransition* transition = dynamic_cast<SceneTransition*>(scene_pool["transition_scene"].get());
+	transition->set_next_scene(id);
 }

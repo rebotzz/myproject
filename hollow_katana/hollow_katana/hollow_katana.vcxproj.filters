@@ -251,5 +251,11 @@
     <ClInclude Include="enemy_hornet_state_node.h">
       <Filter>头文件\character\enemy\hornet</Filter>
     </ClInclude>
+    <ClInclude Include="scene_game_test.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_transition.h">
+      <Filter>头文件\scenery</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

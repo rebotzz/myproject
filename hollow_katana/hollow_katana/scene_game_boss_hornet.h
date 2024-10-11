@@ -2,9 +2,9 @@
 #include <memory>
 #include "scene.h"
 #include "scene_game.h"
+#include "scene_manager.h"
 #include "resources_manager.h"
 #include "character_manager.h"
-#include "scene_manager.h"
 #include "enemy_hornet.h"
 
 
@@ -25,10 +25,9 @@ public:
 		timer_win.set_wait_time(10.f);
 		timer_win.set_on_timeout([&]
 			{
+				// 赢了,清空历史记录,跳转场景
 				game_scene.clear_record();
-				SceneTransition* transition = dynamic_cast<SceneTransition*>(
-					SceneManager::instance()->get_transition_scene());
-				transition->set_next_scene("game_scene_boss_dragon_king");
+				SceneManager::instance()->set_transition_next_scene("game_scene_boss_dragon_king");
 				SceneManager::instance()->switch_scene("transition_scene");
 			});
 	}

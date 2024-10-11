@@ -96,7 +96,8 @@ void GameScene::on_update(float delta)
 
 	// 记录历史画面,用于倒放
 	if (CharacterManager::instance()->get_player()->get_hp() <= 0
-		|| CharacterManager::instance()->get_enemy()->get_hp() <= 0)
+		|| (CharacterManager::instance()->get_enemy() 
+			&& CharacterManager::instance()->get_enemy()->get_hp() <= 0))
 		ReverseTimeManager::instance()->set_record(false);
 	else
 		ReverseTimeManager::instance()->set_record(true);
@@ -159,4 +160,9 @@ void GameScene::clear_record()
 {
 	ReverseTimeManager::instance()->set_enable(false);
 	ReverseTimeManager::instance()->clear();
+}
+
+void GameScene::stop_record()
+{
+	ReverseTimeManager::instance()->set_enable(false);
 }

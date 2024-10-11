@@ -3,7 +3,7 @@
 #pragma comment(lib, "MSIMG32.LIB")		// AlphaBlend()
 
 #include <vector>
-#include <graphics.h>		//老版easyx图形库
+#include <graphics.h>	//老版本easyx图形库,似乎peekmessage鼠标消息更好一点?
 //#include <easyx.h>
 #include "camera.h"
 
@@ -26,8 +26,13 @@ public:
 	Rect rect_src;
 };
 
+enum class Direction
+{
+	Up, Down, Left, Right
+};
 
 
+// 从原图片裁剪指定绘制,可以缩放图形
 inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect_src = nullptr)
 {
 	// 临时摄像机方案
@@ -41,16 +46,6 @@ inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect
 		rect_src ? rect_src->w : img->getwidth(), rect_src ? rect_src->h : img->getheight(), blend_func);
 }
 
-
-// 1.0
-//// 从原图片裁剪指定绘制
-//inline void putimage_alpha_ex(IMAGE* img, const Rect* rect_dst, const Rect* rect_src = nullptr)
-//{
-//	static BLENDFUNCTION blend_func = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
-//	AlphaBlend(GetImageHDC(nullptr), rect_dst->x, rect_dst->y, rect_dst->w, rect_dst->h,
-//		GetImageHDC(img), rect_src ? rect_src->x : 0, rect_src ? rect_src->y : 0,
-//		rect_src ? rect_src->w : img->getwidth(), rect_src ? rect_src->h : img->getheight(), blend_func);
-//}
 
 // 使用系统库实现透明通道图片加载, easyX的putimage不能实现
 inline void putimage_alpha(int x, int y, IMAGE* img)

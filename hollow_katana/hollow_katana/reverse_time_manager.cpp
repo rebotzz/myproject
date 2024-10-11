@@ -218,12 +218,13 @@ void ReverseTimeManager::reverse_time()
 
 void ReverseTimeManager::capture_current_status()
 {
-	history_status_list.push_back(
-		{
-			CharacterManager::instance()->get_player()->get_current_status(),
-			CharacterManager::instance()->get_enemy()->get_current_status(),
-		}
-		);
+	// 记录当前角色和所有敌人状态信息
+	std::vector<HistoryStatus> current_status;
+	current_status.push_back(CharacterManager::instance()->get_player()->get_current_status());
+	for (const auto& enemy : CharacterManager::instance()->get_all_enemy())
+		current_status.push_back(enemy->get_current_status());
+
+	history_status_list.push_back(current_status);
 }
 
 

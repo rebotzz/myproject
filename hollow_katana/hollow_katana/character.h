@@ -1,6 +1,6 @@
 #pragma once
 //#include <easyx.h>
-#include <graphics.h>		//图形库
+#include <graphics.h>		//easyx图形库
 #include "vector2.h"
 #include "timer.h"
 #include "animation.h"
@@ -42,6 +42,9 @@ protected:
 	AnimationGroup* current_animation = nullptr;						// 当前动画组
 	std::unordered_map<std::string, AnimationGroup> animation_pool;		// 角色动画池
 
+	// 测试功能: 
+	Direction dir_gravitiy = Direction::Down;							// 可变重力方向
+
 public:
 	Character();
 	~Character();
@@ -67,6 +70,9 @@ public:
 	void set_facing_left(bool flag) { is_facing_left = flag; }
 	bool get_facing_left() const { return is_facing_left; }
 	void set_invisible(bool flag) { is_invisible = flag; }
+
+	// 测试功能: 重力
+	void set_gravity_dir(const Direction dir) { dir_gravitiy = dir; }
 
 	Vector2 get_logic_center() const { return { position.x, position.y - logic_height / 2 }; }
 	void set_position(const Vector2& position) { this->position = position; }

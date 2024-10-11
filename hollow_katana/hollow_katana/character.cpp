@@ -70,7 +70,23 @@ void Character::on_update(float delta)
 	if (hp < 0)
 		velocity.x = 0;
 	if (enable_gravity)
-		velocity.y += GRAVITY * delta;
+	{
+		switch (dir_gravitiy)
+		{
+		case Direction::Up:
+			velocity.y -= GRAVITY * delta;
+			break;
+		case Direction::Down:
+			velocity.y += GRAVITY * delta;
+			break;
+		case Direction::Left:
+			velocity.x -= GRAVITY * delta;
+			break;
+		case Direction::Right:
+			velocity.x += GRAVITY * delta;
+			break;
+		}
+	}
 	position += velocity * delta;
 
 	if (is_on_floor())

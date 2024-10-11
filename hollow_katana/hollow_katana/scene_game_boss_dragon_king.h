@@ -2,15 +2,10 @@
 #include <memory>
 #include "scene.h"
 #include "scene_game.h"
+#include "scene_manager.h"
 #include "resources_manager.h"
 #include "character_manager.h"
-#include "particle_manager.h"
-#include "reverse_time_manager.h"
-#include "audio_manager.h"
-#include "bullet_time_manager.h"
 #include "enemy_dragon_king.h"
-
-
 
 class SceneGameBossDragonKing : public Scene
 {
@@ -30,9 +25,7 @@ public:
 		timer_win.set_on_timeout([&]
 			{
 				game_scene.clear_record();
-				SceneTransition* transition = dynamic_cast<SceneTransition*>(
-					SceneManager::instance()->get_transition_scene());
-				transition->set_next_scene("menu_scene");
+				SceneManager::instance()->set_transition_next_scene("menu_scene");
 				SceneManager::instance()->switch_scene("transition_scene");
 			});
 	}

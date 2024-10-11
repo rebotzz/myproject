@@ -29,8 +29,8 @@ public:
 	void on_update(float delta);
 	void on_render();
 	Character* get_player();
-	Character* get_enemy();
-	Character* get_enemy(const std::string& id);
+	Character* get_enemy(const std::string& id = "");
+	std::vector<Character*> get_all_enemy();
 
 	void create_enemy(const std::string& id, std::shared_ptr<Character> enemy);
 	void destroy_enemy(const std::string& id);

@@ -58,23 +58,36 @@ Character* CharacterManager::get_player()
 	return player.get();
 }
 
-Character* CharacterManager::get_enemy()
+Character* CharacterManager::get_enemy(const std::string& id)	// 默认返回首个敌人
 {
 	if (enemy_list.empty())
 		return nullptr;
 
-	auto first_enemy = enemy_list.begin();
-	Character* enemy = first_enemy->second.get();
+	if (id == "")
+	{
+		if (enemy_list.empty())
+			return nullptr;
 
-	return enemy;
+		auto first_enemy = enemy_list.begin();
+		Character* enemy = first_enemy->second.get();
+
+		return enemy;
+	}
+	else
+	{
+		if (enemy_list.count(id) == 0)
+			throw std::invalid_argument("enemy id not exist.");
+
+		return enemy_list[id].get();
+	}
 }
 
-Character* CharacterManager::get_enemy(const std::string& id)
+std::vector<Character*> CharacterManager::get_all_enemy()
 {
-	if(enemy_list.count(id) == 0)
-		throw std::invalid_argument("enemy id not exist.");
-
-	return enemy_list[id].get();
+	std::vector<Character*> all_enemy;
+	for (auto& kv : enemy_list)
+		all_enemy.push_back(kv.second.get());
+	return all_enemy;
 }
 
 void CharacterManager::create_enemy(const std::string& id, std::shared_ptr<Character> enemy)

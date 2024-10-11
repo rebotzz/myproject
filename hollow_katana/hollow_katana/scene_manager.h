@@ -38,15 +38,6 @@ public:
 		current_scene->on_render();
 	}
 
-	// putimage_alpha_ex 参数rect_dst
-	// 这里将rect_dst (x, y) 与 camera (x, y) 坐标做差,生成新的坐标,
-	// 然后绘制行动坐标?
-	// 不,很多个画面已经开始绘制了,
-	// 除非修改大部分 render接口, 都加上 camera,然后才行
-	
-	// 临时方案, 这里有一个摄像机,然后 extern 到 putimage_alpha_ex, 那里绘制修改后的坐标
-	// 然后这里修改的坐标是全局的一个 camera , 或者用一个 get_camera()
-
 	void switch_to_pre_scene()
 	{
 		if(!prev_scene_id.empty())
@@ -58,12 +49,10 @@ public:
 		return prev_scene_id;
 	}
 
-	Scene* get_transition_scene()
-	{
-		return scene_pool["transition_scene"].get();
-	}
+	void set_transition_next_scene(const std::string& id);
 
-	Camera* get_camera() 
+	// 临时摄像机方案, extern到putimage_alpha_ex
+	Camera* get_camera()
 	{
 		return &camera;
 	}

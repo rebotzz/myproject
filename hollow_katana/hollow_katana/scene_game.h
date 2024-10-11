@@ -26,5 +26,6 @@ public:
 	void on_exit();
 	void render_background();
 	void clear_record();
+	void stop_record();
 	bool is_reverse() { return is_reverse_time; }
 };

@@ -1,4 +1,4 @@
-#pragma comment (linker,"/subsystem:windows /entry:wWinMainCRTStartup")
+//#pragma comment (linker,"/subsystem:windows /entry:wWinMainCRTStartup")
 #include "game.hpp"
 
 const int WINDOW_WIDTH = 1270;
@@ -85,7 +85,7 @@ int main()
 		// 返回从操作系统启动所经过的毫秒数
 		DWORD begin_time = ::GetTickCount();
 
-		// 处理消息: 异步
+		// 处理消息
 		if (peekmessage(&msg, EX_KEY | EX_MOUSE))
 		{
 			if (is_started_game)
@@ -110,30 +110,30 @@ int main()
 		// 处理数据
 		if (is_started_game)
 		{
-			CharactersAtlas* enemy = nullptr;
+			CharactersAtlas* enemy_atlas = nullptr;
 			CharaterAttribute enemy_attri;
 			int choice_enemy = rand() % 10;
 			// 蜜蜂敌人
 			if (choice_enemy <= 1) {
 				enemy_attri = CharaterAttribute(30, 1, 0, 300);
-				enemy = &enemy_atlas_bee;
+				enemy_atlas = &enemy_atlas_bee;
 			}
 			// 源石虫敌人
 			else if (choice_enemy <= 5) {
 				enemy_attri = CharaterAttribute(18, 2, 0, 400);
-				enemy = &enemy_atlas_worm;
+				enemy_atlas = &enemy_atlas_worm;
 			}
 			// 野猪敌人
 			else if (choice_enemy <= 8) {
 				enemy_attri = CharaterAttribute(22, 2, 0, 500);
-				enemy = &enemy_atlas_boar;
+				enemy_atlas = &enemy_atlas_boar;
 			}
 			// 蜗牛敌人
 			else if (choice_enemy == 9) {
 				enemy_attri = CharaterAttribute(15, 3, 0, 600);
-				enemy = &enemy_atlas_snail;
+				enemy_atlas = &enemy_atlas_snail;
 			}
-			tryGenerateEnmey(enemy_list, enemy->get_left(), enemy->get_right(), enemy->get_left_sketch(), enemy->get_right_sketch(), enemy->get_shadow(), enemy_attri);
+			tryGenerateEnmey(enemy_list, enemy_atlas->get_left(), enemy_atlas->get_right(), enemy_atlas->get_left_sketch(), enemy_atlas->get_right_sketch(), enemy_atlas->get_shadow(), enemy_attri);
 
 			player->move();
 			player->updateStatus(anim_delta_time);
@@ -196,9 +196,9 @@ int main()
 						score++;
 						player->incrementMP(1);
 					}
-					continue;
+					continue;		// 避免跳过,只有不删除时才++
 				}
-				++i;
+				++i;		
 			}
 		}
 

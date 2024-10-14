@@ -245,11 +245,11 @@ public:
 	int _SPEED;
 	int _HP;
 	int _MP;
-	int _no_death_interval_ms;	// 帧率有波动:无敌帧->无敌时间
+	int _invulnerable_interval_ms;	// 帧率有波动:无敌帧->无敌时间
 	int _bullet_count = 0;		// 子弹数目,玩家独有
 public:
 	CharaterAttribute(int speed = 20, int HP = 1, int MP = 0, int no_death_interval_ms = 500, int bullet_count = 3)
-		:_SPEED(speed), _HP(HP), _MP(MP), _no_death_interval_ms(no_death_interval_ms), _bullet_count(bullet_count) {}
+		:_SPEED(speed), _HP(HP), _MP(MP), _invulnerable_interval_ms(no_death_interval_ms), _bullet_count(bullet_count) {}
 };
 
 
@@ -275,7 +275,7 @@ protected:
 
 	// 角色状态: (优先级) 存活状态 > 冻结状态 == 无敌状态
 	bool _alive = true;
-	bool _invicible_status = false;
+	bool _invulnerable_status = false;
 	bool _frozen_status = false;
 
 	POINT _position = { 500, 500 };
@@ -300,11 +300,11 @@ public:
 		return _alive;
 	}
 
-	void setStatus(int speed, int HP, bool invicible_status = false, bool frozen_status = false, POINT pos = { -1, -1 })
+	void setStatus(int speed, int HP, bool invulnerable_status = false, bool frozen_status = false, POINT pos = { -1, -1 })
 	{
 		_attribute._SPEED = speed;
 		_attribute._HP = HP;
-		if (invicible_status) _invicible_status = invicible_status;
+		if (invulnerable_status) _invulnerable_status = invulnerable_status;
 		if (frozen_status) _frozen_status = frozen_status;
 		if (pos.x != -1 && pos.y != -1) _position = pos;
 	}
@@ -344,7 +344,7 @@ public:
 
 		if (_face_left) {
 			// 无敌状态,并且非冻结状态,交替播放白色剪影和原有动画
-			if (_invicible_status && !_frozen_status) {
+			if (_invulnerable_status && !_frozen_status) {
 				if (timer >= interval_ms) {
 					timer = 0;
 					normal_flag = !normal_flag;
@@ -359,7 +359,7 @@ public:
 			}
 		}
 		else {
-			if (_invicible_status && !_frozen_status) {
+			if (_invulnerable_status && !_frozen_status) {
 				if (timer >= interval_ms) {
 					timer = 0;
 					normal_flag = !normal_flag;
@@ -390,16 +390,16 @@ public:
 protected:
 	void _updateStatus(int time_delta)
 	{
-		static int invicible_timer = 0;				// 无敌帧计时器
+		static int invulnerable_timer = 0;				// 无敌帧计时器
 		static int frozen_timer = 0;				// 冻结帧计时器
 		static const int frozen_interval_ms = 2000;	// 冻结时间
-		if (_invicible_status)
+		if (_invulnerable_status)
 		{
 			// 一段时间内没有受伤,重置无敌帧
-			invicible_timer += time_delta;
-			if (invicible_timer >= _attribute._no_death_interval_ms) {
-				_invicible_status = false;
-				invicible_timer = 0;
+			invulnerable_timer += time_delta;
+			if (invulnerable_timer >= _attribute._invulnerable_interval_ms) {
+				_invulnerable_status = false;
+				invulnerable_timer = 0;
 			}
 		}
 
@@ -417,9 +417,9 @@ protected:
 	int _hurt()
 	{
 		// 受伤后的短暂无敌状态:避免每一帧都会受伤,无敌帧
-		if (_invicible_status == false) {
+		if (_invulnerable_status == false) {
 			--_attribute._HP;
-			_invicible_status = true;
+			_invulnerable_status = true;
 			if (_attribute._HP == 0)
 				_alive = false;
 
@@ -449,7 +449,7 @@ public:
 		_attribute._SPEED = 30;
 		_attribute._HP = 5;
 		_attribute._MP = 1;
-		_attribute._no_death_interval_ms = 200;
+		_attribute._invulnerable_interval_ms = 200;
 		_SHADOW_IMG_HEIGHT_DELTA = 8;
 	}
 
@@ -502,7 +502,7 @@ public:
 	{
 		_attribute = _origin_attri;
 		_alive = true;
-		_invicible_status = false;
+		_invulnerable_status = false;
 
 		_position = { 500, 500 };
 		_is_move_up = false;

@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <easyx.h>
+#include <graphics.h>
 
 
 class Atlas

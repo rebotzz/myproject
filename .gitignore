@@ -1,5 +1,10 @@
 # 我的忽略
 
+# 哈基米大冒险
+hakimi_adventure/client/resources
+hakimi_adventure/client/config.cfg
+hakimi_adventure/server/text.txt
+
 # 空洞武士
 hollow_katana/hollow_katana/resources
 

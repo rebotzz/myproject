@@ -10,6 +10,36 @@
 #include <sstream>
 #include <codecvt>
 
+// v1.1 新增菜单,人机对战,难度选择,连击次数
+// 游戏场景
+enum class Scene
+{
+	Menu,
+	Game
+};
+// 游戏菜单
+enum class Menu
+{
+	PlayerVsPlayer,
+	PlayerVsComputer,
+	Invalid
+};
+// 游戏难度
+enum class Difficulty
+{
+	D1,
+	D2,
+	D3,
+	Invalid
+};
+Scene scene = Scene::Menu;							// 场景
+Menu menu_choice = Menu::PlayerVsPlayer;			// 游戏模式
+Difficulty difficulty = Difficulty::D1;				// 人机难度
+int hits_num = 0;									// 当前连击数
+int pos_offset_hits_x = 0, pos_offset_hits_y = 0;	// hits位置偏移
+
+
+// 游戏状态
 enum class State
 {
 	Waiting,						// 等待玩家加入
@@ -25,7 +55,7 @@ std::atomic<int> progress_2 = -1;	// 玩家2进度
 int num_total_char = 0;				// 总字符个数
 
 // 玩家行进路径
-Path path = Path(					
+Path path = Path(
 	{
 		{842,842},{1322,842},{1322,442},
 		{2762,442},{2762,842},{3162,842},
@@ -91,7 +121,7 @@ int main(int argc, char* argv[])
 	ExMessage msg;
 	Camera camera_ui, camera_scene;
 	Timer timer_countdown;
-	Player player_1(&atlas_1P_idle_left, &atlas_1P_idle_right, &atlas_1P_idle_up, &atlas_1P_idle_down, 
+	Player player_1(&atlas_1P_idle_left, &atlas_1P_idle_right, &atlas_1P_idle_up, &atlas_1P_idle_down,
 		&atlas_1P_run_left, &atlas_1P_run_right, &atlas_1P_run_up, &atlas_1P_run_down);
 	Player player_2(&atlas_2P_idle_left, &atlas_2P_idle_right, &atlas_2P_idle_up, &atlas_2P_idle_down,
 		&atlas_2P_run_left, &atlas_2P_run_right, &atlas_2P_run_up, &atlas_2P_run_down);
@@ -120,6 +150,19 @@ int main(int argc, char* argv[])
 			}
 		});
 
+	Timer timer_computer_P2;
+	timer_computer_P2.set_one_shot(false);
+	timer_computer_P2.set_wait_time(0.1f);
+	timer_computer_P2.set_on_timeout([&]
+		{
+			switch (difficulty)
+			{
+			case Difficulty::D1: if (rand() % 100 <= 20) progress_2++; break;
+			case Difficulty::D2: if (rand() % 100 <= 30) progress_2++; break;
+			case Difficulty::D3: if (rand() % 100 <= 40) progress_2++; break;
+			}
+		});
+
 	using namespace std::chrono;
 	nanoseconds frame_duration((int)1e9 / 144);
 	steady_clock::time_point last_tick = steady_clock::now();
@@ -130,37 +173,82 @@ int main(int argc, char* argv[])
 		// 处理消息输入
 		while (peekmessage(&msg/*, EX_KEY | EX_CHAR*/))
 		{
-			if (state != State::Racing)
-				continue;
-			
-			if (msg.message == WM_CHAR && idx_line < str_line_list.size())
+			switch (scene)
 			{
-				switch (rand() % 4)
+			case Scene::Menu:
+				if (msg.message == WM_KEYDOWN)
 				{
-				case 0: play_audio(_T("click_1"));  break;
-				case 1: play_audio(_T("click_2"));  break;
-				case 2: play_audio(_T("click_3"));  break;
-				case 3: play_audio(_T("click_4"));  break;
-				}
-
-				std::string& str_line = str_line_list[idx_line];
-				if (msg.ch == str_line[idx_char])
-				{
-					(id_player == 1) ? progress_1++ : progress_2++;
-
-					idx_char++;
-					if (idx_char >= str_line.size())
+					switch (msg.vkcode)
 					{
-						idx_char = 0;
-						idx_line++;
+					case VK_UP:
+						menu_choice = (Menu)(((int)menu_choice - 1 + (int)Menu::Invalid) % ((int)Menu::Invalid));
+						break;
+					case VK_DOWN:
+						menu_choice = (Menu)(((int)menu_choice + 1) % ((int)Menu::Invalid));
+						break;
+					case VK_LEFT:
+						difficulty = (Difficulty)(((int)difficulty - 1 + (int)Difficulty::Invalid) % ((int)Difficulty::Invalid));
+						break;
+					case VK_RIGHT:
+						difficulty = (Difficulty)(((int)difficulty + 1) % ((int)Difficulty::Invalid));
+						break;
+					case VK_RETURN:
+						scene = Scene::Game;
+						if (menu_choice == Menu::PlayerVsComputer) progress_2 = 0;
+						break;
+					default:
+						break;
 					}
 				}
+				break;
+
+			case Scene::Game:
+				if (state != State::Racing)
+					continue;
+
+				if (msg.message == WM_CHAR && idx_line < str_line_list.size())
+				{
+					switch (rand() % 4)
+					{
+					case 0: play_audio(_T("click_1"));  break;
+					case 1: play_audio(_T("click_2"));  break;
+					case 2: play_audio(_T("click_3"));  break;
+					case 3: play_audio(_T("click_4"));  break;
+					}
+
+					std::string& str_line = str_line_list[idx_line];
+					if (msg.ch == str_line[idx_char])
+					{
+						(id_player == 1) ? progress_1++ : progress_2++;
+
+						idx_char++;
+						if (idx_char >= str_line.size())
+						{
+							idx_char = 0;
+							idx_line++;
+						}
+						// 连击记录
+						hits_num++;
+						pos_offset_hits_x = rand() % 20;
+						pos_offset_hits_y = rand() % 20;
+					}
+					else
+					{
+						hits_num = 0;
+					}
+				}
+				break;
+			default:
+				break;
 			}
 		}
 
 		// 处理游戏数据更新
 		steady_clock::time_point frame_start = steady_clock::now();
 		duration<float> delta = duration<float>(frame_start - last_tick);
+
+		if (state == State::Racing && menu_choice == Menu::PlayerVsComputer)
+			timer_computer_P2.on_update(delta.count());
 
 		if (state == State::Waiting)
 		{
@@ -177,14 +265,14 @@ int main(int argc, char* argv[])
 			{
 				stop_audio(_T("bgm"));
 				play_audio(id_player == 1 ? _T("1p_win") : _T("2p_win"));
-				MessageBox(hwnd, _T("赢了"), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
+				MessageBox(hwnd, _T("哈,赢了"), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
 				exit(0);
 			}
 			else if ((id_player == 1 && progress_2 >= num_total_char)
 				|| (id_player == 2 && progress_1 >= num_total_char))
 			{
 				stop_audio(_T("bgm"));
-				MessageBox(hwnd, _T("输了"), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
+				MessageBox(hwnd, _T("唉,输了"), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
 				exit(0);
 			}
 
@@ -202,98 +290,158 @@ int main(int argc, char* argv[])
 		setbkcolor(RGB(0, 0, 0));
 		cleardevice();
 
-		if (state == State::Waiting)
+		switch (scene)
 		{
+		case Scene::Menu:
+			// 绘制游戏菜单界面
 			settextcolor(RGB(255, 255, 255));
-			outtextxy(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, _T("等待其他玩家加入..."));
-		}
-		else
-		{
-			// 绘制背景
-			static Rect rect_bg =
-			{
-				0, 0,
-				img_background.getwidth(),
-				img_background.getheight()
-			};
-			putimage_alpha_ex(camera_scene, &img_background, &rect_bg);
+			settextstyle(45, 0, _T("IPix"));
+			outtextxy((WINDOW_WIDTH - textwidth(_T("<<哈基米大冒险>>"))) / 2, 200, _T("<<哈基米大冒险>>"));
+			settextstyle(28, 0, _T("IPix"));
+			outtextxy((WINDOW_WIDTH - textwidth(_T("1.玩家 VS 玩家"))) / 2, 400, _T("1.玩家 VS 玩家"));
+			outtextxy((WINDOW_WIDTH - textwidth(_T("2.玩家 VS 电脑"))) / 2, 450, _T("2.玩家 VS 电脑"));
+			outtextxy((WINDOW_WIDTH - textwidth(_T("[方向键] ↓ ↑选择VS模式, ← →选择人机难度"))) / 2, 600, _T("[方向键] ↓ ↑选择VS模式, ← →选择人机难度"));
+			outtextxy((WINDOW_WIDTH - textwidth(_T("[回车键]开始游戏"))) / 2, 660, _T("[回车键]开始游戏"));
 
-			// 绘制玩家
-			if (player_1.get_position().y > player_2.get_position().y)
+			settextcolor(RGB(0, 255, 255));
+			static int choice_offset_x = (WINDOW_WIDTH + textwidth(_T("1.玩家 VS 玩家"))) / 2 + 20;
+			switch (menu_choice)
 			{
-				player_2.on_render(camera_scene);
-				player_1.on_render(camera_scene);
+			case Menu::PlayerVsPlayer:
+				outtextxy(choice_offset_x, 400, _T(":>"));
+				break;
+			case Menu::PlayerVsComputer:
+				outtextxy(choice_offset_x, 450, _T(":>"));
+				break;
+			}
+
+			settextcolor(RGB(160, 160, 160));
+			outtextxy((WINDOW_WIDTH - textwidth(_T("人机难度"))) / 2, 490, _T("人机难度"));
+			static int diff_offset_x = (WINDOW_WIDTH + textwidth(_T("人机难度"))) / 2 + 20;
+			switch (difficulty)
+			{
+			case Difficulty::D1:
+				settextcolor(RGB(102, 255, 102));
+				outtextxy(diff_offset_x, 490, _T("D1"));
+				break;
+			case Difficulty::D2:
+				settextcolor(RGB(255, 178, 102));
+				outtextxy(diff_offset_x, 490, _T("D2"));
+				break;
+			case Difficulty::D3:
+				settextcolor(RGB(255, 102, 102));
+				outtextxy(diff_offset_x, 490, _T("D3"));
+				break;
+			}
+
+			break;
+		case Scene::Game:
+
+			if (state == State::Waiting)
+			{
+				settextcolor(RGB(255, 255, 255));
+				outtextxy(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, _T("等待其他玩家加入..."));
 			}
 			else
 			{
-				player_1.on_render(camera_scene);
-				player_2.on_render(camera_scene);
-			}
+				// 绘制背景
+				static Rect rect_bg =
+				{
+					0, 0,
+					img_background.getwidth(),
+					img_background.getheight()
+				};
+				putimage_alpha_ex(camera_scene, &img_background, &rect_bg);
 
-			// 绘制界面
-			if (state == State::Racing)
-			{
-				static Rect rect_textbox
+				// 绘制玩家
+				if (player_1.get_position().y > player_2.get_position().y)
 				{
-					0, WINDOW_HEIGHT - img_ui_textbox.getheight(),
-					img_ui_textbox.getwidth(),
-					img_ui_textbox.getheight()
-				};
-				putimage_alpha_ex(camera_ui, &img_ui_textbox, &rect_textbox);
-
-				// 字符编码转化string -> wstring
-				static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-				std::wstring wstr_line = convert.from_bytes(str_line_list[idx_line]);
-				std::wstring wstr_completed = convert.from_bytes(str_line_list[idx_line].substr(0, idx_char));
-
-				settextcolor(RGB(125, 125, 125));
-				outtextxy(185 + 2, rect_textbox.y + 65 + 2, wstr_line.c_str());
-				settextcolor(RGB(25, 25, 25));
-				outtextxy(185, rect_textbox.y + 65, wstr_line.c_str());
-				settextcolor(RGB(0, 255, 255));		// (0, 149, 217)
-				outtextxy(185, rect_textbox.y + 65, wstr_completed.c_str());
-			}
-
-			// 绘制倒计时
-			if (state == State::Ready)
-			{
-				static Rect rect_ui_3 =
-				{
-					(WINDOW_WIDTH - img_ui_3.getwidth()) / 2,
-					(WINDOW_HEIGHT - img_ui_3.getheight()) / 2,
-					img_ui_3.getwidth(),
-					img_ui_3.getheight()
-				};
-				static Rect rect_ui_2 =
-				{
-					(WINDOW_WIDTH - img_ui_2.getwidth()) / 2,
-					(WINDOW_HEIGHT - img_ui_2.getheight()) / 2,
-					img_ui_2.getwidth(),
-					img_ui_2.getheight()
-				};
-				static Rect rect_ui_1 =
-				{
-					(WINDOW_WIDTH - img_ui_1.getwidth()) / 2,
-					(WINDOW_HEIGHT - img_ui_1.getheight()) / 2,
-					img_ui_1.getwidth(),
-					img_ui_1.getheight()
-				};
-				static Rect rect_ui_fight =
-				{
-					(WINDOW_WIDTH - img_ui_fight.getwidth()) / 2,
-					(WINDOW_HEIGHT - img_ui_fight.getheight()) / 2,
-					img_ui_fight.getwidth(),
-					img_ui_fight.getheight()
-				};
-				switch (val_countdown)
-				{
-				case 3: putimage_alpha_ex(camera_ui, &img_ui_3, &rect_ui_3); break;
-				case 2: putimage_alpha_ex(camera_ui, &img_ui_2, &rect_ui_2); break;
-				case 1: putimage_alpha_ex(camera_ui, &img_ui_1, &rect_ui_1); break;
-				case 0: putimage_alpha_ex(camera_ui, &img_ui_fight, &rect_ui_fight); break;
+					player_2.on_render(camera_scene);
+					player_1.on_render(camera_scene);
 				}
+				else
+				{
+					player_1.on_render(camera_scene);
+					player_2.on_render(camera_scene);
+				}
+
+				// 绘制界面
+				if (state == State::Racing)
+				{
+					static Rect rect_textbox
+					{
+						0, WINDOW_HEIGHT - img_ui_textbox.getheight(),
+						img_ui_textbox.getwidth(),
+						img_ui_textbox.getheight()
+					};
+					putimage_alpha_ex(camera_ui, &img_ui_textbox, &rect_textbox);
+
+					// 字符编码转化string -> wstring
+					static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+					std::wstring wstr_line = convert.from_bytes(str_line_list[idx_line]);
+					std::wstring wstr_completed = convert.from_bytes(str_line_list[idx_line].substr(0, idx_char));
+
+					settextstyle(28, 0, _T("IPix"));
+					settextcolor(RGB(125, 125, 125));
+					outtextxy(180 + 2, rect_textbox.y + 65 + 2, wstr_line.c_str());
+					settextcolor(RGB(25, 25, 25));
+					outtextxy(180, rect_textbox.y + 65, wstr_line.c_str());
+					settextcolor(RGB(0, 255, 255));		// (0, 149, 217)
+					outtextxy(180, rect_textbox.y + 65, wstr_completed.c_str());
+				}
+
+				// 绘制倒计时
+				if (state == State::Ready)
+				{
+					static Rect rect_ui_3 =
+					{
+						(WINDOW_WIDTH - img_ui_3.getwidth()) / 2,
+						(WINDOW_HEIGHT - img_ui_3.getheight()) / 2,
+						img_ui_3.getwidth(),
+						img_ui_3.getheight()
+					};
+					static Rect rect_ui_2 =
+					{
+						(WINDOW_WIDTH - img_ui_2.getwidth()) / 2,
+						(WINDOW_HEIGHT - img_ui_2.getheight()) / 2,
+						img_ui_2.getwidth(),
+						img_ui_2.getheight()
+					};
+					static Rect rect_ui_1 =
+					{
+						(WINDOW_WIDTH - img_ui_1.getwidth()) / 2,
+						(WINDOW_HEIGHT - img_ui_1.getheight()) / 2,
+						img_ui_1.getwidth(),
+						img_ui_1.getheight()
+					};
+					static Rect rect_ui_fight =
+					{
+						(WINDOW_WIDTH - img_ui_fight.getwidth()) / 2,
+						(WINDOW_HEIGHT - img_ui_fight.getheight()) / 2,
+						img_ui_fight.getwidth(),
+						img_ui_fight.getheight()
+					};
+					switch (val_countdown)
+					{
+					case 3: putimage_alpha_ex(camera_ui, &img_ui_3, &rect_ui_3); break;
+					case 2: putimage_alpha_ex(camera_ui, &img_ui_2, &rect_ui_2); break;
+					case 1: putimage_alpha_ex(camera_ui, &img_ui_1, &rect_ui_1); break;
+					case 0: putimage_alpha_ex(camera_ui, &img_ui_fight, &rect_ui_fight); break;
+					}
+				}
+
+				// 绘制连击次数
+				settextstyle(45, 0, _T("IPix"));
+				if (hits_num <= 5) settextcolor(RGB(128, 128, 128));
+				else if (hits_num <= 15) settextcolor(RGB(153, 255, 255));
+				else if (hits_num <= 25) settextcolor(RGB(102, 178, 255));
+				else if (hits_num <= 40) settextcolor(RGB(255, 178, 102));
+				else settextcolor(RGB(255, 0, 127));
+				std::wstring wstr_hits = std::to_wstring(hits_num) + _T(" Hits");
+				outtextxy(WINDOW_WIDTH - 220 + pos_offset_hits_x, 70 + pos_offset_hits_y, wstr_hits.c_str());
 			}
 
+			break;
 		}
 
 		FlushBatchDraw();
@@ -311,21 +459,6 @@ int main(int argc, char* argv[])
 	EndBatchDraw();
 
 	return 0;
-}
-
-int test()
-{
-	httplib::Client client("localhost:25565");
-	std::cout << "This is Client." << std::endl;
-
-	httplib::Result result = client.Post("/hello");
-	if (!result || result->status != 200)
-	{
-		std::cout << "client post failed, path: /hello." << std::endl;
-		return -1;
-	}
-
-	std::cout << result->body << std::endl;
 }
 
 void load_resources(HWND hwnd)
@@ -430,7 +563,8 @@ void login_to_server(HWND hwnd)
 
 				if (result && result->status == 200)
 				{
-					(id_player == 1 ? progress_2 : progress_1) = std::stoi(result->body);
+					if (menu_choice == Menu::PlayerVsPlayer)
+						(id_player == 1 ? progress_2 : progress_1) = std::stoi(result->body);
 				}
 
 				std::this_thread::sleep_for(nanoseconds((int)1e9 / 10));

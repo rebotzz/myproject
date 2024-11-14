@@ -1,6 +1,8 @@
 # myproject
 项目练习代码
 
+## 游戏:哈基米大冒险
+[项目地址](hakimi_adventure)
 
 ## 游戏:空洞武士
 [项目地址](hollow_katana)

@@ -69,7 +69,7 @@ private:
 
 	Timer timer_hit_effect;											// 击中效果定时器
 	bool is_hitting = false;										// 击中效果状态
-	bool is_hit_cd_comp = true;										// 击中效果CD
+	bool is_hit_eff_cd_comp = true;									// 击中效果CD
 
 	Timer timer_create_particle_effect;
 

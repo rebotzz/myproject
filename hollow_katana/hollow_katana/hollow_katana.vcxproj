@@ -163,6 +163,7 @@
     <ClInclude Include="collision_box.h" />
     <ClInclude Include="collision_layer.h" />
     <ClInclude Include="collision_manager.h" />
+    <ClInclude Include="door.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy_dragon_king.h" />
     <ClInclude Include="enemy_dragon_king_state_node.h" />
@@ -180,7 +181,7 @@
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="scene_menu.h" />
     <ClInclude Include="scene_game_reverse_time.h" />
-    <ClInclude Include="scene_game_test.h" />
+    <ClInclude Include="scene_game_choice.h" />
     <ClInclude Include="scene_transition.h" />
     <ClInclude Include="state_machine.h" />
     <ClInclude Include="state_node.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="vector2.h" />
     <ClInclude Include="particle_effect.h" />
     <ClInclude Include="fire_bullet.h" />
+    <ClInclude Include="woodenman.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -32,6 +32,7 @@ protected:
 	Vector2 velocity;													// 速度
 	CollisionBox* hurt_box;												// 受击碰撞箱
 	CollisionBox* hit_box;												// 攻击碰撞箱
+	CollisionBox* interact_box;											// 交互碰撞箱
 	StateMachine state_machine;											// 状态机
 	Timer timer_invulnerable_status;									// 无敌状态计时器
 	Timer timer_invulnerable_blink;										// 无敌时间闪烁计时器
@@ -41,9 +42,6 @@ protected:
 	bool is_invisible = false;											// 是否可见,播放特效,隐藏本体
 	AnimationGroup* current_animation = nullptr;						// 当前动画组
 	std::unordered_map<std::string, AnimationGroup> animation_pool;		// 角色动画池
-
-	// 测试功能: 
-	Direction dir_gravitiy = Direction::Down;							// 可变重力方向
 
 public:
 	Character();
@@ -70,9 +68,6 @@ public:
 	void set_facing_left(bool flag) { is_facing_left = flag; }
 	bool get_facing_left() const { return is_facing_left; }
 	void set_invisible(bool flag) { is_invisible = flag; }
-
-	// 测试功能: 重力
-	void set_gravity_dir(const Direction dir) { dir_gravitiy = dir; }
 
 	Vector2 get_logic_center() const { return { position.x, position.y - logic_height / 2 }; }
 	void set_position(const Vector2& position) { this->position = position; }

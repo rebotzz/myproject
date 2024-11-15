@@ -229,7 +229,7 @@ public:
 		timer.set_wait_time(4.0f);
 		timer.set_on_timeout([&]()
 			{
-				SceneManager::instance()->set_transition_next_scene("game_scene_boss_hornet");
+				SceneManager::instance()->set_transition_next_scene("game_scene_choice");
 				SceneManager::instance()->switch_scene("transition_scene");
 			});
 	}
@@ -240,7 +240,11 @@ public:
 		timer.restart();
 	}
 	virtual void on_input(const ExMessage& msg) override
-	{}
+	{
+		// ¿ì½ø
+		if (msg.message == WM_KEYDOWN)
+			timer.on_update(0.1f);
+	}
 	virtual void on_update(float delta_time) override
 	{
 		if(!is_finish_animation)

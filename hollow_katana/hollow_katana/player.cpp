@@ -24,7 +24,7 @@ Player::Player() :Character()
 	hurt_box->set_layer_dst(CollisionLayer::None);
 	hurt_box->set_position(get_logic_center());
 	hurt_box->set_on_collision([&] {
-		// 改用延时扣血,便于检测拼刀无敌状态
+		// 改用延时扣血,便于检测拼刀无敌状态,或许?
 		timer_delay_decrease_hp.restart();
 		//decrease_hp();
 		});
@@ -38,6 +38,12 @@ Player::Player() :Character()
 			// 武器击中后坐力,粒子特效,拼刀
 			on_hit_collide();
 		});
+
+	interact_box->set_enabled(true);
+	interact_box->set_size({ 40, 80 });
+	interact_box->set_layer_src(CollisionLayer::None);
+	interact_box->set_layer_dst(CollisionLayer::Scenery);
+	interact_box->set_position(get_logic_center());
 
 	// 攻击,翻滚定时器初始化
 	timer_attack_cd.set_one_shot(true);
@@ -106,10 +112,10 @@ Player::Player() :Character()
 			is_displace_ex = false;
 		});
 	timer_hit_effect.set_one_shot(true);
-	timer_hit_effect.set_wait_time(ATTACK_CD * 0.9f);
+	timer_hit_effect.set_wait_time(ATTACK_CD * 0.8f);
 	timer_hit_effect.set_on_timeout([&]
 		{
-			is_hit_cd_comp = true;
+			is_hit_eff_cd_comp = true;
 		});
 
 	// 粒子特效发射器
@@ -628,11 +634,11 @@ void Player::enable_displace_ex(Direction dir, float delta)
 void Player::on_hit_collide()
 {
 	// 在碰撞箱体开启期间只碰撞一次
-	if (is_hitting || !is_hit_cd_comp)
+	if (is_hitting || !is_hit_eff_cd_comp)
 		return;
 
 	is_hitting = true;
-	is_hit_cd_comp = false;
+	is_hit_eff_cd_comp = false;
 	if (attack_dir == Direction::Down)
 		is_down_slash = true;
 

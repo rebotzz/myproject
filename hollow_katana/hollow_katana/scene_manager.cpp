@@ -5,7 +5,7 @@
 #include "scene_game_boss_hornet.h"
 #include "scene_game_reverse_time.h"
 #include "scene_game_boss_dragon_king.h"
-#include "scene_game_test.h"
+#include "scene_game_choice.h"
 
 SceneManager* SceneManager::manager = nullptr;
 
@@ -20,7 +20,7 @@ SceneManager::SceneManager()
 	scene_pool["game_reverse_time"] = std::shared_ptr<SceneGameReverseTime>(new SceneGameReverseTime);
 	scene_pool["game_scene_boss_hornet"] = std::shared_ptr<SceneGameBossHornet>(new SceneGameBossHornet);
 	scene_pool["game_scene_boss_dragon_king"] = std::shared_ptr<SceneGameBossDragonKing>(new SceneGameBossDragonKing);
-	scene_pool["game_scene_test"] = std::shared_ptr<SceneGameTest>(new SceneGameTest);
+	scene_pool["game_scene_choice"] = std::shared_ptr<SceneGameChoice>(new SceneGameChoice);
 }
 
 SceneManager::~SceneManager()
@@ -44,7 +44,6 @@ void SceneManager::set_entry_scene(const std::string& id)
 }
 
 // debug: 如果是引用, 小心 switch_to_pre_scene 自己给自己赋值
-// todo: switch_to_pre_scene 单独实现
 void SceneManager::switch_scene(std::string id)
 {
 	if (scene_pool.count(id) == 0)
@@ -88,6 +87,10 @@ void SceneManager::on_update(float delta)
 
 void SceneManager::set_transition_next_scene(const std::string& id)
 {
-	SceneTransition* transition = dynamic_cast<SceneTransition*>(scene_pool["transition_scene"].get());
-	transition->set_next_scene(id);
+	if (scene_pool.count(id))
+	{
+		SceneTransition* transition = dynamic_cast<SceneTransition*>(scene_pool["transition_scene"].get());
+		transition->set_next_scene(id);
+	}
 }
+

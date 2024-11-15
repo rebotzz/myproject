@@ -67,13 +67,13 @@
     <Filter Include="头文件\manager\particle_effect">
       <UniqueIdentifier>{e123d085-b8b6-4392-9f9e-899653ea8f1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\manager\scene">
+      <UniqueIdentifier>{b58c6acf-88bf-4b99-90a4-dc370ebc6a53}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="scene_manager.cpp">
-      <Filter>头文件\scenery</Filter>
     </ClCompile>
     <ClCompile Include="fire_bullet.cpp">
       <Filter>头文件\property</Filter>
@@ -138,6 +138,9 @@
     <ClCompile Include="particle_manager.cpp">
       <Filter>头文件\manager\particle_effect</Filter>
     </ClCompile>
+    <ClCompile Include="scene_manager.cpp">
+      <Filter>头文件\manager\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collision_box.h">
@@ -183,9 +186,6 @@
       <Filter>头文件\manager\particle_effect</Filter>
     </ClInclude>
     <ClInclude Include="scene.h">
-      <Filter>头文件\scenery</Filter>
-    </ClInclude>
-    <ClInclude Include="scene_manager.h">
       <Filter>头文件\scenery</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
@@ -251,11 +251,20 @@
     <ClInclude Include="enemy_hornet_state_node.h">
       <Filter>头文件\character\enemy\hornet</Filter>
     </ClInclude>
-    <ClInclude Include="scene_game_test.h">
+    <ClInclude Include="scene_game_choice.h">
       <Filter>头文件\scenery</Filter>
     </ClInclude>
     <ClInclude Include="scene_transition.h">
       <Filter>头文件\scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="door.h">
+      <Filter>头文件\property</Filter>
+    </ClInclude>
+    <ClInclude Include="woodenman.h">
+      <Filter>头文件\property</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_manager.h">
+      <Filter>头文件\manager\scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -40,7 +40,7 @@ int main()
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 	main_camera = SceneManager::instance()->get_camera();
-	SceneManager::instance()->set_entry_scene("game_scene_test");	//menu_scene game_scene_test game_scene_boss_dragon_king
+	SceneManager::instance()->set_entry_scene("menu_scene");	//menu_scene game_scene_choice 
 
 	// Ö÷Ñ­»·
 	while (!is_quit)

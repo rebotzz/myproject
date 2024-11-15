@@ -59,6 +59,8 @@ static const std::vector<ImageResInfo> image_info_list =
 
 	{"menu",				_T(R"(resources\menu.png)") },
 	{"menu_introduce",		_T(R"(resources\menu_introduce.png)") },
+	{"woodenman",			_T(R"(resources\enemy\woodenman.png)") },
+
 };
 
 

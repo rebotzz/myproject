@@ -6,6 +6,7 @@ Character::Character()
 {
 	hit_box = CollisionManager::instance()->create_collision_box();
 	hurt_box = CollisionManager::instance()->create_collision_box();
+	interact_box = CollisionManager::instance()->create_collision_box();
 
 	timer_invulnerable_status.set_one_shot(true);
 	timer_invulnerable_status.set_wait_time(TIME_INVULNERABLE);
@@ -25,6 +26,7 @@ Character::~Character()
 {
 	CollisionManager::instance()->destroy_collision_box(hit_box);
 	CollisionManager::instance()->destroy_collision_box(hurt_box);
+	CollisionManager::instance()->destroy_collision_box(interact_box);
 }
 
 void Character::switch_state(const std::string& id)
@@ -70,23 +72,7 @@ void Character::on_update(float delta)
 	if (hp < 0)
 		velocity.x = 0;
 	if (enable_gravity)
-	{
-		switch (dir_gravitiy)
-		{
-		case Direction::Up:
-			velocity.y -= GRAVITY * delta;
-			break;
-		case Direction::Down:
-			velocity.y += GRAVITY * delta;
-			break;
-		case Direction::Left:
-			velocity.x -= GRAVITY * delta;
-			break;
-		case Direction::Right:
-			velocity.x += GRAVITY * delta;
-			break;
-		}
-	}
+		velocity.y += GRAVITY * delta;
 	position += velocity * delta;
 
 	if (is_on_floor())
@@ -100,6 +86,7 @@ void Character::on_update(float delta)
 		position.x = (float)getwidth();
 
 	hurt_box->set_position(get_logic_center());
+	interact_box->set_position(get_logic_center());
 
 	// 更新无敌状态计时器
 	timer_invulnerable_status.on_update(delta);

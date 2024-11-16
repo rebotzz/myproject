@@ -6,10 +6,26 @@
 #include "particle_manager.h"
 #include "effect.h"
 
+
+//#include <iostream>
+
+
+PlayerAttackState::PlayerAttackState()
+{
+	timer.set_one_shot(true);
+	timer.set_wait_time(0.3f);
+	timer.set_on_timeout([]()
+		{
+			Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+			player->set_attacking(false);
+		});
+}
+
 void PlayerAttackState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("attack");
 
+	timer.restart();
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->set_attacking(true);
 	player->on_attack();
@@ -32,6 +48,8 @@ void PlayerAttackState::on_enter()
 
 void PlayerAttackState::on_update(float delta)
 {
+	timer.on_update(delta);
+
 	// 更新过程中可能会状态跳转
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->update_hit_box_position();
@@ -53,6 +71,7 @@ void PlayerAttackState::on_exit()
 {
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->get_hit_box()->set_enabled(false);
+	player->set_attacking(false);
 }
 
 
@@ -86,10 +105,22 @@ void PlayerRunState::on_exit()
 }
 
 
+PlayerRollState::PlayerRollState()
+{
+	timer.set_one_shot(true);
+	timer.set_wait_time(0.4f);
+	timer.set_on_timeout([]()
+		{
+			Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+			player->set_rolling(false);
+		});
+}
+
 void PlayerRollState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("roll");
 
+	timer.restart();
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->set_rolling(true);
 	player->get_hurt_box()->set_enabled(false);
@@ -100,6 +131,7 @@ void PlayerRollState::on_enter()
 
 void PlayerRollState::on_update(float delta)
 {
+	timer.on_update(delta);
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 
 	if (!player->get_rolling())
@@ -115,9 +147,10 @@ void PlayerRollState::on_update(float delta)
 
 void PlayerRollState::on_exit()
 {
-	CharacterManager::instance()->get_player()->get_hurt_box()->set_enabled(true);
+	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	player->get_hurt_box()->set_enabled(true);
+	player->set_rolling(false);
 }
-
 
 void PlayerJumpState::on_enter()
 {
@@ -139,6 +172,8 @@ void PlayerJumpState::on_update(float delta)
 		player->switch_state("attack");
 	else if (player->get_velocity().y > 0)
 		player->switch_state("fall");
+	else if (player->is_on_floor())		// 新增传送平台后
+		player->switch_state("idle");
 }
 
 
@@ -161,7 +196,6 @@ void PlayerFallState::on_update(float delta)
 
 		AudioManager::instance()->play_audio_ex(_T("player_land"));
 	}
-
 }
 
 
@@ -188,18 +222,33 @@ void PlayerIdleState::on_update(float delta)
 		player->switch_state("run");
 	else if (player->can_dance())
 		player->switch_state("dance");
+}
 
+void PlayerIdleState::on_exit()
+{
 }
 
 
+PlayerDanceState::PlayerDanceState()
+{
+	timer.set_one_shot(false);
+	timer.set_wait_time(1.2f);
+	timer.set_on_timeout([]()
+		{
+			Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+			player->set_hp(player->get_hp() + 1);
+		});
+}
 void PlayerDanceState::on_enter()
 {
 	CharacterManager::instance()->get_player()->set_animation("dance");
 
+	timer.restart();
 	// todo:或许可以播放特殊的BGM
 }
 void PlayerDanceState::on_update(float delta)
 {
+	timer.on_update(delta);
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
 	player->set_velocity({ 0 , 0 });
 

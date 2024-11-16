@@ -170,6 +170,7 @@
     <ClInclude Include="enemy_hornet.h" />
     <ClInclude Include="enemy_hornet_state_node.h" />
     <ClInclude Include="particle_manager.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="player_state_node.h" />
     <ClInclude Include="resources_manager.h" />

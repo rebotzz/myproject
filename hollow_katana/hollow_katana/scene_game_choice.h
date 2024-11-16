@@ -1,10 +1,15 @@
 #pragma once
 #include <memory>
+#include <vector>
 #include "scene.h"
 #include "scene_game.h"
 #include "resources_manager.h"
 #include "door.h"
 #include "woodenman.h"
+#include "platform.h"
+
+
+
 
 // v1.3新增:传送门,木头人
 
@@ -23,6 +28,7 @@ private:
 	Door* door_hornet = nullptr;
 	Door* door_dragon_king = nullptr;
 	Woodenman* woodenman = nullptr;
+	std::vector<Platform*> platform_list;
 
 public:
 	SceneGameChoice()
@@ -51,6 +57,23 @@ public:
 
 		woodenman = new Woodenman;
 		woodenman->set_position({ 550.0f, 620 - woodenman->get_img_size().y / 2});
+
+		platform_list.resize(5, nullptr);
+		auto& platform_normal1 = platform_list[0];
+		auto& platform_flash1 =	platform_list[1];
+		auto& platform_flash2 =	platform_list[2];
+		auto& platform_trans =	platform_list[3];
+		auto& platform_normal2 = platform_list[4];
+
+		platform_normal1 = new Platform({ 100, 530 }, { 100, 20 });
+		platform_normal2 = new Platform({ 250, 450 }, { 100, 20 });
+		platform_flash1 = new Platform({ 400, 600 }, { 100, 40 });
+		platform_flash2 = new Platform({ 550, 300 }, { 250, 150 });
+		platform_flash1->set_mode(Platform::Mode::Flash);
+		platform_flash2->set_mode(Platform::Mode::Flash);
+		platform_trans = new Platform({ 70, 320 }, { 100, 40 });
+		platform_trans->set_mode(Platform::Mode::Transmit);
+		platform_trans->set_target_position({ 750, 300 });
 	}
 	void on_input(const ExMessage& msg)
 	{
@@ -65,11 +88,13 @@ public:
 	void on_render() override
 	{
 		//game_scene.on_render();
-		game_scene.render_background();
+		game_scene.render_background();	// 分层渲染，避免图层遮挡
 
 		door_hornet->on_render();
 		door_dragon_king->on_render();
 		woodenman->on_render();
+		for (auto platform : platform_list)
+			platform->on_render();
 
 		CharacterManager::instance()->on_render();
 		ParticleManager::instance()->on_render();
@@ -82,5 +107,7 @@ public:
 		if (door_hornet) delete door_hornet;
 		if (door_dragon_king) delete door_dragon_king;
 		if (woodenman) delete woodenman;
+		for (auto platform : platform_list)
+			if(platform) delete platform;
 	}
 };

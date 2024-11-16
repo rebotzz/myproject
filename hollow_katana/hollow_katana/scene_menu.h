@@ -243,7 +243,7 @@ public:
 	{
 		// ¿ì½ø
 		if (msg.message == WM_KEYDOWN)
-			timer.on_update(0.1f);
+			timer.on_update(0.5f);
 	}
 	virtual void on_update(float delta_time) override
 	{

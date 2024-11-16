@@ -57,21 +57,17 @@ private:
 	// 外加功能所需的定时器
 	Direction beat_displace_dir = Direction::Left;					// 特殊位移方向
 	bool is_displace_ex = false;									// 是否特殊位移
-	Timer timer_enable_displace_ex;
-	Timer timer_displace_ex;										// 角色特殊位移(攻击)定时器
+	Timer timer_enable_displace_ex;									// 特殊位移持续时间定时器
+	Timer timer_displace_ex;										// 角色特殊位移(攻击)位置累计移动定时器
 	bool is_down_slash = false;										// 是否下劈
 	bool is_sword_hit = false;										// 是否拼刀
 	Timer timer_delay_decrease_hp;									// 延时扣血用于检测是否在拼刀
-
-	// 武器击中后坐力
-	Timer timer_recoiling;											// 后坐力计时器
+	Timer timer_recoiling;											// 武器击中后坐力计时器
 	float speed_jump = 780.0f;										// 跳跃高度控制
-
 	Timer timer_hit_effect;											// 击中效果定时器
 	bool is_hitting = false;										// 击中效果状态
 	bool is_hit_eff_cd_comp = true;									// 击中效果CD
-
-	Timer timer_create_particle_effect;
+	Timer timer_create_particle_effect;								// 粒子特效发射器
 
 private:
 	StatusBar status_bar;

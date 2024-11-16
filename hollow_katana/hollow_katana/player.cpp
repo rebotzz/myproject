@@ -9,6 +9,9 @@
 #include "effect.h"
 
 
+#include <iostream>
+
+
 Player::Player() :Character()
 {
 	// 角色朝向,位置,高度初始化
@@ -42,8 +45,12 @@ Player::Player() :Character()
 	interact_box->set_enabled(true);
 	interact_box->set_size({ 40, 80 });
 	interact_box->set_layer_src(CollisionLayer::None);
-	interact_box->set_layer_dst(CollisionLayer::Scenery);
+	interact_box->set_layer_dst(CollisionLayer::Interact | CollisionLayer::Scenery);
 	interact_box->set_position(get_logic_center());
+	interact_box->set_on_collision([&]()
+		{
+
+		});
 
 	// 攻击,翻滚定时器初始化
 	timer_attack_cd.set_one_shot(true);

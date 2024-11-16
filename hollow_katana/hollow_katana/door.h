@@ -32,7 +32,7 @@ public:
 
 		describe_box = CollisionManager::instance()->create_collision_box();
 		describe_box->set_enabled(true);
-		describe_box->set_layer_src(CollisionLayer::Scenery);
+		describe_box->set_layer_src(CollisionLayer::Interact);
 		describe_box->set_on_collision([&]()
 			{
 				is_showing_desc = true;
@@ -84,6 +84,7 @@ public:
 
 	void on_render()
 	{
+		setlinestyle(PS_SOLID, 2);
 		setlinecolor(color);
 		rectangle((int)(position.x - door_box->get_size().x / 2),
 			(int)(position.y - door_box->get_size().y / 2),

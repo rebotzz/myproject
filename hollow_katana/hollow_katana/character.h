@@ -7,6 +7,9 @@
 #include "collision_manager.h"
 #include "state_machine.h"
 
+#include <iostream>
+
+
 // 角色基类, 角色由状态机驱动
 class Character
 {
@@ -43,6 +46,11 @@ protected:
 	AnimationGroup* current_animation = nullptr;						// 当前动画组
 	std::unordered_map<std::string, AnimationGroup> animation_pool;		// 角色动画池
 
+	// 新增
+	float platform_floor_y = 720.0f;		// 平台地面高度,因为某一时刻只会踩在一个平台上；这么看来，角色可以自己创建平台，自己跳跃
+	Timer timer_platform_reset;				// 平台地面高度恢复定时器
+	float prev_frame_pos_y = 0.0f;			// 上一帧角色Y轴坐标位置
+
 public:
 	Character();
 	~Character();
@@ -55,12 +63,11 @@ public:
 	virtual void reset() { hp = hp_max; }
 	virtual void on_hurt() { };
 
+	// 核心接口
 	virtual void on_input(const ExMessage& msg) { };
 	virtual void on_update(float delta);
 	virtual void on_render();
 
-	bool is_on_floor() const { return position.y >= FLOOR_Y; }
-	float get_floor_y() const { return FLOOR_Y; }
 	int get_hp_max() const { return hp_max; }
 	int get_hp() const { return hp; }
 	float get_gravity() const { return GRAVITY; }
@@ -82,5 +89,35 @@ public:
 	HistoryStatus get_current_status() const 
 	{ 
 		return (is_facing_left ? current_animation->left : current_animation->right).get_current_status();
+	}
+
+	void on_platform(bool flag)
+	{
+		if (flag)
+			timer_platform_reset.restart();
+	}
+
+	// 默认缺省参数：不启用平台地面高度;如果没站在平台上，一段时间后取消平台
+	void set_platform_floor_y(float val = 720.0f)
+	{
+		platform_floor_y = val;
+	}
+	bool is_on_floor() const
+	{
+		return position.y >= FLOOR_Y || position.y >= platform_floor_y;
+	}
+	float get_floor_y() const
+	{
+		return min(FLOOR_Y, platform_floor_y);
+	}
+
+	void set_hp(int val)
+	{
+		hp = val;
+	}
+
+	float get_prev_frame_pos_y() const
+	{
+		return prev_frame_pos_y;
 	}
 };

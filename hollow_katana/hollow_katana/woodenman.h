@@ -3,7 +3,7 @@
 #include "resources_manager.h"
 #include "util.h"
 
-// 传送门
+// 木头人
 class Woodenman
 {
 private:
@@ -33,7 +33,7 @@ public:
 
 		describe_box = CollisionManager::instance()->create_collision_box();
 		describe_box->set_enabled(true);
-		describe_box->set_layer_src(CollisionLayer::Scenery);
+		describe_box->set_layer_src(CollisionLayer::Interact);
 		describe_box->set_size({ (float)img->getwidth() - 10, (float)img->getheight() - 20 });
 		describe_box->set_on_collision([&]()
 			{

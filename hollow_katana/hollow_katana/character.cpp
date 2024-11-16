@@ -20,6 +20,13 @@ Character::Character()
 		{
 			is_blink_invisible = !is_blink_invisible;
 		});
+
+	timer_platform_reset.set_one_shot(true);
+	timer_platform_reset.set_wait_time(0.05f);
+	timer_platform_reset.set_on_timeout([&]()
+		{
+			set_platform_floor_y();
+		});
 }
 
 Character::~Character()
@@ -73,6 +80,7 @@ void Character::on_update(float delta)
 		velocity.x = 0;
 	if (enable_gravity)
 		velocity.y += GRAVITY * delta;
+	prev_frame_pos_y = position.y;		// 平台碰撞判定用
 	position += velocity * delta;
 
 	if (is_on_floor())
@@ -96,10 +104,11 @@ void Character::on_update(float delta)
 	// 更新角色动画
 	if (!current_animation)
 		return;
-
 	Animation& animation = (is_facing_left ? current_animation->left : current_animation->right);
 	animation.set_position(position);
 	animation.on_update(delta);
+
+	timer_platform_reset.on_update(delta);
 }
 
 void Character::on_render()

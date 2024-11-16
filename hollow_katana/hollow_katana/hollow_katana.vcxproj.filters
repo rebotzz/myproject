@@ -266,5 +266,8 @@
     <ClInclude Include="scene_manager.h">
       <Filter>头文件\manager\scene</Filter>
     </ClInclude>
+    <ClInclude Include="platform.h">
+      <Filter>头文件\property</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@ private:
 	std::function<void()> on_collision;
 	bool enabled = true;
 
+	// 其他
 	CollisionLayer trigger_layer = CollisionLayer::None;	// 记录发生碰撞的层,用于拼刀判定等
 
 private:
@@ -32,6 +33,11 @@ public:
 	const Vector2& get_size() const
 	{
 		return size;
+	}
+
+	const Vector2 get_position() const
+	{
+		return position;
 	}
 
 	// 使用中心锚点模式
@@ -65,10 +71,15 @@ public:
 	{
 		return (int)layer_dst & (int)target_layer;
 	}
-	CollisionLayer get_trigger_layer() const { return trigger_layer; }
+	CollisionLayer get_trigger_layer() const 
+	{ 
+		return trigger_layer; 
+	}
 	void set_trigger_layer(CollisionLayer layer) 
 	{ 
 		trigger_layer = CollisionLayer::None | layer;
 	}
+
+
 
 };

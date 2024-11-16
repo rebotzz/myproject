@@ -47,10 +47,6 @@ Player::Player() :Character()
 	interact_box->set_layer_src(CollisionLayer::None);
 	interact_box->set_layer_dst(CollisionLayer::Interact | CollisionLayer::Scenery);
 	interact_box->set_position(get_logic_center());
-	interact_box->set_on_collision([&]()
-		{
-
-		});
 
 	// 攻击,翻滚定时器初始化
 	timer_attack_cd.set_one_shot(true);

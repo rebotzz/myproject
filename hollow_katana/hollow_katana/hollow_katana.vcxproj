@@ -169,6 +169,7 @@
     <ClInclude Include="enemy_dragon_king_state_node.h" />
     <ClInclude Include="enemy_hornet.h" />
     <ClInclude Include="enemy_hornet_state_node.h" />
+    <ClInclude Include="interact_prop.h" />
     <ClInclude Include="particle_manager.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="player.h" />

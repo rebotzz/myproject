@@ -14,7 +14,6 @@ private:
 public:
 	SwordBullet(bool is_face_left = true)
 	{
-		_damage = 10;
 		_size.x = (float)atlas_hornet_sword_left.get_image(0)->getwidth();
 		_size.y = (float)atlas_hornet_sword_left.get_image(0)->getheight();
 

@@ -3,8 +3,9 @@
 #include <easyx.h>
 #include "timer.h"
 
-// bug:为什么使用多级继承出错了?
-// 避免多级继承,这里不继承,用组装		
+// bug:为什么使用多级继承出错了? 避免多级继承,这里不继承,用组装	
+// 	
+// 游戏场景，实现玩家输入控制，背景渲染，bgm,历史画面记录等通用功能
 class GameScene
 {
 protected:

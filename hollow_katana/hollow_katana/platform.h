@@ -21,6 +21,7 @@ private:
 	Mode mode = Mode::Normal;					// 平台类型
 	Vector2 target_position;					// 传送目的地
 	COLORREF color = RGB(255, 255, 255);		// 颜色
+	bool is_enabled = true;						// 是否启用
 
 public:
 	// 位置,中心锚点模式
@@ -45,8 +46,11 @@ public:
 
 				const Vector2& player_velocity = player->get_velocity();
 				const Vector2& player_position = player->get_position();
-				// 条件："站在平台"上时算碰撞
-				player->on_platform(true);
+				// 条件："站在平台"（略偏下）上时算碰撞
+				//CollisionBox* last_platform = nullptr;
+				//if(last_platform == collision_box)		
+				player->on_platform(true);	// debug:不同平台错位碰撞导致浮空走路-> 临时方案避免临近平台高度过低
+				//last_platform = collision_box;
 
 				if (player_velocity.y >= 0)
 				{
@@ -84,17 +88,21 @@ public:
 
 	void set_enabled(bool flag)
 	{
+		is_enabled = flag;
 		collision_box->set_enabled(flag);
 	}
 
 	void on_render()
 	{
+		if (is_enabled)
+		{
 		setlinestyle(PS_SOLID, 5);
 		setlinecolor(color);
 		rectangle((int)(collision_box->get_position().x - collision_box->get_size().x / 2),
 				  (int)(collision_box->get_position().y - collision_box->get_size().y / 2),
 				  (int)(collision_box->get_position().x + collision_box->get_size().x / 2),
 				  (int)(collision_box->get_position().y + collision_box->get_size().y / 2));
+		}
 	}
 
 	void set_mode(Mode target)

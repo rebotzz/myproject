@@ -269,5 +269,8 @@
     <ClInclude Include="platform.h">
       <Filter>头文件\property</Filter>
     </ClInclude>
+    <ClInclude Include="interact_prop.h">
+      <Filter>头文件\property</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

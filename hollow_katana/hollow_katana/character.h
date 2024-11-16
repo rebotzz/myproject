@@ -47,9 +47,9 @@ protected:
 	std::unordered_map<std::string, AnimationGroup> animation_pool;		// 角色动画池
 
 	// 新增
-	float platform_floor_y = 720.0f;		// 平台地面高度,因为某一时刻只会踩在一个平台上；这么看来，角色可以自己创建平台，自己跳跃
-	Timer timer_platform_reset;				// 平台地面高度恢复定时器
-	float prev_frame_pos_y = 0.0f;			// 上一帧角色Y轴坐标位置
+	float platform_floor_y = 720.0f;	// 平台地面高度,因为某一时刻只会踩在一个平台上;这么看来,角色可以自己创建平台，自己跳跃
+	Timer timer_platform_reset;			// 平台地面高度恢复定时器
+	float prev_frame_pos_y = 0.0f;		// 上一帧角色Y轴坐标位置
 
 public:
 	Character();

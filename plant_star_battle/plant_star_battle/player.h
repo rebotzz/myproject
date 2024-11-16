@@ -300,6 +300,7 @@ public:
 			_current_animation = (_is_face_right ? &_animation_idle_right : &_animation_idle_left);
 			_timer_run_particle_effect_generation.pause();
 		}
+		// 左右边界
 		if (_position.x < (_achor_mode == AchorMode::LeftTop ? 0 : _size.x / 2))
 			_position.x = (_achor_mode == AchorMode::LeftTop ? 0 : _size.x / 2);
 		else if (_position.x > (getwidth() - (_achor_mode == AchorMode::LeftTop ? _size.x : _size.x / 2)))
@@ -540,7 +541,7 @@ protected:
 		if (_hp <= 0)
 			return;
 
-		// 单向平台碰撞检测: 下落时,y轴向下		bug: 玩家初始进入游戏时玩家有概率掉落平台下, float进度? 速度过快来不及检测?
+		// 单向平台碰撞检测: 下落时,y轴向下		bug: 玩家初始进入游戏时玩家有概率掉落平台下, float精度? 速度过快来不及检测?
 		if (_velocity.y >= 0)
 		{
 			for (const Platform& platform : platform_list)

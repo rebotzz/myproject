@@ -3,7 +3,6 @@
 #include "collision_manager.h"
 #include "util.h"
 
-// 木头人
 // 具有交互功能的道具
 class InteractProp
 {
@@ -12,15 +11,24 @@ private:
 	Vector2 position;							// 位置,中心锚点模式
 	std::wstring desc;							// 描述文本
 	CollisionBox* desc_box = nullptr;			// 描述碰撞箱体
-	int desc_counter = 0;						// 关闭desc描述计数器
-	bool is_showing_desc = false;				// 是否显示木头人描述
+	int desc_counter = 0;						// desc描述关闭计数器
+	bool is_showing_desc = false;				// 是否显示描述
+	bool is_showing_box = false;				// 是否显示碰撞箱体
+	bool enabled = true;						// 是否启用道具
+
+	// 其他,道具碰撞体边框绘制
+	COLORREF color = RGB(200, 200, 200);
+	int line_style = PS_SOLID;
+	int line_thickness = 1;
+
 
 public:
-	InteractProp()
+	InteractProp(const std::wstring& describe = _T(""))
+		:desc(describe)
 	{
 		switch_box = CollisionManager::instance()->create_collision_box();
 		switch_box->set_enabled(true);
-		switch_box->set_layer_src(CollisionLayer::Enemy);
+		switch_box->set_layer_src(CollisionLayer::Enemy);	// 使用武器攻击交互
 		switch_box->set_layer_dst(CollisionLayer::None);
 
 		desc_box = CollisionManager::instance()->create_collision_box();
@@ -39,6 +47,19 @@ public:
 
 	void on_render()
 	{
+		if (!enabled)
+			return;
+
+		if (is_showing_box)
+		{
+			setlinecolor(color);
+			setlinestyle(line_style, line_thickness);
+			rectangle((int)(position.x - switch_box->get_size().x / 2),
+				(int)(position.y - switch_box->get_size().y / 2),
+				(int)(position.x + switch_box->get_size().x / 2),
+				(int)(position.y + switch_box->get_size().y / 2));
+		}
+
 		if (is_showing_desc)
 		{
 			settextcolor(RGB(255, 255, 255));
@@ -63,6 +84,40 @@ public:
 	{
 		switch_box->set_size(size);
 		desc_box->set_size(size);
+	}
+
+	void set_on_interact(const std::function<void()>& callback)
+	{
+		switch_box->set_on_collision(callback);
+	}
+
+	void set_describe(std::wstring str)
+	{
+		desc = str;
+	}
+
+	const Vector2& get_position() const
+	{
+		return position;
+	}
+
+	void enable_showing_box(bool flag)
+	{
+		is_showing_box = flag;
+	}
+
+	void set_showing_style(COLORREF col = RGB(200, 200, 200), int line_style = PS_SOLID, int line_thickness = 1)
+	{
+		color = col;
+		this->line_style = line_style;
+		this->line_thickness = line_thickness;
+	}
+
+	void set_enabled(bool flag)
+	{
+		enabled = flag;
+		switch_box->set_enabled(flag);
+		desc_box->set_enabled(flag);
 	}
 };
 

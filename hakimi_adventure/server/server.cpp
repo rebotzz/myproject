@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <fstream>
+#include <iostream>
 
 // 临界资源
 std::mutex g_mutex;		// 全局互斥锁
@@ -72,6 +73,8 @@ int main(int argc, char* argv[])
 			progress_2 = std::stoi(req.body);
 			res.set_content(std::to_string(progress_1), "text/plain");
 		});
+
+	std::cout << "hakimi adventure server has initialized." << std::endl;
 
 	server.listen("0.0.0.0", 25565);
 	return 0;

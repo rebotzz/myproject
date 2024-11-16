@@ -140,21 +140,15 @@ public:
 				for (int i = 0; i < count; ++i)
 				{
 					Buff* buff = nullptr;
-					switch (rand() % 4)
-					{
-					case 0:
+					int rand_num = rand() % 10 + 1;
+					if(rand_num <= 3)
 						buff = new BuffRecoveryHP;
-						break;
-					case 1:
+					else if(rand_num <= 7)
 						buff = new BuffRecoveryMP;
-						break;
-					case 2:
+					else if(rand_num <= 8)
 						buff = new BuffInvisible;
-						break;
-					case 3:
+					else 
 						buff = new BuffHurry;
-						break;
-					}
 					buff_list.push_back(buff);
 				}
 			}

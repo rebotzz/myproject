@@ -27,7 +27,7 @@ private:
 	Timer _timer_start_attack_ex;
 	Timer _timer_stay_sky;				// ÖÍ¿Õ¶¨Ê±Æ÷
 	bool _is_stay_sky = false;
-	float _sword_bullet_speed = 0.75f;
+	float _sword_bullet_speed = 1.35f;
 	int _stay_sky_duration = 1000;
 	bool _is_attack = false;
 
@@ -175,6 +175,7 @@ public:
 		if (_is_stay_sky && _velocity.y > 0)
 			_velocity.y = 0;
 
+		// ²»Í¬×´Ì¬¶¯»­ÇÐ»»
 		if (_is_attack_ex)
 			_current_animation = _is_face_right ? &_animation_attack_ex_right : &_animation_attack_ex_left;
 		else if (_is_attack)
@@ -241,7 +242,7 @@ private:
 		sword_bullet->set_collide_target(_id == PlayerID::P1 ? PlayerID::P2 : PlayerID::P1);
 		sword_bullet->set_position(bullet_position);
 		sword_bullet->set_velocity({ _is_face_right ? _sword_bullet_speed : -_sword_bullet_speed, 0 });
-		sword_bullet->set_damage(15);
+		sword_bullet->set_damage(20);
 		sword_bullet->set_callback([&]()
 			{
 				_mp += 25;

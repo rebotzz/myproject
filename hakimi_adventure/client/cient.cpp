@@ -1,3 +1,5 @@
+#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
+
 #include "../thirdparty/httplib.h"
 
 #include "player.h"
@@ -44,10 +46,11 @@ enum class State
 {
 	Waiting,						// 等待玩家加入
 	Ready,							// 准备倒计时
-	Racing							// 比赛中
+	Racing,							// 比赛中
+	None
 };
 
-State state = State::Waiting;		// 游戏当前状态
+State state = State::None;			// 游戏当前状态
 int val_countdown = 4;				// 起跑倒计时
 int id_player = 0;					// 玩家序号
 std::atomic<int> progress_1 = -1;	// 玩家1进度
@@ -116,7 +119,7 @@ int main(int argc, char* argv[])
 	BeginBatchDraw();
 
 	load_resources(hwnd);
-	login_to_server(hwnd);
+	//login_to_server(hwnd);
 
 	ExMessage msg;
 	Camera camera_ui, camera_scene;
@@ -193,8 +196,14 @@ int main(int argc, char* argv[])
 						difficulty = (Difficulty)(((int)difficulty + 1) % ((int)Difficulty::Invalid));
 						break;
 					case VK_RETURN:
+						state = State::Waiting;
 						scene = Scene::Game;
-						if (menu_choice == Menu::PlayerVsComputer) progress_2 = 0;
+						login_to_server(hwnd);
+
+						if (menu_choice == Menu::PlayerVsComputer)
+						{
+							progress_2 = 0;
+						}
 						break;
 					default:
 						break;
@@ -340,7 +349,7 @@ int main(int argc, char* argv[])
 			if (state == State::Waiting)
 			{
 				settextcolor(RGB(255, 255, 255));
-				outtextxy(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, _T("等待其他玩家加入..."));
+				outtextxy(WINDOW_WIDTH / 2 - textwidth(_T("等待其他玩家加入...")) / 2, WINDOW_HEIGHT / 2, _T("等待其他玩家加入..."));
 			}
 			else
 			{

@@ -134,6 +134,7 @@ int main(int argc, char* argv[])
 	player_1.set_position({ 842,842 });
 	player_2.set_position({ 842,842 });
 
+	std::chrono::steady_clock::time_point begin_time;
 	timer_countdown.set_one_shot(false);
 	timer_countdown.set_wait_time(1);
 	timer_countdown.set_on_timeout([&]()
@@ -148,6 +149,7 @@ int main(int argc, char* argv[])
 			case -1:
 				play_audio(_T("bgm"), true);
 				state = State::Racing;
+				begin_time = std::chrono::steady_clock::now();
 				break;
 			default: break;
 			}
@@ -274,14 +276,18 @@ int main(int argc, char* argv[])
 			{
 				stop_audio(_T("bgm"));
 				play_audio(id_player == 1 ? _T("1p_win") : _T("2p_win"));
-				MessageBox(hwnd, _T("哈,赢了"), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
+				nanoseconds total_time = steady_clock::now() - begin_time;
+				std::wstring buff = _T("哈,赢了\n用时：") + std::to_wstring(total_time.count());
+				MessageBox(hwnd, buff.c_str(), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
 				exit(0);
 			}
 			else if ((id_player == 1 && progress_2 >= num_total_char)
 				|| (id_player == 2 && progress_1 >= num_total_char))
 			{
 				stop_audio(_T("bgm"));
-				MessageBox(hwnd, _T("唉,输了"), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
+				nanoseconds total_time = steady_clock::now() - begin_time;
+				std::wstring buff = _T("唉,输了\n用时：") + std::to_wstring(total_time.count());
+				MessageBox(hwnd, buff.c_str(), _T("游戏结束"), MB_OK | MB_ICONINFORMATION);
 				exit(0);
 			}
 

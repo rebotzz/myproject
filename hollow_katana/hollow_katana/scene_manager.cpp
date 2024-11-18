@@ -37,7 +37,7 @@ SceneManager* SceneManager::instance()
 void SceneManager::set_entry_scene(const std::string& id)
 {
 	if (scene_pool.count(id) == 0)
-		throw std::invalid_argument("scene id not find");
+		MessageBox(GetHWnd(), _T("scene id not find"), _T("Error"), MB_OK | MB_ICONERROR);
 
 	current_scene = scene_pool[id];
 	cur_scene_id = id;

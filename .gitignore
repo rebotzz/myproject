@@ -1,5 +1,9 @@
 # 我的忽略
 
+# 生化危鸡
+ChickenEvil/ChickenEvil/resources
+ChickenEvil/Demo
+
 # 哈基米大冒险
 hakimi_adventure/client/resources
 hakimi_adventure/client/config.cfg

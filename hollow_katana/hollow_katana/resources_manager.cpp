@@ -22,6 +22,7 @@ static const std::vector<ImageResInfo> image_info_list =
 	{"background_katana",			_T(R"(resources\background_1.png)")},
 	{"background_hollow",			_T(R"(resources\background_2.png)")},
 	{"ui_heart",					_T(R"(resources\ui_heart.png)")},
+	{"ui_crosshair",				_T(R"(resources\crosshair.png)")},
 
 	// 玩家素材
 	{"player_attack_right",			_T(R"(resources\player\attack.png)")},
@@ -286,7 +287,6 @@ void ResourcesManager::load()
 	// 混叠图片,改变图片原有色彩(注意图片大小别越界)
 	blend_atlas("particle_vfx_hurt_yellow_right", "particle_vfx_hurt_red_right", "effect_mixed_red");
 	blend_atlas("particle_vfx_hurt_yellow_left", "particle_vfx_hurt_red_left", "effect_mixed_red");
-
 
 
 	// 加载音频

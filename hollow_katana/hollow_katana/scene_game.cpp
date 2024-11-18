@@ -140,6 +140,8 @@ void GameScene::on_exit()
 		ReverseTimeManager::instance()->set_background(background);
 #endif
 	}
+
+	BulletTimeManager::instance()->set_status(BulletTimeManager::Status::Exit);
 }
 
 void GameScene::render_background()

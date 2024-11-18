@@ -1,4 +1,4 @@
-//#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
+#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
 
 #include <chrono>
 #include <thread>
@@ -40,13 +40,13 @@ int main()
 	const nanoseconds frame_duration((int)1e9 / FPS);
 	steady_clock::time_point last_tick = steady_clock::now();
 	main_camera = SceneManager::instance()->get_camera();
-	SceneManager::instance()->set_entry_scene("game_scene_choice");	//menu_scene game_scene_choice 
+	SceneManager::instance()->set_entry_scene("menu_scene");	//menu_scene game_scene_choice 
 
 	// 主循环
 	while (!is_quit)
 	{
-		// 处理消息
-		if (peekmessage(&msg, EX_MOUSE | EX_KEY))
+		// 处理消息		debug:改为while,逐个拉取事件队列
+		while (peekmessage(&msg, EX_MOUSE | EX_KEY))
 		{
 			SceneManager::instance()->on_input(msg);
 		}

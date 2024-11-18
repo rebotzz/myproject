@@ -9,9 +9,6 @@
 #include "effect.h"
 
 
-#include <iostream>
-
-
 Player::Player() :Character()
 {
 	// 角色朝向,位置,高度初始化
@@ -317,6 +314,8 @@ Player::Player() :Character()
 		// debug: 这里不能switch_to,不然调用的CharacterManager构造时调用Player构造,死循环
 		state_machine.set_entry("idle");
 	}
+
+	img_crosshair = ResourcesManager::instance()->find_image("ui_crosshair");
 }
 
 Player::~Player() = default;
@@ -344,14 +343,7 @@ void Player::on_input(const ExMessage& msg)
 	static const int VK_C = 0x43;
 	static const int VK_V = 0x56;
 
-	// todo: 优化按键响应
-	// 鼠标点击后,键盘按键松开判断会有遗漏	我很好奇,为什么别人的不会? 
-	// 奇怪的一点是:将easyx.h改为老版的graphics.h后,按键遗漏似乎好了一点
-
-	// 猜测的解决方案: 
-	// 1.更改按键映射,全部改为键盘操作	-->效果不错
-	// 2.更改别的接收键盘/鼠标消息的接口,不用EasyX的,用SDL? or windows API?	-->未实践
-
+	// Debug: 鼠标点击后,键盘按键松开判断会有遗漏, 解决：主循环peekmessage时if改为while,逐个拉取事件队列,不漏
 	switch (msg.message)
 	{
 	case WM_KEYDOWN:
@@ -441,6 +433,10 @@ void Player::on_input(const ExMessage& msg)
 	case WM_RBUTTONUP:
 		is_bullet_time_key_down = false;
 		break;
+	case WM_MOUSEMOVE:
+		pos_cursor.x = (float)(msg.x - img_crosshair->getwidth() / 2);
+		pos_cursor.y = (float)(msg.y - img_crosshair->getheight() / 2);
+		break;
 	default:
 		break;
 	}
@@ -508,6 +504,9 @@ void Player::on_render()
 
 	// 玩家动画
 	Character::on_render();
+
+	// 瞄准十字光标
+	putimage_alpha((int)pos_cursor.x, (int)pos_cursor.y, img_crosshair);
 
 	// 状态栏更新
 	status_bar.on_render();

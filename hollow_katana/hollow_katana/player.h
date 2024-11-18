@@ -68,6 +68,8 @@ private:
 	bool is_hitting = false;										// 击中效果状态
 	bool is_hit_eff_cd_comp = true;									// 击中效果CD
 	Timer timer_create_particle_effect;								// 粒子特效发射器
+	Vector2 pos_cursor = { 0, 0 };									// 十字瞄准图标(鼠标)位置
+	IMAGE* img_crosshair = nullptr;									// 十字瞄准图标
 
 private:
 	StatusBar status_bar;

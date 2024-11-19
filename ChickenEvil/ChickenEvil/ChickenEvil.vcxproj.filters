@@ -13,5 +13,87 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\manager">
+      <UniqueIdentifier>{abf9b2b9-ee94-4607-90a2-72806913f61a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\base_kits">
+      <UniqueIdentifier>{8ff82c24-9a1e-4948-9d23-fa2e7ab42cf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\particle">
+      <UniqueIdentifier>{c90e044c-6bec-4d76-ad74-461f0743abd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\resources">
+      <UniqueIdentifier>{dd8459b1-3ed1-4531-ab3e-7281c1775837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\collision">
+      <UniqueIdentifier>{fd14c567-e947-46c2-a570-aaec1f48a63a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager\character">
+      <UniqueIdentifier>{32dae88c-3a80-4241-a512-028b65538100}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_manager.cpp">
+      <Filter>头文件\manager\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="resources_manager.cpp">
+      <Filter>头文件\manager\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_manager.cpp">
+      <Filter>头文件\manager\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="character_manager.cpp">
+      <Filter>头文件\manager\character</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="animation.h">
+      <Filter>头文件\base_kits</Filter>
+    </ClInclude>
+    <ClInclude Include="atlas.h">
+      <Filter>头文件\base_kits</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>头文件\base_kits</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>头文件\base_kits</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>头文件\base_kits</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.h">
+      <Filter>头文件\base_kits</Filter>
+    </ClInclude>
+    <ClInclude Include="turrent.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_manager.h">
+      <Filter>头文件\manager\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="resources_manager.h">
+      <Filter>头文件\manager\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_box.h">
+      <Filter>头文件\manager\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_layer.h">
+      <Filter>头文件\manager\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_manager.h">
+      <Filter>头文件\manager\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="chicken.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="character_manager.h">
+      <Filter>头文件\manager\character</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

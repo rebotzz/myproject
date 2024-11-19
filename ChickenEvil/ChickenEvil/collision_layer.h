@@ -1,0 +1,9 @@
+#pragma once
+
+// Åö×²²ã
+enum class CollisionLayer
+{
+	None,
+	Enemy,		// µÐÈË
+	//Bullet,		// ×Óµ¯
+};

@@ -19,7 +19,7 @@ class Chicken
 protected:
 	int hp = 1;									// hp,目前一击必杀，所以没用到
 	Vector2 position;							// 位置
-	float speed_y = 30.0f;						// 移动速度
+	float speed_y = 35.0f;						// 移动速度
 	Animation anim_chicken;						// 动画
 	CollisionBox* hurt_box = nullptr;			// 受击碰撞箱
 	State state = State::Alive;					// 状态

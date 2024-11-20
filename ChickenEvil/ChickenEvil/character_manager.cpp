@@ -20,7 +20,11 @@ CharacterManager::CharacterManager()
 	timer_spawn_enemy.set_wait_time(0.3f);
 	timer_spawn_enemy.set_on_timeout([&]()
 		{
-			int rand_num = rand() % 3;
+			static int counter = 0;
+			static int mod = 3;
+			if (++counter % 150 == 0 && mod <= 5) mod++;
+			else if(++counter % 300 == 0 && mod <= 7) mod++;
+			int rand_num = rand() % mod;
 			for (int i = 0; i < rand_num; ++i)
 				enemy_list.push_back(spawn_chicken());
 		});
@@ -32,6 +36,11 @@ CharacterManager::CharacterManager()
 
 void CharacterManager::on_input(SDL_Event* event)
 {
+	if (home_hp <= 0)
+	{
+		return;
+	}
+
 	for (auto& turrent : turrent_list)
 		turrent->on_input(event);
 }
@@ -41,10 +50,7 @@ void CharacterManager::on_update(float delta)
 	// 游戏结束
 	if (home_hp <= 0)
 	{
-		Mix_PlayMusic(ResourcesManager::instance()->find_audio_music("loss"), 0);
-		SDL_Log("game over!\n");
-		system("pause");
-		exit(0);
+		return;
 	}
 
 	// 敌人刷新
@@ -85,20 +91,37 @@ void CharacterManager::on_update(float delta)
 
 void CharacterManager::on_render(SDL_Renderer* renderer, const Camera& camera)
 {
-	// 敌人
-	for (auto& enemy : enemy_list)
-	{
-		enemy->on_render(renderer, camera);
-	}
-
 	// 炮塔
 	for (auto& turrent : turrent_list)
 	{
 		turrent->on_render(renderer, camera);
 	}
 
+	// 敌人
+	for (auto& enemy : enemy_list)
+	{
+		enemy->on_render(renderer, camera);
+	}
+
 	// 粒子
 	ParticleManager::instance()->on_render(renderer, camera);
+
+	if (home_hp <= 0)
+	{
+		std::string str = "Game Over! Score: " + std::to_string(score);
+		SDL_Surface* suf_text = TTF_RenderText_Blended(ResourcesManager::instance()->find_font("IPix"),
+			str.c_str(), { 0, 0, 0, 255 });
+		SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
+		SDL_Rect rect_msg_box, rect_text;
+		rect_msg_box = { WINDOW_W / 2 - 250, WINDOW_H / 2 - 100, 500, 200 };
+		rect_text = { rect_msg_box.x + rect_msg_box.w / 2 - suf_text->w / 2, 
+			rect_msg_box.y + rect_msg_box.h / 2 - suf_text->h / 2,  suf_text->w, suf_text->h };
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 100);
+		SDL_RenderFillRect(renderer, &rect_msg_box);
+		SDL_RenderCopy(renderer, tex_text, nullptr, &rect_text);
+		SDL_FreeSurface(suf_text);
+		SDL_DestroyTexture(tex_text);
+	}
 }
 
 static std::shared_ptr<Chicken> spawn_chicken()

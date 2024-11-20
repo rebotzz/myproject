@@ -17,7 +17,7 @@
 // 1.增加挡板,防止角色飞出屏幕顶部
 // 2.重力更改时,调整动画方向,碰撞箱体方向,锚点位置,或许还有跳跃方向(暂时废弃,或许在别的游戏中实现)
 
-// todo:场景最好动态加载，用到时候在创建，一股脑全创建容易产生很多碰撞箱
+// TODO:场景最好动态加载，用到时候在创建，一股脑全创建容易产生很多碰撞箱 | 或者场景内素材进入加载，退出销毁
 class SceneGameChoice : public Scene
 {
 private:
@@ -39,6 +39,39 @@ public:
 	{
 		// 没有战斗，停止画面记录
 		game_scene.stop_record();
+
+		prop_platform_switch.set_describe(_T("跳跃平台开关"));
+		prop_platform_switch.set_on_interact([&]()
+			{
+				timer_switch_platforms.resume();
+				timer_switch_platforms.restart();
+			});
+		prop_platform_switch.set_size({ 20, 70 });
+		prop_platform_switch.set_position({ 720, 580 });
+		prop_platform_switch.enable_showing_box(true);
+		prop_platform_switch.set_showing_style(RGB(200, 150, 255), PS_SOLID, 8);
+
+		timer_switch_platforms.set_one_shot(true);
+		timer_switch_platforms.set_wait_time(0.2f);
+		timer_switch_platforms.pause();
+		timer_switch_platforms.set_on_timeout([&]()
+			{
+				enabled_platforms = !enabled_platforms;
+				for (auto platform : platform_list)
+					platform->set_enabled(enabled_platforms);
+			});
+	}
+
+	~SceneGameChoice()
+	{
+
+	}
+
+	void on_enter() override
+	{
+		game_scene.on_enter();
+		game_scene.stop_record();
+		CharacterManager::instance()->get_player()->set_position(pos_player);
 
 		// 初始化场景交互道具
 		door_hornet = new Door("game_scene_boss_hornet");
@@ -73,44 +106,7 @@ public:
 		platform_trans->set_mode(Platform::Mode::Transmit);
 		platform_trans->set_target_position({ 750, 300 });
 
-		prop_platform_switch.set_describe(_T("跳跃平台开关"));
-		prop_platform_switch.set_on_interact([&]()
-			{
-				timer_switch_platforms.resume();
-				timer_switch_platforms.restart();
-			});
-		prop_platform_switch.set_size({ 20, 70 });
-		prop_platform_switch.set_position({ 720, 580 });
-		prop_platform_switch.enable_showing_box(true);
-		prop_platform_switch.set_showing_style(RGB(200, 150, 255), PS_SOLID, 8);
-
-		timer_switch_platforms.set_one_shot(true);
-		timer_switch_platforms.set_wait_time(0.2f);
-		timer_switch_platforms.pause();
-		timer_switch_platforms.set_on_timeout([&]()
-			{
-				enabled_platforms = !enabled_platforms;
-				for (auto platform : platform_list)
-					platform->set_enabled(enabled_platforms);
-			});
-	}
-
-	~SceneGameChoice()
-	{
-		if (door_hornet) delete door_hornet;
-		if (door_dragon_king) delete door_dragon_king;
-		if (woodenman) delete woodenman;
-		for (auto platform : platform_list)
-			if (platform) delete platform;
-	}
-
-	void on_enter() override
-	{
-		game_scene.on_enter();
-		game_scene.stop_record();
-		CharacterManager::instance()->get_player()->set_position(pos_player);
-
-		// 关闭道具碰撞检测
+		// 开启道具碰撞检测
 		door_hornet->set_enabled(true);
 		door_dragon_king->set_enabled(true);
 		woodenman->set_enabled(true);
@@ -150,12 +146,20 @@ public:
 	{
 		game_scene.clear_record();
 		game_scene.on_exit();
+		AudioManager::instance()->stop_audio_ex(_T("bgm_0"));
 
-		// 关闭道具碰撞检测
-		door_hornet->set_enabled(false);
-		door_dragon_king->set_enabled(false);
-		woodenman->set_enabled(false);
+		// 销毁交互道具
+		if (door_hornet) delete door_hornet;
+		if (door_dragon_king) delete door_dragon_king;
+		if (woodenman) delete woodenman;
 		for (auto platform : platform_list)
-			platform->set_enabled(false);
+			if (platform) delete platform;
+
+		//// 关闭道具碰撞检测
+		//door_hornet->set_enabled(false);
+		//door_dragon_king->set_enabled(false);
+		//woodenman->set_enabled(false);
+		//for (auto platform : platform_list)
+		//	platform->set_enabled(false);
 	}
 };

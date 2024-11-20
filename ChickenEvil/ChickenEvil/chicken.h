@@ -1,23 +1,29 @@
 #pragma once
-#include "vector2.h"
 #include "animation.h"
-#include "collision_box.h"
 #include "collision_manager.h"
 #include "resources_manager.h"
+#include "particle_manager.h"
 #include <ctime>
 #include <memory>
 
 extern const int WINDOW_W;
 extern const int WINDOW_H;
 
+// 爆炸效果：plan1,动画+标志位；plan2,粒子特效
 class Chicken
 {
+	enum class State
+	{
+		Alive, Exploision, Death
+	};
 protected:
-	int hp = 1;
-	Vector2 position;
-	float speed_y = 30.0f;
-	Animation anim;
-	CollisionBox* hurt_box = nullptr;
+	int hp = 1;									// hp,目前一击必杀，所以没用到
+	Vector2 position;							// 位置
+	float speed_y = 30.0f;						// 移动速度
+	Animation anim_chicken;						// 动画
+	CollisionBox* hurt_box = nullptr;			// 受击碰撞箱
+	State state = State::Alive;					// 状态
+	bool shooting_death = false;				// 判定死法，用于加分
 
 public:
 	Chicken()
@@ -26,12 +32,9 @@ public:
 		position.x = (rand() % (WINDOW_W - 32)) + 32 / 2;
 		position.y = -55;
 
-		//position.x = 600;
-		//position.y = 350;
-
-		anim.set_interval(0.3f);
-		anim.set_loop(true);
-		anim.set_position(position);
+		anim_chicken.set_interval(0.3f);
+		anim_chicken.set_loop(true);
+		anim_chicken.set_position(position);
 
 		hurt_box = CollisionManager::instance()->create_collision_box();
 		hurt_box->set_enabled(true);
@@ -42,16 +45,22 @@ public:
 		hurt_box->set_on_collision([&]()
 			{
 				hp = 0;
-				//SDL_Log("chicken died, x:%f, y:%f\n", position.x, position.y);
+				shooting_death = true;
+				// 爆炸状态只存在一瞬间，用于生成粒子
+				if (hp == 0) state = State::Exploision;
+				if (state == State::Exploision)			
+				{
+					state = State::Death;
+					// 死亡，放烟花(创建粒子特效)
+					std::shared_ptr<Particle> particle = std::shared_ptr<Particle>(new ParticleEffExplode(position));
+					ParticleManager::instance()->register_particle(particle);
+					Mix_PlayChannel(-1, ResourcesManager::instance()->find_audio_chunk("explosion"), 0);
+				}
 			});
-
-		//SDL_Log("Create a Chicken, x: %f, y:%f\n", position.x, position.y);
-
 	}
 	~Chicken()
 	{
 		CollisionManager::instance()->destroy_collision_box(hurt_box);
-
 		//SDL_Log("Delete Chicken, x: %f, y:%f\n", position.x, position.y);
 	}
 
@@ -62,10 +71,8 @@ public:
 
 		position.y += speed_y * delta;
 		hurt_box->set_position(position);
-		anim.set_position(position);
-		anim.on_update(delta);
-
-		// 超过屏幕底部消失，给玩家扣血 ->放到检测位置
+		anim_chicken.set_position(position);
+		anim_chicken.on_update(delta);
 	}
 
 	void on_render(SDL_Renderer* renderer, const Camera& camera)
@@ -73,22 +80,27 @@ public:
 		if (!is_alive())
 			return;
 
-		anim.on_render(renderer, camera);
+		anim_chicken.on_render(renderer, camera);
 	}
 
 	bool is_alive() const
 	{
-		return hp > 0;
+		return state == State::Alive;
 	}
 
 	void dead()
 	{
-		hp = 0;
+		state = State::Death;
 	}
 
 	const Vector2& get_position() const
 	{
 		return position;
+	}
+
+	bool is_shooting_death() const
+	{
+		return shooting_death;
 	}
 
 };
@@ -100,7 +112,7 @@ public:
 	ChickenFast()
 		:Chicken()
 	{
-		anim.add_frame(ResourcesManager::instance()->find_atlas("chicken_fast"));
+		anim_chicken.add_frame(ResourcesManager::instance()->find_atlas("chicken_fast"));
 		speed_y *= 1.2f;
 	}
 };
@@ -111,7 +123,7 @@ public:
 	ChickenMedium()
 		:Chicken()
 	{
-		anim.add_frame(ResourcesManager::instance()->find_atlas("chicken_medium"));
+		anim_chicken.add_frame(ResourcesManager::instance()->find_atlas("chicken_medium"));
 	}
 };
 
@@ -121,7 +133,7 @@ public:
 	ChickenSlow()
 		:Chicken()
 	{
-		anim.add_frame(ResourcesManager::instance()->find_atlas("chicken_slow"));
+		anim_chicken.add_frame(ResourcesManager::instance()->find_atlas("chicken_slow"));
 		speed_y *= 0.7f;
 	}
 };

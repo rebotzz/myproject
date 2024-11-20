@@ -88,8 +88,8 @@ public:
 	// 与X轴的角度
 	double angle() const
 	{
-		double val = (atan(y / x) * 180.0) / 3.141592654;		// atan值域(-PI/2, PI/2)
-		if ((x < 0 && y < 0) || (x < 0 && y > 0)) val -= 180.0;		// (-90, 90) 增加映射范围，x负半轴
+		double val = (atan(y / x) * 180.0) / 3.141592654;			// atan值域(-PI/2, PI/2)：x正半轴
+		if ((x < 0 && y < 0) || (x < 0 && y > 0)) val -= 180.0;		// 增加映射范围：x负半轴
 		return val;
 	}
 

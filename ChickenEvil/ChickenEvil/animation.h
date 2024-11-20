@@ -8,7 +8,7 @@
 // SDL_Surface：包含图片信息，可以修改底层像素，从硬盘读取后的直接格式，但是渲染时需要转SDL_Texture
 // SDL_Texture: 不包含图片信息，初始化需要渲染器(资源管理就与renderer关联了)，可直接渲染
 // 目前采用SDL_Surface,每次渲染时多了创建/销毁SDL_Texture工作
-// TODO:或许可以动画首次渲染时SDL_Surface转SDL_Texture, 之后照常，动画析构时释放SDL_Texture
+// v0.1:动画首次渲染时SDL_Surface转SDL_Texture, 之后照常，动画析构时释放SDL_Texture
 class Animation
 {
 private:
@@ -17,6 +17,7 @@ private:
 	{
 		SDL_Rect rect_src;
 		SDL_Surface* suf_img = nullptr;
+		SDL_Texture* tex_img = nullptr;
 
 		Frame() = default;
 		Frame(SDL_Surface* img, SDL_Rect rect)
@@ -33,6 +34,7 @@ private:
 	std::function<void()> on_finished;					// 动画结束处理	
 	double angle = 0.0;									// 动画旋转角度
 	SDL_Point *rotate_point = nullptr;					// 旋转中心
+	bool init = false;									// 初始化
 
 public:
 	Animation()
@@ -54,6 +56,11 @@ public:
 	~Animation()
 	{
 		if (rotate_point) delete rotate_point;
+		for (auto& frame : frame_list)
+		{
+			if (frame.tex_img)
+				SDL_DestroyTexture(frame.tex_img);
+		}
 	}
 
 	void reset()
@@ -102,8 +109,17 @@ public:
 		timer.on_update(delta);
 	}
 
-	void on_render(SDL_Renderer* renderer , const Camera& camera) const
+	void on_render(SDL_Renderer* renderer , const Camera& camera) 
 	{
+		if (!init)
+		{
+			init = true;
+			for (auto& frame : frame_list)
+			{
+				frame.tex_img = SDL_CreateTextureFromSurface(renderer, frame.suf_img);
+			}
+		}
+
 		const Frame& frame = frame_list[idx_frame];
 
 		SDL_Rect rect_dst;
@@ -111,10 +127,7 @@ public:
 		rect_dst.x = (int)position.x - frame.rect_src.w / 2 - (int)camera.get_position().x;		// 中心锚点模式
 		rect_dst.y = (int)position.y - frame.rect_src.h / 2 - (int)camera.get_position().x;
 
-		SDL_Texture* tex_img = SDL_CreateTextureFromSurface(renderer, frame.suf_img);
-
-		SDL_RenderCopyEx(renderer, tex_img, &frame.rect_src, &rect_dst, angle, rotate_point, SDL_FLIP_NONE);
-		SDL_DestroyTexture(tex_img);
+		SDL_RenderCopyEx(renderer, frame.tex_img, &frame.rect_src, &rect_dst, angle, rotate_point, SDL_FLIP_NONE);
 	}
 
 	void add_frame(SDL_Surface* suf_img, int num_w)

@@ -38,9 +38,9 @@ public:
 	}
 
 	// 使用中心锚点模式
-	void set_position(const Vector2 position)
+	void set_position(const Vector2& target)
 	{
-		this->position = position;
+		position = target;
 	}
 
 	void set_layer_src(CollisionLayer layer_src)

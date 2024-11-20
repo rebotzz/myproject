@@ -95,5 +95,8 @@
     <ClInclude Include="bullet.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="particle_effect.h">
+      <Filter>头文件\manager\particle</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

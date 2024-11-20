@@ -74,6 +74,13 @@ int main(int argc, char* argv[])
 			res.set_content(std::to_string(progress_1), "text/plain");
 		});
 
+	server.Post("/reset", [](const httplib::Request& req, httplib::Response& res)
+		{
+			std::lock_guard<std::mutex> lock(g_mutex);
+			progress_1 = -1;
+			progress_2 = -1;
+		});
+
 	std::cout << "hakimi adventure server has initialized." << std::endl;
 
 	server.listen("0.0.0.0", 25565);

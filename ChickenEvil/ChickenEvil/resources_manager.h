@@ -14,8 +14,9 @@ private:
 	static ResourcesManager* manager;
 	std::unordered_map<std::string, SDL_Surface*> suf_image_pool;
 	std::unordered_map<std::string, Atlas*> suf_atlas_pool;
-	std::unordered_map<std::string, Mix_Music*> audio_pool;
-	TTF_Font* font = nullptr;
+	std::unordered_map<std::string, Mix_Music*> long_audio_pool;
+	std::unordered_map<std::string, Mix_Chunk*> short_audio_pool;
+	std::unordered_map<std::string, TTF_Font*> font_pool;
 
 private:
 	ResourcesManager();
@@ -24,10 +25,12 @@ private:
 public:
 	static ResourcesManager* instance();
 	void load();
-	SDL_Surface* find_image(const std::string& id);
-	Atlas* find_atlas(const std::string& id);
-	Mix_Music* find_audio(const std::string& id);
-	TTF_Font* get_font() const { return font; }
-	//SDL_Texture* find_image_tex(const std::string& id);
-	//SDL_Texture* find_atlas_tex(const std::string& id);
+	SDL_Surface* find_image(const std::string& id) const;
+	Atlas* find_atlas(const std::string& id) const;
+	Mix_Music* find_audio_music(const std::string& id) const;
+	Mix_Chunk* find_audio_chunk(const std::string& id) const;
+	TTF_Font* find_font(const std::string& id) const;
+
+	// TODO功能：批次加载某些资源集合，然后批次释放；或许需要和文件结合；弄一个json之类的资源清单
+	//void free(const std::string& kind, const std::string* id) {}	
 };

@@ -91,7 +91,6 @@ void CollisionManager::on_debug_render(SDL_Renderer* renderer, const Camera& cam
 			(int)collision_box->size.x,
 			(int)collision_box->size.y
 		};
-
 		SDL_RenderDrawRect(renderer, &rect_box);
 	}
 }

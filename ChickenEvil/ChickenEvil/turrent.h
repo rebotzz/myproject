@@ -26,9 +26,6 @@ private:
 	Timer timer_shot;									// 子弹发射器
 	bool is_shotting = false;							// 射击状态中
 	std::vector<std::shared_ptr<Bullet>> bullet_list;	// 子弹列表
-
-	bool shot_done = false;
-
 	Animation* cur_anim = nullptr;
 	Timer timer_shot_down;
 
@@ -51,23 +48,23 @@ public:
 
 		anim_barrel_idle.set_loop(false);
 		anim_barrel_idle.set_interval(0.1f);
-		anim_barrel_idle.add_frame(ResourcesManager::instance()->find_image("barrel_idle"), 1);
+		anim_barrel_idle.add_frame(ResourcesManager::instance()->find_image("barrel_idle"));
 		anim_barrel_idle.set_position(pos_self + Vector2({ 100, 0 }));
 		anim_barrel_idle.set_rotate_center(25, 25);
 
 		anim_bottom.set_loop(false);
 		anim_bottom.set_interval(0.1f);
-		anim_bottom.add_frame(ResourcesManager::instance()->find_image("bottom"), 1);
+		anim_bottom.add_frame(ResourcesManager::instance()->find_image("bottom"));
 		anim_bottom.set_position(pos_self);
 
 		anim_battery.set_loop(false);
 		anim_battery.set_interval(0.1f);
-		anim_battery.add_frame(ResourcesManager::instance()->find_image("battery"), 1);
+		anim_battery.add_frame(ResourcesManager::instance()->find_image("battery"));
 		anim_battery.set_position(pos_self);
 
 		anim_crosshair.set_loop(false);
 		anim_crosshair.set_interval(0.1f);
-		anim_crosshair.add_frame(ResourcesManager::instance()->find_image("crosshair"), 1);
+		anim_crosshair.add_frame(ResourcesManager::instance()->find_image("crosshair"));
 		anim_crosshair.set_position(pos_self);
 
 		timer_shot.set_one_shot(false);
@@ -150,22 +147,18 @@ public:
 		}
 
 		// 炮塔,枪管，瞄准
-		anim_bottom.on_render(renderer, camera);
 		anim_battery.on_render(renderer, camera);
 		cur_anim->on_render(renderer, camera);
 		anim_crosshair.on_render(renderer, camera);
-
-		// 中心点
-		//SDL_Rect rect = { pos_self.x - 4, pos_self.y - 4, 8, 8 };
-		//SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
-		//SDL_RenderFillRect(renderer, &rect);
 	}
 
 	void spawn_bullet()
 	{
 		// 生成子弹	
 		Vector2 pos_barrel_front = pos_self + (pos_target - pos_self).normalize() * 100.0;
-		std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(pos_barrel_front, pos_target - pos_self);
+		Vector2 shot_dir = pos_target - pos_self;
+		Vector2 vertical_offset = Vector2(shot_dir.y, shot_dir.x).normalize() * (rand() % 2 ? 1 : -1) * (rand() % 6);
+		std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(pos_barrel_front + vertical_offset, shot_dir);
 		bullet_list.push_back(bullet);
 
 		switch (rand() % 3 + 1)
@@ -182,5 +175,20 @@ public:
 		}
 	}
 
+	void set_position(const Vector2& target)
+	{
+		pos_self = target;
+
+		anim_barrel_fire.set_position(target);
+		anim_barrel_idle.set_position(target);
+		anim_bottom.set_position(target);
+		anim_battery.set_position(target);
+		anim_crosshair.set_position(target);
+	}
+
+	void render_bottom(SDL_Renderer* renderer, const Camera& camera)
+	{
+		anim_bottom.on_render(renderer, camera);
+	}
 };
 

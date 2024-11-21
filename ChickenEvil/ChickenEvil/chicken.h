@@ -9,7 +9,7 @@
 extern const int WINDOW_W;
 extern const int WINDOW_H;
 
-// 爆炸效果：plan1,动画+标志位；plan2,粒子特效
+// 生化鸡
 class Chicken
 {
 	enum class State
@@ -17,7 +17,6 @@ class Chicken
 		Alive, Exploision, Death
 	};
 protected:
-	int hp = 1;									// hp,目前一击必杀，所以没用到
 	Vector2 position;							// 位置
 	float speed_y = 35.0f;						// 移动速度
 	Animation anim_chicken;						// 动画
@@ -29,8 +28,8 @@ public:
 	Chicken()
 	{
 		// 随机位置刷新
-		position.x = (rand() % (WINDOW_W - 32)) + 32 / 2;
-		position.y = -55;
+		position.x = (float)((rand() % (WINDOW_W - 32)) + 32 / 2);
+		position.y = -55.0f;
 
 		anim_chicken.set_interval(0.3f);
 		anim_chicken.set_loop(true);
@@ -44,11 +43,9 @@ public:
 		hurt_box->set_size({ 30, 40 });
 		hurt_box->set_on_collision([&]()
 			{
-				hp = 0;
 				shooting_death = true;
-				// 爆炸状态只存在一瞬间，用于生成粒子
-				if (hp == 0) state = State::Exploision;
-				if (state == State::Exploision)			
+				state = State::Exploision;
+				if (state == State::Exploision)		// 爆炸状态只存在一瞬间，用于生成粒子
 				{
 					state = State::Death;
 					// 死亡，放烟花(创建粒子特效)
@@ -61,7 +58,6 @@ public:
 	~Chicken()
 	{
 		CollisionManager::instance()->destroy_collision_box(hurt_box);
-		//SDL_Log("Delete Chicken, x: %f, y:%f\n", position.x, position.y);
 	}
 
 	void on_update(float delta)

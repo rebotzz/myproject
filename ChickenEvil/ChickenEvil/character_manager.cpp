@@ -22,8 +22,27 @@ CharacterManager::CharacterManager()
 		{
 			static int counter = 0;
 			static int mod = 3;
-			if (++counter % 150 == 0 && mod <= 5) mod++;
-			else if(++counter % 300 == 0 && mod <= 7) mod++;
+			if (++counter % 150 == 0)
+			{
+				if (mod < 6) mod++;					// 45s后增加刷新速度,直到2倍数
+				else mod += (rand() % 2 ? 2 : -2);	// 超过2倍数后，刷新速度随机波动
+				if (score <= 700)					// 6~10
+				{
+					mod = std::max(6, mod);
+					mod = std::min(10, mod);
+				}
+				else if (score <= 1500)				// 10~14
+				{
+					mod = std::max(10, mod);
+					mod = std::min(14, mod);
+				}
+				else								// 14~16
+				{
+					mod = std::max(14, mod);
+					mod = std::min(16, mod);
+				}
+			}
+
 			int rand_num = rand() % mod;
 			for (int i = 0; i < rand_num; ++i)
 				enemy_list.push_back(spawn_chicken());
@@ -51,6 +70,15 @@ void CharacterManager::on_update(float delta)
 	if (home_hp <= 0)
 	{
 		return;
+	}
+
+	if (score >= 300 && turrent_list.size() < 2)
+	{
+		turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2 + 300, 600 })));
+	}
+	else if (score >= 600 && turrent_list.size() < 3)
+	{
+		turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2 - 300, 600 })));
 	}
 
 	// 敌人刷新
@@ -94,13 +122,19 @@ void CharacterManager::on_render(SDL_Renderer* renderer, const Camera& camera)
 	// 炮塔
 	for (auto& turrent : turrent_list)
 	{
-		turrent->on_render(renderer, camera);
+		turrent->render_bottom(renderer, camera);
 	}
 
 	// 敌人
 	for (auto& enemy : enemy_list)
 	{
 		enemy->on_render(renderer, camera);
+	}
+
+	// 炮塔
+	for (auto& turrent : turrent_list)
+	{
+		turrent->on_render(renderer, camera);
 	}
 
 	// 粒子
@@ -148,15 +182,9 @@ static std::shared_ptr<Chicken> spawn_chicken()
 void CharacterManager::render_status(SDL_Renderer* renderer, const Camera& camera)
 {
 	// 渲染生命值
-	static SDL_Texture* tex_img = nullptr;
+	static SDL_Texture* tex_img = ResourcesManager::instance()->find_image("heart");
 	static SDL_Rect rect_hp = {30, 30, 0, 0};
-	if (nullptr == tex_img)
-	{
-		SDL_Surface* suf_img = ResourcesManager::instance()->find_image("heart");
-		tex_img = SDL_CreateTextureFromSurface(renderer, suf_img);
-		rect_hp.w = suf_img->w;
-		rect_hp.h = suf_img->h;
-	}
+	SDL_QueryTexture(tex_img, nullptr, nullptr, &rect_hp.w, &rect_hp.h);
 
 	for (int i = 0; i < home_hp; ++i)
 	{
@@ -168,7 +196,7 @@ void CharacterManager::render_status(SDL_Renderer* renderer, const Camera& camer
 	static TTF_Font* font = ResourcesManager::instance()->find_font("IPix");
 	static SDL_Rect rect_score = { WINDOW_W * 0.8, 30, 0, 0 };
 	std::string str = "Score: " + std::to_string(score);
-	SDL_Surface* suf_text = TTF_RenderUTF8_Blended(font, str.c_str(), { 255,255,255,255 });
+	SDL_Surface* suf_text = TTF_RenderUTF8_Solid(font, str.c_str(), { 255,255,255,255 });
 	rect_score.w = suf_text->w, rect_score.h = suf_text->h;
 	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
 	SDL_RenderCopy(renderer, tex_text, nullptr, &rect_score);

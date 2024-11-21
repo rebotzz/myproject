@@ -1,6 +1,9 @@
 # myproject
 项目练习代码
 
+## 游戏:生化危鸡
+[项目地址](ChickenEvil)
+
 ## 游戏:哈基米大冒险
 [项目地址](hakimi_adventure)
 

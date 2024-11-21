@@ -35,13 +35,13 @@ static const std::vector<AtlasResInfo> atlas_info_list =
 };
 
 // 音频资源
-// 长音频，只能单个音乐
+// BGM音频(长)，只能播放单个
 static const std::vector<ResInfo> audioL_info_list =
 {
 	{"bgm",			"resources/bgm.mp3"},
 	{"loss",		"resources/loss.mp3"},
 };
-// 短音频，可以播放多个，每个音乐会占用一个通道
+// 特效音频(短)，可以播放多个，每个音乐会占用一个通道
 static const std::vector<ResInfo> audioS_info_list = {
 	{"explosion",	"resources/explosion.wav"},
 	{"fire_1",		"resources/fire_1.wav"},
@@ -62,7 +62,7 @@ ResourcesManager* ResourcesManager::instance()
 	return manager;
 }
 
-SDL_Surface* ResourcesManager::find_image(const std::string& id) const
+SDL_Texture* ResourcesManager::find_image(const std::string& id) const
 {
 	auto iter = suf_image_pool.find(id);
 	if (iter == suf_image_pool.end())
@@ -109,12 +109,12 @@ TTF_Font* ResourcesManager::find_font(const std::string& id) const
 }
 
 
-void ResourcesManager::load()
+void ResourcesManager::load(SDL_Renderer* renderer)
 {
 	// 加载图片
 	for (auto& info : image_info_list)
 	{
-		SDL_Surface* suf_img =  IMG_Load(info.path.c_str());
+		SDL_Texture* suf_img =  IMG_LoadTexture(renderer, info.path.c_str());
 		if (!suf_img)
 			throw info.path;
 
@@ -124,11 +124,11 @@ void ResourcesManager::load()
 	for (auto& info : atlas_info_list)
 	{
 		Atlas* atlas = new Atlas();
-		atlas->load(info.path, info.num_frame);
+		atlas->load(renderer, info.path, info.num_frame);
 
 		for (int i = 0; i < atlas->get_size(); ++i)
 		{
-			if (!atlas->get_image(i))
+			if (!atlas->get_texture(i))
 				throw info.path;
 		}
 

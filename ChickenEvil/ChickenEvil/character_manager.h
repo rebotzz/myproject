@@ -24,5 +24,4 @@ public:
 	void on_render(SDL_Renderer* renderer, const Camera& camera);
 	void render_status(SDL_Renderer* renderer, const Camera& camera);
 	bool is_alive() const { return home_hp > 0; }
-	int get_score() const { return score; }
 };

@@ -4,18 +4,16 @@
 #include <ctime>
 #include <Windows.h>
 
-#undef main
-
 const int WINDOW_W = 1280;
 const int WINDOW_H = 720;
 const int FPS = 60;
 
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
-
 void render_background(const Camera& camera);
 
-int main()
+#undef main
+int main(int argc, char* argv[])
 {
 	// 初始化SDL
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
@@ -25,20 +23,20 @@ int main()
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);	// MIX_DEFAULT_FREQUENCY 44100
 
 	window = SDL_CreateWindow(u8"《生化危鸡》 By Rebotzz", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);	// SDL_RENDERER_SOFTWARE SDL_RENDERER_ACCELERATED
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-	srand(time(nullptr));
+	SDL_ShowCursor(false);		// 隐藏鼠标光标
+	//srand((unsigned int)time(nullptr));
 
 	// 资源加载
 	try
 	{
-		ResourcesManager::instance()->load();
+		ResourcesManager::instance()->load(renderer);
 	}
-	catch (const std::string s)
+	catch (const std::string& s)
 	{
-		//SDL_Log("ResourcesManager error, %s", s.c_str());
-		//system("pause");
+		SDL_Log("ResourcesManager error, %s", s.c_str());
+		system("pause");
 		exit(-1);
 	}
 
@@ -87,12 +85,13 @@ int main()
 		cur_tick = SDL_GetPerformanceCounter();
 		double delta = (cur_tick - last_tick) / (double)freq;
 		last_tick = cur_tick;
-		CharacterManager::instance()->on_update(delta);
+		CharacterManager::instance()->on_update((float)delta);
 		CollisionManager::instance()->process_collide();
-		scene_camera.on_update(delta);
+		scene_camera.on_update((float)delta);
 
 		// 渲染画面
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
 		render_background(scene_camera);
 		CharacterManager::instance()->on_render(renderer, scene_camera);
 		CharacterManager::instance()->render_status(renderer, ui_camera);
@@ -100,11 +99,12 @@ int main()
 		SDL_RenderPresent(renderer);
 
 		// 动态延时
-		double delay = delta + (SDL_GetPerformanceCounter() - last_tick) / (double)freq - 1.0 / (double)FPS;
+		double delay = 1.0 / (double)FPS - (delta + (SDL_GetPerformanceCounter() - last_tick) / (double)freq);
 		if (delay > 0)
-			SDL_Delay(delay);
+		{
+			SDL_Delay((int)(delay * 1000.0));	// debug: 单位转化ms
+		}
 	}
-
 
 	// 关闭SDL
 	SDL_DestroyRenderer(renderer);
@@ -120,52 +120,57 @@ int main()
 
 inline void render_background(const Camera& camera)
 {
-	static SDL_Texture* tex_img_bg = SDL_CreateTextureFromSurface(renderer, ResourcesManager::instance()->find_image("background"));
-	SDL_Rect rect_bg = { -(int)camera.get_position().x, -(int)camera.get_position().y, WINDOW_W, WINDOW_H };
-	SDL_RenderCopy(renderer, tex_img_bg, nullptr, &rect_bg);
+	static SDL_Texture* tex_bg = ResourcesManager::instance()->find_image("background");
+	static SDL_Rect rect_bg = { 0, 0,  WINDOW_W, WINDOW_H };
+	int bg_h = 0, bg_w = 0;
+	SDL_QueryTexture(tex_bg, nullptr, nullptr, &bg_w, &bg_h);
+	rect_bg.x = (bg_w - WINDOW_W) - (int)camera.get_position().x;
+	rect_bg.y = (bg_h - WINDOW_H) - (int)camera.get_position().y;
+
+	SDL_RenderCopy(renderer, tex_bg, &rect_bg, nullptr);
 }
 
-// 废弃
-inline void game_over()
-{
-	// 如果有多个窗口时，似乎事件处理（关闭）没反应
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-
-	Mix_PlayMusic(ResourcesManager::instance()->find_audio_music("loss"), 0);
-	SDL_Window* end_window = nullptr;
-	SDL_Surface* suf_window = nullptr;
-	end_window = SDL_CreateWindow(u8"游戏结束!", SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED, 300, 250, SDL_WINDOW_SHOWN);
-	suf_window = SDL_GetWindowSurface(end_window);
-
-	std::string str = "Score: " + std::to_string(CharacterManager::instance()->get_score());
-	SDL_Surface* suf_text = TTF_RenderUTF8_Blended(ResourcesManager::instance()->find_font("IPix"),
-		str.c_str(), { 255, 255, 255, 255 });
-	SDL_Rect rect_text = { 50, 50, suf_text->w, suf_text->h };
-	SDL_BlitSurface(suf_text, nullptr, suf_window, &rect_text);
-	SDL_UpdateWindowSurface(end_window);
-
-	// 读取消息
-	SDL_Event event;
-	while (true)
-	{
-		while (SDL_PollEvent(&event))
-		{
-			switch (event.type)
-			{
-			case SDL_QUIT:
-
-				SDL_DestroyWindow(end_window);
-				TTF_Quit();
-				IMG_Quit();
-				Mix_Quit();
-				SDL_Quit();
-				exit(0);
-				break;
-			}
-			SDL_Delay(1.0 / (double)FPS);
-		}
-	}
-	exit(0);
-}
+//// 废弃
+//inline void game_over()
+//{
+//	// 如果有多个窗口时，似乎事件处理（关闭）没反应
+//	SDL_DestroyRenderer(renderer);
+//	SDL_DestroyWindow(window);
+//
+//	Mix_PlayMusic(ResourcesManager::instance()->find_audio_music("loss"), 0);
+//	SDL_Window* end_window = nullptr;
+//	SDL_Surface* suf_window = nullptr;
+//	end_window = SDL_CreateWindow(u8"游戏结束!", SDL_WINDOWPOS_CENTERED,
+//		SDL_WINDOWPOS_CENTERED, 300, 250, SDL_WINDOW_SHOWN);
+//	suf_window = SDL_GetWindowSurface(end_window);
+//
+//	std::string str = "Score: " + std::to_string(CharacterManager::instance()->get_score());
+//	SDL_Surface* suf_text = TTF_RenderUTF8_Blended(ResourcesManager::instance()->find_font("IPix"),
+//		str.c_str(), { 255, 255, 255, 255 });
+//	SDL_Rect rect_text = { 50, 50, suf_text->w, suf_text->h };
+//	SDL_BlitSurface(suf_text, nullptr, suf_window, &rect_text);
+//	SDL_UpdateWindowSurface(end_window);
+//
+//	// 读取消息
+//	SDL_Event event;
+//	while (true)
+//	{
+//		while (SDL_PollEvent(&event))
+//		{
+//			switch (event.type)
+//			{
+//			case SDL_QUIT:
+//
+//				SDL_DestroyWindow(end_window);
+//				TTF_Quit();
+//				IMG_Quit();
+//				Mix_Quit();
+//				SDL_Quit();
+//				exit(0);
+//				break;
+//			}
+//			SDL_Delay(1.0 / (double)FPS);
+//		}
+//	}
+//	exit(0);
+//}

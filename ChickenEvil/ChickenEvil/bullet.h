@@ -25,7 +25,7 @@ public:
 		pos = pos_src;
 		velocity = direction.normalize() * SPEED;
 
-		anim.add_frame(ResourcesManager::instance()->find_image("bullet"), 1);
+		anim.add_frame(ResourcesManager::instance()->find_image("bullet"));
 		anim.set_loop(false);
 		anim.set_interval(0.1f);
 		anim.set_position(pos);
@@ -54,8 +54,8 @@ public:
 		hit_box->set_position(pos);
 
 		// 如果超过屏幕边界
-		if (pos.x < -30.0f || pos.x > WINDOW_W + 30.0f
-			|| pos.y < -30.0f || pos.y > WINDOW_H + 30.0f)
+		if (pos.x < -5.0f || pos.x > WINDOW_W + 5.0f
+			|| pos.y < -5.0f || pos.y > WINDOW_H + 5.0f)
 		{
 			valid = false;
 		}

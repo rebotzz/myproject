@@ -5,17 +5,19 @@
 #include <vector>
 #include <string>
 
-// 图集类
+// v0.2	SDL_Surface改为SDL_Texture
+
+// 图集类	
 class Atlas
 {
 private:
-	std::vector<SDL_Surface*> image_list;
+	std::vector<SDL_Texture*> image_list;
 
 public:
 	Atlas() = default;
 	~Atlas() = default;
 
-	void load(const std::string& path_image, int num)
+	void load(SDL_Renderer* renderer, const std::string& path_template, int num)
 	{
 		// 加载动画帧图片
 		image_list.clear();
@@ -23,8 +25,8 @@ public:
 
 		char buffer[512] = { 0 };
 		for (int i = 0; i < num; ++i) {
-			sprintf_s(buffer, path_image.c_str(), i + 1);
-			image_list[i] = IMG_Load(buffer);
+			sprintf_s(buffer, path_template.c_str(), i + 1);
+			image_list[i] = IMG_LoadTexture(renderer, buffer);		// IMG_Load改为IMG_LoadTexture
 		}
 	}
 
@@ -38,7 +40,7 @@ public:
 		return (int)image_list.size();
 	}
 
-	SDL_Surface* get_image(int idx)
+	SDL_Texture* get_texture(int idx)
 	{
 		if (idx < 0 || idx >= image_list.size())
 			return nullptr;
@@ -46,9 +48,9 @@ public:
 		return image_list[idx];
 	}
 
-	void add_image(SDL_Surface *img)
+	void add_texture(SDL_Texture *tex)
 	{
-		image_list.push_back(img);
+		image_list.push_back(tex);
 	}
 
 };

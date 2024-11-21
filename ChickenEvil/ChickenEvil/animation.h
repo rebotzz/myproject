@@ -4,11 +4,12 @@
 #include "timer.h"
 #include "camera.h"
 
-// 图片表示用SDL_Surface还是SDL_Texture
-// SDL_Surface：包含图片信息，可以修改底层像素，从硬盘读取后的直接格式，但是渲染时需要转SDL_Texture
-// SDL_Texture: 不包含图片信息，初始化需要渲染器(资源管理就与renderer关联了)，可直接渲染
-// 目前采用SDL_Surface,每次渲染时多了创建/销毁SDL_Texture工作
+// 用SDL_Surface还是SDL_Texture
+//
 // v0.1:动画首次渲染时SDL_Surface转SDL_Texture, 之后照常，动画析构时释放SDL_Texture
+// v0.2:改用SDL_Texture，频繁创建/销毁太耗性能,通过SDL_QueryTexture查看纹理信息
+
+// 动画类
 class Animation
 {
 private:
@@ -16,12 +17,11 @@ private:
 	struct Frame
 	{
 		SDL_Rect rect_src;
-		SDL_Surface* suf_img = nullptr;
 		SDL_Texture* tex_img = nullptr;
 
 		Frame() = default;
-		Frame(SDL_Surface* img, SDL_Rect rect)
-			:suf_img(img), rect_src(rect) {}
+		Frame(SDL_Texture* img, SDL_Rect rect)
+			:tex_img(img), rect_src(rect) {}
 		~Frame() = default;
 	};
 
@@ -34,7 +34,6 @@ private:
 	std::function<void()> on_finished;					// 动画结束处理	
 	double angle = 0.0;									// 动画旋转角度
 	SDL_Point *rotate_point = nullptr;					// 旋转中心
-	bool init = false;									// 初始化
 
 public:
 	Animation()
@@ -56,11 +55,6 @@ public:
 	~Animation()
 	{
 		if (rotate_point) delete rotate_point;
-		for (auto& frame : frame_list)
-		{
-			if (frame.tex_img)
-				SDL_DestroyTexture(frame.tex_img);
-		}
 	}
 
 	void reset()
@@ -111,15 +105,6 @@ public:
 
 	void on_render(SDL_Renderer* renderer , const Camera& camera) 
 	{
-		if (!init)
-		{
-			init = true;
-			for (auto& frame : frame_list)
-			{
-				frame.tex_img = SDL_CreateTextureFromSurface(renderer, frame.suf_img);
-			}
-		}
-
 		const Frame& frame = frame_list[idx_frame];
 
 		SDL_Rect rect_dst;
@@ -130,10 +115,10 @@ public:
 		SDL_RenderCopyEx(renderer, frame.tex_img, &frame.rect_src, &rect_dst, angle, rotate_point, SDL_FLIP_NONE);
 	}
 
-	void add_frame(SDL_Surface* suf_img, int num_w)
+	void add_frame(SDL_Texture* tex_img, int num_w = 1)
 	{
-		int height = suf_img->h;
-		int width = suf_img->w;
+		int height = 0, width = 0;
+		SDL_QueryTexture(tex_img, nullptr, nullptr, &width, &height);
 		int width_frame = width / num_w;
 
 		for (int i = 0; i < num_w; ++i)
@@ -142,7 +127,7 @@ public:
 			rect_src.x = width_frame * i, rect_src.y = 0;
 			rect_src.w = width_frame, rect_src.h = height;
 
-			frame_list.emplace_back(suf_img, rect_src);
+			frame_list.emplace_back(tex_img, rect_src);
 		}
 	}
 
@@ -150,17 +135,12 @@ public:
 	{
 		for (int i = 0; i < atlas->get_size(); ++i)
 		{
-			SDL_Surface* suf_img = atlas->get_image(i);
+			SDL_Texture* tex_img = atlas->get_texture(i);
 			SDL_Rect rect_src;
 			rect_src.x = 0, rect_src.y = 0;
-			rect_src.w = suf_img->w, rect_src.h = suf_img->h;
+			SDL_QueryTexture(tex_img, nullptr, nullptr, &rect_src.w, &rect_src.h);
 
-			frame_list.emplace_back(suf_img, rect_src);
+			frame_list.emplace_back(tex_img, rect_src);
 		}
-	}
-
-	void add_frame(SDL_Surface* suf_img, const SDL_Rect& rect_src)
-	{
-		frame_list.push_back({ suf_img, rect_src });
 	}
 };

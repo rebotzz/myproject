@@ -1,8 +1,8 @@
 #pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
+#define SDL_MAIN_HANDLED
 #include "resources_manager.h"
 #include "character_manager.h"
-#include <ctime>
-#include <Windows.h>
+#include <SDL_main.h>
 
 const int WINDOW_W = 1280;
 const int WINDOW_H = 720;
@@ -12,7 +12,7 @@ SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
 void render_background(const Camera& camera);
 
-#undef main
+//#undef main
 int main(int argc, char* argv[])
 {
 	// 初始化SDL

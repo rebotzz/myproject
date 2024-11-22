@@ -17,15 +17,21 @@ static std::shared_ptr<Chicken> spawn_chicken();
 CharacterManager::CharacterManager()
 {
 	timer_spawn_enemy.set_one_shot(false);
-	timer_spawn_enemy.set_wait_time(0.3f);
+	timer_spawn_enemy.set_wait_time(0.25f);
 	timer_spawn_enemy.set_on_timeout([&]()
 		{
 			static int counter = 0;
 			static int mod = 3;
 			if (++counter % 150 == 0)
 			{
-				if (mod < 6) mod++;					// 45s后增加刷新速度,直到2倍数
-				else mod += (rand() % 2 ? 2 : -2);	// 超过2倍数后，刷新速度随机波动
+				if (mod < 6) mod++;					// 0.25*150 s后增加刷新速度,直到2倍数
+				else
+				{
+					// 超过2倍数后，刷新速度随机波动
+					if (score <= 800) mod += (rand() % 2 ? 3 : -3);
+					else if (score <= 1500) mod += (rand() % 2 ? 4 : -4);
+					else mod += (rand() % 2 ? 5 : -5);
+				}
 				if (score <= 700)					// 6~10
 				{
 					mod = std::max(6, mod);
@@ -36,10 +42,15 @@ CharacterManager::CharacterManager()
 					mod = std::max(10, mod);
 					mod = std::min(14, mod);
 				}
-				else								// 14~16
+				else if(score <= 2500)				// 14~18
 				{
 					mod = std::max(14, mod);
-					mod = std::min(16, mod);
+					mod = std::min(18, mod);
+				}
+				else
+				{
+					mod = std::max(18, mod);
+					mod = std::min(22, mod);
 				}
 			}
 
@@ -49,8 +60,10 @@ CharacterManager::CharacterManager()
 		});
 
 	turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2, 600 })));
-	//turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2 - 300, 600 })));
+	//turrent_list.push_back(std::shared_ptr<Turrent>(new TurrentAuto({ WINDOW_W / 2 - 550, 600 }, -45.0, 30.0, true)));
+	//turrent_list.push_back(std::shared_ptr<Turrent>(new TurrentAuto({ WINDOW_W / 2 + 550, 600 }, -135.0, 30.0, false)));
 	//turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2 + 300, 600 })));
+	//turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2 - 300, 600 })));
 }
 
 void CharacterManager::on_input(SDL_Event* event)
@@ -72,13 +85,21 @@ void CharacterManager::on_update(float delta)
 		return;
 	}
 
-	if (score >= 300 && turrent_list.size() < 2)
+	if (score >= 200 && turrent_list.size() < 2)
 	{
 		turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2 + 300, 600 })));
 	}
 	else if (score >= 600 && turrent_list.size() < 3)
 	{
 		turrent_list.push_back(std::shared_ptr<Turrent>(new Turrent({ WINDOW_W / 2 - 300, 600 })));
+	}
+	else if (score >= 1500 && turrent_list.size() < 4)
+	{
+		turrent_list.push_back(std::shared_ptr<Turrent>(new TurrentAuto({ WINDOW_W / 2 - 550, 600 }, -45.0, 30.0, true)));
+	}
+	else if (score >= 3000 && turrent_list.size() < 5)
+	{
+		turrent_list.push_back(std::shared_ptr<Turrent>(new TurrentAuto({ WINDOW_W / 2 + 550, 600 }, -135.0, 30.0, false)));
 	}
 
 	// 敌人刷新

@@ -34,6 +34,7 @@ private:
 	std::function<void()> on_finished;					// 动画结束处理	
 	double angle = 0.0;									// 动画旋转角度
 	SDL_Point *rotate_point = nullptr;					// 旋转中心
+	double scale = 1.0;									// 缩放比例
 
 public:
 	Animation()
@@ -98,6 +99,11 @@ public:
 		rotate_point->y = y;
 	}
 
+	void set_scale(double val)
+	{
+		scale = val;
+	}
+
 	void on_update(float delta)
 	{
 		timer.on_update(delta);
@@ -108,7 +114,7 @@ public:
 		const Frame& frame = frame_list[idx_frame];
 
 		SDL_Rect rect_dst;
-		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
+		rect_dst.w = static_cast<int>(frame.rect_src.w * scale), rect_dst.h = static_cast<int>(frame.rect_src.h * scale);
 		rect_dst.x = (int)position.x - frame.rect_src.w / 2 - (int)camera.get_position().x;		// 中心锚点模式
 		rect_dst.y = (int)position.y - frame.rect_src.h / 2 - (int)camera.get_position().x;
 

@@ -12,10 +12,10 @@
 // 炮塔
 class Turrent
 {
-private:
+protected:
 	const float SHOT_CD = 0.15f;
 
-private:
+protected:
 	Vector2 pos_self;									// 炮塔位置
 	Vector2 pos_target;									// 射击位置
 	Animation anim_barrel_fire;							// 枪管射击动画
@@ -84,7 +84,7 @@ public:
 		cur_anim = &anim_barrel_idle;
 	}
 
-	void on_input(SDL_Event* event)
+	virtual void on_input(SDL_Event* event)
 	{
 		switch (event->type)
 		{
@@ -105,7 +105,7 @@ public:
 		}
 	}
 
-	void on_update(float delta)
+	virtual void on_update(float delta)
 	{
 		// 发射子弹,切换/更新动画
 		if (is_shotting)
@@ -138,7 +138,7 @@ public:
 			}), bullet_list.end());
 	}
 
-	void on_render(SDL_Renderer* renderer, const Camera& camera)
+	virtual void on_render(SDL_Renderer* renderer, const Camera& camera)
 	{
 		// 子弹
 		for (auto& bullet : bullet_list)
@@ -192,3 +192,95 @@ public:
 	}
 };
 
+// 自动炮塔
+class TurrentAuto : public Turrent
+{
+private:
+	enum class Mode
+	{
+		Strafing,	// 来回扫射
+		AutoAim		// 自动瞄准 todo
+	};
+
+private:
+	double angle = 0.0;				// 当前角度
+	double center_angle = 0.0;		// 扫射中心角度
+	double delta_angle = 45.0;		// 扫射摆动角度+/-
+	Timer timer_strafe;				// 摆动角度定时器
+	double speed_angle = 15.0;		// 摆动角速度
+	bool dir_clockwise = true;		// 摆动方向
+
+private:
+	const double SCALE = 0.5;		// 动画缩放比例(废弃)
+
+public:
+	TurrentAuto(const Vector2& positon, double center_angle_ = -90.0, 
+		double delta_angle_ = 45.0, bool dir_clockwise_ = true)
+		:Turrent(positon)
+	{
+		angle = center_angle = center_angle_;
+		delta_angle = delta_angle_;
+		dir_clockwise = dir_clockwise_;
+		cur_anim = &anim_barrel_fire;
+
+		timer_strafe.set_one_shot(false);
+		timer_strafe.set_wait_time(0.01);
+		timer_strafe.set_on_timeout([&]()
+			{
+				if (abs(angle - center_angle) >= delta_angle)
+				{
+					dir_clockwise = !dir_clockwise;
+				}
+
+				angle += dir_clockwise ? 0.01 * speed_angle : -0.01 * speed_angle;
+
+				double radian = angle * 3.1415926 / 180.0;
+				pos_target.x = pos_self.x + 50 * cos(radian);
+				pos_target.y = pos_self.y + 50 * sin(radian);
+			});
+	}
+
+	virtual void on_input(SDL_Event* event) override
+	{
+		// 暂时什么也不做，将来预留设置射击角度 | 切换模式
+	}
+
+	virtual void on_update(float delta) override
+	{
+		timer_shot.on_update(delta);
+		timer_strafe.on_update(delta);
+
+		anim_barrel_fire.set_angle(angle);
+		anim_battery.set_angle(angle);
+		cur_anim->on_update(delta);
+
+		// 更新子弹
+		for (auto& bullet : bullet_list)
+		{
+			bullet->on_update(delta);
+		}
+
+		bullet_list.erase(std::remove_if(bullet_list.begin(), bullet_list.end(), [](std::shared_ptr<Bullet> bullet)
+			{
+				return !bullet->is_valid();
+			}), bullet_list.end());
+	}
+
+	virtual void on_render(SDL_Renderer* renderer, const Camera& camera)
+	{
+		// 子弹
+		for (auto& bullet : bullet_list)
+		{
+			bullet->on_render(renderer, camera);
+		}
+
+		// 炮塔,枪管，瞄准
+		anim_battery.on_render(renderer, camera);
+		cur_anim->on_render(renderer, camera);
+	}
+
+	void set_center_angle(double val)
+	{
+		angle = center_angle = val;
+	}
+};

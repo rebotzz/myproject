@@ -1,5 +1,8 @@
 # 我的忽略
 
+# 扫雷图形版
+mine_sweeper/mine_sweeper/res
+
 # 生化危鸡
 ChickenEvil/ChickenEvil/resources
 ChickenEvil/Demo
@@ -14,6 +17,8 @@ hollow_katana/hollow_katana/resources
 
 # 植物明星大乱斗
 plant_star_battle/plant_star_battle/resources
+# 临时忽略
+plant_star_battle/plant_star_battle_online
 
 # 提瓦特幸存者
 Tivat_Survivor_Game/Tivat_Survivor_Game/resource

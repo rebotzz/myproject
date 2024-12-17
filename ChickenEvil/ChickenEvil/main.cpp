@@ -22,11 +22,11 @@ int main(int argc, char* argv[])
 	Mix_Init(MIX_INIT_MP3);	// sdl核心库有.wav
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);	// MIX_DEFAULT_FREQUENCY 44100
 
-	window = SDL_CreateWindow(u8"《生化危鸡》 By Rebotzz", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow(u8"《生化危鸡》 By rebotzz", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);	// SDL_RENDERER_SOFTWARE SDL_RENDERER_ACCELERATED
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_ShowCursor(false);		// 隐藏鼠标光标
-	//srand((unsigned int)time(nullptr));
+	srand((unsigned int)time(nullptr));
 
 	// 资源加载
 	try

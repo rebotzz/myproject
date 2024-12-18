@@ -1,4 +1,5 @@
 #pragma once
+#include "util.h"
 #include <vector>
 #include <string>
 #include <ctime>
@@ -8,7 +9,6 @@
 extern const int grid_size;
 extern const int status_h;
 extern TTF_Font* font;
-
 
 class MineBoard
 {
@@ -23,21 +23,31 @@ private:
 private:
 	std::vector<std::vector<int>> show_board;	// 展示棋盘
 	std::vector<std::vector<bool>> mine_board;	// 地雷棋盘
-	int grid_x;									// 棋盘大小
-	int grid_y;
+	int grid_x, grid_y;							// 棋盘大小
 	int mine_count;								// 地雷个数
 	int flag_count;								// 标记个数
+	int remain_grid;							// 未探测网格个数
 	bool alive = true;							// 是否存活
 
 public:
 	MineBoard(int _grid_x, int _grid_y, int _mine_count)
-		:grid_x(_grid_x), grid_y(_grid_y), mine_count(_mine_count), flag_count(0)
+		:grid_x(_grid_x), grid_y(_grid_y), mine_count(_mine_count), flag_count(0), remain_grid(_grid_x * _grid_y)
 	{
 		show_board.resize(grid_x, std::vector<int>(grid_y, NONE));
 		mine_board.resize(grid_x, std::vector<bool>(grid_y, false));
 		srand((unsigned int)time(nullptr));
 
-		if (mine_count > grid_x * grid_y) return;
+		if (mine_count >= grid_x * grid_y)
+		{
+			for (int i = 0; i < grid_x; ++i)
+			{
+				for (int j = 0; j < grid_y; ++j)
+				{
+					mine_board[i][j] = true;
+				}
+			}
+			return;
+		}
 		for (int i = 0; i < mine_count; ++i)
 		{
 			bool valid = false;
@@ -59,7 +69,6 @@ public:
 		if (x < 0 || x >= grid_x || y < 0 || y >= grid_y)
 			return;
 
-
 		// dfs
 		if (mine_board[x][y])
 		{
@@ -68,7 +77,6 @@ public:
 		}
 		else
 		{
-			SDL_Log("sweep_point, dfs\n");
 			dfs(x, y);
 		}
 	}
@@ -80,10 +88,12 @@ public:
 
 		if (NONE == show_board[x][y])
 		{
+			++flag_count;
 			show_board[x][y] = FLAG;
 		}
 		else if (FLAG == show_board[x][y])
 		{
+			--flag_count;
 			show_board[x][y] = NONE;
 		}
 	}
@@ -98,12 +108,18 @@ public:
 		return alive;
 	}
 
+	bool is_seccess() const
+	{
+		return mine_count == remain_grid;
+	}
+
 	void on_render(SDL_Renderer* renderer)
 	{
 		// 方块
 		static SDL_Rect rect_grid = { 0, 0, grid_size, grid_size };
 		static SDL_Rect rect_flag = { 0, 0, grid_size * 0.5, grid_size * 0.5 };
 		static SDL_Rect rect_text = { 0, 0, grid_size, grid_size };
+
 		for (int i = 0; i < grid_x; ++i)
 		{
 			for (int j = 0; j < grid_y; ++j)
@@ -130,10 +146,7 @@ public:
 				switch (show_board[i][j])
 				{
 				case FLAG:
-					SDL_SetRenderDrawColor(renderer, 255, 106, 106, 255);
-					rect_flag.x = i * grid_size + (rect_grid.w - rect_flag.w) / 2;
-					rect_flag.y = j * grid_size + status_h + (rect_grid.h - rect_flag.h) / 2;
-					SDL_RenderFillRect(renderer, &rect_flag);
+					draw_flag(renderer, i * grid_size, j * grid_size + status_h, grid_size);
 					break;
 				case MINE:
 					SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
@@ -164,8 +177,6 @@ public:
 							break;
 						}
 
-						//SDL_Log("text: %s\n", std::to_string(show_board[i][j]).c_str());
-						//SDL_Log("font: %p\n", font);
 						SDL_Surface* suf_text = TTF_RenderText_Blended(font, std::to_string(show_board[i][j]).c_str(), color);
 						SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
 						rect_text.x = i * grid_size + (grid_size - suf_text->w) / 2;
@@ -235,11 +246,9 @@ private:
 		if (show_board[x][y] != NONE)
 			return;
 
+		--remain_grid;
 		int side_mine = get_side_mine(x, y);
 		show_board[x][y] = side_mine;
-
-		if (side_mine > 0)
-			SDL_Log("show_board[%d][%d]: %d\n", x, y, side_mine);
 		if (side_mine == 0)
 		{
 			for (int i = -1; i <= 1; ++i)

@@ -1,19 +1,20 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include <memory>
 #include "scene.h"
 
 
-// 仅单线程单例
+// 单例
 class SceneManager
 {
 private:
 	static SceneManager* manager;
-	Scene* current_scene = nullptr;
-	std::unordered_map<std::string, Scene*> scene_pool;
+	std::shared_ptr<Scene> current_scene = nullptr;
+	std::unordered_map<std::string, std::shared_ptr<Scene>> scene_pool;
 
 private:
-	SceneManager();
+	SceneManager() {};
 	SceneManager(const SceneManager&) = delete;
 
 public:
@@ -46,7 +47,7 @@ public:
 	}
 
 
-	bool register_scene(const std::string& id, Scene* scene)
+	bool register_scene(const std::string& id, const std::shared_ptr<Scene>& scene)
 	{
 		if (scene_pool.count(id) == 0 && nullptr != scene)
 		{

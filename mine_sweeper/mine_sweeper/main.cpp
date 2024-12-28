@@ -50,7 +50,7 @@ int main()
 			SceneManager::instance()->on_input(event);
 		}
 		// 更新数据
-		SceneManager::instance()->on_update(frame_delta);	// 粗略用预计帧间隔替代
+		SceneManager::instance()->on_update(frame_delta);	// 这里没用时间，粗略用预计帧间隔替代
 		// 渲染画面
 		SDL_RenderClear(renderer);
 		SceneManager::instance()->on_render(renderer);

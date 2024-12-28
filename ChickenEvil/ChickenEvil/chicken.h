@@ -22,7 +22,6 @@ protected:
 	Animation anim_chicken;						// 动画
 	CollisionBox* hurt_box = nullptr;			// 受击碰撞箱
 	State state = State::Alive;					// 状态
-	bool shooting_death = false;				// 判定死法，用于加分
 
 public:
 	Chicken()
@@ -43,7 +42,6 @@ public:
 		hurt_box->set_size({ 30, 40 });
 		hurt_box->set_on_collision([&]()
 			{
-				shooting_death = true;
 				state = State::Exploision;
 				if (state == State::Exploision)		// 爆炸状态只存在一瞬间，用于生成粒子
 				{
@@ -71,12 +69,12 @@ public:
 		anim_chicken.on_update(delta);
 	}
 
-	void on_render(SDL_Renderer* renderer, const Camera& camera)
+	void on_render(const Camera& camera) const
 	{
 		if (!is_alive())
 			return;
 
-		anim_chicken.on_render(renderer, camera);
+		anim_chicken.on_render(camera);
 	}
 
 	bool is_alive() const
@@ -84,21 +82,10 @@ public:
 		return state == State::Alive;
 	}
 
-	void dead()
-	{
-		state = State::Death;
-	}
-
 	const Vector2& get_position() const
 	{
 		return position;
 	}
-
-	bool is_shooting_death() const
-	{
-		return shooting_death;
-	}
-
 };
 
 
@@ -109,7 +96,7 @@ public:
 		:Chicken()
 	{
 		anim_chicken.add_frame(ResourcesManager::instance()->find_atlas("chicken_fast"));
-		speed_y *= 1.2f;
+		speed_y *= 1.5f;
 	}
 };
 
@@ -130,7 +117,7 @@ public:
 		:Chicken()
 	{
 		anim_chicken.add_frame(ResourcesManager::instance()->find_atlas("chicken_slow"));
-		speed_y *= 0.7f;
+		speed_y *= 0.6f;
 	}
 };
 

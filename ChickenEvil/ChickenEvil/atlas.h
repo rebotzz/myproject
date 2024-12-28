@@ -15,7 +15,11 @@ private:
 
 public:
 	Atlas() = default;
-	~Atlas() = default;
+	~Atlas()
+	{
+		for (auto& tex : image_list)
+			SDL_DestroyTexture(tex);
+	}
 
 	void load(SDL_Renderer* renderer, const std::string& path_template, int num)
 	{

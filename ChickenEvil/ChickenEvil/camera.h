@@ -1,28 +1,36 @@
 #pragma once
+#include "SDL.h"
 #include "vector2.h"
 #include "timer.h"
+
+// v0.1:摄像机仅有定位功能
+// v0.2:摄像机同时作为绘图的发出者和绘制结果，便于游戏画面缩放，镜面投影
 
 class Camera
 {
 private:
-	Vector2 pos_cur;				// 当前摄像机位置
-	Vector2 pos_base;				// 基准摄像机位置
-	Vector2 size;					// 窗口大小
-	bool shake = false;				// 是否抖动
-	int shake_strength = 0;			// 抖动强度
-	Timer timer_shake;				// 抖动计时器
+	Vector2 pos_cur;					// 当前摄像机位置
+	Vector2 pos_base;					// 基准摄像机位置
+	Vector2 size;						// 窗口大小???
+	volatile bool is_shake = false;		// 是否抖动
+	int shake_strength = 0;				// 抖动强度
+	Timer timer_shake;					// 抖动计时器
+	SDL_Renderer* renderer = nullptr;	// 渲染器
 
 public:
-	Camera()
+	Camera(SDL_Renderer* renderer_)
+		:renderer(renderer_)
 	{
-		timer_shake.set_one_shot(false);
-		timer_shake.set_wait_time(0.05f);
+		timer_shake.set_one_shot(true);
 		timer_shake.set_on_timeout([&]()
 			{
-				pos_cur.x = pos_base.x + (rand() % 2 ? 1 : -1) * (rand() % shake_strength);
-				pos_cur.y = pos_base.y + (rand() % 2 ? 1 : -1) * (rand() % shake_strength);
+				is_shake = false;
+				pos_cur = pos_base;
+
+				SDL_Log("timer_shake over!!!!!!!!!!!!.\n");
 			});
 	}
+	Camera() = default;
 	~Camera() = default;
 
 	void set_size(const Vector2& val)
@@ -51,17 +59,47 @@ public:
 		pos_cur = target - size / 2.0f;
 	}
 
-	void set_shake(bool enable = false, int strenth = 5)
+	void shake(float strenth, float duration)
 	{
-		shake = enable;
+		is_shake = true;
 		shake_strength = strenth;
-		if (!enable) pos_cur = pos_base;
+
+		timer_shake.set_wait_time(duration);
+		timer_shake.restart();
+
+		SDL_Log("camera shake start---------- duration: [%f].\n", duration);
 	}
 
 	void on_update(float delta)
 	{
-		if (shake)
+		if (is_shake)
+		{
 			timer_shake.on_update(delta);
+			pos_cur.x = (-50 + rand() % 100) / 50.0f * shake_strength + pos_base.x;
+			pos_cur.y = (-50 + rand() % 100) / 50.0f * shake_strength + pos_base.y;
+		}
+
+		//SDL_Log("camera shake: [%d], delta: %f\n", is_shake, delta);
+		SDL_Log("camera pass time: [%f]\n", timer_shake.get_pass_time());
 	}
 
+	void render_texture(SDL_Texture* texture, const SDL_Rect* rect_src, const SDL_FRect* rect_dst,
+		float angle, const SDL_FPoint* center) const
+	{
+		SDL_FRect rect_dst_win = *rect_dst;
+		rect_dst_win.x -= pos_cur.x;
+		rect_dst_win.y -= pos_cur.y;
+
+		SDL_RenderCopyExF(renderer, texture, rect_src, &rect_dst_win, angle, center, SDL_FLIP_NONE);
+	}
+
+	SDL_Renderer* get_renderer() const
+	{
+		return renderer;
+	}
+
+	void set_renderer(SDL_Renderer* renderer_)
+	{
+		renderer = renderer_;
+	}
 };

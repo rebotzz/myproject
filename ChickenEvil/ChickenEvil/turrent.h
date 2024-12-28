@@ -9,12 +9,11 @@
 #include <memory>
 #include <vector>
 
+extern Camera scene_camera;
+
 // 炮塔
 class Turrent
 {
-protected:
-	const float SHOT_CD = 0.15f;
-
 protected:
 	Vector2 pos_self;									// 炮塔位置
 	Vector2 pos_target;									// 射击位置
@@ -23,27 +22,22 @@ protected:
 	Animation anim_bottom;								// 炮塔底部石头动画（图片）
 	Animation anim_battery;								// 炮塔底部电池动画（图片）
 	Animation anim_crosshair;							// 瞄准十字动画（图片）
-	Timer timer_shot;									// 子弹发射器
-	bool is_shotting = false;							// 射击状态中
+	bool is_fire_keydown = false;						// 射击按键状态
+	bool is_cool_down = true;							// 机枪是否冷却
 	std::vector<std::shared_ptr<Bullet>> bullet_list;	// 子弹列表
-	Animation* cur_anim = nullptr;
-	Timer timer_shot_down;
 
 public:
 	Turrent(const Vector2& positon)
 		:pos_self(positon)
 	{
-		anim_barrel_fire.set_loop(true);
-		anim_barrel_fire.set_interval(0.05f);
+		anim_barrel_fire.set_loop(false);
+		anim_barrel_fire.set_interval(0.04f);
 		anim_barrel_fire.add_frame(ResourcesManager::instance()->find_atlas("barrel_fire"));
 		anim_barrel_fire.set_position(pos_self + Vector2({100, 0}));
 		anim_barrel_fire.set_rotate_center(25, 25);
 		anim_barrel_fire.set_on_finished([&]()
 			{
-				if (!is_shotting)
-				{
-					timer_shot_down.restart();
-				}
+				is_cool_down = true;
 			});
 
 		anim_barrel_idle.set_loop(false);
@@ -61,27 +55,12 @@ public:
 		anim_battery.set_interval(0.1f);
 		anim_battery.add_frame(ResourcesManager::instance()->find_image("battery"));
 		anim_battery.set_position(pos_self);
+		anim_battery.set_rotate_center(62.5, 62.5);
 
 		anim_crosshair.set_loop(false);
 		anim_crosshair.set_interval(0.1f);
 		anim_crosshair.add_frame(ResourcesManager::instance()->find_image("crosshair"));
 		anim_crosshair.set_position(pos_self);
-
-		timer_shot.set_one_shot(false);
-		timer_shot.set_wait_time(SHOT_CD);
-		timer_shot.set_on_timeout([&]()
-			{
-				spawn_bullet();
-			});
-
-		timer_shot_down.set_one_shot(true);
-		timer_shot_down.set_wait_time(0.04f);
-		timer_shot_down.set_on_timeout([&]
-			{
-				cur_anim = &anim_barrel_idle;
-			});
-
-		cur_anim = &anim_barrel_idle;
 	}
 
 	virtual void on_input(SDL_Event* event)
@@ -93,14 +72,10 @@ public:
 			pos_target.y = (float)event->button.y;
 			break;
 		case SDL_MOUSEBUTTONDOWN:								
-			is_shotting = true;
-			spawn_bullet();				// 单独按一次也会生成子弹.
-			anim_barrel_fire.reset();
-			cur_anim = &anim_barrel_fire;
+			is_fire_keydown = true;
 			break;
 		case SDL_MOUSEBUTTONUP:
-			is_shotting = false;
-			timer_shot.restart();
+			is_fire_keydown = false;
 			break;
 		}
 	}
@@ -108,17 +83,23 @@ public:
 	virtual void on_update(float delta)
 	{
 		// 发射子弹,切换/更新动画
-		if (is_shotting)
+		if (is_fire_keydown && is_cool_down)
 		{
-			timer_shot.on_update(delta);
-			anim_barrel_fire.set_loop(true);
+			anim_barrel_fire.reset();
+			is_cool_down = false;
+			spawn_bullet();
 		}
-		else
+
+		if (!is_cool_down)
 		{
-			anim_barrel_fire.set_loop(false);
-			timer_shot_down.on_update(delta);
+			anim_barrel_fire.on_update(delta);
+			//scene_camera.shake(3.0f, 0.3f);
+
+			//SDL_Log("not cool down... [%d]\n", is_cool_down);
 		}
-		cur_anim->on_update(delta);
+		//scene_camera.on_update(delta);
+
+
 
 		double shot_angle = (pos_target - pos_self).angle();
 		anim_barrel_fire.set_angle(shot_angle);
@@ -138,18 +119,25 @@ public:
 			}), bullet_list.end());
 	}
 
-	virtual void on_render(SDL_Renderer* renderer, const Camera& camera)
+	virtual void on_render(const Camera& camera) const
 	{
 		// 子弹
 		for (auto& bullet : bullet_list)
 		{
-			bullet->on_render(renderer, camera);
+			bullet->on_render(camera);
 		}
 
 		// 炮塔,枪管，瞄准
-		anim_battery.on_render(renderer, camera);
-		cur_anim->on_render(renderer, camera);
-		anim_crosshair.on_render(renderer, camera);
+		anim_battery.on_render(camera);
+		if (is_cool_down)
+		{
+			anim_barrel_idle.on_render(camera);
+		}
+		else
+		{
+			anim_barrel_fire.on_render(camera);
+		}
+		anim_crosshair.on_render(camera);
 	}
 
 	void spawn_bullet()
@@ -186,9 +174,9 @@ public:
 		anim_crosshair.set_position(target);
 	}
 
-	void render_bottom(SDL_Renderer* renderer, const Camera& camera)
+	void render_bottom(const Camera& camera) const
 	{
-		anim_bottom.on_render(renderer, camera);
+		anim_bottom.on_render(camera);
 	}
 };
 
@@ -221,7 +209,6 @@ public:
 		angle = center_angle = center_angle_;
 		delta_angle = delta_angle_;
 		dir_clockwise = dir_clockwise_;
-		cur_anim = &anim_barrel_fire;
 
 		timer_strafe.set_one_shot(false);
 		timer_strafe.set_wait_time(0.01);
@@ -247,12 +234,11 @@ public:
 
 	virtual void on_update(float delta) override
 	{
-		timer_shot.on_update(delta);
 		timer_strafe.on_update(delta);
 
 		anim_barrel_fire.set_angle(angle);
 		anim_battery.set_angle(angle);
-		cur_anim->on_update(delta);
+		anim_barrel_fire.on_update(delta);
 
 		// 更新子弹
 		for (auto& bullet : bullet_list)
@@ -266,17 +252,17 @@ public:
 			}), bullet_list.end());
 	}
 
-	virtual void on_render(SDL_Renderer* renderer, const Camera& camera)
+	virtual void on_render(const Camera& camera) const
 	{
 		// 子弹
 		for (auto& bullet : bullet_list)
 		{
-			bullet->on_render(renderer, camera);
+			bullet->on_render(camera);
 		}
 
 		// 炮塔,枪管，瞄准
-		anim_battery.on_render(renderer, camera);
-		cur_anim->on_render(renderer, camera);
+		anim_battery.on_render(camera);
+		anim_barrel_fire.on_render(camera);
 	}
 
 	void set_center_angle(double val)

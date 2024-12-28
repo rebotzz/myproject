@@ -1,5 +1,6 @@
 #include "character_manager.h"
 #include "particle_manager.h"
+#include <algorithm>
 
 
 CharacterManager* CharacterManager::manager = nullptr;
@@ -110,14 +111,13 @@ void CharacterManager::on_update(float delta)
 		enemy->on_update(delta);
 
 		// 射杀，加分
-		if (enemy->is_shooting_death())
+		if (!enemy->is_alive())
 		{
 			score++;
 		}
 		// 越界，扣血
 		if (enemy->is_alive() && enemy->get_position().y > (double)WINDOW_H + 50.0f)
 		{
-			enemy->dead();
 			home_hp--;
 			Mix_PlayChannel(-1, ResourcesManager::instance()->find_audio_chunk("hurt"), 0);
 		}
@@ -125,8 +125,16 @@ void CharacterManager::on_update(float delta)
 	enemy_list.erase(std::remove_if(enemy_list.begin(), enemy_list.end(), 
 		[](const std::shared_ptr<Chicken>& chicken)
 		{
-			return !chicken->is_alive();
+			return !chicken->is_alive() || (chicken->get_position().y > (double)WINDOW_H + 50.0f);
 		}), enemy_list.end());
+
+	// 排序,修改渲染先后层次
+	std::sort(enemy_list.begin(), enemy_list.end(),
+		[](const std::shared_ptr<Chicken>& a, const std::shared_ptr<Chicken>& b)
+		{
+			return a->get_position().y < b->get_position().y;
+		});
+	
 
 	// 炮塔更新
 	for (auto& turrent : turrent_list)
@@ -138,45 +146,28 @@ void CharacterManager::on_update(float delta)
 	ParticleManager::instance()->on_update(delta);
 }
 
-void CharacterManager::on_render(SDL_Renderer* renderer, const Camera& camera)
+void CharacterManager::on_render(const Camera& camera) const
 {
-	// 炮塔
+	// 炮塔底部
 	for (auto& turrent : turrent_list)
 	{
-		turrent->render_bottom(renderer, camera);
+		turrent->render_bottom(camera);
 	}
 
 	// 敌人
 	for (auto& enemy : enemy_list)
 	{
-		enemy->on_render(renderer, camera);
+		enemy->on_render(camera);
 	}
 
 	// 炮塔
 	for (auto& turrent : turrent_list)
 	{
-		turrent->on_render(renderer, camera);
+		turrent->on_render(camera);
 	}
 
 	// 粒子
-	ParticleManager::instance()->on_render(renderer, camera);
-
-	if (home_hp <= 0)
-	{
-		std::string str = "Game Over! Score: " + std::to_string(score);
-		SDL_Surface* suf_text = TTF_RenderText_Blended(ResourcesManager::instance()->find_font("IPix"),
-			str.c_str(), { 0, 0, 0, 255 });
-		SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
-		SDL_Rect rect_msg_box, rect_text;
-		rect_msg_box = { WINDOW_W / 2 - 250, WINDOW_H / 2 - 100, 500, 200 };
-		rect_text = { rect_msg_box.x + rect_msg_box.w / 2 - suf_text->w / 2, 
-			rect_msg_box.y + rect_msg_box.h / 2 - suf_text->h / 2,  suf_text->w, suf_text->h };
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 100);
-		SDL_RenderFillRect(renderer, &rect_msg_box);
-		SDL_RenderCopy(renderer, tex_text, nullptr, &rect_text);
-		SDL_FreeSurface(suf_text);
-		SDL_DestroyTexture(tex_text);
-	}
+	ParticleManager::instance()->on_render(camera);
 }
 
 static std::shared_ptr<Chicken> spawn_chicken()
@@ -200,27 +191,30 @@ static std::shared_ptr<Chicken> spawn_chicken()
 	return chicken;
 }
 
-void CharacterManager::render_status(SDL_Renderer* renderer, const Camera& camera)
+void CharacterManager::render_status(const Camera& camera) const
 {
 	// 渲染生命值
 	static SDL_Texture* tex_img = ResourcesManager::instance()->find_image("heart");
-	static SDL_Rect rect_hp = {30, 30, 0, 0};
-	SDL_QueryTexture(tex_img, nullptr, nullptr, &rect_hp.w, &rect_hp.h);
+	static int w = 0, h = 0;
+	SDL_QueryTexture(tex_img, nullptr, nullptr, &w, &h);
+	static SDL_FRect frect_dst_hp = { 30, 30, w, h };
 
 	for (int i = 0; i < home_hp; ++i)
 	{
-		rect_hp.x = 30 + i * 40;
-		SDL_RenderCopy(renderer, tex_img, nullptr, &rect_hp);
+		frect_dst_hp.x = 30 + i * 40;
+		//SDL_RenderCopy(renderer, tex_img, nullptr, &rect_hp);
+		camera.render_texture(tex_img, nullptr, &frect_dst_hp, 0, nullptr);
 	}
 
 	// 渲染得分
 	static TTF_Font* font = ResourcesManager::instance()->find_font("IPix");
-	static SDL_Rect rect_score = { WINDOW_W * 0.8, 30, 0, 0 };
+	static SDL_FRect rect_score = { WINDOW_W * 0.8, 30, 0, 0 };
 	std::string str = "Score: " + std::to_string(score);
 	SDL_Surface* suf_text = TTF_RenderUTF8_Solid(font, str.c_str(), { 255,255,255,255 });
 	rect_score.w = suf_text->w, rect_score.h = suf_text->h;
-	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
-	SDL_RenderCopy(renderer, tex_text, nullptr, &rect_score);
+	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(camera.get_renderer(), suf_text);
+	//SDL_RenderCopy(renderer, tex_text, nullptr, &rect_score);
+	camera.render_texture(tex_text, nullptr, &rect_score, 0, nullptr);
 	SDL_FreeSurface(suf_text);
 	SDL_DestroyTexture(tex_text);
 }

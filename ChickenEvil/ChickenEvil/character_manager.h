@@ -21,7 +21,8 @@ public:
 	static CharacterManager* instance();
 	void on_input(SDL_Event* event);
 	void on_update(float delta);
-	void on_render(SDL_Renderer* renderer, const Camera& camera);
-	void render_status(SDL_Renderer* renderer, const Camera& camera);
+	void on_render(const Camera& camera) const;
+	void render_status(const Camera& camera) const;
 	bool is_alive() const { return home_hp > 0; }
+	int get_score() const { return score; }
 };

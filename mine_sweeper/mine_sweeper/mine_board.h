@@ -1,10 +1,7 @@
 #pragma once
 #include "util.h"
 #include <vector>
-#include <string>
 #include <ctime>
-#include <SDL.h>
-#include <SDL_ttf.h>
 
 extern const int grid_size;
 extern const int status_h;

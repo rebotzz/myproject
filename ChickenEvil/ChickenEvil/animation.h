@@ -4,10 +4,9 @@
 #include "timer.h"
 #include "camera.h"
 
-// 用SDL_Surface还是SDL_Texture
-//
 // v0.1:动画首次渲染时SDL_Surface转SDL_Texture, 之后照常，动画析构时释放SDL_Texture
 // v0.2:改用SDL_Texture，频繁创建/销毁太耗性能,通过SDL_QueryTexture查看纹理信息
+// v0.3:改用摄像机作为渲染执行者
 
 // 动画类
 class Animation
@@ -32,9 +31,8 @@ private:
 	bool is_loop = false;								// 是否循环播放					
 	std::vector<Frame> frame_list;						// 动画帧序列
 	std::function<void()> on_finished;					// 动画结束处理	
-	double angle = 0.0;									// 动画旋转角度
-	SDL_Point *rotate_point = nullptr;					// 旋转中心
-	double scale = 1.0;									// 缩放比例
+	float angle = 0.0f;									// 动画旋转角度
+	SDL_FPoint rotate_center = { 0 };					// 旋转中心
 
 public:
 	Animation()
@@ -53,10 +51,7 @@ public:
 			}
 		);
 	}
-	~Animation()
-	{
-		if (rotate_point) delete rotate_point;
-	}
+	~Animation() = default;
 
 	void reset()
 	{
@@ -89,19 +84,10 @@ public:
 		angle = val;
 	}
 
-	void set_rotate_center(int x, int y)
+	void set_rotate_center(float x, float y)
 	{
-		if (nullptr == rotate_point)
-		{
-			rotate_point = new SDL_Point({ -1, -1 });
-		}
-		rotate_point->x = x;
-		rotate_point->y = y;
-	}
-
-	void set_scale(double val)
-	{
-		scale = val;
+		rotate_center.x = x;
+		rotate_center.y = y;
 	}
 
 	void on_update(float delta)
@@ -109,16 +95,17 @@ public:
 		timer.on_update(delta);
 	}
 
-	void on_render(SDL_Renderer* renderer , const Camera& camera) 
+	void on_render(const Camera& camera) const
 	{
 		const Frame& frame = frame_list[idx_frame];
 
-		SDL_Rect rect_dst;
-		rect_dst.w = static_cast<int>(frame.rect_src.w * scale), rect_dst.h = static_cast<int>(frame.rect_src.h * scale);
-		rect_dst.x = (int)position.x - frame.rect_src.w / 2 - (int)camera.get_position().x;		// 中心锚点模式
-		rect_dst.y = (int)position.y - frame.rect_src.h / 2 - (int)camera.get_position().x;
+		SDL_FRect rect_dst;
+		rect_dst.w = static_cast<float>(frame.rect_src.w);
+		rect_dst.h = static_cast<float>(frame.rect_src.h);
+		rect_dst.x = static_cast<float>(position.x - frame.rect_src.w / 2);		// 中心锚点模式
+		rect_dst.y = static_cast<float>(position.y - frame.rect_src.h / 2);
 
-		SDL_RenderCopyEx(renderer, frame.tex_img, &frame.rect_src, &rect_dst, angle, rotate_point, SDL_FLIP_NONE);
+		camera.render_texture(frame.tex_img, &frame.rect_src, &rect_dst, angle, &rotate_center);
 	}
 
 	void add_frame(SDL_Texture* tex_img, int num_w = 1)
@@ -142,8 +129,7 @@ public:
 		for (int i = 0; i < atlas->get_size(); ++i)
 		{
 			SDL_Texture* tex_img = atlas->get_texture(i);
-			SDL_Rect rect_src;
-			rect_src.x = 0, rect_src.y = 0;
+			SDL_Rect rect_src = { 0, 0, 0, 0 };
 			SDL_QueryTexture(tex_img, nullptr, nullptr, &rect_src.w, &rect_src.h);
 
 			frame_list.emplace_back(tex_img, rect_src);

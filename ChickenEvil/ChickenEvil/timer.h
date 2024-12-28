@@ -51,7 +51,7 @@ public:
 	{
 		if (is_pause)
 			return;
-			
+
 		pass_time += delta;
 		if (pass_time >= wait_time)
 		{
@@ -61,6 +61,12 @@ public:
 				on_timeout();
 			pass_time -= wait_time;
 		}
+	}
+
+	// debug:
+	float get_pass_time() const
+	{
+		return pass_time;
 	}
 
 };

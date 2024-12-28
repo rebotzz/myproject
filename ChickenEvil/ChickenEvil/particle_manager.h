@@ -19,7 +19,7 @@ private:
 public:
 	static ParticleManager* instance();
 	void on_update(float delta);
-	void on_render(SDL_Renderer* renderer, const Camera& camera);
+	void on_render(const Camera& camera) const;
 
 	void register_particle(const std::shared_ptr<Particle>& particle)
 	{

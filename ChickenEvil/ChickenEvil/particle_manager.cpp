@@ -21,12 +21,12 @@ void  ParticleManager::on_update(float delta)
 			return !particle->is_valid();
 		}), particle_list.end());
 }
-void  ParticleManager::on_render(SDL_Renderer* renderer, const Camera& camera)
+void  ParticleManager::on_render(const Camera& camera) const
 {
 	// äÖÈ¾Á£×Ó
-	for (std::shared_ptr<Particle>& particle : particle_list)
+	for (const std::shared_ptr<Particle>& particle : particle_list)
 	{
 		if (particle->is_valid())
-			particle->on_render(renderer, camera);
+			particle->on_render(camera);
 	}
 }

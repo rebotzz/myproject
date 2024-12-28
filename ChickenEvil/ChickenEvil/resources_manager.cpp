@@ -64,8 +64,8 @@ ResourcesManager* ResourcesManager::instance()
 
 SDL_Texture* ResourcesManager::find_image(const std::string& id) const
 {
-	auto iter = suf_image_pool.find(id);
-	if (iter == suf_image_pool.end())
+	auto iter = image_pool.find(id);
+	if (iter == image_pool.end())
 		return nullptr;
 
 	return iter->second;
@@ -73,8 +73,8 @@ SDL_Texture* ResourcesManager::find_image(const std::string& id) const
 
 Atlas* ResourcesManager::find_atlas(const std::string& id) const
 {
-	auto iter = suf_atlas_pool.find(id);
-	if (iter == suf_atlas_pool.end())
+	auto iter = atlas_pool.find(id);
+	if (iter == atlas_pool.end())
 		return nullptr;
 
 	return iter->second;
@@ -114,11 +114,11 @@ void ResourcesManager::load(SDL_Renderer* renderer)
 	// º”‘ÿÕº∆¨
 	for (auto& info : image_info_list)
 	{
-		SDL_Texture* suf_img =  IMG_LoadTexture(renderer, info.path.c_str());
-		if (!suf_img)
+		SDL_Texture* img =  IMG_LoadTexture(renderer, info.path.c_str());
+		if (!img)
 			throw info.path;
 
-		suf_image_pool[info.id] = suf_img;
+		image_pool[info.id] = img;
 	}
 
 	for (auto& info : atlas_info_list)
@@ -132,7 +132,7 @@ void ResourcesManager::load(SDL_Renderer* renderer)
 				throw info.path;
 		}
 
-		suf_atlas_pool[info.id] = atlas;
+		atlas_pool[info.id] = atlas;
 	}
 
 	// º”‘ÿ“Ù∆µ
@@ -166,5 +166,35 @@ void ResourcesManager::load(SDL_Renderer* renderer)
 		throw std::string("TTF_OpenFont failed, ") + std::string(TTF_GetError());
 	}
 	font_pool["IPix"] = font;
+}
+
+void ResourcesManager::unload()
+{
+	for (auto& kv : image_pool)
+	{
+		SDL_DestroyTexture(kv.second);
+	}
+	for (auto& kv : atlas_pool)
+	{
+		delete kv.second;
+	}
+	for (auto& kv : long_audio_pool)
+	{
+		Mix_FreeMusic(kv.second);
+	}
+	for (auto& kv : short_audio_pool)
+	{
+		Mix_FreeChunk(kv.second);
+	}
+	for(auto& kv : font_pool)
+	{
+		TTF_CloseFont(kv.second);
+	}
+
+	image_pool.clear();
+	atlas_pool.clear();
+	long_audio_pool.clear();
+	short_audio_pool.clear();
+	font_pool.clear();
 }
 

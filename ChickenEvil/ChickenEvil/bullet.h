@@ -61,9 +61,9 @@ public:
 		}
 	}
 
-	void on_render(SDL_Renderer* renderer, const Camera& camera)
+	void on_render(const Camera& camera) const
 	{
-		anim.on_render(renderer, camera);
+		anim.on_render(camera);
 	}
 
 	bool is_valid() const

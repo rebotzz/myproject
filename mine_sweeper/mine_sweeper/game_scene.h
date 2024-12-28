@@ -109,7 +109,6 @@ public:
 		SDL_SetRenderDrawColor(renderer, 170, 170, 170, 255);
 		SDL_RenderFillRect(renderer, &rect_status);
 		button.on_render(renderer);
-
 		SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
 		SDL_RenderFillRect(renderer, &rect_mine);
 		draw_text(renderer, font, rect_mine_count.x + rect_mine_count.w / 2, rect_mine_count.y + rect_mine_count.h / 2,
@@ -118,8 +117,8 @@ public:
 			(const char*)std::to_string(timer).c_str(), color_text);
 		if (mine_board->is_seccess())
 		{
-			draw_text(renderer, font, rect_time.x - 100, rect_time.y + rect_time.h / 2,
-				(const char*)"Win !", color_text);
+			draw_text(renderer, font, (grid_size * grid_x) / 2, (status_h - 50) / 2,
+				(const char*)"Win!", color_text);
 		}
 
 		// µÿ¿◊∆Â≈Ã

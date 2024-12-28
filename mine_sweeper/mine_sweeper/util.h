@@ -1,9 +1,10 @@
 #pragma once
+#include <SDL.h>
+#include <SDL_ttf.h>
 #include <cmath>
 #include <functional>
 #include <string>
-#include <SDL.h>
-#include <SDL_ttf.h>
+
 
 inline void draw_text(SDL_Renderer* renderer, TTF_Font* font, int center_x, int center_y, const char* text, SDL_Color color)
 {

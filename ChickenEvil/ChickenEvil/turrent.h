@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-extern Camera scene_camera;
+extern Camera* scene_camera;
 
 // ÅÚËþ
 class Turrent
@@ -93,13 +93,8 @@ public:
 		if (!is_cool_down)
 		{
 			anim_barrel_fire.on_update(delta);
-			//scene_camera.shake(3.0f, 0.3f);
-
-			//SDL_Log("not cool down... [%d]\n", is_cool_down);
+			scene_camera->shake(3.0f, 0.3f);
 		}
-		//scene_camera.on_update(delta);
-
-
 
 		double shot_angle = (pos_target - pos_self).angle();
 		anim_barrel_fire.set_angle(shot_angle);

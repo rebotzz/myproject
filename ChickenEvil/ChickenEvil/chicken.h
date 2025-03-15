@@ -12,16 +12,12 @@ extern const int WINDOW_H;
 // 生化鸡
 class Chicken
 {
-	enum class State
-	{
-		Alive, Exploision, Death
-	};
 protected:
 	Vector2 position;							// 位置
 	float speed_y = 35.0f;						// 移动速度
 	Animation anim_chicken;						// 动画
 	CollisionBox* hurt_box = nullptr;			// 受击碰撞箱
-	State state = State::Alive;					// 状态
+	bool is_alive = true;						// 存活状态
 
 public:
 	Chicken()
@@ -42,10 +38,9 @@ public:
 		hurt_box->set_size({ 30, 40 });
 		hurt_box->set_on_collision([&]()
 			{
-				state = State::Exploision;
-				if (state == State::Exploision)		// 爆炸状态只存在一瞬间，用于生成粒子
+				if (is_alive)		// 爆炸状态只存在一瞬间，用于生成粒子;优化，只用是否存活表示
 				{
-					state = State::Death;
+					is_alive = false;
 					// 死亡，放烟花(创建粒子特效)
 					std::shared_ptr<Particle> particle = std::shared_ptr<Particle>(new ParticleEffExplode(position));
 					ParticleManager::instance()->register_particle(particle);
@@ -60,7 +55,7 @@ public:
 
 	void on_update(float delta)
 	{
-		if (!is_alive())
+		if (!check_alive())
 			return;
 
 		position.y += speed_y * delta;
@@ -71,15 +66,20 @@ public:
 
 	void on_render(const Camera& camera) const
 	{
-		if (!is_alive())
+		if (!check_alive())
 			return;
 
 		anim_chicken.on_render(camera);
 	}
 
-	bool is_alive() const
+	bool check_alive() const
 	{
-		return state == State::Alive;
+		return is_alive;
+	}
+
+	bool can_remove() const
+	{
+		return !is_alive || (position.y > (float)WINDOW_H + 50.0f);
 	}
 
 	const Vector2& get_position() const

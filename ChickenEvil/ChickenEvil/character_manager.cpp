@@ -111,12 +111,12 @@ void CharacterManager::on_update(float delta)
 		enemy->on_update(delta);
 
 		// 射杀，加分
-		if (!enemy->is_alive())
+		if (!enemy->check_alive())
 		{
 			score++;
 		}
 		// 越界，扣血
-		if (enemy->is_alive() && enemy->get_position().y > (double)WINDOW_H + 50.0f)
+		if (enemy->check_alive() && enemy->get_position().y > (float)WINDOW_H + 50.0f)
 		{
 			home_hp--;
 			Mix_PlayChannel(-1, ResourcesManager::instance()->find_audio_chunk("hurt"), 0);
@@ -125,7 +125,7 @@ void CharacterManager::on_update(float delta)
 	enemy_list.erase(std::remove_if(enemy_list.begin(), enemy_list.end(), 
 		[](const std::shared_ptr<Chicken>& chicken)
 		{
-			return !chicken->is_alive() || (chicken->get_position().y > (double)WINDOW_H + 50.0f);
+			return chicken->can_remove();
 		}), enemy_list.end());
 
 	// 排序,修改渲染先后层次

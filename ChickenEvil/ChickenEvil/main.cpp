@@ -7,24 +7,80 @@
 
 const int WINDOW_W = 1280;
 const int WINDOW_H = 720;
-const int FPS = 25;
-
+const int FPS = 60;
+float win_scale = 1.0f;				// 画面缩放比例
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
-Camera scene_camera, ui_camera;
+Camera* scene_camera = nullptr, *ui_camera = nullptr;
+
 void render_background(const Camera& camera);
 void init();
 void deinit();
+void main_loop();
 
 //#undef main
 int main(int argc, char* argv[])
 {
 	init();
+	main_loop();
+	deinit();
+
+	return 0;
+}
+
+
+void init()
+{
+	// 初始化SDL
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	IMG_Init(IMG_INIT_PNG);
+	TTF_Init();
+	Mix_Init(MIX_INIT_MP3);	// sdl核心库有.wav
+	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);	// MIX_DEFAULT_FREQUENCY 44100
+
+	window = SDL_CreateWindow(u8"《生化危鸡》 by rebotzz", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);	// SDL_RENDERER_SOFTWARE SDL_RENDERER_ACCELERATED
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_ShowCursor(false);		// 隐藏鼠标光标 SDL_DISABLE 0
+	Mix_AllocateChannels(32);
+	srand((unsigned int)time(nullptr));
+
+	// 资源加载
+	try
+	{
+		ResourcesManager::instance()->load(renderer);
+	}
+	catch (const std::string& s)
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Resources Not Find", s.c_str(), window);
+		exit(-1);
+	}
+
+	// BGM
+	Mix_FadeInMusic(ResourcesManager::instance()->find_audio_music("bgm"), -1, 100);
 
 	// 摄像机
-	scene_camera.set_renderer(renderer);
-	ui_camera.set_renderer(renderer);
+	scene_camera = new Camera(renderer);
+	ui_camera = new Camera(renderer);
+}
 
+void deinit()
+{
+	ResourcesManager::instance()->unload();
+	if (scene_camera) delete scene_camera;
+	if (ui_camera) delete ui_camera;
+
+	// 关闭SDL
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	TTF_Quit();
+	IMG_Quit();
+	Mix_Quit();
+	SDL_Quit();
+}
+
+void main_loop()
+{
 	// 时间
 	Uint64 freq = SDL_GetPerformanceFrequency();
 	Uint64 last_tick, cur_tick;
@@ -47,9 +103,6 @@ int main(int argc, char* argv[])
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 				CharacterManager::instance()->on_input(&event);
-
-				
-				if(event.type == SDL_MOUSEBUTTONDOWN) scene_camera.shake(3.0f, 0.7f);
 				break;
 			}
 		}
@@ -68,14 +121,14 @@ int main(int argc, char* argv[])
 			is_quit = true;
 		}
 		CollisionManager::instance()->process_collide();
-		scene_camera.on_update((float)delta);
+		scene_camera->on_update((float)delta);
 
 		// 渲染画面
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
-		render_background(scene_camera);
-		CharacterManager::instance()->on_render(scene_camera);
-		CharacterManager::instance()->render_status(ui_camera);
+		render_background(*scene_camera);
+		CharacterManager::instance()->on_render(*scene_camera);
+		CharacterManager::instance()->render_status(*ui_camera);
 		//CollisionManager::instance()->on_debug_render(renderer, scene_camera);
 		SDL_RenderPresent(renderer);
 
@@ -86,55 +139,6 @@ int main(int argc, char* argv[])
 			SDL_Delay((int)(delay * 1000.0));	// debug: 单位转化ms
 		}
 	}
-
-	deinit();
-
-	return 0;
-}
-
-
-void init()
-{
-	// 初始化SDL
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	IMG_Init(IMG_INIT_PNG);
-	TTF_Init();
-	Mix_Init(MIX_INIT_MP3);	// sdl核心库有.wav
-	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);	// MIX_DEFAULT_FREQUENCY 44100
-
-	window = SDL_CreateWindow(u8"《生化危鸡》 By rebotzz", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);	// SDL_RENDERER_SOFTWARE SDL_RENDERER_ACCELERATED
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-	SDL_ShowCursor(false);		// 隐藏鼠标光标
-	Mix_AllocateChannels(32);
-	srand((unsigned int)time(nullptr));
-
-	// 资源加载
-	try
-	{
-		ResourcesManager::instance()->load(renderer);
-	}
-	catch (const std::string& s)
-	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Resources Not Find", s.c_str(), window);
-		exit(-1);
-	}
-
-	// BGM
-	Mix_FadeInMusic(ResourcesManager::instance()->find_audio_music("bgm"), -1, 100);
-}
-
-void deinit()
-{
-	ResourcesManager::instance()->unload();
-
-	// 关闭SDL
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	TTF_Quit();
-	IMG_Quit();
-	Mix_Quit();
-	SDL_Quit();
 }
 
 inline void render_background(const Camera& camera)

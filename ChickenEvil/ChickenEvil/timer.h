@@ -62,11 +62,4 @@ public:
 			pass_time -= wait_time;
 		}
 	}
-
-	// debug:
-	float get_pass_time() const
-	{
-		return pass_time;
-	}
-
 };

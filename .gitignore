@@ -1,5 +1,8 @@
 # 我的忽略
 
+# 拼好饭传奇
+GroupMealsLegend/GroupMealsLegend/resources
+
 # 扫雷图形版
 mine_sweeper/mine_sweeper/res
 

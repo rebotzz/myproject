@@ -18,5 +18,22 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="resources_manager.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cursor_manager.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resources_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="meal.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cursor_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

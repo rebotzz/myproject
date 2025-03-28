@@ -1,0 +1,65 @@
+#include "resources_manager.h"
+#include "SDL_image.h"
+#include <filesystem>
+#include <iostream>
+
+ResMgr* ResMgr::manager = nullptr;
+
+ResMgr* ResMgr::instance()
+{
+	if (manager == nullptr)
+	{
+		manager = new ResMgr();
+	}
+	return manager;
+}
+
+void ResMgr::load(SDL_Renderer* renderer)
+{
+	using namespace std::filesystem;
+	if (!exists(path("resources"))) return;
+	for (auto& entry : directory_iterator("resources"))
+	{
+		const path& path = entry.path();
+		if (is_regular_file(path))
+		{
+			if (path.extension() == ".png")
+			{
+				SDL_Texture* tex = IMG_LoadTexture(renderer, path.u8string().c_str());
+				texture_pool[path.stem().u8string().c_str()] = tex;
+			}
+			else if (path.extension() == ".mp3")
+			{
+				Mix_Chunk* chunk = Mix_LoadWAV(path.u8string().c_str());
+				audio_pool[path.stem().u8string().c_str()] = chunk;
+			}
+		}
+
+		//std::cout << path.u8string().c_str() << std::endl;
+	}
+
+}
+
+void ResMgr::unload()
+{
+	for (auto& iter : texture_pool)
+	{
+		SDL_DestroyTexture(iter.second);
+		texture_pool.erase(iter.first);
+	}
+	for (auto& iter : audio_pool)
+	{
+		Mix_FreeChunk(iter.second);
+		audio_pool.erase(iter.first);
+	}
+}
+SDL_Texture* ResMgr::find_texture(const std::string& id)
+{
+	if (!texture_pool.count(id)) return nullptr;
+	else return texture_pool[id];
+}
+Mix_Chunk* ResMgr::find_audio(const std::string& id)
+{
+	if (!audio_pool.count(id)) return nullptr;
+	else return audio_pool[id];
+}

@@ -141,7 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cursor_manager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="resources_manager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cursor_manager.h" />
+    <ClInclude Include="meal.h" />
+    <ClInclude Include="resources_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

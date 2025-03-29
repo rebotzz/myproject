@@ -53,7 +53,7 @@ void TakeoutBox::on_cursor_up()
 		meal = CursorMgr::instance()->get_picked();
 		CursorMgr::instance()->set_picked(Meal::None);
 	}
-	else if (meal == Meal::None)
+	else if (meal == Meal::TakeoutBox)
 	{
 		switch (CursorMgr::instance()->get_picked())
 		{

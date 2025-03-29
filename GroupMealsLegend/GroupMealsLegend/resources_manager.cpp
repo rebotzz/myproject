@@ -1,7 +1,5 @@
 #include "resources_manager.h"
-#include "SDL_image.h"
 #include <filesystem>
-#include <iostream>
 
 ResMgr* ResMgr::manager = nullptr;
 
@@ -33,9 +31,13 @@ void ResMgr::load(SDL_Renderer* renderer)
 				Mix_Chunk* chunk = Mix_LoadWAV(path.u8string().c_str());
 				audio_pool[path.stem().u8string().c_str()] = chunk;
 			}
+			else if (path.extension() == ".ttf")
+			{
+				TTF_Font* font = TTF_OpenFont(path.u8string().c_str(), 32);
+				font_pool[path.stem().u8string().c_str()] = font;
+			}
 		}
-
-		//std::cout << path.u8string().c_str() << std::endl;
+		//SDL_Log("%s\n", path.u8string().c_str());
 	}
 
 }
@@ -52,14 +54,43 @@ void ResMgr::unload()
 		Mix_FreeChunk(iter.second);
 		audio_pool.erase(iter.first);
 	}
+	for (auto& iter : font_pool)
+	{
+		TTF_CloseFont(iter.second);
+		font_pool.erase(iter.first);
+	}
 }
 SDL_Texture* ResMgr::find_texture(const std::string& id)
 {
-	if (!texture_pool.count(id)) return nullptr;
+	if (!texture_pool.count(id))
+	{
+#ifdef DEBUG
+		throw std::string("not find resource: ") + id;
+#endif // DEBUG
+
+		return nullptr;
+	}
 	else return texture_pool[id];
 }
 Mix_Chunk* ResMgr::find_audio(const std::string& id)
 {
-	if (!audio_pool.count(id)) return nullptr;
+	if (!audio_pool.count(id))
+	{
+#ifdef DEBUG
+		throw std::string("not find resource: ") + id;
+#endif // DEBUG
+		return nullptr;
+	}
 	else return audio_pool[id];
+}
+TTF_Font* ResMgr::find_font(const std::string& id)
+{
+	if (!font_pool.count(id))
+	{
+#ifdef DEBUG
+		throw std::string("not find resource: ") + id;
+#endif // DEBUG
+		return nullptr;
+	}
+	else return font_pool[id];
 }

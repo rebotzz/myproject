@@ -141,14 +141,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="buondle.cpp" />
     <ClCompile Include="cursor_manager.cpp" />
+    <ClCompile Include="delivery_driver.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="microwave_oven.cpp" />
+    <ClCompile Include="region_manager.cpp" />
     <ClCompile Include="resources_manager.cpp" />
+    <ClCompile Include="takeout_box.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bundle.h" />
+    <ClInclude Include="delivery_driver.h" />
+    <ClInclude Include="goods_bundle.h" />
     <ClInclude Include="cursor_manager.h" />
     <ClInclude Include="meal.h" />
+    <ClInclude Include="microwave_oven.h" />
+    <ClInclude Include="region.h" />
+    <ClInclude Include="region_manager.h" />
     <ClInclude Include="resources_manager.h" />
+    <ClInclude Include="takeout_box.h" />
+    <ClInclude Include="timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

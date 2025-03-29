@@ -1,20 +1,20 @@
-#include "boundle.h"
+#include "bundle.h"
 
 #include "cursor_manager.h"
 
 
-void Boundle::on_render(SDL_Renderer* renderer)
+void Bundle::on_render(SDL_Renderer* renderer)
 {
 	SDL_RenderCopy(renderer, _texture, nullptr, &get_rect());
 }
 
-void Boundle::on_cursor_down()
+void Bundle::on_cursor_down()
 {
 	if (CursorMgr::instance()->get_picked() == Meal::None)
 		CursorMgr::instance()->set_picked(_meal);
 }
 
-void Boundle::on_cursor_up()
+void Bundle::on_cursor_up()
 {
 	if (CursorMgr::instance()->get_picked() == _meal)
 		CursorMgr::instance()->set_picked(Meal::None);

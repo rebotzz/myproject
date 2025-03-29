@@ -1,6 +1,7 @@
 #include "cursor_manager.h"
 #include "resources_manager.h"
 
+
 CursorMgr* CursorMgr::manager = nullptr;
 CursorMgr* CursorMgr::instance()
 {
@@ -10,7 +11,7 @@ CursorMgr* CursorMgr::instance()
 	}
 	return manager;
 }
-void CursorMgr::input(const SDL_Event& event)
+void CursorMgr::on_input(const SDL_Event& event)
 {
 	switch (event.type)
 	{
@@ -30,6 +31,10 @@ void CursorMgr::input(const SDL_Event& event)
 			default: break;
 			}
 		}
+		else if (event.button.button == SDL_BUTTON_RIGHT)
+		{
+			meal_picked = Meal::None;
+		}
 		break;
 	case SDL_MOUSEBUTTONUP:
 		if (event.button.button == SDL_BUTTON_LEFT)
@@ -39,7 +44,7 @@ void CursorMgr::input(const SDL_Event& event)
 		break;
 	}
 }
-void CursorMgr::render(SDL_Renderer* renderer)
+void CursorMgr::on_render(SDL_Renderer* renderer)
 {
 	// 绘制持有的餐品纹理
 	SDL_Texture* texture_picked = nullptr;
@@ -48,20 +53,19 @@ void CursorMgr::render(SDL_Renderer* renderer)
 	case Meal::None: break;
 	case Meal::Cola:				texture_picked = ResMgr::instance()->find_texture("cola"); break;
 	case Meal::Sprite:				texture_picked = ResMgr::instance()->find_texture("sprite"); break;
-	case Meal::BraisedChicken_Hot:	texture_picked = ResMgr::instance()->find_texture("bc_hot"); break;
-	case Meal::BraisedChicken_Cold:	texture_picked = ResMgr::instance()->find_texture("bc_cold"); break;
-	case Meal::MeatBall_Hot:		texture_picked = ResMgr::instance()->find_texture("mb_hot"); break;
-	case Meal::MeatBall_Cold:		texture_picked = ResMgr::instance()->find_texture("mb_cold"); break;
-	case Meal::RedCookedPork_Hot:	texture_picked = ResMgr::instance()->find_texture("rcp_hot"); break;
-	case Meal::RedCookedPork_Cold:	texture_picked = ResMgr::instance()->find_texture("rcp_cold"); break;
+	case Meal::BraisedChicken_Hot:	texture_picked = ResMgr::instance()->find_texture("bc_hot_picked"); break;
+	case Meal::BraisedChicken_Cold:	texture_picked = ResMgr::instance()->find_texture("bc_cold_picked"); break;
+	case Meal::MeatBall_Hot:		texture_picked = ResMgr::instance()->find_texture("mb_hot_picked"); break;
+	case Meal::MeatBall_Cold:		texture_picked = ResMgr::instance()->find_texture("mb_cold_picked"); break;
+	case Meal::RedCookedPork_Hot:	texture_picked = ResMgr::instance()->find_texture("rcp_hot_picked"); break;
+	case Meal::RedCookedPork_Cold:	texture_picked = ResMgr::instance()->find_texture("rcp_cold_picked"); break;
 	case Meal::BraisedChicken_Box:	texture_picked = ResMgr::instance()->find_texture("bc_box"); break;
 	case Meal::MeatBall_Box:		texture_picked = ResMgr::instance()->find_texture("mb_box"); break;
 	case Meal::RedCookedPork_Box:	texture_picked = ResMgr::instance()->find_texture("rcp_box"); break;
 	case Meal::TakeoutBox:			texture_picked = ResMgr::instance()->find_texture("tb_picked"); break;			
 	default: break;
 	}
-
-	if (is_mouse_lbtn_down && texture_picked)
+	if (texture_picked)
 	{
 		SDL_Rect rect_picked = { pos_cursor.x, pos_cursor.y, 0, 0 };
 		SDL_QueryTexture(texture_picked, nullptr, nullptr, &rect_picked.w, &rect_picked.h);
@@ -73,6 +77,18 @@ void CursorMgr::render(SDL_Renderer* renderer)
 	SDL_Texture* tex_cursor = ResMgr::instance()->find_texture(is_mouse_lbtn_down ? "cursor_down" : "cursor_idle");
 	SDL_QueryTexture(tex_cursor, nullptr, nullptr, &rect_cursor.w, &rect_cursor.h);
 	SDL_RenderCopy(renderer, tex_cursor, nullptr, &rect_cursor);
+
+	// 绘制赚取的硬币
+	static SDL_Texture* tex_coin = ResMgr::instance()->find_texture("coin");
+	static SDL_Rect rect_coin = { 1100, 20, 40, 40 };
+	SDL_RenderCopy(renderer, tex_coin, nullptr, &rect_coin);
+	SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font("IPix"), std::to_string(coins).c_str(), { 255,255,255,255 });
+	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
+	SDL_Rect rect_text = { 1150, 25, 0,0 };
+	SDL_QueryTexture(tex_text, nullptr, nullptr, &rect_text.w, &rect_text.h);
+	SDL_RenderCopy(renderer, tex_text, nullptr, &rect_text);
+	SDL_FreeSurface(suf_text);
+	SDL_DestroyTexture(tex_text);
 }
 void CursorMgr::set_picked(Meal meal)
 {
@@ -81,4 +97,10 @@ void CursorMgr::set_picked(Meal meal)
 Meal CursorMgr::get_picked()
 {
 	return meal_picked;
+}
+
+void CursorMgr::add_coins(int val)
+{
+	coins += val;
+	Mix_PlayChannel(-1, ResMgr::instance()->find_audio("get_coins"), 0);
 }

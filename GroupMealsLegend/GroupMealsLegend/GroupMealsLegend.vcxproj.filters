@@ -19,10 +19,25 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="resources_manager.cpp">
-      <Filter>头文件</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="cursor_manager.cpp">
-      <Filter>头文件</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="region_manager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="buondle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="takeout_box.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="microwave_oven.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="delivery_driver.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +48,30 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="cursor_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="region.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="region_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="goods_bundle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bundle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="takeout_box.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="microwave_oven.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="delivery_driver.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

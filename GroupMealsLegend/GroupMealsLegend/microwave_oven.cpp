@@ -6,10 +6,12 @@
 MicrowaveOven::MicrowaveOven(int x, int y) :Region({ x, y, 284, 176 })
 {
 	timer.set_one_shot(true);
-	timer.set_wait_time(9.0f);
+	timer.set_wait_time(5.0f);
 	timer.set_on_timeout([this]
 		{
 			is_working = false;
+			Mix_PlayChannel(-1, ResMgr::instance()->find_audio("mo_complete"), 0);
+			Mix_PlayChannel(-1, ResMgr::instance()->find_audio("mo_open"), 0);
 		});
 }
 
@@ -29,8 +31,16 @@ void MicrowaveOven::on_cursor_up()
 	{
 		is_working = true;
 		timer.restart();
-		meal_target = CursorMgr::instance()->get_picked();
+		switch (CursorMgr::instance()->get_picked())
+		{
+		case Meal::BraisedChicken_Cold: meal_target = Meal::BraisedChicken_Hot; break;
+		case Meal::MeatBall_Cold: meal_target = Meal::MeatBall_Hot; break;
+		case Meal::RedCookedPork_Cold: meal_target = Meal::RedCookedPork_Hot; break;
+		}
 		CursorMgr::instance()->set_picked(Meal::None);
+
+		Mix_PlayChannel(-1, ResMgr::instance()->find_audio("mo_working"), 0);
+		Mix_PlayChannel(-1, ResMgr::instance()->find_audio("mo_open"), 0);
 	}
 }
 
@@ -40,19 +50,13 @@ void MicrowaveOven::on_cursor_down()
 	if (is_working || CursorMgr::instance()->get_picked() != Meal::None)
 		return;
 
-	switch (meal_target)
-	{
-	case Meal::BraisedChicken_Cold: meal_target = Meal::BraisedChicken_Hot; break;
-	case Meal::MeatBall_Cold: meal_target = Meal::MeatBall_Hot; break;
-	case Meal::RedCookedPork_Cold: meal_target = Meal::RedCookedPork_Hot; break;
-	}
 	CursorMgr::instance()->set_picked(meal_target);
 	meal_target = Meal::None;
 }
 
 void MicrowaveOven::on_render(SDL_Renderer* renderer)
 {
-	SDL_RenderCopy(renderer, ResMgr::instance()->find_texture(is_working ? "mo_working" : "mo_open"), nullptr, &get_rect());
+	SDL_RenderCopy(renderer, ResMgr::instance()->find_texture(is_working ? "mo_working" : "mo_opening"), nullptr, &get_rect());
 
 	if (!is_working)
 	{

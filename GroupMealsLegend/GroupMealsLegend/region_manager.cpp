@@ -59,6 +59,18 @@ void RegionMgr::on_render(SDL_Renderer* renderer)
 	}
 }
 
+void RegionMgr::on_debug_render(SDL_Renderer* renderer)
+{
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	for (auto& [name, region] : region_pool)
+	{
+		if (nullptr != region)
+		{
+			SDL_RenderDrawRect(renderer, &region->get_rect());
+		}
+	}
+}
+
 void RegionMgr::add(const std::string& name, Region* region)
 {
 	region_pool[name] = region;

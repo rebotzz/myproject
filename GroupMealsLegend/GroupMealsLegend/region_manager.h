@@ -19,6 +19,7 @@ public:
 	void on_input(const SDL_Event& event);
 	void on_update(float delta);
 	void on_render(SDL_Renderer* renderer);
+	void on_debug_render(SDL_Renderer* renderer);
 
 	void add(const std::string& name, Region* region);
 	Region* find(const std::string& name);

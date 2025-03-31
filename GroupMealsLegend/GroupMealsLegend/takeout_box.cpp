@@ -3,7 +3,7 @@
 #include "resources_manager.h"
 #include "cursor_manager.h"
 
-TakeoutBox::TakeoutBox(int x, int y) :Region({ x, y, 92, 48 })
+TakeoutBox::TakeoutBox(int x, int y) :Region({ x, y, 92, 48 + 15 })
 {
 	static Meal list[] = { Meal::TakeoutBox, Meal::BraisedChicken_Cold, Meal::BraisedChicken_Hot,
 	Meal::MeatBall_Cold, Meal::MeatBall_Hot, Meal::RedCookedPork_Cold, Meal::RedCookedPork_Hot };

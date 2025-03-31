@@ -1,5 +1,3 @@
-#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
-
 #include "resources_manager.h"
 #include "cursor_manager.h"
 #include "region_manager.h"
@@ -20,7 +18,7 @@ SDL_Window* win = nullptr;
 SDL_Renderer* renderer = nullptr;
 
 
-void init_region();
+
 inline void render_background()
 {
 	static SDL_Texture* texture = ResMgr::instance()->find_texture("background");
@@ -29,7 +27,7 @@ inline void render_background()
 }
 
 #undef main
-int _main()
+int main()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	IMG_Init(IMG_INIT_PNG);
@@ -37,14 +35,14 @@ int _main()
 	Mix_Init(MIX_INIT_MP3);
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);
 
-	win =  SDL_CreateWindow(u8"《拼好饭传奇》-by rebotzz", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
+	win = SDL_CreateWindow(u8"《拼好饭传奇》-by rebotzz", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
 	renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_ShowCursor(SDL_DISABLE);
 	Mix_AllocateChannels(12);
 	srand((unsigned int)time(nullptr));
 
-	init_region();
+
 	Mix_FadeInChannel(-1, ResMgr::instance()->find_audio("bgm"), -1, 500);
 
 	SDL_Event event;
@@ -86,7 +84,7 @@ int _main()
 
 		// 帧率控制
 		int delay = 1000.0 / FPS - (delta + (SDL_GetPerformanceCounter() - last_tick) / (double)freq);
-		if(delay > 0)
+		if (delay > 0)
 			SDL_Delay((int)(delay * 1000));	//ms
 	}
 
@@ -98,44 +96,4 @@ int _main()
 	SDL_Quit();
 
 	return 0;
-}
-
-void init_region()
-{
-	try
-	{
-		// 加载资源
-		ResMgr::instance()->load(renderer);
-
-		// 初始化可交互区域
-		RegionMgr::instance()->add("delivery_driver_1", new DeliveryDriver(300, 145));
-		RegionMgr::instance()->add("delivery_driver_2", new DeliveryDriver(600, 145));
-		RegionMgr::instance()->add("delivery_driver_3", new DeliveryDriver(900, 145));
-
-		RegionMgr::instance()->add("cola_bundle", new ColaBundle(260, 380));
-		RegionMgr::instance()->add("sprite_bundle", new SpriteBundle(400, 380));
-		RegionMgr::instance()->add("tb_bundle", new TbBundle(550, 420));
-		RegionMgr::instance()->add("mb_bundle", new MbBoxBundle(200, 520));
-		RegionMgr::instance()->add("bc_bundle", new BcBoxBundle(400, 520));
-		RegionMgr::instance()->add("rcp_boudle", new RcpBoxBundle(600, 520));
-		RegionMgr::instance()->add("mo_1", new MicrowaveOven(750, 400));
-		RegionMgr::instance()->add("mo_2", new MicrowaveOven(1000, 400));
-		RegionMgr::instance()->add("takeout_box_1", new TakeoutBox(800, 550));
-		RegionMgr::instance()->add("takeout_box_2", new TakeoutBox(900, 550));
-		RegionMgr::instance()->add("takeout_box_3", new TakeoutBox(1000, 550));
-		RegionMgr::instance()->add("takeout_box_4", new TakeoutBox(1100, 550));
-		RegionMgr::instance()->add("takeout_box_5", new TakeoutBox(1200, 550));
-	}
-	catch (const std::exception& e)
-	{
-		SDL_Log("%s\n", e.what());
-	}
-	catch (const std::string& e)
-	{
-		SDL_Log("%s\n", e.c_str());
-	}
-	catch (...)
-	{
-		SDL_Log("unkown exception!\n");
-	}
 }

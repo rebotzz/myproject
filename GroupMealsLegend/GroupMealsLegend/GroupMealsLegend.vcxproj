@@ -144,6 +144,8 @@
     <ClCompile Include="buondle.cpp" />
     <ClCompile Include="cursor_manager.cpp" />
     <ClCompile Include="delivery_driver.cpp" />
+    <ClCompile Include="demo.cpp" />
+    <ClCompile Include="dialogue_manager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="microwave_oven.cpp" />
     <ClCompile Include="region_manager.cpp" />
@@ -153,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="bundle.h" />
     <ClInclude Include="delivery_driver.h" />
+    <ClInclude Include="dialogue_manager.h" />
     <ClInclude Include="goods_bundle.h" />
     <ClInclude Include="cursor_manager.h" />
     <ClInclude Include="meal.h" />

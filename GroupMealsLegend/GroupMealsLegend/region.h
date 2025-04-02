@@ -5,6 +5,7 @@ class Region
 {
 protected:
 	SDL_Rect _rect = { 0 };
+	bool valid = true;
 
 public:
 	Region() = default;
@@ -20,8 +21,18 @@ public:
 	{
 		_rect = rect;
 	}
-	const SDL_Rect& get_rect() const 
+	const SDL_Rect& get_rect() const
 	{
 		return _rect;
 	}
+
+	void set_valid(bool flag)
+	{
+		valid = flag;
+	}
+	bool get_valid() const
+	{
+		return valid;
+	}
+
 };

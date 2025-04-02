@@ -29,7 +29,7 @@ inline void render_background()
 }
 
 #undef main
-int _main()
+int main()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	IMG_Init(IMG_INIT_PNG);
@@ -44,6 +44,8 @@ int _main()
 	Mix_AllocateChannels(12);
 	srand((unsigned int)time(nullptr));
 
+	// 初始化：加载资源
+	ResMgr::instance()->load(renderer);
 	init_region();
 	Mix_FadeInChannel(-1, ResMgr::instance()->find_audio("bgm"), -1, 500);
 
@@ -104,27 +106,24 @@ void init_region()
 {
 	try
 	{
-		// 加载资源
-		ResMgr::instance()->load(renderer);
-
 		// 初始化可交互区域
-		RegionMgr::instance()->add("delivery_driver_1", new DeliveryDriver(300, 145));
-		RegionMgr::instance()->add("delivery_driver_2", new DeliveryDriver(600, 145));
-		RegionMgr::instance()->add("delivery_driver_3", new DeliveryDriver(900, 145));
+		RegionMgr::instance()->add("delivery_driver_1", new DeliveryDriver(300, 145), 1);
+		RegionMgr::instance()->add("delivery_driver_2", new DeliveryDriver(600, 145), 1);
+		RegionMgr::instance()->add("delivery_driver_3", new DeliveryDriver(900, 145), 1);
 
-		RegionMgr::instance()->add("cola_bundle", new ColaBundle(260, 380));
-		RegionMgr::instance()->add("sprite_bundle", new SpriteBundle(400, 380));
-		RegionMgr::instance()->add("tb_bundle", new TbBundle(550, 420));
-		RegionMgr::instance()->add("mb_bundle", new MbBoxBundle(200, 520));
-		RegionMgr::instance()->add("bc_bundle", new BcBoxBundle(400, 520));
-		RegionMgr::instance()->add("rcp_boudle", new RcpBoxBundle(600, 520));
-		RegionMgr::instance()->add("mo_1", new MicrowaveOven(750, 400));
-		RegionMgr::instance()->add("mo_2", new MicrowaveOven(1000, 400));
-		RegionMgr::instance()->add("takeout_box_1", new TakeoutBox(800, 550));
-		RegionMgr::instance()->add("takeout_box_2", new TakeoutBox(900, 550));
-		RegionMgr::instance()->add("takeout_box_3", new TakeoutBox(1000, 550));
-		RegionMgr::instance()->add("takeout_box_4", new TakeoutBox(1100, 550));
-		RegionMgr::instance()->add("takeout_box_5", new TakeoutBox(1200, 550));
+		RegionMgr::instance()->add("cola_bundle", new ColaBundle(260, 380), 2);
+		RegionMgr::instance()->add("sprite_bundle", new SpriteBundle(400, 380), 2);
+		RegionMgr::instance()->add("tb_bundle", new TbBundle(550, 420), 2);
+		RegionMgr::instance()->add("mb_bundle", new MbBoxBundle(200, 520), 2);
+		RegionMgr::instance()->add("bc_bundle", new BcBoxBundle(400, 520), 2);
+		RegionMgr::instance()->add("rcp_boudle", new RcpBoxBundle(600, 520), 2);
+		RegionMgr::instance()->add("mo_1", new MicrowaveOven(750, 400), 2);
+		RegionMgr::instance()->add("mo_2", new MicrowaveOven(1000, 400), 2);
+		RegionMgr::instance()->add("takeout_box_1", new TakeoutBox(800, 550), 2);
+		RegionMgr::instance()->add("takeout_box_2", new TakeoutBox(900, 550), 2);
+		RegionMgr::instance()->add("takeout_box_3", new TakeoutBox(1000, 550), 2);
+		RegionMgr::instance()->add("takeout_box_4", new TakeoutBox(1100, 550), 2);
+		RegionMgr::instance()->add("takeout_box_5", new TakeoutBox(1200, 550), 2);
 	}
 	catch (const std::exception& e)
 	{

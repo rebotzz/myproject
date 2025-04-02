@@ -1,6 +1,6 @@
 #include "cursor_manager.h"
 #include "resources_manager.h"
-
+#include "kits.h"
 
 CursorMgr* CursorMgr::manager = nullptr;
 CursorMgr* CursorMgr::instance()
@@ -82,13 +82,15 @@ void CursorMgr::on_render(SDL_Renderer* renderer)
 	static SDL_Texture* tex_coin = ResMgr::instance()->find_texture("coin");
 	static SDL_Rect rect_coin = { 1100, 20, 40, 40 };
 	SDL_RenderCopy(renderer, tex_coin, nullptr, &rect_coin);
-	SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font("IPix"), std::to_string(coins).c_str(), { 255,255,255,255 });
-	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
-	SDL_Rect rect_text = { 1150, 25, 0,0 };
-	SDL_QueryTexture(tex_text, nullptr, nullptr, &rect_text.w, &rect_text.h);
-	SDL_RenderCopy(renderer, tex_text, nullptr, &rect_text);
-	SDL_FreeSurface(suf_text);
-	SDL_DestroyTexture(tex_text);
+	//SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font("IPix"), std::to_string(coins).c_str(), { 255,255,255,255 });
+	//SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
+	//SDL_Rect rect_text = { 1150, 25, 0,0 };
+	//SDL_QueryTexture(tex_text, nullptr, nullptr, &rect_text.w, &rect_text.h);
+	//SDL_RenderCopy(renderer, tex_text, nullptr, &rect_text);
+	//SDL_FreeSurface(suf_text);
+	//SDL_DestroyTexture(tex_text);
+
+	render_text(renderer, std::to_string(coins), { 1150, 25, INT_MAX, INT_MAX }, { 255,255,255,255 });
 }
 void CursorMgr::set_picked(Meal meal)
 {

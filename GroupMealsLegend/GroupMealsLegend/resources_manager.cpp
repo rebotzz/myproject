@@ -1,5 +1,6 @@
 #include "resources_manager.h"
 #include <filesystem>
+#include <fstream>
 
 ResMgr* ResMgr::manager = nullptr;
 
@@ -36,6 +37,21 @@ void ResMgr::load(SDL_Renderer* renderer)
 				TTF_Font* font = TTF_OpenFont(path.u8string().c_str(), 32);
 				font_pool[path.stem().u8string().c_str()] = font;
 			}
+			else if (path.extension() == ".txt")
+			{
+				std::fstream file;
+				file.open(path);
+				std::vector<std::string>& text = script_pool[path.stem().u8string()];
+				std::string str;
+
+				while (getline(file, str))
+				{
+					text.emplace_back(std::move(str));
+				}
+
+				//cout << "log: load texts " << texts.size() << " lines." << endl;
+				file.close();
+			}
 		}
 		//SDL_Log("%s\n", path.u8string().c_str());
 	}
@@ -59,6 +75,14 @@ void ResMgr::unload()
 		TTF_CloseFont(iter.second);
 		font_pool.erase(iter.first);
 	}
+	for (auto& iter : script_pool)
+	{
+		iter.second.clear();
+	}
+	texture_pool.clear();
+	audio_pool.clear();
+	font_pool.clear();
+	script_pool.clear();
 }
 SDL_Texture* ResMgr::find_texture(const std::string& id)
 {
@@ -93,4 +117,15 @@ TTF_Font* ResMgr::find_font(const std::string& id)
 		return nullptr;
 	}
 	else return font_pool[id];
+}
+const std::vector<std::string>& ResMgr::find_script(const std::string& id)
+{
+	if (!script_pool.count(id))
+	{
+#ifdef DEBUG
+		throw std::string("not find resource: ") + id;
+#endif // DEBUG
+		return {};
+	}
+	else return script_pool[id];
 }

@@ -150,6 +150,7 @@
     <ClCompile Include="microwave_oven.cpp" />
     <ClCompile Include="region_manager.cpp" />
     <ClCompile Include="resources_manager.cpp" />
+    <ClCompile Include="scene_manager.cpp" />
     <ClCompile Include="takeout_box.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,8 @@
     <ClInclude Include="region.h" />
     <ClInclude Include="region_manager.h" />
     <ClInclude Include="resources_manager.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="scene_manager.h" />
     <ClInclude Include="takeout_box.h" />
     <ClInclude Include="timer.h" />
   </ItemGroup>

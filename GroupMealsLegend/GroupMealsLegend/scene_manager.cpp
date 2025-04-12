@@ -26,14 +26,14 @@ SceneMgr::SceneMgr()
 void SceneMgr::on_input(const SDL_Event& event)
 {
 	// 只渲染，不接收输入、更新；为了对话在场景之上提供支持。
-	if (GameSystem::Mode::Dialogue == GameSystem::instance()->get_mode()) return;
+	if (cur_scene_id != "transition" && GameSystem::Mode::Dialogue == GameSystem::instance()->get_mode()) return;
 
 	if (cur_scene)
 		cur_scene->on_input(event);
 }
 void SceneMgr::on_update(float delta)
 {
-	if (GameSystem::Mode::Dialogue == GameSystem::instance()->get_mode()) return;
+	if (cur_scene_id != "transition" && GameSystem::Mode::Dialogue == GameSystem::instance()->get_mode()) return;
 
 	if (cur_scene)
 		cur_scene->on_update(delta);
@@ -51,6 +51,8 @@ void SceneMgr::add(const std::string& id, Scene* scene)
 
 void SceneMgr::switch_scene(const std::string& id)
 {
+	SDL_Log("switch_scene: %s\n", id.c_str());
+
 	if (cur_scene)
 		cur_scene->on_exit();
 	cur_scene = scene_pool[id];
@@ -68,7 +70,7 @@ void SceneMgr::transition_scene(const std::string& transition_text, float transi
 	switch_scene("transition");
 }
 
-void SceneMgr::set_just_render(bool flag)
+bool SceneMgr::is_transition() const
 {
-	just_render = flag;
+	return "transition" == cur_scene_id;
 }

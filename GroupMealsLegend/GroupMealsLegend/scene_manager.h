@@ -31,4 +31,6 @@ public:
 	void add(const std::string& id, Scene* scene);
 	void switch_scene(const std::string& id);
 	void transition_scene(const std::string& transition_text, float transition_time = 3.0, const std::string& next_scene = "");
+
+	bool is_transition() const;
 };

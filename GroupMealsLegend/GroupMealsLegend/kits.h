@@ -5,7 +5,7 @@
 
 #include <string>
 
-inline void render_text(SDL_Renderer* renderer, const std::string& text, const SDL_Rect& rect, const SDL_Color& color, const std::string& font = "IPix")
+inline void render_text(SDL_Renderer* renderer, const std::string& text, const SDL_Rect& rect, const SDL_Color& color, const std::string& font = "simhei")
 {
 	SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font(font), text.c_str(), color);
 	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
@@ -23,13 +23,29 @@ inline void render_text(SDL_Renderer* renderer, const std::string& text, const S
 	SDL_DestroyTexture(tex_text);
 }
 
-// 实现格式化渲染，不同未知不同颜色
-inline void render_textEx()
+// 实现格式化渲染，不同颜色
+inline void render_textEx(SDL_Renderer* renderer, const std::vector<std::string>& texts, const std::vector<SDL_Color>& colors,
+	const SDL_Point& left_top_point, const std::string& font = "simhei")
 {
-	// todo
+	if (texts.size() != colors.size())
+		return;
+
+	SDL_Point point = left_top_point;
+	for (int i = 0; i < texts.size(); ++i)
+	{
+		SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font(font), texts[i].c_str(), colors[i]);
+		SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
+		SDL_Rect rect_text = { point.x, point.y, 0, 0 };
+		SDL_QueryTexture(tex_text, nullptr, nullptr, &rect_text.w, &rect_text.h);
+		SDL_RenderCopy(renderer, tex_text, nullptr, &rect_text);
+		SDL_FreeSurface(suf_text);
+		SDL_DestroyTexture(tex_text);
+
+		point.x += rect_text.w;
+	}
 }
 
-inline void render_text(SDL_Renderer* renderer, const std::string& text, const SDL_Point& center_point, const SDL_Color& color, const std::string& font = "IPix")
+inline void render_text(SDL_Renderer* renderer, const std::string& text, const SDL_Point& center_point, const SDL_Color& color, const std::string& font = "simhei")
 {
 	SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font(font), text.c_str(), color);
 	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);

@@ -33,6 +33,7 @@ public:
 	{
 		Bundle::on_render(renderer);
 		static SDL_Texture* texture = ResMgr::instance()->find_texture("mb_icon");
+		SDL_SetTextureAlphaMod(texture, 255);
 		static SDL_Rect rect_src = { 0, 0, (int)(63 * 0.7), (int)(27 * 0.7) };
 		static SDL_Rect rect_dst = { _rect.x + 30, _rect.y - 5, rect_src.w, rect_src.h };
 		SDL_RenderCopy(renderer, texture, nullptr, &rect_dst);
@@ -49,6 +50,7 @@ public:
 	{
 		Bundle::on_render(renderer);
 		static SDL_Texture* texture = ResMgr::instance()->find_texture("bc_icon");
+		SDL_SetTextureAlphaMod(texture, 255);
 		static SDL_Rect rect_src = { 0, 0, (int)(63 * 0.7), (int)(27 * 0.7) };
 		static SDL_Rect rect_dst = { _rect.x + 30, _rect.y - 5, rect_src.w, rect_src.h };
 		SDL_RenderCopy(renderer, texture, nullptr, &rect_dst);
@@ -65,6 +67,7 @@ public:
 	{
 		Bundle::on_render(renderer);
 		static SDL_Texture* texture = ResMgr::instance()->find_texture("rcp_icon");
+		SDL_SetTextureAlphaMod(texture, 255);
 		static SDL_Rect rect_src = { 0, 0, (int)(63 * 0.7), (int)(27 * 0.7) };
 		static SDL_Rect rect_dst = { _rect.x + 30, _rect.y - 5, rect_src.w, rect_src.h };
 		SDL_RenderCopy(renderer, texture, nullptr, &rect_dst);

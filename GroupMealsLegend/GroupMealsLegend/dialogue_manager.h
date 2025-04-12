@@ -12,7 +12,7 @@
 class DialogMgr
 {
 private:
-	class DialogBox 
+	class DialogBox
 	{
 	public:
 		enum class Color
@@ -21,18 +21,16 @@ private:
 		};
 	private:
 		std::string text;
-		SDL_Rect rect;
-		//bool finished = false;
+		SDL_Rect rect = { 0 };
 		Color color = Color::C1;
-		std::string img_id;
+		std::string img;
 
-
+		//bool finished = false;
 
 	public:
 		void on_input(const SDL_Event& event);
 		void on_update(float delta);
 		void on_render(SDL_Renderer* renderer);
-		const SDL_Rect& get_rect() const;
 		void set_dialog(const std::string& text, const std::string& img, Color color);
 	};
 
@@ -54,16 +52,15 @@ private:
 	static DialogMgr* manager;
 
 	DialogBox dialog_box;
-	DialogHistory dialog_history;
-	std::string script_id;		// 在资源管理中
+	std::string script_id = "script_1";		// 执行脚本，在资源管理中
 	int idx = 0;
+	bool condition = true;					// 继续解析脚本的条件是否完成
+	std::string goal;						// 继续解析脚本前需要完成的目标
 
-	bool condition = true;		// 继续解析脚本的条件是否完成
-	std::string goal;			// 继续解析脚本前需要完成的目标
+	//DialogHistory dialog_history;
 
 private:
 	DialogMgr() = default;
-	DialogMgr(const std::string& _script_id) :script_id(_script_id) { }
 	~DialogMgr() = default;
 
 public:
@@ -78,9 +75,9 @@ public:
 	void set_idx(int val);
 	bool check_idx() const;
 
+	void set_script_id(const std::string& id);
+
 	void finish_goal();
 	const std::string& get_goal() const;
 
-private:
-	//const std::string& get_next_text() const;
 };

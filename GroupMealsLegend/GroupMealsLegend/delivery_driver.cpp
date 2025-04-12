@@ -11,8 +11,6 @@ DeliveryDriver::DeliveryDriver(int x, int y):Region({x, y, 192, 272})
 		{
 			refresh();
 		});
-	//refresh();
-	//is_waiting = rand() % 2;
 }
 
 void DeliveryDriver::refresh()

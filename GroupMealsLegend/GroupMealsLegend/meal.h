@@ -15,4 +15,6 @@ enum class Meal
 	MeatBall_Box,					// 肉丸（餐品盒子）
 	RedCookedPork_Box,				// 红烧肉（餐品盒子）
 	TakeoutBox,						// 外卖盒
+
+	// todo 调酒原料
 };

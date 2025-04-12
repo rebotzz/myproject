@@ -22,7 +22,6 @@ private:
 	SDL_Renderer* renderer = nullptr;
 	const int WINDOW_W = 1280, WINDOW_H = 720;
 	const int FPS = 60;
-
 	std::string bgm;
 
 private:
@@ -37,4 +36,6 @@ public:
 	void start();
 
 	void switch_bgm(const std::string& id);
+	void set_goal(int val);
+	void finish_goal();
 };

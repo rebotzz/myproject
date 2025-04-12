@@ -1,6 +1,8 @@
 #include "cursor_manager.h"
 #include "resources_manager.h"
 #include "kits.h"
+#include "game_system.h"
+#include "scene_manager.h"
 
 CursorMgr* CursorMgr::manager = nullptr;
 CursorMgr* CursorMgr::instance()
@@ -46,6 +48,9 @@ void CursorMgr::on_input(const SDL_Event& event)
 }
 void CursorMgr::on_render(SDL_Renderer* renderer)
 {
+	if (SceneMgr::instance()->is_transition())
+		return;
+
 	// 绘制持有的餐品纹理
 	SDL_Texture* texture_picked = nullptr;
 	switch (meal_picked)
@@ -104,5 +109,15 @@ Meal CursorMgr::get_picked()
 void CursorMgr::add_coins(int val)
 {
 	coins += val;
+	goal -= val;
+	if (goal <= 0)
+	{
+		GameSystem::instance()->finish_goal();
+	}
 	Mix_PlayChannel(-1, ResMgr::instance()->find_audio("get_coins"), 0);
+}
+
+void CursorMgr::set_goal(int val)
+{
+	goal = val;
 }

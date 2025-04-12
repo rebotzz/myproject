@@ -54,7 +54,7 @@ void RegionMgr::on_update(float delta)
 
 void RegionMgr::on_render(SDL_Renderer* renderer)
 {
-	for (auto& [name, region] : region_pool)
+	for (auto& [layer, region] : render_layer_region)
 	{
 		if (nullptr != region && region->get_valid())
 			region->on_render(renderer);
@@ -76,11 +76,25 @@ void RegionMgr::on_debug_render(SDL_Renderer* renderer)
 void RegionMgr::add(const std::string& name, Region* region, int layer)
 {
 	region_pool[name] = region;
-	render_layer.push_back(std::make_pair(layer, region));
-	std::sort(render_layer.begin(), render_layer.end(), [](std::pair<int, Region*>& p1, std::pair<int, Region*>& p2)
+	render_layer_region.push_back(std::make_pair(layer, region));
+	std::sort(render_layer_region.begin(), render_layer_region.end());
+}
+
+void RegionMgr::remove(const std::string& name)
+{
+	if (region_pool.count(name))
+	{
+		Region* target = region_pool[name];
+		region_pool.erase(name);
+		for (auto iter = render_layer_region.begin(); iter != render_layer_region.end(); ++iter)
 		{
-			return p1.first < p2.first;
-		});
+			if (iter->second == target)
+			{
+				iter = render_layer_region.erase(iter);
+				break;
+			}
+		}
+	}
 }
 
 Region* RegionMgr::find(const std::string& name)
@@ -92,14 +106,14 @@ void RegionMgr::set_layer(const std::string& id, unsigned int val)
 {
 	if (region_pool.count(id) == 0) return;
 	const Region* target = region_pool[id];
-	for (auto iter = render_layer.begin(); iter != render_layer.end(); ++iter)
+	for (auto iter = render_layer_region.begin(); iter != render_layer_region.end(); ++iter)
 	{
 		if (iter->second == target)
 		{
-			render_layer.erase(iter);
+			render_layer_region.erase(iter);
 			break;
 		}
 	}
-	render_layer.push_back(std::make_pair(val, region_pool[id]));
-	std::sort(render_layer.begin(), render_layer.end());		// ÉıĞò
+	render_layer_region.push_back(std::make_pair(val, region_pool[id]));
+	std::sort(render_layer_region.begin(), render_layer_region.end());		// ÉıĞò
 }

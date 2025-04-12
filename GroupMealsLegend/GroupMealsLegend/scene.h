@@ -7,9 +7,10 @@
 class Scene
 {
 public:
-	virtual void on_input(const SDL_Event& evnet) = 0;
-	virtual void on_update(float delta) = 0;
-	virtual void on_render(SDL_Renderer* renderer) = 0;
-	virtual void on_enter() {};	// 场景切换资源准备工作
+	virtual void on_input(const SDL_Event& evnet);
+	virtual void on_update(float delta);
+	virtual void on_render(SDL_Renderer* renderer);
+	// 场景切换资源加载/释放
+	virtual void on_enter() = 0;	
 	virtual void on_exit() {};
 };

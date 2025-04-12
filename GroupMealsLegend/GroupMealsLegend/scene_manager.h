@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string>
 
-// 包含关系：场景管理器 - 场景 - 多个区域
+// 包含关系：场景管理器 - 管理多个场景 - 每个场景包含多个区域
 
 
 class SceneMgr
@@ -14,9 +14,11 @@ private:
 
 	std::unordered_map<std::string, Scene*> scene_pool;
 	Scene* cur_scene = nullptr;
+	std::string cur_scene_id;
+
 
 private:
-	SceneMgr() = default;
+	SceneMgr();
 	~SceneMgr() = default;
 
 public:
@@ -28,4 +30,5 @@ public:
 
 	void add(const std::string& id, Scene* scene);
 	void switch_scene(const std::string& id);
+	void transition_scene(const std::string& transition_text, float transition_time = 3.0, const std::string& next_scene = "");
 };

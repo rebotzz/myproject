@@ -1,4 +1,7 @@
 #include "scene_manager.h"
+#include "concrete_scene.h"
+
+#include "game_system.h"
 
 SceneMgr* SceneMgr::manager = nullptr;
 
@@ -11,13 +14,27 @@ SceneMgr* SceneMgr::instance()
 	return manager;
 }
 
+SceneMgr::SceneMgr()
+{
+	scene_pool["day"] = new DayScene();
+	scene_pool["night"] = new NightScene();
+	scene_pool["transition"] = new TransitionScene();
+	cur_scene = scene_pool["day"];
+	cur_scene_id = "day";
+}
+
 void SceneMgr::on_input(const SDL_Event& event)
 {
+	// 只渲染，不接收输入、更新；为了对话在场景之上提供支持。
+	if (GameSystem::Mode::Dialogue == GameSystem::instance()->get_mode()) return;
+
 	if (cur_scene)
 		cur_scene->on_input(event);
 }
 void SceneMgr::on_update(float delta)
 {
+	if (GameSystem::Mode::Dialogue == GameSystem::instance()->get_mode()) return;
+
 	if (cur_scene)
 		cur_scene->on_update(delta);
 }
@@ -37,6 +54,21 @@ void SceneMgr::switch_scene(const std::string& id)
 	if (cur_scene)
 		cur_scene->on_exit();
 	cur_scene = scene_pool[id];
+	cur_scene_id = id;
 	if (cur_scene)
 		cur_scene->on_enter();
+}
+
+void SceneMgr::transition_scene(const std::string& transition_text, float transition_time, const std::string& next_scene)
+{
+	TransitionScene* trans = dynamic_cast<TransitionScene*>(scene_pool["transition"]);
+	trans->set_text(transition_text);
+	trans->set_wait_time(transition_time);
+	trans->set_next_scene(next_scene == "" ? cur_scene_id : next_scene);
+	switch_scene("transition");
+}
+
+void SceneMgr::set_just_render(bool flag)
+{
+	just_render = flag;
 }

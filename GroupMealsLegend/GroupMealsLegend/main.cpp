@@ -48,6 +48,7 @@ int main()
 	ResMgr::instance()->load(renderer);
 	init_region();
 	Mix_FadeInChannel(-1, ResMgr::instance()->find_audio("bgm"), -1, 500);
+	
 
 	SDL_Event event;
 	bool quit = false;
@@ -92,6 +93,8 @@ int main()
 			SDL_Delay((int)(delay * 1000));	//ms
 	}
 
+
+	Mix_CloseAudio();
 	Mix_Quit();
 	TTF_Quit();
 	IMG_Quit();

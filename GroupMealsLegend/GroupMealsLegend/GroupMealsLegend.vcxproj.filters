@@ -39,13 +39,19 @@
     <ClCompile Include="delivery_driver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="demo.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="dialogue_manager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="scene_manager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="game_system.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="concrete_scene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -90,6 +96,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="scene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kits.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game_system.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="concrete_scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

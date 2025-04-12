@@ -9,8 +9,8 @@ class RegionMgr
 {
 private:
 	static RegionMgr* manager;
-	std::unordered_map<std::string, Region*> region_pool;	// ÇøÓò³Ø
-	std::vector<std::pair<int, Region*>> render_layer;		// ÇøÓòäÖÈ¾·Ö²ã
+	std::unordered_map<std::string, Region*> region_pool;			// ÇøÓò³Ø
+	std::vector<std::pair<int, Region*>> render_layer_region;		// ÇøÓòäÖÈ¾·Ö²ã
 
 private:
 	RegionMgr() = default;
@@ -25,6 +25,7 @@ public:
 	void on_debug_render(SDL_Renderer* renderer);
 
 	void add(const std::string& name, Region* region, int layer = 0);
+	void remove(const std::string& name);
 	Region* find(const std::string& name);
 	void set_layer(const std::string& id, unsigned int val);
 };

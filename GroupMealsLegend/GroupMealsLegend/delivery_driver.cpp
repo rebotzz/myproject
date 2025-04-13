@@ -96,10 +96,10 @@ void DeliveryDriver::on_render(SDL_Renderer* renderer)
 	if (!is_waiting) return;
 
 	// 外卖员
-	SDL_RenderCopy(renderer, ResMgr::instance()->find_texture(is_meituan ? "meituan" : "eleme"), nullptr, &_rect);
+	SDL_RenderCopy(renderer, ResMgr::instance()->find_texture(is_meituan ? "meituan" : "eleme"), nullptr, &rect);
 
 	// 耐心条
-	SDL_Rect rect_border = { _rect.x - 35, _rect.y + 15, 40, 160 };
+	SDL_Rect rect_border = { rect.x - 35, rect.y + 15, 40, 160 };
 	int h = 160 * (waited_time / waited_time_limit);
 	SDL_Rect rect_content_src = { 0, 160 - h, rect_border.w, h };
 	SDL_Rect rect_content_dst = { rect_border.x, rect_border.y + 160 - h, rect_border.w, h };
@@ -109,7 +109,7 @@ void DeliveryDriver::on_render(SDL_Renderer* renderer)
 	SDL_RenderCopy(renderer, tex_patience_content, &rect_content_src, &rect_content_dst);
 
 	// 需求框
-	SDL_Rect rect_bubble = { _rect.x + 175, _rect.y + 55, 76, 139 };
+	SDL_Rect rect_bubble = { rect.x + 175, rect.y + 55, 76, 139 };
 	static SDL_Texture* tex_bubble = ResMgr::instance()->find_texture("bubble");
 	SDL_RenderCopy(renderer, tex_bubble, nullptr, &rect_bubble);
 

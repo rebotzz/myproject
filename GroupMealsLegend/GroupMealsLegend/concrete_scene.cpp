@@ -71,9 +71,6 @@ void DayScene::on_enter()
 	RegionMgr::instance()->add("takeout_box_5", new TakeoutBox(1200, 550), 4);
 
 	timer.restart();
-
-	// 播放音乐	改为gamesystem管理
-	//Mix_FadeInChannel(-1, ResMgr::instance()->find_audio("bgm"), -1, 500);
 }
 void DayScene::on_exit() 
 {
@@ -94,11 +91,21 @@ void DayScene::on_exit()
 	RegionMgr::instance()->remove("takeout_box_3");
 	RegionMgr::instance()->remove("takeout_box_4");
 	RegionMgr::instance()->remove("takeout_box_5");
-
-	//Mix_FreeChunk(ResMgr::instance()->find_audio("bgm"));
 }
 
 
+NightScene::NightScene()
+{
+
+}
+void NightScene::on_update(float delta)
+{
+
+}
+void NightScene::on_render(SDL_Renderer* renderer)
+{
+
+}
 void NightScene::on_enter() {}
 void NightScene::on_exit() {}
 

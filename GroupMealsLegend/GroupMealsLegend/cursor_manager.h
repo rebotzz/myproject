@@ -26,4 +26,5 @@ public:
 	void add_coins(int val);
 
 	void set_goal(int val);
+	const SDL_Point& get_position() const;
 };

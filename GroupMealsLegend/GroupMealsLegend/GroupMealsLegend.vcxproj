@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bartending_tools.cpp" />
     <ClCompile Include="buondle.cpp" />
     <ClCompile Include="concrete_scene.cpp" />
     <ClCompile Include="cursor_manager.cpp" />
@@ -156,6 +157,8 @@
     <ClCompile Include="takeout_box.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="animation.h" />
+    <ClInclude Include="bartending_tools.h" />
     <ClInclude Include="bundle.h" />
     <ClInclude Include="concrete_scene.h" />
     <ClInclude Include="delivery_driver.h" />
@@ -173,6 +176,7 @@
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="takeout_box.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

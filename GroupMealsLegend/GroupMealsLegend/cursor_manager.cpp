@@ -121,3 +121,8 @@ void CursorMgr::set_goal(int val)
 {
 	goal = val;
 }
+
+const SDL_Point& CursorMgr::get_position() const
+{
+	return pos_cursor;
+}

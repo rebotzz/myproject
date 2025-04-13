@@ -67,7 +67,7 @@ void MicrowaveOven::on_render(SDL_Renderer* renderer)
 		case Meal::MeatBall_Hot: texture = ResMgr::instance()->find_texture("mb_hot"); break;
 		case Meal::RedCookedPork_Hot: texture = ResMgr::instance()->find_texture("rcp_hot"); break;
 		}
-		SDL_Rect rect_meal = { _rect.x + 113, _rect.y + 65, 0, 0 };
+		SDL_Rect rect_meal = { rect.x + 113, rect.y + 65, 0, 0 };
 		SDL_QueryTexture(texture, nullptr, nullptr, &rect_meal.w, &rect_meal.h);
 		SDL_RenderCopy(renderer, texture, nullptr, &rect_meal);
 	}

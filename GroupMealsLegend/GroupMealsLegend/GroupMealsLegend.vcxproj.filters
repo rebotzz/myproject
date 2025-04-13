@@ -54,6 +54,9 @@
     <ClCompile Include="scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="bartending_tools.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resources_manager.h">
@@ -105,6 +108,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="concrete_scene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bartending_tools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="animation.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

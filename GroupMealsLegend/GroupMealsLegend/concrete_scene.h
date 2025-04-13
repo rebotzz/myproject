@@ -29,7 +29,10 @@ public:
 class NightScene : public Scene
 {
 public:
+	NightScene();
 
+	void on_update(float delta) override;
+	void on_render(SDL_Renderer* renderer) override;
 	void on_enter() override;// 场景切换资源准备工作
 	void on_exit() override;
 };

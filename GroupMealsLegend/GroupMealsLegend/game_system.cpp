@@ -4,15 +4,14 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "SDL_mixer.h"
-
 #include "resources_manager.h"
 #include "cursor_manager.h"
 #include "region_manager.h"
-
-#include <ctime>
-
 #include "scene_manager.h"
 #include "dialogue_manager.h"
+#include <ctime>
+
+
 
 GameSystem* GameSystem::manager = nullptr;
 

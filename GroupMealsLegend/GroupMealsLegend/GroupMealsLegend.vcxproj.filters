@@ -54,7 +54,16 @@
     <ClCompile Include="scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="bartending_tools.cpp">
+    <ClCompile Include="bartend_tool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="button.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="bartend_material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="bartend_system.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,13 +119,22 @@
     <ClInclude Include="concrete_scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="bartending_tools.h">
+    <ClInclude Include="bartend_tool.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="animation.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vector2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bartend_material.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bartend_system.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,6 +3,8 @@
 #include "kits.h"
 #include "game_system.h"
 #include "scene_manager.h"
+#include "region_manager.h"
+#include "bartend_tool.h"
 
 CursorMgr* CursorMgr::manager = nullptr;
 CursorMgr* CursorMgr::instance()
@@ -67,7 +69,16 @@ void CursorMgr::on_render(SDL_Renderer* renderer)
 	case Meal::BraisedChicken_Box:	texture_picked = ResMgr::instance()->find_texture("bc_box"); break;
 	case Meal::MeatBall_Box:		texture_picked = ResMgr::instance()->find_texture("mb_box"); break;
 	case Meal::RedCookedPork_Box:	texture_picked = ResMgr::instance()->find_texture("rcp_box"); break;
-	case Meal::TakeoutBox:			texture_picked = ResMgr::instance()->find_texture("tb_picked"); break;			
+	case Meal::TakeoutBox:			texture_picked = ResMgr::instance()->find_texture("tb_picked"); break;
+
+	case Meal::Adelhyde:			texture_picked = ResMgr::instance()->find_texture("adelhyde"); break;
+	case Meal::BronsonExt:			texture_picked = ResMgr::instance()->find_texture("bronsonext"); break;
+	case Meal::PwdDelta:			texture_picked = ResMgr::instance()->find_texture("pwddelta"); break;
+	case Meal::Flanergide:			texture_picked = ResMgr::instance()->find_texture("flanergide"); break;
+	case Meal::Karmotrine:			texture_picked = ResMgr::instance()->find_texture("karmotrine"); break;
+	case Meal::Ice:			texture_picked = ResMgr::instance()->find_texture("ice"); break;
+	case Meal::Ageing:			texture_picked = ResMgr::instance()->find_texture("ageing"); break;
+
 	default: break;
 	}
 	if (texture_picked)
@@ -79,7 +90,11 @@ void CursorMgr::on_render(SDL_Renderer* renderer)
 
 	// 绘制光标纹理
 	SDL_Rect rect_cursor = { pos_cursor.x ,pos_cursor.y, 0, 0 };
-	SDL_Texture* tex_cursor = ResMgr::instance()->find_texture(is_mouse_lbtn_down ? "cursor_down" : "cursor_idle");
+	SDL_Texture* tex_cursor = nullptr;
+	if(is_bartending)
+		tex_cursor = ResMgr::instance()->find_texture(is_mouse_lbtn_down ? "cursor2_down" : "cursor2_idle");
+	else
+		tex_cursor = ResMgr::instance()->find_texture(is_mouse_lbtn_down ? "cursor_down" : "cursor_idle");
 	SDL_QueryTexture(tex_cursor, nullptr, nullptr, &rect_cursor.w, &rect_cursor.h);
 	SDL_RenderCopy(renderer, tex_cursor, nullptr, &rect_cursor);
 
@@ -87,14 +102,6 @@ void CursorMgr::on_render(SDL_Renderer* renderer)
 	static SDL_Texture* tex_coin = ResMgr::instance()->find_texture("coin");
 	static SDL_Rect rect_coin = { 1100, 20, 40, 40 };
 	SDL_RenderCopy(renderer, tex_coin, nullptr, &rect_coin);
-	//SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font("IPix"), std::to_string(coins).c_str(), { 255,255,255,255 });
-	//SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
-	//SDL_Rect rect_text = { 1150, 25, 0,0 };
-	//SDL_QueryTexture(tex_text, nullptr, nullptr, &rect_text.w, &rect_text.h);
-	//SDL_RenderCopy(renderer, tex_text, nullptr, &rect_text);
-	//SDL_FreeSurface(suf_text);
-	//SDL_DestroyTexture(tex_text);
-
 	render_text(renderer, std::to_string(coins), { 1150, 25, INT_MAX, INT_MAX }, { 255,255,255,255 });
 }
 void CursorMgr::set_picked(Meal meal)
@@ -125,4 +132,29 @@ void CursorMgr::set_goal(int val)
 const SDL_Point& CursorMgr::get_position() const
 {
 	return pos_cursor;
+}
+
+void CursorMgr::redo_drink()
+{
+	// 这里还有更好的办法吗？
+	BartendBottle* bartend_bottle = dynamic_cast<BartendBottle*>(RegionMgr::instance()->find("bartend_bottle"));
+	bartend_bottle->reset();
+}
+void CursorMgr::modulate_drink()
+{
+	BartendBottle* bartend_bottle = dynamic_cast<BartendBottle*>(RegionMgr::instance()->find("bartend_bottle"));
+	Meal before = meal_picked;
+	bartend_bottle->modulate();
+
+	// todo: 限制判断条件, 加入酒客判断酒是否正确部分。
+	if (before == Meal::None && meal_picked != Meal::None)
+	{
+		GameSystem::instance()->finish_goal();
+		meal_picked = Meal::None;
+	}
+}
+
+void CursorMgr::enable_bartend(bool flag)		// 是否开启酒保模式
+{
+	is_bartending = flag;
 }

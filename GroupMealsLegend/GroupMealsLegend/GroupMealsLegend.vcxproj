@@ -141,8 +141,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bartending_tools.cpp" />
+    <ClCompile Include="bartend_tool.cpp" />
+    <ClCompile Include="bartend_material.cpp" />
+    <ClCompile Include="bartend_system.cpp" />
     <ClCompile Include="buondle.cpp" />
+    <ClCompile Include="button.cpp" />
     <ClCompile Include="concrete_scene.cpp" />
     <ClCompile Include="cursor_manager.cpp" />
     <ClCompile Include="delivery_driver.cpp" />
@@ -158,8 +161,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h" />
-    <ClInclude Include="bartending_tools.h" />
+    <ClInclude Include="bartend_tool.h" />
+    <ClInclude Include="bartend_material.h" />
+    <ClInclude Include="bartend_system.h" />
     <ClInclude Include="bundle.h" />
+    <ClInclude Include="button.h" />
     <ClInclude Include="concrete_scene.h" />
     <ClInclude Include="delivery_driver.h" />
     <ClInclude Include="dialogue_manager.h" />

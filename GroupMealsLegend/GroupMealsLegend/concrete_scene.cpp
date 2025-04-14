@@ -10,7 +10,8 @@
 #include "microwave_oven.h"
 #include "kits.h"
 #include "game_system.h"
-
+#include "bartend_tool.h"
+#include "bartend_material.h"
 
 DayScene::DayScene()
 {
@@ -71,6 +72,7 @@ void DayScene::on_enter()
 	RegionMgr::instance()->add("takeout_box_5", new TakeoutBox(1200, 550), 4);
 
 	timer.restart();
+	CursorMgr::instance()->enable_bartend(false);
 }
 void DayScene::on_exit() 
 {
@@ -100,14 +102,49 @@ NightScene::NightScene()
 }
 void NightScene::on_update(float delta)
 {
-
+	Scene::on_update(delta);
 }
 void NightScene::on_render(SDL_Renderer* renderer)
 {
-
+	// ±³¾°
+	static SDL_Texture* tex_bg = ResMgr::instance()->find_texture("background_night");
+	static SDL_Texture* tex_bartend = ResMgr::instance()->find_texture("bartending");
+	static SDL_Rect rect_bg = { 0,0,1280,720 };
+	static SDL_Rect rect_bt = { 700,155,583, 470 };
+	SDL_RenderCopy(renderer, tex_bg, nullptr, &rect_bg);
+	SDL_RenderCopy(renderer, tex_bartend, nullptr, &rect_bt);
+	
+	// ½»»¥ÇøÓò
+	Scene::on_render(renderer);
 }
-void NightScene::on_enter() {}
-void NightScene::on_exit() {}
+void NightScene::on_enter() 
+{
+	RegionMgr::instance()->add("Adelhyde", new Adelhyde, 0);
+	RegionMgr::instance()->add("BronsonExt", new BronsonExt, 0);
+	RegionMgr::instance()->add("PwdDelta", new PwdDelta, 0);
+	RegionMgr::instance()->add("Flanergide", new Flanergide, 0);
+	RegionMgr::instance()->add("Karmotrine", new Karmotrine, 0);
+	RegionMgr::instance()->add("Ice", new Ice, 0);
+	RegionMgr::instance()->add("Ageing", new Ageing, 0);
+
+	RegionMgr::instance()->add("ButtonRedo", new ButtonRedo, 0);
+	RegionMgr::instance()->add("ButtonModulate", new ButtonModulate, 0);
+	RegionMgr::instance()->add("BartendBottle", new BartendBottle, 0);
+
+	CursorMgr::instance()->enable_bartend(true);
+}
+void NightScene::on_exit() 
+{
+	RegionMgr::instance()->remove("Adelhyde");
+	RegionMgr::instance()->remove("BronsonExt");
+	RegionMgr::instance()->remove("PwdDelta");
+	RegionMgr::instance()->remove("Flanergide");
+	RegionMgr::instance()->remove("Karmotrine");
+	RegionMgr::instance()->remove("Ice");
+	RegionMgr::instance()->remove("Ageing");
+	RegionMgr::instance()->remove("ButtonRedo");
+	RegionMgr::instance()->remove("ButtonModulate");
+}
 
 
 

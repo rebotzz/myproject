@@ -12,6 +12,7 @@ private:
 	bool is_mouse_lbtn_down = false;	// 鼠标左键是否按下
 	int coins = 0;						// 获取硬币
 	int goal = 100;						// 目标赚取硬币数目
+	bool is_bartending = false;			// 是否是酒保模式
 
 private:
 	CursorMgr() = default;
@@ -27,4 +28,8 @@ public:
 
 	void set_goal(int val);
 	const SDL_Point& get_position() const;
+
+	void redo_drink();					// 重新调酒
+	void modulate_drink();				// 调酒
+	void enable_bartend(bool flag);		// 是否开启酒保模式
 };

@@ -1,50 +1,13 @@
-#include "bartending_tools.h"
+#include "bartend_tool.h"
 #include "cursor_manager.h"
 #include "resources_manager.h"
+#include "kits.h"
 #include <unordered_set>
 #include <algorithm>
 
-RawMaterial::RawMaterial(Meal _meal, SDL_Rect _rect, SDL_Color _color)
-	:Region(_rect), meal(_meal), color(_color)
-{
-}
 
-void RawMaterial::on_render(SDL_Renderer* renderer)
-{
-	// 绘制表示原料加入份量的矩形
-	SDL_Rect base_rect = { rect.x + 50, rect.y, 90 / 5, 70 / 2 };
-	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a * 0.5);
-	for (int i = 0; i < 10; ++i)
-	{
-		SDL_Rect count_rect = base_rect;
-		if (i < 5) count_rect.x += (i % 5) * base_rect.w + 2;
-		if (i > 5) count_rect.y += base_rect.h + 2;
 
-		SDL_RenderDrawRect(renderer, &count_rect);
-	}
-	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-	for (int i = 0; i < count; ++i)
-	{
-		SDL_Rect count_rect = base_rect;
-		count_rect.x += (i % 5) * base_rect.w + 2;
-		count_rect.y += ((i / 5) % 2) * base_rect.h + 2;
-
-		if (i >= 10) SDL_RenderFillRect(renderer, &count_rect);
-		else SDL_RenderDrawRect(renderer, &count_rect);
-	}
-}
-void RawMaterial::on_cursor_down()
-{
-	if (CursorMgr::instance()->get_picked() == Meal::None)
-		CursorMgr::instance()->set_picked(meal);
-}
-void RawMaterial::on_cursor_up()
-{
-	if (CursorMgr::instance()->get_picked() == meal)
-		CursorMgr::instance()->set_picked(Meal::None);
-}
-
-BartendBottle::BartendBottle()
+BartendBottle::BartendBottle():Region({990, 420, 100, 120})
 {
 	timer_shake.set_one_shot(true);
 	timer_shake.set_on_timeout([&]
@@ -90,17 +53,44 @@ void BartendBottle::on_update(float delta)
 }
 void BartendBottle::on_render(SDL_Renderer* renderer)
 {
-	if (Status::SevereShaking == status || Status::Shaking == status)
+	if (Status::Init == status)
+	{
+		SDL_Rect rect_img{ 0 };
+		if (SDL_PointInRect(&CursorMgr::instance()->get_position(), &rect))
+		{
+			SDL_QueryTexture(tex_open, nullptr, nullptr, &rect_img.w, &rect_img.h);
+			rect_img.x = rect.x + rect.h - rect_img.h;
+			rect_img.y = rect.y + rect.w / 2 - rect_img.w / 2;
+			SDL_RenderCopy(renderer, tex_open, nullptr, &rect_img);
+		}
+		else
+		{
+			SDL_QueryTexture(tex_close, nullptr, nullptr, &rect_img.w, &rect_img.h);
+			rect_img.x = rect.x + rect.h - rect_img.h;
+			rect_img.y = rect.y + rect.w / 2 - rect_img.w / 2;
+			SDL_RenderCopy(renderer, tex_close, nullptr, &rect_img);
+		}
+	}
+	else if (Status::SevereShaking == status || Status::Shaking == status)
 	{
 		anim.on_render(renderer);
 	}
-	else if (SDL_PointInRect(&CursorMgr::instance()->get_position(), &rect))
-	{
-		SDL_RenderCopy(renderer, tex_open, nullptr, &rect);
-	}
 	else
 	{
-		SDL_RenderCopy(renderer, tex_close, nullptr, &rect);
+		SDL_Texture* tex = nullptr;
+		switch (drink)
+		{
+		case Meal::Unkown: tex = ResMgr::instance()->find_texture("unkown"); break;
+		case Meal::CobltVlvt: tex = ResMgr::instance()->find_texture("coblt_vlvt"); break;
+		case Meal::FlffDream: tex = ResMgr::instance()->find_texture("flff_dream"); break;
+		case Meal::MoonBlast: tex = ResMgr::instance()->find_texture("moonblast"); break;
+		case Meal::SugarRush: tex = ResMgr::instance()->find_texture("sugar_rush"); break;
+		}
+		SDL_Rect rect_img{ 0 };
+		SDL_QueryTexture(tex_close, nullptr, nullptr, &rect_img.w, &rect_img.h);
+		rect_img.x = rect.x + rect.h - rect_img.h;
+		rect_img.y = rect.y + rect.w / 2 - rect_img.w / 2;
+		SDL_RenderCopy(renderer, tex, nullptr, &rect_img);
 	}
 }
 void BartendBottle::on_cursor_up()
@@ -121,6 +111,27 @@ void BartendBottle::reset()
 	anim.set_interval(0.5);
 	materials.clear();
 }
+void BartendBottle::modulate()	// 调制饮料
+{
+	switch (status)
+	{
+	case Status::Init: 
+		shake(); 
+		break;
+	case Status::Shaking:
+	case Status::SevereShaking:
+		stop_shaking(); 
+		break;
+	case Status::Done:
+		if (CursorMgr::instance()->get_picked() == Meal::None)
+		{
+			CursorMgr::instance()->set_picked(get_drink());
+		}
+		break;
+	}
+}
+
+
 void BartendBottle::shake()
 {
 	status = Status::Shaking;
@@ -128,16 +139,20 @@ void BartendBottle::shake()
 }
 void BartendBottle::stop_shaking()
 {
-	if (Status::SevereShaking == status)
-		materials.push_back(Meal::Shaking);
+	if (Status::SevereShaking == status || Status::Shaking == status)
+	{
+		if(Status::SevereShaking == status)
+			materials.push_back(Meal::Shaking);
+		status = Status::Done;
+		// 先排序（升序）材料，然后trie树
+		std::sort(materials.begin(), materials.end());
+		drink = tree.check(materials);
+	}
 
-	status = Status::Done;
 }
 Meal BartendBottle::get_drink()
 {
-	// 先排序（升序）材料，然后trie树
-	std::sort(materials.begin(), materials.end());
-	return tree.check(materials);
+	return drink;
 }
 
 
@@ -154,7 +169,7 @@ Meal BartendBottle::TrieTree::check(const std::vector<Meal>& arr)
 	if (i == arr.size()) return cur->drink;
 }
 // 添加新的配方
-void BartendBottle::TrieTree::add_branch(const std::vector<Meal>& arr, Meal meal, bool any_karmotrine = false)
+void BartendBottle::TrieTree::add_branch(const std::vector<Meal>& arr, Meal meal, bool any_karmotrine)
 {
 	Node* cur = root;
 	for (int i = 0; i < 20; ++i)
@@ -205,4 +220,8 @@ void BartendBottle::TrieTree::destroy(Node* node)
 	}
 	delete node;
 }
+
+
+
+
 

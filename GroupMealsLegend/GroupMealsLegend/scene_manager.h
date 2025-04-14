@@ -16,7 +16,6 @@ private:
 	Scene* cur_scene = nullptr;
 	std::string cur_scene_id;
 
-
 private:
 	SceneMgr();
 	~SceneMgr() = default;

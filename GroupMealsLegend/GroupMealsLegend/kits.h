@@ -7,13 +7,14 @@
 
 inline void render_text(SDL_Renderer* renderer, const std::string& text, const SDL_Rect& rect, const SDL_Color& color, const std::string& font = "simhei")
 {
-	SDL_Surface* suf_text = TTF_RenderUTF8_Solid(ResMgr::instance()->find_font(font), text.c_str(), color);
+	//TTF_RenderUTF8_Blended TTF_RenderUTF8_Solid
+	SDL_Surface* suf_text = TTF_RenderUTF8_Blended(ResMgr::instance()->find_font(font), text.c_str(), color);
 	SDL_Texture* tex_text = SDL_CreateTextureFromSurface(renderer, suf_text);
 	SDL_Rect rect_text = rect;
 	SDL_QueryTexture(tex_text, nullptr, nullptr, &rect_text.w, &rect_text.h);
 	if (rect_text.w > rect.w || rect_text.h > rect.h)		// 文字超过给定矩形时，缩放
 	{
-		float scale = std::min(rect.w / rect_text.w, rect.h / rect_text.h);
+		float scale = std::min((float)rect.w / (float)rect_text.w, (float)rect.h / (float)rect_text.h);	// debug: (float)
 		rect_text.w *= scale;
 		rect_text.h *= scale;
 	}

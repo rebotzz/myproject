@@ -92,6 +92,8 @@ SDL_Texture* ResMgr::find_texture(const std::string& id)
 		throw std::string("not find resource: ") + id;
 #endif // DEBUG
 
+		SDL_Log("not find texture: %s\n", id.c_str());
+
 		return nullptr;
 	}
 	else return texture_pool[id];

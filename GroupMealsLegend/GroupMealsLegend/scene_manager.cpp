@@ -21,6 +21,7 @@ SceneMgr::SceneMgr()
 	scene_pool["transition"] = new TransitionScene();
 	cur_scene = scene_pool["day"];
 	cur_scene_id = "day";
+	cur_scene->on_enter();
 }
 
 void SceneMgr::on_input(const SDL_Event& event)

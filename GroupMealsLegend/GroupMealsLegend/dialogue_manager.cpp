@@ -174,10 +174,10 @@ void DialogMgr::DialogBox::on_render(SDL_Renderer* renderer)
 	static int dialog_box_h = 100;
 
 	SDL_Rect dstrect = { 0 };
-	if (img != "??")
+	if (img != "??" && img != "Player")
 	{
 		SDL_QueryTexture(ResMgr::instance()->find_texture(img), nullptr, nullptr, &dstrect.w, &dstrect.h);
-		dstrect.x = 1280 / 2 - dstrect.w / 2;
+		dstrect.x = 1280 / 2 - dstrect.w / 2 - 200;
 		dstrect.y = 720 - dialog_box_h - dstrect.h;
 		SDL_RenderCopy(renderer, ResMgr::instance()->find_texture(img), nullptr, &dstrect);
 	}

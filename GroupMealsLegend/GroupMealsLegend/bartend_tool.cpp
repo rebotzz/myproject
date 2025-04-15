@@ -39,12 +39,10 @@ BartendBottle::BartendBottle() :Region({ 980, 450, 100, 120 })
 	std::vector<Meal> coblt_vlvt_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::Flanergide, Meal::Flanergide,
 	Meal::Flanergide, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Ice };
 
-
 	tree.add_branch(sugar_rush_list, Meal::SugarRush, true);// 任选酒精
 	tree.add_branch(flff_dream_list, Meal::FlffDream, true);// 任选酒精
 	tree.add_branch(moon_blast_list, Meal::MoonBlast);
 	tree.add_branch(coblt_vlvt_list, Meal::CobltVlvt);
-
 }
 
 void BartendBottle::on_update(float delta)

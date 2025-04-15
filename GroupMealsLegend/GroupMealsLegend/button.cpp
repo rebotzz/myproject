@@ -24,7 +24,6 @@ void Button::set_enable(bool flag)
 	is_enabled = flag;
 }
 
-
 void Button::on_render(SDL_Renderer* renderer)
 {
 	if (!is_enabled)
@@ -65,4 +64,14 @@ void Button::on_update(float delta)
 {
 	if (is_button_down && !CursorMgr::instance()->is_button_down())
 		is_button_down = false;
+}
+
+void ButtonText::on_render(SDL_Renderer* renderer)
+{
+	SDL_Color text_color = color;
+	if (!SDL_PointInRect(&CursorMgr::instance()->get_position(), &rect))
+	{
+		text_color.a *= 0.6;
+	}
+	Button::on_render(renderer);
 }

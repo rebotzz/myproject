@@ -34,8 +34,9 @@ GameSystem::Mode GameSystem::get_mode() const
 }
 void GameSystem::switch_bgm(const std::string& id)
 {
-	Mix_FreeChunk(ResMgr::instance()->find_audio(bgm));
-	Mix_FadeInChannel(-1, ResMgr::instance()->find_audio(id), -1, 500);
+	if(bgm_channel != -1)
+		Mix_FadeOutChannel(bgm_channel, 500);
+	bgm_channel = Mix_FadeInChannel(-1, ResMgr::instance()->find_audio(id), -1, 500);
 	bgm = id;
 }
 void GameSystem::start()

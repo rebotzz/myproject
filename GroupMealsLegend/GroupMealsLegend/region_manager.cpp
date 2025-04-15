@@ -54,6 +54,12 @@ void RegionMgr::on_update(float delta)
 
 void RegionMgr::on_render(SDL_Renderer* renderer)
 {
+	if (need_sort)
+	{
+		need_sort = false;
+		std::sort(render_layer_region.begin(), render_layer_region.end());
+	}
+
 	for (auto& [layer, region] : render_layer_region)
 	{
 		if (nullptr != region && region->get_valid())
@@ -77,7 +83,8 @@ void RegionMgr::add(const std::string& name, Region* region, int layer)
 {
 	region_pool[name] = region;
 	render_layer_region.push_back(std::make_pair(layer, region));
-	std::sort(render_layer_region.begin(), render_layer_region.end());
+	need_sort = true;
+	//std::sort(render_layer_region.begin(), render_layer_region.end());
 }
 
 void RegionMgr::remove(const std::string& name)
@@ -85,7 +92,7 @@ void RegionMgr::remove(const std::string& name)
 	if (region_pool.count(name))
 	{
 		Region* target = region_pool[name];
-		region_pool.erase(name);
+		region_pool.erase(name);		// 需要确保后续渲染顺序
 		for (auto iter = render_layer_region.begin(); iter != render_layer_region.end(); ++iter)
 		{
 			if (iter->second == target)

@@ -3,6 +3,7 @@
 #include "game_system.h"
 #undef main
 
+// 即使代码支离破碎，也请您完成它。
 int main()
 {
 	GameSystem::instance()->start();

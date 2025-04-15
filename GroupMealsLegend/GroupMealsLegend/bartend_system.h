@@ -8,10 +8,6 @@
 class BartendSystem
 {
 public:
-	//enum class Staus
-	//{
-	//	// 状态：制作未开始，制作中，调制中，完成
-	//};
 	enum class Status
 	{
 		Init, Doing, Done	// 初始状态->调制中（摇晃）->制作完成（停止摇晃）->提交

@@ -23,6 +23,7 @@ private:
 	const int WINDOW_W = 1280, WINDOW_H = 720;
 	const int FPS = 60;
 	std::string bgm;
+	int bgm_channel = -1;
 
 private:
 	GameSystem() = default;

@@ -42,7 +42,6 @@ private:
 	//	std::queue<std::string> history;
 	//	SDL_Rect rect;
 	//	bool valid = false;
-
 	//public:
 	//	void on_input(const SDL_Event& event);
 	//	void on_update(float delta);
@@ -58,7 +57,6 @@ private:
 	int idx = 0;							// 当前执行脚本序号
 	bool condition = true;					// 继续解析脚本的条件是否完成
 	bool showing_tip = false;				// 是否显示提示
-
 	//DialogHistory dialog_history;
 
 private:

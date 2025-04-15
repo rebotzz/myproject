@@ -3,7 +3,7 @@
 #include <functional>
 #include <string>
 
-// 按钮
+// 一般按键
 class Button : public Region
 {
 private:
@@ -14,6 +14,7 @@ private:
 	bool is_enabled = true;							// 按键是否启用
 
 public:
+	Button() = default;
 	Button(int x, int y);
 
 	void set_describe(const std::string& str);
@@ -27,3 +28,15 @@ public:
 	virtual void on_cursor_down() override;
 };
 
+// 文字按键
+class ButtonText : public Button
+{
+public:
+	SDL_Color color = { 255,255,255,255 };
+public:
+	ButtonText(int x, int y) : Button(x, y) { set_texture(nullptr); }
+	ButtonText():Button(0, 0) { set_texture(nullptr); }
+
+	void set_color(SDL_Color _color) { color = _color; }
+	virtual void on_render(SDL_Renderer* renderer) override;
+};

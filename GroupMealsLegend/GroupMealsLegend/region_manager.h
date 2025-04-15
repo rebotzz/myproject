@@ -11,6 +11,7 @@ private:
 	static RegionMgr* manager;
 	std::unordered_map<std::string, Region*> region_pool;			// 区域池
 	std::vector<std::pair<int, Region*>> render_layer_region;		// 区域渲染分层
+	bool need_sort = false;											// 是否需要排序，保证分层渲染
 
 private:
 	RegionMgr() = default;

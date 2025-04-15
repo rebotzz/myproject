@@ -15,7 +15,7 @@ void RawMaterial::set_count(int val)
 void RawMaterial::on_render(SDL_Renderer* renderer)
 {
 	// 绘制表示原料加入份量的矩形
-	SDL_Rect base_rect = { rect.x + 50, rect.y + 30, 90 / 5 - 5, 70 / 2 - 5};
+	SDL_Rect base_rect = { rect.x + 50, rect.y + 30, 90 / 5 - 6, 70 / 2 - 6};
 
 	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a * 0.5);
 	for (int i = 0; i < 10; ++i)
@@ -30,8 +30,8 @@ void RawMaterial::on_render(SDL_Renderer* renderer)
 	for (int i = 0; i < count; ++i)
 	{
 		SDL_Rect count_rect = base_rect;
-		count_rect.x += (i % 5) * base_rect.w + 4;
-		count_rect.y += ((i / 5) % 2) * base_rect.h + 4;
+		count_rect.x += (i % 5) * (base_rect.w + 2) + 4;
+		count_rect.y += ((i / 5) % 2) * (base_rect.h + 2) + 4;
 
 		if (i >= 10) SDL_RenderFillRect(renderer, &count_rect);
 		else SDL_RenderDrawRect(renderer, &count_rect);

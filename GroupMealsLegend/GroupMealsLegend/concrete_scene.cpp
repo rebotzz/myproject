@@ -10,8 +10,7 @@
 #include "microwave_oven.h"
 #include "kits.h"
 #include "game_system.h"
-#include "bartend_tool.h"
-#include "bartend_material.h"
+#include "bartend_system.h"
 
 DayScene::DayScene()
 {
@@ -96,12 +95,10 @@ void DayScene::on_exit()
 }
 
 
-NightScene::NightScene()
-{
 
-}
 void NightScene::on_update(float delta)
 {
+	BartendSystem::instance()->on_update(delta);
 	Scene::on_update(delta);
 }
 void NightScene::on_render(SDL_Renderer* renderer)
@@ -119,31 +116,14 @@ void NightScene::on_render(SDL_Renderer* renderer)
 }
 void NightScene::on_enter() 
 {
-	RegionMgr::instance()->add("Adelhyde", new Adelhyde, 0);
-	RegionMgr::instance()->add("BronsonExt", new BronsonExt, 0);
-	RegionMgr::instance()->add("PwdDelta", new PwdDelta, 0);
-	RegionMgr::instance()->add("Flanergide", new Flanergide, 0);
-	RegionMgr::instance()->add("Karmotrine", new Karmotrine, 0);
-	RegionMgr::instance()->add("Ice", new Ice, 0);
-	RegionMgr::instance()->add("Ageing", new Ageing, 0);
-
-	RegionMgr::instance()->add("ButtonRedo", new ButtonRedo, 0);
-	RegionMgr::instance()->add("ButtonModulate", new ButtonModulate, 0);
-	RegionMgr::instance()->add("BartendBottle", new BartendBottle, 0);
+	BartendSystem::instance()->open();
 
 	CursorMgr::instance()->enable_bartend(true);
 }
 void NightScene::on_exit() 
 {
-	RegionMgr::instance()->remove("Adelhyde");
-	RegionMgr::instance()->remove("BronsonExt");
-	RegionMgr::instance()->remove("PwdDelta");
-	RegionMgr::instance()->remove("Flanergide");
-	RegionMgr::instance()->remove("Karmotrine");
-	RegionMgr::instance()->remove("Ice");
-	RegionMgr::instance()->remove("Ageing");
-	RegionMgr::instance()->remove("ButtonRedo");
-	RegionMgr::instance()->remove("ButtonModulate");
+	BartendSystem::instance()->close();
+
 }
 
 

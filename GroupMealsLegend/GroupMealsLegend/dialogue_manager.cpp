@@ -40,6 +40,11 @@ void DialogMgr::on_update(float delta)
 }
 void DialogMgr::on_render(SDL_Renderer* renderer)
 {
+	if (showing_tip)
+	{
+		dialog_box.on_render(renderer);
+	}
+
 	if (GameSystem::instance()->get_mode() != GameSystem::Mode::Dialogue || SceneMgr::instance()->is_transition())
 		return;
 
@@ -78,17 +83,21 @@ void DialogMgr::parse()
 		}
 		else if (cmd == "music")	// 播放音乐	
 		{
-			// todo
 			GameSystem::instance()->switch_bgm(opt);
 		}
-		else if (cmd == "game")		// 游戏操作模式,游戏目标可以为空
+		else if (cmd == "game")		// 游戏操作模式,游戏目标可以为空; 目标(1.获取一定数量金币，2.调制某种酒)
 		{
 			GameSystem::instance()->set_mode(GameSystem::Mode::Operator);
-			goal = opt;
-			if (goal.find("coins") != std::string::npos)
+			if (opt.find("coins") != std::string::npos)
 			{
-				int val = std::stoi(goal.substr(5, std::string::npos));
-				GameSystem::instance()->set_goal(val);
+				int val = std::stoi(opt.substr(5, std::string::npos));
+				GameSystem::instance()->set_coins_goal(val);
+			}
+			else
+			{
+				GameSystem::instance()->set_drink_goal(opt);
+				enable_tips(true);
+				set_tips(u8"Tips: 调制一杯" + opt);
 			}
 			condition = false;
 		}
@@ -142,15 +151,32 @@ bool DialogMgr::check_idx() const
 void DialogMgr::finish_goal()
 {
 	condition = true;
-}
-const std::string& DialogMgr::get_goal() const
-{
-	return goal;
+	enable_tips(false);
 }
 
 void DialogMgr::set_script_id(const std::string& id)
 {
 	script_id = id;
+}
+
+void DialogMgr::set_tips(const std::string& val)
+{
+	dialog_box.set_dialog(val, "", DialogBox::Color::C1);
+}
+void DialogMgr::enable_tips(bool flag)
+{
+	showing_tip = flag;
+}
+
+
+DialogMgr::DialogBox::DialogBox()
+{
+	color_map[static_cast<int>(Color::C1)] = { 200, 200, 200, 255 };
+	color_map[static_cast<int>(Color::C2)] = { 50, 130, 240, 255 };
+	color_map[static_cast<int>(Color::C3)] = { 60, 230, 230, 255 };
+	color_map[static_cast<int>(Color::C4)] = { 70, 255, 90, 255 };
+	color_map[static_cast<int>(Color::C5)] = { 255, 130, 70, 255 };
+	color_map[static_cast<int>(Color::C6)] = { 255, 70, 170, 255 };
 }
 
 void DialogMgr::DialogBox::on_input(const SDL_Event& event)
@@ -172,9 +198,8 @@ void DialogMgr::DialogBox::on_render(SDL_Renderer* renderer)
 {
 	// 渲染角色立绘
 	static int dialog_box_h = 100;
-
 	SDL_Rect dstrect = { 0 };
-	if (img != "??" && img != "Player")
+	if (img != "??" && img != "Player" && !img.empty())
 	{
 		SDL_QueryTexture(ResMgr::instance()->find_texture(img), nullptr, nullptr, &dstrect.w, &dstrect.h);
 		dstrect.x = 1280 / 2 - dstrect.w / 2 - 200;
@@ -188,22 +213,12 @@ void DialogMgr::DialogBox::on_render(SDL_Renderer* renderer)
 	SDL_RenderFillRect(renderer, &box_rect);
 
 	// 渲染对话文本
-	SDL_Color text_color;
-	switch (color)
-	{
-	case Color::C1:
-		text_color = { 200, 200, 200, 255 };
-		break;
-	case Color::C2:
-		text_color = { 50, 130, 240, 255 };
-		break;
-	case Color::C3:
-		text_color = { 255, 255, 255, 255 };
-		break;
-	}
-
+	SDL_Color text_color = color_map[static_cast<int>(color)];
 	static SDL_Rect text_rect = { box_rect.x + 30, box_rect.y + 15, box_rect.w - 60, box_rect.h - 20 };
-	render_text(renderer, text, text_rect, text_color);
+	int pos = text.find(':');
+	std::string name = text.substr(0, pos + 1);
+	std::string talk = text.substr(pos + 1, std::string::npos);
+	render_textEx(renderer, { name, talk }, { text_color , {255,255,255,255} }, { text_rect.x, text_rect.y });
 }
 
 void DialogMgr::DialogBox::set_dialog(const std::string& text, const std::string& img, Color color)

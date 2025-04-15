@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bartend_meun.cpp" />
     <ClCompile Include="bartend_tool.cpp" />
     <ClCompile Include="bartend_material.cpp" />
     <ClCompile Include="bartend_system.cpp" />
@@ -160,7 +161,7 @@
     <ClCompile Include="takeout_box.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="animation.h" />
+    <ClInclude Include="bartend_meun.h" />
     <ClInclude Include="bartend_tool.h" />
     <ClInclude Include="bartend_material.h" />
     <ClInclude Include="bartend_system.h" />
@@ -182,7 +183,6 @@
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="takeout_box.h" />
     <ClInclude Include="timer.h" />
-    <ClInclude Include="vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

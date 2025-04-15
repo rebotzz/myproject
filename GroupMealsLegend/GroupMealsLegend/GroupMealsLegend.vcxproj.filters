@@ -66,6 +66,9 @@
     <ClCompile Include="bartend_system.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="bartend_meun.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resources_manager.h">
@@ -122,12 +125,6 @@
     <ClInclude Include="bartend_tool.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="animation.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vector2.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="button.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -135,6 +132,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="bartend_system.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bartend_meun.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

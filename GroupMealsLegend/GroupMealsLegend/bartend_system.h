@@ -1,23 +1,25 @@
 #pragma once
 #include "bartend_material.h"
 #include "bartend_tool.h"
+#include "button.h"
+#include "timer.h"
 
 // 调酒系统统一管理。避免各个组件间相互调用
 class BartendSystem
 {
-	//RegionMgr::instance()->add("Adelhyde", new Adelhyde, 0);
-	//RegionMgr::instance()->add("BronsonExt", new BronsonExt, 0);
-	//RegionMgr::instance()->add("PwdDelta", new PwdDelta, 0);
-	//RegionMgr::instance()->add("Flanergide", new Flanergide, 0);
-	//RegionMgr::instance()->add("Karmotrine", new Karmotrine, 0);
-	//RegionMgr::instance()->add("Ice", new Ice, 0);
-	//RegionMgr::instance()->add("Ageing", new Ageing, 0);
-
-	//RegionMgr::instance()->add("ButtonRedo", new ButtonRedo, 0);
-	//RegionMgr::instance()->add("ButtonModulate", new ButtonModulate, 0);
-	//RegionMgr::instance()->add("BartendBottle", new BartendBottle, 0);
+public:
+	//enum class Staus
+	//{
+	//	// 状态：制作未开始，制作中，调制中，完成
+	//};
+	enum class Status
+	{
+		Init, Doing, Done	// 初始状态->调制中（摇晃）->制作完成（停止摇晃）->提交
+	};
 
 private:
+	static BartendSystem* manager;
+
 	// 原料
 	Adelhyde	 adelhyde;
 	BronsonExt	 bronsonext;
@@ -26,20 +28,29 @@ private:
 	Karmotrine	 karmotrine;
 	Ice			 ice;
 	Ageing		 ageing;
-
 	// 调酒瓶子
 	BartendBottle bartendbottle;
+	// 功能按钮; 不用具体类，注册回调就行
+	Button button_redo;
+	Button button_modulate;
 
-	// 功能按钮
-	ButtonRedo buttonredo;
-	ButtonModulate buttonmodulate;
+	bool valid = false;						// 是否启用
+	Status status = Status::Init;			// 用于辅助描述按键状态
+	Timer timer_button;						// 更新按键状态
 
+private:
+	BartendSystem();		
+	~BartendSystem() = default;
 
 public:
-	BartendSystem();
-	~BartendSystem();
+	static BartendSystem* instance();
 
-	void on_input();
-	void on_update();
-	void on_render();
+	void open();
+	void close();
+	
+	// 被具体场景调用
+	void on_update(float delta);
+
+	void reset();
+	void modulate();
 };

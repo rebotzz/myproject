@@ -1,6 +1,7 @@
 #pragma once
 #include "SDL.h"
 #include "meal.h"
+#include <string>
 
 class CursorMgr
 {
@@ -11,8 +12,10 @@ private:
 	SDL_Point pos_cursor = { 0, 0 };	// 光标位置
 	bool is_mouse_lbtn_down = false;	// 鼠标左键是否按下
 	int coins = 0;						// 获取硬币
-	int goal = 100;						// 目标赚取硬币数目
+	int coins_goal = 100;				// 目标赚取硬币数目
 	bool is_bartending = false;			// 是否是酒保模式
+	Meal target_drink = Meal::None;		// 目标所需要的酒
+	std::string target_drink_name;		// 目标所需要的酒名字
 
 private:
 	CursorMgr() = default;
@@ -26,10 +29,12 @@ public:
 	Meal get_picked();
 	void add_coins(int val);
 
-	void set_goal(int val);
 	const SDL_Point& get_position() const;
 
-	void redo_drink();					// 重新调酒
-	void modulate_drink();				// 调酒
+	void set_coins_goal(int val);
+	void set_drink_goal(const std::string& target);
+	Meal get_drink_goal() const;
+	const std::string& get_drink_goal_name() const;
+	bool is_button_down() const;
 	void enable_bartend(bool flag);		// 是否开启酒保模式
 };

@@ -2,45 +2,46 @@
 #include "cursor_manager.h"
 #include "resources_manager.h"
 #include "kits.h"
+#include "game_system.h"
+#include "bartend_system.h"
+#include "dialogue_manager.h"
 #include <unordered_set>
 #include <algorithm>
+#include <cmath>
 
-
-
-BartendBottle::BartendBottle():Region({990, 420, 100, 120})
+BartendBottle::BartendBottle() :Region({ 980, 450, 100, 120 })
 {
+	timer_shake.set_wait_time(SHAKE_CD);
 	timer_shake.set_one_shot(true);
 	timer_shake.set_on_timeout([&]
 		{
 			if (Status::Shaking == status)
 			{
 				status = Status::SevereShaking;
-				anim.set_interval(0.2);
+				timer_anim.set_wait_time(SHAKE_FRAME_DELTA * 0.5);
 			}
+		});
+	timer_anim.set_one_shot(false);
+	timer_anim.set_wait_time(SHAKE_FRAME_DELTA);
+	timer_anim.set_on_timeout([&]() {
+		frame_idx = (frame_idx + 1) % frame_list.size();
 		});
 
 	tex_open = ResMgr::instance()->find_texture("bottle_open");
 	tex_close = ResMgr::instance()->find_texture("bottle_close");
 
-	anim.set_interval(0.5);
-	anim.set_loop(true);
-	anim.set_position({ rect.x + rect.w / 2, rect.y + rect.h });
-	anim.add_frame(ResMgr::instance()->find_texture("bottle_close"));
-	anim.add_frame(ResMgr::instance()->find_texture("bottle_left"));
-	anim.add_frame(ResMgr::instance()->find_texture("bottle_right"));
-
 	// 初始化Trie树
-	static std::vector<Meal> sugar_rush_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::PwdDelta };	// 任选酒精
-	static std::vector<Meal> flff_dream_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::Adelhyde,
-		Meal::PwdDelta, Meal::PwdDelta, Meal::PwdDelta, Meal::Ageing };								// 任选酒精
-	static std::vector<Meal> moon_blast_list = { Meal::Adelhyde, Meal::Adelhyde,  Meal::Adelhyde, Meal::Adelhyde,
+	std::vector<Meal> sugar_rush_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::PwdDelta };	
+	std::vector<Meal> flff_dream_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::Adelhyde,
+		Meal::PwdDelta, Meal::PwdDelta, Meal::PwdDelta, Meal::Ageing };								
+	std::vector<Meal> moon_blast_list = { Meal::Adelhyde, Meal::Adelhyde,  Meal::Adelhyde, Meal::Adelhyde,
 	 Meal::Adelhyde, Meal::Adelhyde, Meal::PwdDelta, Meal::Flanergide, Meal::Karmotrine, Meal::Karmotrine, Meal::Ice };
-	static std::vector<Meal> coblt_vlvt_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::Flanergide, Meal::Flanergide, 
+	std::vector<Meal> coblt_vlvt_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::Flanergide, Meal::Flanergide,
 	Meal::Flanergide, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Ice };
 
 
-	tree.add_branch(sugar_rush_list, Meal::SugarRush, true);
-	tree.add_branch(flff_dream_list, Meal::FlffDream, true);
+	tree.add_branch(sugar_rush_list, Meal::SugarRush, true);// 任选酒精
+	tree.add_branch(flff_dream_list, Meal::FlffDream, true);// 任选酒精
 	tree.add_branch(moon_blast_list, Meal::MoonBlast);
 	tree.add_branch(coblt_vlvt_list, Meal::CobltVlvt);
 
@@ -50,51 +51,81 @@ void BartendBottle::on_update(float delta)
 {
 	if (Status::Shaking == status)
 		timer_shake.on_update(delta);
+	if (Status::Shaking == status || Status::SevereShaking == status)
+		timer_anim.on_update(delta);
 }
 void BartendBottle::on_render(SDL_Renderer* renderer)
 {
+	// 绘制调酒瓶
 	if (Status::Init == status)
 	{
-		SDL_Rect rect_img{ 0 };
-		if (SDL_PointInRect(&CursorMgr::instance()->get_position(), &rect))
+		if (SDL_PointInRect(&CursorMgr::instance()->get_position(), &rect) && CursorMgr::instance()->get_picked() != Meal::None)
 		{
-			SDL_QueryTexture(tex_open, nullptr, nullptr, &rect_img.w, &rect_img.h);
-			rect_img.x = rect.x + rect.h - rect_img.h;
-			rect_img.y = rect.y + rect.w / 2 - rect_img.w / 2;
-			SDL_RenderCopy(renderer, tex_open, nullptr, &rect_img);
+			render_img(renderer, tex_open, { rect.x + rect.w / 2, rect.y + rect.h / 2 });
 		}
 		else
 		{
-			SDL_QueryTexture(tex_close, nullptr, nullptr, &rect_img.w, &rect_img.h);
-			rect_img.x = rect.x + rect.h - rect_img.h;
-			rect_img.y = rect.y + rect.w / 2 - rect_img.w / 2;
-			SDL_RenderCopy(renderer, tex_close, nullptr, &rect_img);
+			render_img(renderer, tex_close, { rect.x + rect.w / 2, rect.y + rect.h / 2 });
 		}
 	}
+	// 绘制摇晃的调酒瓶动画
 	else if (Status::SevereShaking == status || Status::Shaking == status)
 	{
-		anim.on_render(renderer);
+		double angle = frame_list[frame_idx];
+		render_img(renderer, tex_close, { rect.x + rect.w / 2, rect.y + rect.h / 2 }, angle);
 	}
+	// 绘制调好的酒
 	else
 	{
-		SDL_Texture* tex = nullptr;
+		SDL_Texture* tex_drink = nullptr;
 		switch (drink)
 		{
-		case Meal::Unkown: tex = ResMgr::instance()->find_texture("unkown"); break;
-		case Meal::CobltVlvt: tex = ResMgr::instance()->find_texture("coblt_vlvt"); break;
-		case Meal::FlffDream: tex = ResMgr::instance()->find_texture("flff_dream"); break;
-		case Meal::MoonBlast: tex = ResMgr::instance()->find_texture("moonblast"); break;
-		case Meal::SugarRush: tex = ResMgr::instance()->find_texture("sugar_rush"); break;
+		default:
+		case Meal::Unkown: tex_drink = ResMgr::instance()->find_texture("unkown"); break;
+		case Meal::CobltVlvt: tex_drink = ResMgr::instance()->find_texture("coblt_vlvt"); break;
+		case Meal::FlffDream: tex_drink = ResMgr::instance()->find_texture("flff_dream"); break;
+		case Meal::MoonBlast: tex_drink = ResMgr::instance()->find_texture("moonblast"); break;
+		case Meal::SugarRush: tex_drink = ResMgr::instance()->find_texture("sugar_rush"); break;
 		}
-		SDL_Rect rect_img{ 0 };
-		SDL_QueryTexture(tex_close, nullptr, nullptr, &rect_img.w, &rect_img.h);
-		rect_img.x = rect.x + rect.h - rect_img.h;
-		rect_img.y = rect.y + rect.w / 2 - rect_img.w / 2;
-		SDL_RenderCopy(renderer, tex, nullptr, &rect_img);
+		render_img(renderer, tex_drink, { rect.x + rect.w / 2, rect.y + rect.h / 2 });
+	}
+
+	// 绘制材料数量
+	if (status != Status::Done)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		SDL_Rect base_rect = { 960 + 10, 580, 120 / 5 - 2, 20 / 2 - 2 };
+		for (int i = 0; i < materials.size(); ++i)
+		{
+			SDL_Rect count_rect = base_rect;
+			count_rect.x += (i % 5) * (base_rect.w + 3) + 2;
+			count_rect.y += ((i / 5) % 2) * (base_rect.h + 5) + 4;
+
+			if (i >= 10) SDL_RenderFillRect(renderer, &count_rect);
+			else SDL_RenderDrawRect(renderer, &count_rect);
+		}
+	}
+	// 绘制酒的名字
+	else
+	{
+		std::string str;
+		switch (drink)
+		{
+		default:
+		case Meal::Unkown: str = "unkown??"; break;
+		case Meal::CobltVlvt: str = "Coblt Vlvt"; break;
+		case Meal::FlffDream: str = "Flff Dream"; break;
+		case Meal::MoonBlast: str = "Moon Blast"; break;
+		case Meal::SugarRush: str = "Sugar Rush"; break;
+		}
+		SDL_Point text_center_point = { 960 + 136 / 2, 580 + 26 / 2 };
+		render_text(renderer, str, text_center_point, { 255,255,255,255 }, "simhei", 0.7);
 	}
 }
+
 void BartendBottle::on_cursor_up()
 {
+	if (materials.size() >= 20) return;
 	static std::unordered_set<Meal> allow_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::BronsonExt, Meal::PwdDelta,
 		Meal::Flanergide, Meal::Karmotrine, Meal::Ice, Meal::Ageing, Meal::Shaking };
 	if (allow_list.count(CursorMgr::instance()->get_picked()))
@@ -107,48 +138,71 @@ void BartendBottle::on_cursor_up()
 // 清空调酒瓶
 void BartendBottle::reset()
 {
-	anim.reset();
-	anim.set_interval(0.5);
+	status = Status::Init;
+	timer_shake.restart();
+	timer_anim.set_wait_time(SHAKE_FRAME_DELTA);
 	materials.clear();
 }
-void BartendBottle::modulate()	// 调制饮料
+// 调制饮料
+void BartendBottle::modulate()	
 {
 	switch (status)
 	{
-	case Status::Init: 
-		shake(); 
+	case Status::Init:
+		shake();
 		break;
 	case Status::Shaking:
 	case Status::SevereShaking:
-		stop_shaking(); 
+		stop_shaking();
 		break;
 	case Status::Done:
-		if (CursorMgr::instance()->get_picked() == Meal::None)
+		// 判断酒是否对
+		// 符合：设置完成目标
+		// 不符合：提示不对，不完成目标
+		if (CursorMgr::instance()->get_drink_goal() == drink)
 		{
-			CursorMgr::instance()->set_picked(get_drink());
+			GameSystem::instance()->finish_goal();
+			DialogMgr::instance()->enable_tips(false);
 		}
+		else
+		{
+			std::string tips = u8"Tips: 需要调制的饮品似乎不是这个,再瞅一眼配方：";
+			tips += CursorMgr::instance()->get_drink_goal_name();
+			DialogMgr::instance()->set_tips(tips);
+			DialogMgr::instance()->enable_tips(true);
+		}
+		BartendSystem::instance()->reset();
 		break;
 	}
 }
-
 
 void BartendBottle::shake()
 {
 	status = Status::Shaking;
 	timer_shake.restart();
+	timer_anim.set_wait_time(SHAKE_FRAME_DELTA);
 }
 void BartendBottle::stop_shaking()
 {
-	if (Status::SevereShaking == status || Status::Shaking == status)
+	if (Status::SevereShaking == status)
 	{
-		if(Status::SevereShaking == status)
-			materials.push_back(Meal::Shaking);
-		status = Status::Done;
-		// 先排序（升序）材料，然后trie树
-		std::sort(materials.begin(), materials.end());
-		drink = tree.check(materials);
+		materials.push_back(Meal::Shaking);
 	}
+	status = Status::Done;
 
+	// 先排序（升序）材料，然后trie树
+	std::sort(materials.begin(), materials.end());
+	drink = tree.check(materials);
+
+#ifdef DEBUG
+	SDL_Log("Adelhyde: %d\n", (int)Meal::Adelhyde);
+	SDL_Log("materials size: %d\n", (int)materials.size());
+	for (auto x : materials)
+	{
+		SDL_Log("%d ", (int)x);
+	}
+	SDL_Log("\n");
+#endif // DEBUG
 }
 Meal BartendBottle::get_drink()
 {
@@ -157,43 +211,44 @@ Meal BartendBottle::get_drink()
 
 
 // 检测配方是否正确，返回饮料种类
-Meal BartendBottle::TrieTree::check(const std::vector<Meal>& arr)
+Meal BartendBottle::TrieTree::check(const std::vector<Meal>& material_list)
 {
 	auto cur = root;
-	int i = 0;
-	for (; i < arr.size(); ++i)
+	for (int i = 0; i < material_list.size(); ++i)
 	{
-		if (cur->nexts.count(arr[i])) cur = cur->nexts[arr[i]];
-		else break;
+		if (cur->nexts.count(material_list[i])) cur = cur->nexts[material_list[i]];
+		else return Meal::Unkown;
 	}
-	if (i == arr.size()) return cur->drink;
+	return cur->drink;
 }
 // 添加新的配方
-void BartendBottle::TrieTree::add_branch(const std::vector<Meal>& arr, Meal meal, bool any_karmotrine)
+void BartendBottle::TrieTree::add_branch(std::vector<Meal>& material_list, Meal target, bool any_karmotrine)
 {
+	std::sort(material_list.begin(), material_list.end());	// 排序，保证唯一性
 	Node* cur = root;
 	for (int i = 0; i < 20; ++i)
 	{
-		if (i < arr.size())
+		if (i < material_list.size())
 		{
-			if (!cur->nexts.count(arr[i]))
+			if (!cur->nexts.count(material_list[i]))
 			{
-				cur->nexts[arr[i]] = new Node;
+				cur->nexts[material_list[i]] = new Node;
 			}
-			cur = cur->nexts[arr[i]];
+			cur = cur->nexts[material_list[i]];
 		}
 		else if (any_karmotrine)
 		{
+			cur->drink = target;
 			if (!cur->nexts.count(Meal::Karmotrine))
 			{
-				cur->nexts[Meal::Karmotrine] = new Node(meal);
+				cur->nexts[Meal::Karmotrine] = new Node(target);
 			}
 			cur = cur->nexts[Meal::Karmotrine];
 		}
 		else break;
 
 	}
-	cur->drink = meal;
+	cur->drink = target;
 }
 
 

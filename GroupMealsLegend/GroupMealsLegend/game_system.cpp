@@ -115,9 +115,13 @@ void GameSystem::start()
 	SDL_Quit();
 }
 
-void GameSystem::set_goal(int val)
+void GameSystem::set_coins_goal(int val)
 {
-	CursorMgr::instance()->set_goal(val);
+	CursorMgr::instance()->set_coins_goal(val);
+}
+void GameSystem::set_drink_goal(const std::string& target)
+{
+	CursorMgr::instance()->set_drink_goal(target);
 }
 void GameSystem::finish_goal()
 {

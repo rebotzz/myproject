@@ -5,6 +5,7 @@
 #include "scene_manager.h"
 #include "region_manager.h"
 #include "bartend_tool.h"
+#include <unordered_map>
 
 CursorMgr* CursorMgr::manager = nullptr;
 CursorMgr* CursorMgr::instance()
@@ -116,17 +117,17 @@ Meal CursorMgr::get_picked()
 void CursorMgr::add_coins(int val)
 {
 	coins += val;
-	goal -= val;
-	if (goal <= 0)
+	coins_goal -= val;
+	if (coins_goal <= 0)
 	{
 		GameSystem::instance()->finish_goal();
 	}
 	Mix_PlayChannel(-1, ResMgr::instance()->find_audio("get_coins"), 0);
 }
 
-void CursorMgr::set_goal(int val)
+void CursorMgr::set_coins_goal(int val)
 {
-	goal = val;
+	coins_goal = val;
 }
 
 const SDL_Point& CursorMgr::get_position() const
@@ -134,27 +135,34 @@ const SDL_Point& CursorMgr::get_position() const
 	return pos_cursor;
 }
 
-void CursorMgr::redo_drink()
+bool CursorMgr::is_button_down() const
 {
-	// 这里还有更好的办法吗？
-	BartendBottle* bartend_bottle = dynamic_cast<BartendBottle*>(RegionMgr::instance()->find("bartend_bottle"));
-	bartend_bottle->reset();
+	return is_mouse_lbtn_down;
 }
-void CursorMgr::modulate_drink()
-{
-	BartendBottle* bartend_bottle = dynamic_cast<BartendBottle*>(RegionMgr::instance()->find("bartend_bottle"));
-	Meal before = meal_picked;
-	bartend_bottle->modulate();
 
-	// todo: 限制判断条件, 加入酒客判断酒是否正确部分。
-	if (before == Meal::None && meal_picked != Meal::None)
-	{
-		GameSystem::instance()->finish_goal();
-		meal_picked = Meal::None;
-	}
-}
 
 void CursorMgr::enable_bartend(bool flag)		// 是否开启酒保模式
 {
 	is_bartending = flag;
+}
+
+void CursorMgr::set_drink_goal(const std::string& target)
+{
+	static std::unordered_map<std::string, Meal> drink_map = { {"SugarRush", Meal::SugarRush}, 
+		{"FluffyDream", Meal::FlffDream}, {"MoonBlast", Meal::MoonBlast}, 
+		{"CobaltVelvet", Meal::CobltVlvt} };
+
+	if (drink_map.count(target))
+		target_drink = drink_map[target];
+	else target_drink = Meal::Unkown;
+	target_drink_name = target;
+}
+
+Meal CursorMgr::get_drink_goal() const
+{
+	return target_drink;
+}
+const std::string& CursorMgr::get_drink_goal_name() const
+{
+	return target_drink_name;
 }

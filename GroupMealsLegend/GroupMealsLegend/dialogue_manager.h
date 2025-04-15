@@ -4,6 +4,7 @@
 
 #include <string>
 #include <queue>
+#include <array>
 
 // 对话管理器	
 // 需要：角色立绘 + 聊天框 + 历史对话记录框 + 音效 + 字幕逐个出现特效 + 鼠标点击响应（下一条、加载完整一条对话）
@@ -18,17 +19,17 @@ private:
 	public:
 		enum class Color
 		{
-			C1, C2, C3
+			C1, C2, C3, C4, C5, C6, None
 		};
 	private:
 		std::string text;
 		SDL_Rect rect = { 0 };
 		Color color = Color::C1;
 		std::string img;
-
-		//bool finished = false;
+		std::array<SDL_Color, static_cast<int>(Color::None)> color_map;
 
 	public:
+		DialogBox();
 		void on_input(const SDL_Event& event);
 		void on_update(float delta);
 		void on_render(SDL_Renderer* renderer);
@@ -52,11 +53,11 @@ private:
 private:
 	static DialogMgr* manager;
 
-	DialogBox dialog_box;
+	DialogBox dialog_box;					// 对话框
 	std::string script_id = "script_1";		// 执行脚本，在资源管理中
-	int idx = 0;
+	int idx = 0;							// 当前执行脚本序号
 	bool condition = true;					// 继续解析脚本的条件是否完成
-	std::string goal;						// 继续解析脚本前需要完成的目标
+	bool showing_tip = false;				// 是否显示提示
 
 	//DialogHistory dialog_history;
 
@@ -75,10 +76,8 @@ public:
 
 	void set_idx(int val);
 	bool check_idx() const;
-
 	void set_script_id(const std::string& id);
-
 	void finish_goal();
-	const std::string& get_goal() const;
-
+	void set_tips(const std::string& val);
+	void enable_tips(bool flag);
 };

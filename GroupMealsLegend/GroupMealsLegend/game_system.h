@@ -36,6 +36,7 @@ public:
 	void start();
 
 	void switch_bgm(const std::string& id);
-	void set_goal(int val);
+	void set_coins_goal(int val);
+	void set_drink_goal(const std::string& target);
 	void finish_goal();
 };

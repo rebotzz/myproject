@@ -151,7 +151,9 @@ void TransitionScene::on_input(const SDL_Event& event)
 }
 void TransitionScene::on_update(float delta) 
 {
-	timer.on_update(delta);
+	// 如果有背景图，过场时间变长,主动点击跳过
+	float scale_delta = delta * (tex_bg ? 0.1 : 1.0);
+	timer.on_update(scale_delta);
 }
 void TransitionScene::on_render(SDL_Renderer* renderer) 
 {
@@ -160,15 +162,24 @@ void TransitionScene::on_render(SDL_Renderer* renderer)
 	{
 		SDL_RenderCopy(renderer, tex_bg, nullptr, nullptr);
 	}
+	else
+	{
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+	}
 
 	// 绘制过场文字
 	if (text.size() > 0)
 	{
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);
 		static SDL_Point center_point = { 1280 / 2, 720 / 2 };
+		static SDL_Point bottom_point = { 1280 / 2, 720 - 80 };
+		static SDL_Point center_point_offset = { center_point.x + 2, center_point.y + 2 };
+		static SDL_Point bottom_point_offset = { bottom_point.x + 2, bottom_point.y + 2 };
 		static SDL_Color color = { 255,255, 255, 255 };
-		render_text(renderer, text, center_point, color);
+		static SDL_Color color_bg = { 100,100, 100, 255 };
+
+		render_text(renderer, text, is_center ? center_point_offset : bottom_point_offset, color_bg);
+		render_text(renderer, text, is_center ? center_point : bottom_point, color);
 	}
 }
 void TransitionScene::on_enter() 
@@ -196,4 +207,16 @@ void TransitionScene::set_next_scene(const std::string& id)
 void TransitionScene::set_background(const std::string& tex_id)
 {
 	tex_bg = ResMgr::instance()->find_texture(tex_id);
+
+}
+void TransitionScene::set_text_position(const std::string& pos)
+{
+	if (pos == "bottom")
+	{
+		is_center = false;
+	}
+	else        // (pos == "center")
+	{
+		is_center = true;
+	}
 }

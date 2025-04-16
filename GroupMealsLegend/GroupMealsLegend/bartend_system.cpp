@@ -82,6 +82,7 @@ void BartendSystem::open()
 	if (valid == false)
 	{
 		valid = true;
+		bartendmeun.reset();
 
 		btc_bottom.set_valid(true);
 		adelhyde.set_valid(true);
@@ -131,7 +132,6 @@ void BartendSystem::reset()
 	karmotrine.set_count(0);
 
 	bartendbottle.reset();
-	bartendmeun.reset();
 	status = Status::Init;
 }
 void BartendSystem::modulate()

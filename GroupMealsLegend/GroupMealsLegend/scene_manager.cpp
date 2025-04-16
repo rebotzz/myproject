@@ -52,8 +52,6 @@ void SceneMgr::add(const std::string& id, Scene* scene)
 
 void SceneMgr::switch_scene(const std::string& id)
 {
-	SDL_Log("switch_scene: %s\n", id.c_str());
-
 	if (cur_scene)
 		cur_scene->on_exit();
 	cur_scene = scene_pool[id];
@@ -80,4 +78,9 @@ void SceneMgr::set_transition_background(const std::string& tex_id)
 {
 	TransitionScene* trans = dynamic_cast<TransitionScene*>(scene_pool["transition"]);
 	trans->set_background(tex_id);
+}
+void SceneMgr::set_transition_text_position(const std::string& pos)
+{
+	TransitionScene* trans = dynamic_cast<TransitionScene*>(scene_pool["transition"]);
+	trans->set_text_position(pos);
 }

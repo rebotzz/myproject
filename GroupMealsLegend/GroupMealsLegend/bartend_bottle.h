@@ -17,6 +17,10 @@ private:
 		Meal drink = Meal::Unkown;				// 饮料类型
 		std::unordered_map<Meal, Node*> nexts;	// k-v: 原料-下一个节点
 
+		// 特殊调料判断
+		bool need_ice = false;
+		bool need_ageing = false;
+
 	public:
 		Node() = default;
 		Node(Meal target) :drink(target) {}
@@ -29,7 +33,7 @@ private:
 		TrieTree();
 		~TrieTree();
 		// 检测配方是否正确，返回饮料种类
-		Meal check(const std::vector<Meal>& material_list);
+		Meal check(std::vector<Meal>& material_list);
 		// 添加新的配方
 		void add_branch(std::vector<Meal>& material_list, Meal target, bool any_karmotrine = false);
 		void destroy(Node* node);
@@ -47,6 +51,8 @@ private:
 	SDL_Texture* tex_open = nullptr;			// 瓶子打开图片
 	SDL_Texture* tex_close = nullptr;			// 瓶子关闭图片
 	Status status = Status::Init;				// 调酒过程状态
+	bool has_ice = false;						// 是否有冰
+	bool is_ageing = false;						// 是否陈化
 
 	// 瓶子摇晃动画
 	Timer timer_anim;							// 摇晃动画定时器
@@ -54,6 +60,8 @@ private:
 	int frame_idx = 0;							// 摇晃动画当前帧
 	const float SHAKE_FRAME_DELTA = 0.25f;		// 摇晃动画帧间隔
 	const float SHAKE_CD = 2.5f;				// 调制到剧烈摇晃间隔
+
+
 
 public:
 	BartendBottle();							// 初始化Trie树

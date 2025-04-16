@@ -126,8 +126,20 @@ void BartendBottle::on_cursor_up()
 {
 	if (materials.size() >= 20) return;
 	static std::unordered_set<Meal> allow_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::BronsonExt, Meal::PwdDelta,
-		Meal::Flanergide, Meal::Karmotrine, Meal::Ice, Meal::Ageing, Meal::Shaking };
-	if (allow_list.count(CursorMgr::instance()->get_picked()))
+		Meal::Flanergide, Meal::Karmotrine };
+	if (Meal::Ice == CursorMgr::instance()->get_picked() && !has_ice)
+	{
+		has_ice = true;
+		materials.push_back(Meal::Ice);
+		CursorMgr::instance()->set_picked(Meal::None);
+	}
+	else if (Meal::Ageing == CursorMgr::instance()->get_picked() && !is_ageing)
+	{
+		is_ageing = true;
+		materials.push_back(Meal::Ageing);
+		CursorMgr::instance()->set_picked(Meal::None);
+	}
+	else if (allow_list.count(CursorMgr::instance()->get_picked()))
 	{
 		materials.push_back(CursorMgr::instance()->get_picked());
 		CursorMgr::instance()->set_picked(Meal::None);
@@ -137,6 +149,8 @@ void BartendBottle::on_cursor_up()
 // 清空调酒瓶
 void BartendBottle::reset()
 {
+	is_ageing = false;
+	has_ice = false;
 	status = Status::Init;
 	timer_shake.restart();
 	timer_anim.set_wait_time(SHAKE_FRAME_DELTA);
@@ -156,13 +170,13 @@ void BartendBottle::modulate()
 		break;
 	case Status::Done:
 		// 判断酒是否对
-		// 符合：设置完成目标
-		// 不符合：提示不对，不完成目标
+		// 符合：设置完成目标  不符合：提示不对，不完成目标
 		if (CursorMgr::instance()->get_drink_goal() == drink)
 		{
 			GameSystem::instance()->finish_goal();
 			DialogMgr::instance()->enable_tips(false);
 			BartendSystem::instance()->enable_meun(false);
+			CursorMgr::instance()->add_coins(10);
 		}
 		else
 		{
@@ -170,7 +184,6 @@ void BartendBottle::modulate()
 			tips += CursorMgr::instance()->get_drink_goal_name();
 			DialogMgr::instance()->set_tips(tips);
 			DialogMgr::instance()->enable_tips(true);
-			CursorMgr::instance()->add_coins(10);
 		}
 		BartendSystem::instance()->reset();
 		break;
@@ -190,9 +203,6 @@ void BartendBottle::stop_shaking()
 		materials.push_back(Meal::Shaking);
 	}
 	status = Status::Done;
-
-	// 先排序（升序）材料，然后trie树
-	std::sort(materials.begin(), materials.end());
 	drink = tree.check(materials);
 
 #ifdef DEBUG
@@ -212,13 +222,26 @@ Meal BartendBottle::get_drink()
 
 
 // 检测配方是否正确，返回饮料种类
-Meal BartendBottle::TrieTree::check(const std::vector<Meal>& material_list)
+Meal BartendBottle::TrieTree::check(std::vector<Meal>& material_list)
 {
+	// 先排序（升序）材料，然后trie树
+	std::sort(material_list.begin(), material_list.end());
 	auto cur = root;
 	for (int i = 0; i < material_list.size(); ++i)
 	{
-		if (cur->nexts.count(material_list[i])) cur = cur->nexts[material_list[i]];
-		else return Meal::Unkown;
+		if (material_list[i] == Meal::Ice)
+		{
+			if(!cur->need_ice) return Meal::Unkown;
+		}
+		else if (material_list[i] == Meal::Ageing)
+		{
+			if (!cur->need_ageing) return Meal::Unkown;
+		}
+		else
+		{
+			if (cur->nexts.count(material_list[i])) cur = cur->nexts[material_list[i]];
+			else return Meal::Unkown;
+		}
 	}
 	return cur->drink;
 }
@@ -226,20 +249,36 @@ Meal BartendBottle::TrieTree::check(const std::vector<Meal>& material_list)
 void BartendBottle::TrieTree::add_branch(std::vector<Meal>& material_list, Meal target, bool any_karmotrine)
 {
 	std::sort(material_list.begin(), material_list.end());	// 排序，保证唯一性
+	bool need_ice = false, need_ageing = false;
 	Node* cur = root;
 	for (int i = 0; i < 20; ++i)
 	{
 		if (i < material_list.size())
 		{
-			if (!cur->nexts.count(material_list[i]))
+			if (material_list[i] == Meal::Ice)
 			{
-				cur->nexts[material_list[i]] = new Node;
+				cur->need_ice = true;
+				need_ice = true;
 			}
-			cur = cur->nexts[material_list[i]];
+			else if (material_list[i] == Meal::Ageing)
+			{
+				cur->need_ageing = true;
+				need_ageing = true;
+			}
+			else
+			{
+				if (!cur->nexts.count(material_list[i]))
+				{
+					cur->nexts[material_list[i]] = new Node;
+				}
+				cur = cur->nexts[material_list[i]];
+			}
 		}
 		else if (any_karmotrine)
 		{
 			cur->drink = target;
+			cur->need_ageing = need_ageing;
+			cur->need_ice = need_ice;
 			if (!cur->nexts.count(Meal::Karmotrine))
 			{
 				cur->nexts[Meal::Karmotrine] = new Node(target);
@@ -250,6 +289,8 @@ void BartendBottle::TrieTree::add_branch(std::vector<Meal>& material_list, Meal 
 
 	}
 	cur->drink = target;
+	cur->need_ageing = need_ageing;
+	cur->need_ice = need_ice;
 }
 
 

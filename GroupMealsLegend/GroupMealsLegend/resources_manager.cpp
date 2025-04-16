@@ -48,12 +48,9 @@ void ResMgr::load(SDL_Renderer* renderer)
 				{
 					text.emplace_back(std::move(str));
 				}
-
-				//cout << "log: load texts " << texts.size() << " lines." << endl;
 				file.close();
 			}
 		}
-		//SDL_Log("%s\n", path.u8string().c_str());
 	}
 
 }
@@ -89,11 +86,8 @@ SDL_Texture* ResMgr::find_texture(const std::string& id)
 	if (!texture_pool.count(id))
 	{
 #ifdef DEBUG
-		throw std::string("not find resource: ") + id;
-#endif // DEBUG
-
 		SDL_Log("not find texture: %s\n", id.c_str());
-
+#endif // DEBUG
 		return nullptr;
 	}
 	else return texture_pool[id];
@@ -103,7 +97,7 @@ Mix_Chunk* ResMgr::find_audio(const std::string& id)
 	if (!audio_pool.count(id))
 	{
 #ifdef DEBUG
-		throw std::string("not find resource: ") + id;
+		SDL_Log("not find texture: %s\n", id.c_str());
 #endif // DEBUG
 		return nullptr;
 	}
@@ -114,7 +108,7 @@ TTF_Font* ResMgr::find_font(const std::string& id)
 	if (!font_pool.count(id))
 	{
 #ifdef DEBUG
-		throw std::string("not find resource: ") + id;
+		SDL_Log("not find texture: %s\n", id.c_str());
 #endif // DEBUG
 		return nullptr;
 	}
@@ -125,7 +119,7 @@ const std::vector<std::string>& ResMgr::find_script(const std::string& id)
 	if (!script_pool.count(id))
 	{
 #ifdef DEBUG
-		throw std::string("not find resource: ") + id;
+		SDL_Log("not find texture: %s\n", id.c_str());
 #endif // DEBUG
 		return {};
 	}

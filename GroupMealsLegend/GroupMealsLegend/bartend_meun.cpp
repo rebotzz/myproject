@@ -38,24 +38,24 @@ BartendMeun::BartendMeun()
 	SDL_QueryTexture(ResMgr::instance()->find_texture("btc_icon"), nullptr, nullptr, &rect_btc_icon.w, &rect_btc_icon.h);
 
 	formula_list[0] = { u8"Sugar Rush - $150",
-		u8"Sugar Rush是由2 Adelhyde、1 Powdered Delta和",
-		u8"任选Karmotrine调制而成。",
-		u8"\"甘甜，清淡，水果风味，不能更加女性化的饮品。\"",
-		u8"甜味，女性化，惬意。"
+	u8"Sugar Rush是由2 Adelhyde、1 Powdered Delta和",
+	u8"任选Karmotrine调制而成。",
+	u8"\"甘甜，清淡，水果风味，不能更加女性化的饮品。\"",
+	u8"甜味，女性化，惬意。"
 	};
 	formula_list[1] = { u8"Fluffy Dream - $170",
 	u8"Fluffy Dream是由3 Adelhyde、3 Powdered Delta和",
 	u8"任选Karmotrine陈化，调制而成。",
-	u8"(点击\"调制\"按钮后请等待至摇酒壶开始剧烈晃动。)",
-	u8"\"一两口就足以取悦你的舌头，再多喝就",
-	u8"可能会导致睡过头。\"",
+	u8"\"一两口就足以取悦你的舌头，再多喝就可能会导致",
+	u8"睡过头。\"",
 	u8"酸味，女性化，温和。"
 	};
 	formula_list[2] = { u8"Moonblast - $180",
 	u8"Moonblast是由6 Adelhyde、1 Powdered Delta、",
 	u8"1 Flanergide 和2 Karmotrine加冰，调和而成。",
-	u8"\"与你每个月都有一周时间能看到的那座",
-	u8"月球强子大炮没有任何关系。\"",
+	u8"(点击\"调制\"按钮后请等待至摇酒壶开始剧烈晃动。)",
+	u8"\"与你每个月都有一周时间能看到的那座月球强子大",	
+	u8"炮没有任何关系。\"",
 	u8"甜味，女性化，惬意。"
 	};
 	formula_list[3] = { u8"Cobalt Velvet - $280",
@@ -160,14 +160,5 @@ void BartendMeun::init_render_format()
 			formula_list_seg[i].push_back(std::move(post_str));
 			formula_list_color[i].push_back(std::move(post_color));
 		}
-
-		//SDL_Log("formula idx: %d\n", i);
-		//for (auto& line : formula_list_seg[i])
-		//{
-		//	for(auto& s : line)
-		//		SDL_Log("%s ", s.c_str());
-		//	SDL_Log("----------next line\n");
-		//}
-		//SDL_Log("\n");
 	}
 }

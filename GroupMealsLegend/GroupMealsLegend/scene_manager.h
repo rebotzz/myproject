@@ -33,4 +33,5 @@ public:
 
 	bool is_transition() const;
 	void set_transition_background(const std::string& tex_id);
+	void set_transition_text_position(const std::string& pos);
 };

@@ -27,10 +27,11 @@ private:
 	Ageing		 ageing;
 	// 调酒瓶子
 	BartendBottle bartendbottle;
+	// 调酒指南
+	BartendMeun bartendmeun;
 	// 功能按钮; 不用具体类，注册回调就行
 	Button button_redo;
 	Button button_modulate;
-	BartendMeun bartendmeun;
 
 	bool valid = false;						// 是否启用
 	Status status = Status::Init;			// 用于辅助描述按键状态

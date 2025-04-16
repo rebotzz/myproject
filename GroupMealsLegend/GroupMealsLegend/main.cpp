@@ -1,4 +1,4 @@
-//#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
+#pragma comment (linker,"/subsystem:windows /entry:mainCRTStartup")		// 关闭控制台窗口
 
 #include "game_system.h"
 #undef main

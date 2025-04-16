@@ -21,7 +21,7 @@ private:
 	SDL_Window* win = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	const int WINDOW_W = 1280, WINDOW_H = 720;
-	const int FPS = 60;
+	const int FPS = 30;
 	std::string bgm;
 	int bgm_channel = -1;
 
@@ -36,7 +36,8 @@ public:
 	Mode get_mode() const;
 	void start();
 
-	void switch_bgm(const std::string& id);
+	void switch_bgm(const std::string& id);		// 背景音乐，只有一个
+	void play_audio(const std::string& id);		// 音效，可以多个
 	void set_coins_goal(int val);
 	void set_drink_goal(const std::string& target);
 	void finish_goal();

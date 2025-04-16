@@ -38,6 +38,10 @@ void GameSystem::switch_bgm(const std::string& id)
 	bgm_channel = Mix_FadeInChannel(-1, ResMgr::instance()->find_audio(id), -1, 500);
 	bgm = id;
 }
+void GameSystem::play_audio(const std::string& id)
+{
+	Mix_PlayChannel(-1, ResMgr::instance()->find_audio(id), 0);
+}
 void GameSystem::start()
 {
 	// ÓÎÏ·³õÊ¼»¯

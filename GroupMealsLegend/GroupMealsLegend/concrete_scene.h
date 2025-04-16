@@ -43,6 +43,7 @@ private:
 	std::string next_scene;		// 即将过度场景
 	int counter = 0;
 	SDL_Texture* tex_bg;		// 背景图
+	bool is_center = true;		// 文字是否在中心位置
 
 public:
 	TransitionScene();
@@ -58,4 +59,5 @@ public:
 	void set_next_scene(const std::string& id);
 
 	void set_background(const std::string& tex_id);
+	void set_text_position(const std::string& pos);
 };

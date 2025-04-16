@@ -64,7 +64,10 @@ void DialogMgr::parse()
 	const std::vector<std::string>& script = ResMgr::instance()->find_script(script_id);
 	const std::string& text = script[idx++];
 
+#ifdef DEBUG
 	SDL_Log("parse script: %s\n", text.c_str());
+#endif // DEBUG
+
 
 	if (text.empty())return;
 	// 指令
@@ -74,24 +77,31 @@ void DialogMgr::parse()
 		std::string cmd = text.substr(1, pos - 1);
 		std::string opt = text.substr(pos + 1, std::string::npos);
 		opt.pop_back();
-		if (cmd == "describe")				// 场景切换过度：黑底白字描述,无图片
+		if (cmd == "describe")					// 场景切换过度：默认黑底白字描述
 		{
-			SceneMgr::instance()->transition_scene(opt, 4.0);
+			SceneMgr::instance()->transition_scene(opt, 5.0);
 		}
-		else if (cmd == "transition_image")	// 场景切换的图片，只有图片，没有文字
+		else if (cmd == "describe_image")		// 添加场景切换的图片
 		{
 			SceneMgr::instance()->set_transition_background(opt);
-			//SceneMgr::instance()->transition_scene("", 4.0);
 		}
-		else if (cmd == "scene")	// 切换场景
+		else if (cmd == "describe_position")	// 过场文字位置：center/bottom
+		{
+			SceneMgr::instance()->set_transition_text_position(opt);
+		}
+		else if (cmd == "scene")				// 切换场景
 		{
 			SceneMgr::instance()->switch_scene(opt);
 		}
-		else if (cmd == "music")	// 播放音乐	
+		else if (cmd == "music")				// 播放背景音乐	
 		{
 			GameSystem::instance()->switch_bgm(opt);
 		}
-		else if (cmd == "game")		// 游戏操作模式,游戏目标可以为空; 目标(1.获取一定数量金币，2.调制某种酒)
+		else if (cmd == "interlude")			// 播放音效
+		{
+			GameSystem::instance()->play_audio(opt);
+		}
+		else if (cmd == "game")					// 游戏操作模式,游戏目标可以为空; 目标(1.获取一定数量金币，2.调制某种酒)
 		{
 			GameSystem::instance()->set_mode(GameSystem::Mode::Operator);
 			if (opt.find("coins") != std::string::npos)
@@ -117,7 +127,9 @@ void DialogMgr::parse()
 		}
 		else
 		{
+#ifdef DEBUG
 			SDL_Log("unkown cmd: %s\n", cmd.c_str());
+#endif // DEBUG
 		}
 	}
 	// 文本
@@ -199,7 +211,7 @@ void DialogMgr::DialogBox::on_input(const SDL_Event& event)
 
 void DialogMgr::DialogBox::on_update(float delta)
 {
-	// todo 或许可以加入特效
+	// todo 或许可以加入特效/音效
 }
 
 void DialogMgr::DialogBox::on_render(SDL_Renderer* renderer)
@@ -236,13 +248,3 @@ void DialogMgr::DialogBox::set_dialog(const std::string& text, const std::string
 	this->color = color;
 }
 
-
-//void DialogMgr::DialogHistory::on_update(float delta)
-//{
-//
-//}
-//
-//void DialogMgr::DialogHistory::on_render(SDL_Renderer* renderer)
-//{
-//
-//}

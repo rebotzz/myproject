@@ -42,6 +42,7 @@ private:
 	std::string text;			// 场景过度显示文本
 	std::string next_scene;		// 即将过度场景
 	int counter = 0;
+	SDL_Texture* tex_bg;		// 背景图
 
 public:
 	TransitionScene();
@@ -50,9 +51,11 @@ public:
 	void on_update(float delta) override;
 	void on_render(SDL_Renderer* renderer) override;
 	void on_enter() override;
-	void on_exit() {}
+	void on_exit() override;
 
 	void set_wait_time(float delta);
 	void set_text(const std::string& val);
 	void set_next_scene(const std::string& id);
+
+	void set_background(const std::string& tex_id);
 };

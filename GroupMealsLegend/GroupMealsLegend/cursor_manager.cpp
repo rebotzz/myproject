@@ -4,7 +4,6 @@
 #include "game_system.h"
 #include "scene_manager.h"
 #include "region_manager.h"
-#include "bartend_tool.h"
 #include <unordered_map>
 
 CursorMgr* CursorMgr::manager = nullptr;
@@ -100,10 +99,13 @@ void CursorMgr::on_render(SDL_Renderer* renderer)
 	SDL_RenderCopy(renderer, tex_cursor, nullptr, &rect_cursor);
 
 	// »æÖÆ×¬È¡µÄÓ²±Ò
-	static SDL_Texture* tex_coin = ResMgr::instance()->find_texture("coin");
-	static SDL_Rect rect_coin = { 1100, 20, 40, 40 };
-	SDL_RenderCopy(renderer, tex_coin, nullptr, &rect_coin);
-	render_text(renderer, std::to_string(coins), { 1150, 25, INT_MAX, INT_MAX }, { 255,255,255,255 });
+	//if (!is_bartending)
+	{
+		static SDL_Texture* tex_coin = ResMgr::instance()->find_texture("coin");
+		static SDL_Rect rect_coin = { 1100, 20, 40, 40 };
+		SDL_RenderCopy(renderer, tex_coin, nullptr, &rect_coin);
+		render_text(renderer, std::to_string(coins), { 1150, 25, INT_MAX, INT_MAX }, { 255,255,255,255 });
+	}
 }
 void CursorMgr::set_picked(Meal meal)
 {

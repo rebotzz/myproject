@@ -14,7 +14,6 @@
 
 
 GameSystem* GameSystem::manager = nullptr;
-
 GameSystem* GameSystem::instance()
 {
 	if (!manager)

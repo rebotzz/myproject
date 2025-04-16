@@ -2,6 +2,7 @@
 #include "resources_manager.h"
 #include "scene_manager.h"
 #include "game_system.h"
+#include "bartend_system.h"
 #include "kits.h"
 
 DialogMgr* DialogMgr::manager = nullptr;
@@ -33,7 +34,7 @@ void DialogMgr::on_update(float delta)
 	// 解析执行脚本
 	parse();
 
-	// 定时器更新，给个0.5s滴滴声，文本动态出现
+	// todo定时器更新，给个0.5s滴滴声，文本动态出现
 	dialog_box.on_update(delta);
 	//dialog_history.on_update(delta);
 
@@ -73,9 +74,14 @@ void DialogMgr::parse()
 		std::string cmd = text.substr(1, pos - 1);
 		std::string opt = text.substr(pos + 1, std::string::npos);
 		opt.pop_back();
-		if (cmd == "describe")		// 切换到过度场景：黑底白字描述
+		if (cmd == "describe")				// 场景切换过度：黑底白字描述,无图片
 		{
-			SceneMgr::instance()->transition_scene(opt, 5.0);
+			SceneMgr::instance()->transition_scene(opt, 4.0);
+		}
+		else if (cmd == "transition_image")	// 场景切换的图片，只有图片，没有文字
+		{
+			SceneMgr::instance()->set_transition_background(opt);
+			//SceneMgr::instance()->transition_scene("", 4.0);
 		}
 		else if (cmd == "scene")	// 切换场景
 		{
@@ -92,12 +98,15 @@ void DialogMgr::parse()
 			{
 				int val = std::stoi(opt.substr(5, std::string::npos));
 				GameSystem::instance()->set_coins_goal(val);
+				enable_tips(true);
+				set_tips(u8"Tips: 赚取硬币" + std::to_string(val));
 			}
 			else
 			{
 				GameSystem::instance()->set_drink_goal(opt);
 				enable_tips(true);
 				set_tips(u8"Tips: 调制一杯" + opt);
+				BartendSystem::instance()->enable_meun(true);
 			}
 			condition = false;
 		}
@@ -129,14 +138,13 @@ void DialogMgr::parse()
 			if (color == "C1") color_id = DialogBox::Color::C1;
 			else if (color == "C2") color_id = DialogBox::Color::C2;
 			else if (color == "C3") color_id = DialogBox::Color::C3;
+			else if (color == "C4") color_id = DialogBox::Color::C4;
+			else if (color == "C5") color_id = DialogBox::Color::C5;
+			else if (color == "C6") color_id = DialogBox::Color::C6;
 
 			dialog_box.set_dialog(dialog, npc_img, color_id);
-
-			SDL_Log("set dialog: %s\n", dialog.c_str());
 		}
 	}
-
-
 }
 void DialogMgr::set_idx(int val)
 {

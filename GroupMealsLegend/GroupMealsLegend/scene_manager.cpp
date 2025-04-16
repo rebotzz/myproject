@@ -75,3 +75,9 @@ bool SceneMgr::is_transition() const
 {
 	return "transition" == cur_scene_id;
 }
+
+void SceneMgr::set_transition_background(const std::string& tex_id)
+{
+	TransitionScene* trans = dynamic_cast<TransitionScene*>(scene_pool["transition"]);
+	trans->set_background(tex_id);
+}

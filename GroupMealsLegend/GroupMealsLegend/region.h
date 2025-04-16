@@ -1,5 +1,6 @@
 #pragma once
-#include <SDL.h>
+#include "SDL.h"
+#include <functional>
 
 class Region
 {
@@ -34,5 +35,22 @@ public:
 	{
 		return valid;
 	}
+};
 
+class Region2 : public Region
+{
+private:
+	std::function<void(SDL_Renderer*)> render_callback;
+
+public:
+	virtual void on_render(SDL_Renderer* renderer) 
+	{
+		if (render_callback)
+			render_callback(renderer);
+	};
+
+	void set_render_callback(const std::function<void(SDL_Renderer*)>& callback)
+	{
+		render_callback = callback;
+	}
 };

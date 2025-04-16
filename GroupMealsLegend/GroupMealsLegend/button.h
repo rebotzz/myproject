@@ -21,6 +21,7 @@ public:
 	void set_on_click(const std::function<void(void)>& callback);
 	void set_texture(SDL_Texture* tex);
 	void set_enable(bool flag);
+	void set_position(int x, int y);
 
 	virtual void on_update(float delta) override;
 	virtual void on_render(SDL_Renderer* renderer) override;

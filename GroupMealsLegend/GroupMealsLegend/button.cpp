@@ -23,6 +23,11 @@ void Button::set_enable(bool flag)
 {
 	is_enabled = flag;
 }
+void Button::set_position(int x, int y)
+{
+	rect.x = x, rect.y = y;
+}
+
 
 void Button::on_render(SDL_Renderer* renderer)
 {

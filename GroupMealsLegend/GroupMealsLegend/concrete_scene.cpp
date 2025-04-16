@@ -105,11 +105,8 @@ void NightScene::on_render(SDL_Renderer* renderer)
 {
 	// 背景
 	static SDL_Texture* tex_bg = ResMgr::instance()->find_texture("background_night");
-	static SDL_Texture* tex_bartend = ResMgr::instance()->find_texture("bartending");
 	static SDL_Rect rect_bg = { 0,0,1280,720 };
-	static SDL_Rect rect_bt = { 700,155,583, 470 };
 	SDL_RenderCopy(renderer, tex_bg, nullptr, &rect_bg);
-	SDL_RenderCopy(renderer, tex_bartend, nullptr, &rect_bt);
 	
 	// 交互区域
 	Scene::on_render(renderer);
@@ -158,17 +155,32 @@ void TransitionScene::on_update(float delta)
 }
 void TransitionScene::on_render(SDL_Renderer* renderer) 
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
-	static SDL_Point center_point = { 1280 / 2, 720 / 2 };
-	static SDL_Color color = { 255,255, 255, 255 };
-	render_text(renderer, text, center_point, color);
+	// 绘制背景
+	if (tex_bg)
+	{
+		SDL_RenderCopy(renderer, tex_bg, nullptr, nullptr);
+	}
+
+	// 绘制过场文字
+	if (text.size() > 0)
+	{
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+		static SDL_Point center_point = { 1280 / 2, 720 / 2 };
+		static SDL_Color color = { 255,255, 255, 255 };
+		render_text(renderer, text, center_point, color);
+	}
 }
 void TransitionScene::on_enter() 
 {
 	timer.restart();
 	counter = 0;
 }
+void TransitionScene::on_exit()
+{
+	tex_bg = nullptr;
+}
+
 void TransitionScene::set_wait_time(float delta) 
 {
 	timer.set_wait_time(delta);
@@ -180,4 +192,8 @@ void TransitionScene::set_text(const std::string& val)
 void TransitionScene::set_next_scene(const std::string& id)
 {
 	next_scene = id;
+}
+void TransitionScene::set_background(const std::string& tex_id)
+{
+	tex_bg = ResMgr::instance()->find_texture(tex_id);
 }

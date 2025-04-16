@@ -30,18 +30,29 @@ BartendSystem::BartendSystem()
 			modulate();
 		});
 
-	RegionMgr::instance()->add("Adelhyde", &adelhyde, 0);
-	RegionMgr::instance()->add("BronsonExt", &bronsonext, 0);
-	RegionMgr::instance()->add("PwdDelta", &pwddelta, 0);
-	RegionMgr::instance()->add("Flanergide", &flanergide, 0);
-	RegionMgr::instance()->add("Karmotrine", &karmotrine, 0);
-	RegionMgr::instance()->add("Ice", &ice, 0);
-	RegionMgr::instance()->add("Ageing", &ageing, 0);
-	RegionMgr::instance()->add("BartendBottle", &bartendbottle, 0);
+	btc_bottom.set_render_callback([](SDL_Renderer* renderer)
+		{
+			// »æÖÆ±³¾°¿ò
+			static SDL_Texture* tex_bartend = ResMgr::instance()->find_texture("bartending");
+			static SDL_Rect rect_bt = { 700,155,583, 470 };
+			SDL_RenderCopy(renderer, tex_bartend, nullptr, &rect_bt);
+		});
 
-	RegionMgr::instance()->add("ButtonRedo", &button_redo, 0);
-	RegionMgr::instance()->add("ButtonModulate", &button_modulate, 0);
 
+	RegionMgr::instance()->add("btc_bottom", &btc_bottom, 0);
+	RegionMgr::instance()->add("Adelhyde", &adelhyde, 1);
+	RegionMgr::instance()->add("BronsonExt", &bronsonext, 1);
+	RegionMgr::instance()->add("PwdDelta", &pwddelta, 1);
+	RegionMgr::instance()->add("Flanergide", &flanergide, 1);
+	RegionMgr::instance()->add("Karmotrine", &karmotrine, 1);
+	RegionMgr::instance()->add("Ice", &ice, 1);
+	RegionMgr::instance()->add("Ageing", &ageing, 1);
+	RegionMgr::instance()->add("BartendBottle", &bartendbottle, 1);
+
+	RegionMgr::instance()->add("ButtonRedo", &button_redo, 1);
+	RegionMgr::instance()->add("ButtonModulate", &button_modulate, 1);
+
+	btc_bottom.set_valid(false);
 	adelhyde.set_valid(false);
 	bronsonext.set_valid(false);
 	pwddelta.set_valid(false);
@@ -72,6 +83,7 @@ void BartendSystem::open()
 	{
 		valid = true;
 
+		btc_bottom.set_valid(true);
 		adelhyde.set_valid(true);
 		bronsonext.set_valid(true);
 		pwddelta.set_valid(true);
@@ -91,6 +103,7 @@ void BartendSystem::close()
 	{
 		valid = false;
 
+		btc_bottom.set_valid(false);
 		adelhyde.set_valid(false);
 		bronsonext.set_valid(false);
 		pwddelta.set_valid(false);
@@ -118,6 +131,7 @@ void BartendSystem::reset()
 	karmotrine.set_count(0);
 
 	bartendbottle.reset();
+	bartendmeun.reset();
 	status = Status::Init;
 }
 void BartendSystem::modulate()
@@ -126,4 +140,8 @@ void BartendSystem::modulate()
 	else if (Status::Doing == status) status = Status::Done;
 
 	bartendbottle.modulate();
+}
+void BartendSystem::enable_meun(bool flag)
+{
+	bartendmeun.set_valid(flag);
 }

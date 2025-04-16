@@ -1,6 +1,7 @@
 #pragma once
 #include "bartend_material.h"
-#include "bartend_tool.h"
+#include "bartend_bottle.h"
+#include "bartend_meun.h"
 #include "button.h"
 #include "timer.h"
 
@@ -29,10 +30,12 @@ private:
 	// 功能按钮; 不用具体类，注册回调就行
 	Button button_redo;
 	Button button_modulate;
+	BartendMeun bartendmeun;
 
 	bool valid = false;						// 是否启用
 	Status status = Status::Init;			// 用于辅助描述按键状态
 	Timer timer_button;						// 更新按键状态
+	Region2 btc_bottom;						// 绘制底部图片
 
 private:
 	BartendSystem();		
@@ -49,4 +52,5 @@ public:
 
 	void reset();
 	void modulate();
+	void enable_meun(bool flag);
 };

@@ -1,4 +1,5 @@
-#include "bartend_tool.h"
+#include "bartend_bottle.h"
+
 #include "cursor_manager.h"
 #include "resources_manager.h"
 #include "kits.h"
@@ -161,6 +162,7 @@ void BartendBottle::modulate()
 		{
 			GameSystem::instance()->finish_goal();
 			DialogMgr::instance()->enable_tips(false);
+			BartendSystem::instance()->enable_meun(false);
 		}
 		else
 		{
@@ -168,6 +170,7 @@ void BartendBottle::modulate()
 			tips += CursorMgr::instance()->get_drink_goal_name();
 			DialogMgr::instance()->set_tips(tips);
 			DialogMgr::instance()->enable_tips(true);
+			CursorMgr::instance()->add_coins(10);
 		}
 		BartendSystem::instance()->reset();
 		break;

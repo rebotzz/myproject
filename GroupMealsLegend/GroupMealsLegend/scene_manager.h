@@ -32,4 +32,5 @@ public:
 	void transition_scene(const std::string& transition_text, float transition_time = 3.0, const std::string& next_scene = "");
 
 	bool is_transition() const;
+	void set_transition_background(const std::string& tex_id);
 };

@@ -10,7 +10,7 @@
 #include "scene_manager.h"
 #include "dialogue_manager.h"
 #include <ctime>
-
+#include <fstream>
 
 
 GameSystem* GameSystem::manager = nullptr;
@@ -63,6 +63,7 @@ void GameSystem::start()
 	DialogMgr::instance()->set_script_id("script_1");
 	set_mode(Mode::Dialogue);
 	SceneMgr::instance()->switch_scene("transition");
+	load_game();
 
 	SDL_Event event;
 	bool quit = false;
@@ -109,6 +110,7 @@ void GameSystem::start()
 			SDL_Delay((int)(delay * 1000));	//ms
 	}
 
+	save_game();
 
 	Mix_CloseAudio();
 	Mix_Quit();
@@ -131,4 +133,43 @@ void GameSystem::finish_goal()
 {
 	DialogMgr::instance()->finish_goal();
 	set_mode(Mode::Dialogue);
+}
+void GameSystem::save_game()
+{
+	// 存档格式：执行脚本id,执行到的位置，当前场景id，当前bgm，硬币数量
+	std::ofstream file("save.txt", std::ios::out | std::ios::trunc);
+	file << DialogMgr::instance()->get_script_id() << "\n";
+	file << DialogMgr::instance()->get_idx() << "\n";
+	file << SceneMgr::instance()->get_cur_scene_name() << "\n";
+	file << bgm << "\n";
+	file << CursorMgr::instance()->get_coins() << "\n";
+	file.close();
+}
+void GameSystem::load_game()
+{
+	std::ifstream file("save.txt");
+	if (!file.fail())
+	{
+		std::string script_id, scene_id, bgm_id;
+		int script_line_idx = 0, coins = -1;
+		file >> script_id;
+		file >> script_line_idx;
+		file >> scene_id;
+		file >> bgm_id;
+		file >> coins;
+		if (coins < 0)
+		{
+			// 存档错误
+			file.close();
+			std::ofstream out("save.txt", std::ios::trunc);
+			out.close();
+			return;
+		}
+		DialogMgr::instance()->set_script_id(script_id);
+		DialogMgr::instance()->set_idx(script_line_idx);
+		SceneMgr::instance()->switch_scene(scene_id);
+		switch_bgm(bgm_id);
+		CursorMgr::instance()->add_coins(coins);
+		file.close();
+	}
 }

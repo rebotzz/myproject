@@ -36,5 +36,6 @@ public:
 	Meal get_drink_goal() const;
 	const std::string& get_drink_goal_name() const;
 	bool is_button_down() const;
-	void enable_bartend(bool flag);		// 是否开启酒保模式
+	void enable_bartend(bool flag);			// 是否开启酒保模式
+	int get_coins() const { return coins; }	// 存档相关
 };

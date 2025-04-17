@@ -36,9 +36,13 @@ public:
 	Mode get_mode() const;
 	void start();
 
-	void switch_bgm(const std::string& id);		// 背景音乐，只有一个
-	void play_audio(const std::string& id);		// 音效，可以多个
+	void switch_bgm(const std::string& id);				// 背景音乐，只有一个
+	void play_audio(const std::string& id);				// 音效，可以多个
+	// 游戏目标设定相关
 	void set_coins_goal(int val);
-	void set_drink_goal(const std::string& target);
+	void set_drink_goal(const std::string& target);	
 	void finish_goal();
+	// 存档相关
+	void save_game();		
+	void load_game();
 };

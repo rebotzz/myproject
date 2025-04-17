@@ -1,0 +1,5 @@
+script_1
+13
+day
+bgm
+0

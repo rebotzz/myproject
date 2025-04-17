@@ -21,10 +21,10 @@ private:
 			C1, C2, C3, C4, C5, C6, None
 		};
 	private:
-		std::string text;
-		SDL_Rect rect = { 0 };
-		Color color = Color::C1;
-		std::string img;
+		std::string text;					// 对话文本
+		SDL_Rect rect = { 0 };				// 对话框区域
+		Color color = Color::C1;			// 角色名字颜色
+		std::string img;					// 角色立绘
 		std::array<SDL_Color, static_cast<int>(Color::None)> color_map;
 
 	public:
@@ -68,11 +68,17 @@ public:
 	void on_update(float delta);
 	void on_render(SDL_Renderer* renderer);
 
-	void parse();				// 解析脚本，确定接下来执行什么
+	// 解析脚本，确定接下来执行什么
+	void parse();				
 
-	void set_idx(int val);
+	// 与执行脚本相关
 	bool check_idx() const;
+	void set_idx(int val);
 	void set_script_id(const std::string& id);
+	int get_idx() const;
+	const std::string& get_script_id() const;
+
+	// 游戏目标达成，继续推进相关
 	void finish_goal();
 	void set_tips(const std::string& val);
 	void enable_tips(bool flag);

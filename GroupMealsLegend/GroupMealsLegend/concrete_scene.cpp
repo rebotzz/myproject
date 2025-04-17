@@ -95,7 +95,6 @@ void DayScene::on_exit()
 }
 
 
-
 void NightScene::on_update(float delta)
 {
 	BartendSystem::instance()->on_update(delta);

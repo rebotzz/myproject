@@ -84,3 +84,7 @@ void SceneMgr::set_transition_text_position(const std::string& pos)
 	TransitionScene* trans = dynamic_cast<TransitionScene*>(scene_pool["transition"]);
 	trans->set_text_position(pos);
 }
+const std::string& SceneMgr::get_cur_scene_name() const
+{
+	return cur_scene_id;
+}

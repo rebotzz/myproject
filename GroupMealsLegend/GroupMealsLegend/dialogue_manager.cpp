@@ -178,6 +178,14 @@ void DialogMgr::set_script_id(const std::string& id)
 {
 	script_id = id;
 }
+int DialogMgr::get_idx() const
+{
+	return idx;
+}
+const std::string& DialogMgr::get_script_id() const
+{
+	return script_id;
+}
 
 void DialogMgr::set_tips(const std::string& val)
 {

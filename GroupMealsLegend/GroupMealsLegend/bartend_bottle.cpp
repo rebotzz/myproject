@@ -36,7 +36,7 @@ BartendBottle::BartendBottle() :Region({ 980, 450, 100, 120 })
 	std::vector<Meal> flff_dream_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::Adelhyde,
 		Meal::PwdDelta, Meal::PwdDelta, Meal::PwdDelta, Meal::Ageing };								
 	std::vector<Meal> moon_blast_list = { Meal::Adelhyde, Meal::Adelhyde,  Meal::Adelhyde, Meal::Adelhyde,
-	 Meal::Adelhyde, Meal::Adelhyde, Meal::PwdDelta, Meal::Flanergide, Meal::Karmotrine, Meal::Karmotrine, Meal::Ice };
+	 Meal::Adelhyde, Meal::Adelhyde, Meal::PwdDelta, Meal::Flanergide, Meal::Karmotrine, Meal::Karmotrine, Meal::Ice, Meal::Shaking };
 	std::vector<Meal> coblt_vlvt_list = { Meal::Adelhyde, Meal::Adelhyde, Meal::Flanergide, Meal::Flanergide,
 	Meal::Flanergide, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Karmotrine, Meal::Ice };
 

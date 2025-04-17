@@ -29,9 +29,13 @@ public:
 
 	void add(const std::string& id, Scene* scene);
 	void switch_scene(const std::string& id);
-	void transition_scene(const std::string& transition_text, float transition_time = 3.0, const std::string& next_scene = "");
 
+	// 场景过度
+	void transition_scene(const std::string& transition_text, float transition_time = 3.0, const std::string& next_scene = "");
 	bool is_transition() const;
 	void set_transition_background(const std::string& tex_id);
 	void set_transition_text_position(const std::string& pos);
+
+	// 存档相关
+	const std::string& get_cur_scene_name() const;		
 };

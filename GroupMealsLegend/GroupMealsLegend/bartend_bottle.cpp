@@ -227,15 +227,16 @@ Meal BartendBottle::TrieTree::check(std::vector<Meal>& material_list)
 	// 先排序（升序）材料，然后trie树
 	std::sort(material_list.begin(), material_list.end());
 	auto cur = root;
+	bool has_ice = false, has_ageing = false;
 	for (int i = 0; i < material_list.size(); ++i)
 	{
 		if (material_list[i] == Meal::Ice)
 		{
-			if(!cur->need_ice) return Meal::Unkown;
+			has_ice = true;
 		}
 		else if (material_list[i] == Meal::Ageing)
 		{
-			if (!cur->need_ageing) return Meal::Unkown;
+			has_ageing = true;
 		}
 		else
 		{
@@ -243,6 +244,10 @@ Meal BartendBottle::TrieTree::check(std::vector<Meal>& material_list)
 			else return Meal::Unkown;
 		}
 	}
+	if (has_ice != cur->need_ice || has_ageing != cur->need_ageing) return Meal::Unkown;
+	//if ((has_ice && !cur->need_ice) || (has_ageing && !cur->need_ageing)
+	//	|| (!has_ice && cur->need_ice) || (!has_ageing && cur->need_ageing))
+	//	return Meal::Unkown;
 	return cur->drink;
 }
 // 添加新的配方

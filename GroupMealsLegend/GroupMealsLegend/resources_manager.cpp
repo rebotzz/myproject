@@ -46,6 +46,7 @@ void ResMgr::load(SDL_Renderer* renderer)
 
 				while (getline(file, str))
 				{
+					//if (!str.empty())		// 保留空行可以与文本序号匹配，方便手动回档
 					text.emplace_back(std::move(str));
 				}
 				file.close();

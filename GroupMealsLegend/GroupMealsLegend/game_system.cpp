@@ -4,6 +4,7 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "SDL_mixer.h"
+#include "json/json.h"
 #include "resources_manager.h"
 #include "cursor_manager.h"
 #include "region_manager.h"
@@ -72,18 +73,16 @@ void GameSystem::start()
 		// 消息处理
 		while (SDL_PollEvent(&event))
 		{
-			switch (event.type)
+			if (event.type == SDL_QUIT)
 			{
-			case SDL_QUIT:
 				quit = true;
 				break;
-			case SDL_MOUSEMOTION:
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
+			}
+			else
+			{
 				CursorMgr::instance()->on_input(event);
 				SceneMgr::instance()->on_input(event);
 				DialogMgr::instance()->on_input(event);
-				break;
 			}
 		}
 
@@ -137,39 +136,43 @@ void GameSystem::finish_goal()
 void GameSystem::save_game()
 {
 	// 存档格式：执行脚本id,执行到的位置，当前场景id，当前bgm，硬币数量
+	Json::Value root;
+	root["script"] = DialogMgr::instance()->get_script_id();
+	root["script_line_idx"] = DialogMgr::instance()->get_idx();
+	root["scene"] = SceneMgr::instance()->get_cur_scene_name();
+	root["bgm"] = bgm;
+	root["coins"] = CursorMgr::instance()->get_coins();
+
 	std::ofstream file("save.txt", std::ios::out | std::ios::trunc);
-	file << DialogMgr::instance()->get_script_id() << "\n";
-	file << DialogMgr::instance()->get_idx() << "\n";
-	file << SceneMgr::instance()->get_cur_scene_name() << "\n";
-	file << bgm << "\n";
-	file << CursorMgr::instance()->get_coins() << "\n";
+	file << root;
 	file.close();
 }
 void GameSystem::load_game()
 {
-	std::ifstream file("save.txt");
-	if (!file.fail())
-	{
-		std::string script_id, scene_id, bgm_id;
-		int script_line_idx = 0, coins = -1;
-		file >> script_id;
-		file >> script_line_idx;
-		file >> scene_id;
-		file >> bgm_id;
-		file >> coins;
-		if (coins < 0)
-		{
-			// 存档错误
-			file.close();
-			std::ofstream out("save.txt", std::ios::trunc);
-			out.close();
-			return;
-		}
-		DialogMgr::instance()->set_script_id(script_id);
-		DialogMgr::instance()->set_idx(script_line_idx);
-		SceneMgr::instance()->switch_scene(scene_id);
-		switch_bgm(bgm_id);
-		CursorMgr::instance()->add_coins(coins);
-		file.close();
-	}
+	std::ifstream input("save.txt");
+	if (input.fail()) return;
+	std::stringstream str_stream;
+	str_stream << input.rdbuf();
+	input.close();
+
+	Json::Value root;
+	Json::Reader reader;
+	if (!reader.parse(str_stream, root, false)) return;
+
+	std::string script_id, scene_id, bgm_id;
+	int script_line_idx = -1, coins = -1;
+	script_id = root["script"].asString();
+	script_line_idx = root["script_line_idx"].asInt();
+	scene_id = root["scene"].asString();
+	bgm_id = root["bgm"].asString();
+	coins = root["coins"].asInt();
+	// 存档错误
+	if (script_id.empty() || scene_id.empty() || bgm_id.empty() || script_line_idx < 0 || coins < 0)
+		return;
+
+	DialogMgr::instance()->set_script_id(script_id);
+	DialogMgr::instance()->set_idx(script_line_idx);
+	SceneMgr::instance()->switch_scene(scene_id);
+	switch_bgm(bgm_id);
+	CursorMgr::instance()->add_coins(coins, false);
 }

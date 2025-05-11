@@ -27,7 +27,7 @@ public:
 	void on_render(SDL_Renderer* renderer);
 	void set_picked(Meal meal);				// 光标管理器本身不负责抓取，当光标移动到对应的槽位时，槽位设置抓取内容
 	Meal get_picked();
-	void add_coins(int val);
+	void add_coins(int val, bool play_audio = true);
 
 	const SDL_Point& get_position() const;
 

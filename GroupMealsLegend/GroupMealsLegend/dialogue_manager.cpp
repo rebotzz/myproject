@@ -6,6 +6,17 @@
 #include "kits.h"
 
 DialogMgr* DialogMgr::manager = nullptr;
+std::array<SDL_Color, static_cast<int>(DialogMgr::Color::None)> DialogMgr::color_map;
+
+DialogMgr::DialogMgr()
+{
+	color_map[static_cast<int>(Color::C1)] = { 200, 200, 200, 255 };
+	color_map[static_cast<int>(Color::C2)] = { 50, 130, 240, 255 };
+	color_map[static_cast<int>(Color::C3)] = { 60, 230, 230, 255 };
+	color_map[static_cast<int>(Color::C4)] = { 70, 255, 90, 255 };
+	color_map[static_cast<int>(Color::C5)] = { 255, 130, 70, 255 };
+	color_map[static_cast<int>(Color::C6)] = { 255, 70, 170, 255 };
+}
 
 DialogMgr* DialogMgr::instance()
 {
@@ -23,8 +34,16 @@ void DialogMgr::on_input(const SDL_Event& event)
 
 	// 鼠标点击/滚动响应，对话/历史
 	// 历史框触发方式：1.滚轮上滑，2.按键图标
-	dialog_box.on_input(event);
-	//dialog_history.on_input(event);
+	switch (event.type)
+	{
+	case SDL_MOUSEBUTTONDOWN:
+		if (showing_history) break;
+		DialogMgr::instance()->finish_goal();
+		break;
+	case SDL_MOUSEWHEEL:
+		showing_history = event.wheel.y > 0;
+		break;
+	}
 }
 void DialogMgr::on_update(float delta)
 {
@@ -34,10 +53,8 @@ void DialogMgr::on_update(float delta)
 	// 解析执行脚本
 	parse();
 
-	// todo定时器更新，给个0.5s滴滴声，文本动态出现
-	dialog_box.on_update(delta);
-	//dialog_history.on_update(delta);
-
+	// todo: 定时器更新，给个滴滴声，或者文本动态出现
+	//dialog_box.on_update(delta);
 }
 void DialogMgr::on_render(SDL_Renderer* renderer)
 {
@@ -51,7 +68,8 @@ void DialogMgr::on_render(SDL_Renderer* renderer)
 
 	// 渲染角色立绘，聊天框，文本
 	dialog_box.on_render(renderer);
-	//dialog_history.on_render(renderer);
+	if(showing_history)
+		dialog_history.on_render(renderer);
 }
 
 void DialogMgr::parse()
@@ -67,7 +85,6 @@ void DialogMgr::parse()
 #ifdef DEBUG
 	SDL_Log("parse script: %s\n", text.c_str());
 #endif // DEBUG
-
 
 	if (text.empty())return;
 	// 指令
@@ -146,15 +163,16 @@ void DialogMgr::parse()
 			std::string color = npc_color.substr(npc_color.find(':') + 1, std::string::npos);
 			std::string dialog = text.substr(right + 1, std::string::npos);
 
-			DialogBox::Color color_id = DialogBox::Color::C1;
-			if (color == "C1") color_id = DialogBox::Color::C1;
-			else if (color == "C2") color_id = DialogBox::Color::C2;
-			else if (color == "C3") color_id = DialogBox::Color::C3;
-			else if (color == "C4") color_id = DialogBox::Color::C4;
-			else if (color == "C5") color_id = DialogBox::Color::C5;
-			else if (color == "C6") color_id = DialogBox::Color::C6;
+			Color color_id = Color::C1;
+			if (color == "C1") color_id = Color::C1;
+			else if (color == "C2") color_id = Color::C2;
+			else if (color == "C3") color_id = Color::C3;
+			else if (color == "C4") color_id = Color::C4;
+			else if (color == "C5") color_id = Color::C5;
+			else if (color == "C6") color_id = Color::C6;
 
 			dialog_box.set_dialog(dialog, npc_img, color_id);
+			dialog_history.add_text(color_id, dialog);
 		}
 	}
 }
@@ -189,33 +207,13 @@ const std::string& DialogMgr::get_script_id() const
 
 void DialogMgr::set_tips(const std::string& val)
 {
-	dialog_box.set_dialog(val, "", DialogBox::Color::C1);
+	dialog_box.set_dialog(val, "", Color::C1);
 }
 void DialogMgr::enable_tips(bool flag)
 {
 	showing_tip = flag;
 }
 
-
-DialogMgr::DialogBox::DialogBox()
-{
-	color_map[static_cast<int>(Color::C1)] = { 200, 200, 200, 255 };
-	color_map[static_cast<int>(Color::C2)] = { 50, 130, 240, 255 };
-	color_map[static_cast<int>(Color::C3)] = { 60, 230, 230, 255 };
-	color_map[static_cast<int>(Color::C4)] = { 70, 255, 90, 255 };
-	color_map[static_cast<int>(Color::C5)] = { 255, 130, 70, 255 };
-	color_map[static_cast<int>(Color::C6)] = { 255, 70, 170, 255 };
-}
-
-void DialogMgr::DialogBox::on_input(const SDL_Event& event)
-{
-	switch (event.type)
-	{
-	case SDL_MOUSEBUTTONDOWN:
-		DialogMgr::instance()->finish_goal();
-		break;
-	}
-}
 
 void DialogMgr::DialogBox::on_update(float delta)
 {
@@ -256,3 +254,29 @@ void DialogMgr::DialogBox::set_dialog(const std::string& text, const std::string
 	this->color = color;
 }
 
+
+void  DialogMgr::DialogHistory::on_render(SDL_Renderer* renderer)
+{
+	// 渲染对话框
+	static int box_height = 720;
+	static SDL_Rect box_rect = { 0, (720 - box_height) / 2, 1280, box_height };
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
+	SDL_RenderFillRect(renderer, &box_rect);
+
+	// 渲染对话文本
+	SDL_Rect text_rect = { box_rect.x + 30, box_rect.y + 15, box_rect.w - 60, box_rect.h - 20 };
+	for (const auto& [color, text] : history)
+	{
+		SDL_Color text_color = color_map[static_cast<int>(color)];
+		int pos = text.find(':');
+		std::string name = text.substr(0, pos + 1);
+		std::string talk = text.substr(pos + 1, std::string::npos);
+		render_textEx(renderer, { name, talk }, { text_color , {255,255,255,255} }, { text_rect.x, text_rect.y });
+		text_rect.y += box_height / MAX_SIZE - 10;
+	}
+}
+void  DialogMgr::DialogHistory::add_text(Color color, const std::string& text)
+{
+	history.push_back({ color, text });
+	if (history.size() > MAX_SIZE) history.pop_front();
+}

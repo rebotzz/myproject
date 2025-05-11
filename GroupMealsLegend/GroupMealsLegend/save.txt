@@ -1,5 +1,7 @@
-script_1
-13
-day
-bgm
-0
+{
+	"bgm" : "bgm",
+	"coins" : 90,
+	"scene" : "transition",
+	"script" : "script_1",
+	"script_line_idx" : 204
+}

@@ -3,8 +3,8 @@
 #include "timer.h"
 
 #include <string>
-#include <queue>
 #include <array>
+#include <deque>
 
 // 对话管理器	
 // 需要：角色立绘 + 聊天框 + 点击响应
@@ -13,40 +13,39 @@
 class DialogMgr
 {
 private:
+	enum class Color
+	{
+		C1, C2, C3, C4, C5, C6, None
+	};
 	class DialogBox
 	{
-	public:
-		enum class Color
-		{
-			C1, C2, C3, C4, C5, C6, None
-		};
 	private:
 		std::string text;					// 对话文本
 		SDL_Rect rect = { 0 };				// 对话框区域
 		Color color = Color::C1;			// 角色名字颜色
 		std::string img;					// 角色立绘
-		std::array<SDL_Color, static_cast<int>(Color::None)> color_map;
 
 	public:
-		DialogBox();
-		void on_input(const SDL_Event& event);
+		DialogBox() = default;
+		~DialogBox() = default;
 		void on_update(float delta);
 		void on_render(SDL_Renderer* renderer);
 		void set_dialog(const std::string& text, const std::string& img, Color color);
 	};
+	class DialogHistory 
+	{
+	private:
+		std::deque<std::pair<Color, std::string>> history;
+		SDL_Rect rect;
+		bool valid = false;
+		const int MAX_SIZE = 10;
+	public:
+		void on_render(SDL_Renderer* renderer);
+		void add_text(Color color, const std::string& text);
+	};
 
-	//class DialogHistory 
-	//{
-	//private:
-	//	std::queue<std::string> history;
-	//	SDL_Rect rect;
-	//	bool valid = false;
-	//public:
-	//	void on_input(const SDL_Event& event);
-	//	void on_update(float delta);
-	//	void on_render(SDL_Renderer* renderer);
-	//	const SDL_Rect& get_rect() const;
-	//};
+public:
+	static std::array<SDL_Color, static_cast<int>(Color::None)> color_map;
 
 private:
 	static DialogMgr* manager;
@@ -56,9 +55,11 @@ private:
 	int idx = 0;							// 当前执行脚本序号
 	bool condition = true;					// 继续解析脚本的条件是否完成
 	bool showing_tip = false;				// 是否显示提示
+	DialogHistory dialog_history;			// 历史对话
+	bool showing_history = false;			// 是否展示历史对话
 
 private:
-	DialogMgr() = default;
+	DialogMgr();
 	~DialogMgr() = default;
 
 public:

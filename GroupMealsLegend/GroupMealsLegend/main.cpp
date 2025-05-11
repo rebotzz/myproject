@@ -7,4 +7,5 @@
 int main()
 {
 	GameSystem::instance()->start();
+	return 0;
 }

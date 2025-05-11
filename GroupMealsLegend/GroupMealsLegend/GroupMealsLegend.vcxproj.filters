@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\day_meal">
+      <UniqueIdentifier>{ab25b639-e058-48b8-bf6e-99e7e317c720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\night_bartend">
+      <UniqueIdentifier>{8d6302a4-7855-4332-ad67-c0a29986272b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\scene">
+      <UniqueIdentifier>{d00199b1-873c-4f7b-882c-3f441689ed5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\kits">
+      <UniqueIdentifier>{b853a4c8-cb67-4784-87c0-eb948b651f90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\manager">
+      <UniqueIdentifier>{8a6a491b-0b45-4da1-8e50-a40548228e83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -71,71 +86,71 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resources_manager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="meal.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="cursor_manager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="region.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="region_manager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="goods_bundle.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="bundle.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="microwave_oven.h">
+      <Filter>头文件\day_meal</Filter>
     </ClInclude>
     <ClInclude Include="takeout_box.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="timer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="microwave_oven.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\day_meal</Filter>
     </ClInclude>
     <ClInclude Include="delivery_driver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="dialogue_manager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="scene_manager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="kits.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="game_system.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="concrete_scene.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\day_meal</Filter>
     </ClInclude>
     <ClInclude Include="bartend_bottle.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="button.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\night_bartend</Filter>
     </ClInclude>
     <ClInclude Include="bartend_material.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="bartend_system.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\night_bartend</Filter>
     </ClInclude>
     <ClInclude Include="bartend_meun.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\night_bartend</Filter>
+    </ClInclude>
+    <ClInclude Include="bartend_system.h">
+      <Filter>头文件\night_bartend</Filter>
+    </ClInclude>
+    <ClInclude Include="bundle.h">
+      <Filter>头文件\night_bartend</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>头文件\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_manager.h">
+      <Filter>头文件\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="region.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
+      <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="concrete_scene.h">
+      <Filter>头文件\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="goods_bundle.h">
+      <Filter>头文件\day_meal</Filter>
+    </ClInclude>
+    <ClInclude Include="region_manager.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="resources_manager.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="cursor_manager.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogue_manager.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="game_system.h">
+      <Filter>头文件\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="kits.h">
+      <Filter>头文件\kits</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

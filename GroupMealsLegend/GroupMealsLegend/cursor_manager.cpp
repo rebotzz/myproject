@@ -116,7 +116,7 @@ Meal CursorMgr::get_picked()
 	return meal_picked;
 }
 
-void CursorMgr::add_coins(int val)
+void CursorMgr::add_coins(int val, bool play_audio)
 {
 	coins += val;
 	coins_goal -= val;
@@ -124,7 +124,8 @@ void CursorMgr::add_coins(int val)
 	{
 		GameSystem::instance()->finish_goal();
 	}
-	Mix_PlayChannel(-1, ResMgr::instance()->find_audio("get_coins"), 0);
+	if(play_audio)
+		Mix_PlayChannel(-1, ResMgr::instance()->find_audio("get_coins"), 0);
 }
 
 void CursorMgr::set_coins_goal(int val)

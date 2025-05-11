@@ -4,6 +4,6 @@ if(Test-Path bin/shooter.exe)
 }
 
 cd SDLShooter
-make all
+make all -f .\myMakefile
 mv shooter.exe ../bin
 cd ..

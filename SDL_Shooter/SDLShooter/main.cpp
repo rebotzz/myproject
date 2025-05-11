@@ -1,17 +1,10 @@
 #define SDL_MAIN_HANDLED
 #include <iostream>
-#include "json/json.h"
 #include "SDL.h"
+#include "SDL_image.h"
+#include "SDL_mixer.h"
+#include "SDL_ttf.h"
 
-void test_json()
-{
-    std::cout << "test\n";
-
-    Json::Value root;
-    root["name"] = "neo";
-    root["id"] = 2398085;
-    std::cout << root << std::endl;
-}
 
 void test_sdl()
 {
@@ -56,10 +49,11 @@ void test_sdl()
     SDL_Quit();
 }
 
-int main(int argc, char** argv)
+int main(int, char**)
 {
 
-    test_json();
+    // test_json();
+    test_sdl();
 
     return 0;
 }

@@ -2,6 +2,7 @@
 #define _GAME_MGR_H_
 
 #include "singleton.h"
+#include "scene.h"
 
 #include "SDL.h"
 #include "SDL_image.h"
@@ -15,10 +16,14 @@ class GameMgr : public Singleton<GameMgr>
 public:
     int run();
 
+    void switch_scene(Scene* scene);
 
     // set
 
     // get
+    int getWindowHeight() const { return window_h; }
+    int getWindowWidth() const { return window_w; }
+    SDL_Renderer* getRenderer() { return renderer; }
 
 private:
     GameMgr();
@@ -33,7 +38,8 @@ private:
     bool is_quit = false;
     int window_h = 800;
     int window_w = 600;
-
+    const double FPS = 60;
+    Scene* current_scene = nullptr;
 };
 
 

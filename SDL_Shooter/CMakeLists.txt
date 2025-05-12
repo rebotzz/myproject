@@ -34,6 +34,8 @@ find_package(SDL2_ttf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL2_ttf)
 add_executable(${MyExecutable} src/main.cpp
                                 src/gameMgr.cpp
                                 src/resourcesMgr.cpp
+                                src/scene.cpp
+                                src/sceneMain.cpp
                                 )
 
 # 链接库
@@ -50,3 +52,6 @@ if(MSVC)
     # target_link_options(${MyExecutable} PRIVATE "/SUBSYSTEM:WINDOWS")
 endif()
 
+# 其他
+# set(CMAKE_CXX_COMPILER "g++")
+# set(CMAKE_GENERATOR "MinGW Makefiles")

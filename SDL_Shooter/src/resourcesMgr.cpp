@@ -27,7 +27,8 @@ TTF_Font* ResMgr::FontWrapper::get_font(int size)
 ResMgr::ResMgr()
 {
     // 加载器初始化
-    loader_pool[".png"] = [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
+    loader_pool[".png"] = loader_pool[".jpg"] = 
+    [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
     {
         SDL_Texture* tex = IMG_LoadTexture(renderer, path.u8string().c_str());
         if(!tex) 
@@ -39,7 +40,8 @@ ResMgr::ResMgr()
         return true;
     };
 
-    loader_pool[".ogg"] = loader_pool[".wav"] = [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
+    loader_pool[".mp3"] = loader_pool[".ogg"] = loader_pool[".wav"] = 
+    [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
     {
         // Mix_Music一边播放一边加载,适合bgm
         if (path.stem().u8string().find("music") != std::string::npos)
@@ -127,7 +129,15 @@ bool ResMgr::load(SDL_Renderer* renderer, const std::string& resources_path)
         if (!entry.is_regular_file()) continue;
         auto& path = entry.path();
         if(loader_pool.count(path.extension().u8string()))
+        {
             loader_pool[path.extension().u8string()](path, renderer);
+        }
+        else 
+        {
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "load resources [%s] failed: %s", 
+                path.u8string().c_str(), SDL_GetError());
+            return false;
+        }
     }
 
     return true;
@@ -157,7 +167,7 @@ static std::string rename_ResID(const std::string& str)
     // 将"npc_idle_1" 改为 "NpcIdle1"; 注意:命名只能最好只有字母/数字/下划线
     std::string s;
     bool upper_alpha = true;
-    for (int i = 0; i < str.size(); i++)
+    for (size_t i = 0; i < str.size(); i++)
     {
         // 字母/数字/下划线之外,跳过
         if(!isalnum(str[i]) && str[i] != '_') continue;
@@ -218,33 +228,35 @@ void ResMgr::create_NameResID_map(const std::string& resources_dir, const std::s
         }
     }
 
-    output << "ResID: " << std::endl;
+    output << "enum class ResID\n{" << std::endl;
+    output << "\t//图片纹理" << std::endl;
     for (auto& s : vs_tex)
-        output << s.second << "," << std::endl;
-    output << std::endl;
+        output << "\t" << s.second << "," << std::endl;
+    output << "\t//BGM音频" << std::endl;
     for (auto& s : vs_mus)
-        output << s.second << "," << std::endl;
-    output << std::endl;
+        output << "\t" << s.second << "," << std::endl;
+    output << "\t//音效" << std::endl;
     for (auto& s : vs_sound)
-        output << s.second << "," << std::endl;
-    output << std::endl;
+        output << "\t" << s.second << "," << std::endl;
+    output << "\t//字体" << std::endl;
     for (auto& s : vs_font)
-        output << s.second << "," << std::endl;
-    output << std::endl;
+        output << "\t" << s.second << "," << std::endl;
+    output << "}\n"<< std::endl;
     output << std::endl;
 
-    output << "FileName-ResID:" << std::endl;
+    output << "std::unordered_map<std::string, ResID> FileName_ResID = \n{" << std::endl;
     for (auto& s : vs_tex)
-        output << "{\"" << s.first << "\",\t ResID::" << s.second << "}," << std::endl;
+        output << "\t{\"" << s.first << "\",\t ResID::" << s.second << "}," << std::endl;
     output << std::endl;
     for (auto& s : vs_mus)
-        output << "{\"" << s.first << "\",\t  ResID::" << s.second << "}," << std::endl;
+        output << "\t{\"" << s.first << "\",\t  ResID::" << s.second << "}," << std::endl;
     output << std::endl;
     for (auto& s : vs_sound)
-        output << "{\"" << s.first << "\",\t  ResID::" << s.second << "}," << std::endl;
+        output << "\t{\"" << s.first << "\",\t  ResID::" << s.second << "}," << std::endl;
     output << std::endl;
     for (auto& s : vs_font)
-        output << "{\"" << s.first << "\",\t  ResID::" << s.second << "}," << std::endl;
+        output << "\t{\"" << s.first << "\",\t  ResID::" << s.second << "}," << std::endl;
+    output << "}\n"; 
 
     output.close();
 }

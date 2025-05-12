@@ -4,6 +4,14 @@
 SDL_Shooter/bin
 SDL_Shooter/.vscode
 SDL_Shooter/build
+SDL_Shooter/out
+SDL_Shooter/Makefile
+SDL_Shooter/src/my_rm.ps1
+SDL_Shooter/src/my_mv_run.ps1
+*.i
+*.s
+*.o
+
 
 # 拼好饭传奇
 GroupMealsLegend/GroupMealsLegend/resources

@@ -1,7 +1,7 @@
 # 游戏:SDL2与太空战机
 
 ## 简介
-- 1.改用`vscode`/`g++`/`make`编译代码,这次不用visual stuio
+- 1.改用`vscode`/`g++`/`make`编译代码,这次不用`visual stuio`
 ```
     在window下使用vscode,make,g++编译程序,还真是新奇的体验。
     不过make执行指令不能是linux指令,它创建子进程和进程替换也不是用fork.
@@ -24,6 +24,10 @@
         Release/Debug模式: cmake -DCMAKE_BUILD_TYPE=Release
         选择编译器: -DCMAKE_CXX_COMPILER=/usr/local/gcc/bin/g++
         指定生成器: -G "Visual Studio" 或者 -G "MinGW Makefiles"
+        一些字段也可以在CmakeLists.txt中设置：
+        set (CMAKE_C_COMPILER "/usr/local/gcc/bin/gcc")
+        set (CMAKE_CXX_COMPILER "/usr/local/gcc/bin/g++")
+
     )
     4.然后在build目录运行cmake --build . 别忘了".",即build路径,通过中间文件(sln...)生成可执行文件
 ```

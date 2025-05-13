@@ -38,8 +38,10 @@ private:
     void spawnEnemy();
     void spawnPlayerBullet();
     void spawnProp(const Vector2& pos);
+    void player_hurt();
 
 private:
+    // 用于复制生成的模板
     Player player_template;
     Enemy enemy_template;
     Bullet player_bullet_template;
@@ -52,9 +54,8 @@ private:
     std::vector<Bullet*> enemy_bullets;
     std::vector<Prop*> props;
     std::list<ExplodeAnimation*> explosion;
-    int score = 0;          // 玩家得分
-    double timer_end = 3;   // 玩家死亡场景调整定时器
-    double player_dead_pass_time = 0;
+    int score = 0;                    // 玩家得分
+    double timer_end_countdown = 3.0; // 玩家死亡场景跳转定时器
 
     // 随机数
     std::default_random_engine random_generator;

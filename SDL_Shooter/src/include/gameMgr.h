@@ -32,9 +32,9 @@ public:
     int getScore() const { return score; }
 
     // 其他
-    SDL_Point renderText(TTF_Font* font, const std::string& text, double pos_x_ratio, double pos_y_ratio, bool is_left = true);
+    SDL_Point renderText(TTF_Font* font, const std::string& text, double pos_x_ratio, double pos_y_ratio, bool left_align = true);
+    SDL_Point renderText(TTF_Font* font, const std::string& text, int pos_x, int pos_y);
     SDL_Point renderTextCenter(TTF_Font* font, const std::string& text, double pos_y_ratio);
-
 private:
     GameMgr();
     ~GameMgr();
@@ -55,6 +55,7 @@ private:
     Scene* current_scene = nullptr;
     std::map<int, std::string, std::greater<int>> ranking_list; // 排行榜
     int score = 0;  // 当前玩家得分
+    bool is_full_screen = false;
 };
 
 

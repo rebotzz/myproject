@@ -1,6 +1,6 @@
 #include "gameMgr.h"
 #include "resourcesMgr.h"
-#include "sceneMain.h"
+#include "sceneBegin.h"
 #include <fstream>
 
 GameMgr::GameMgr()
@@ -33,7 +33,8 @@ void GameMgr::init()
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL_mixer init failed: %s", SDL_GetError());
         exit(-1);
     }
-    Mix_AllocateChannels(32);
+    const int channels = 32;
+    Mix_AllocateChannels(channels);
     if(TTF_Init())
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL_ttf init failed: %s", SDL_GetError());
@@ -60,6 +61,19 @@ void GameMgr::init()
 
     // 加载资源
     if(!ResMgr::getInstance().load(renderer, "assets")) exit(-1);
+
+    // 中文输入时开启候选词, 没效果?
+    if(SDL_FALSE == SDL_SetHintWithPriority(SDL_HINT_IME_SHOW_UI, "1", SDL_HINT_OVERRIDE))
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL_SetHint failed: %s", SDL_GetError());
+    }
+
+    // 音量调节
+    for(int i = 0; i < channels; ++i)
+    {
+        Mix_Volume(i, static_cast<int>(MIX_MAX_VOLUME * 0.8));
+    }
+    Mix_Volume(0, static_cast<int>(MIX_MAX_VOLUME));    // 玩家受伤音效大一些
 }
 
 void GameMgr::clean()
@@ -68,6 +82,7 @@ void GameMgr::clean()
     if(window) SDL_DestroyWindow(window);
 
     TTF_Quit();
+    Mix_HaltMusic();
     Mix_CloseAudio();
     Mix_Quit();
     IMG_Quit();
@@ -81,7 +96,7 @@ int GameMgr::run()
     double delta_time = 0;
 
     // 场景初始化,不能在构造,因为场景需要用到GameMgr,那时还未初始化完成
-    current_scene = new SceneMain;
+    current_scene = new SceneBegin;
     current_scene->enter();
     loadGame();
 
@@ -99,6 +114,12 @@ int GameMgr::run()
             }
             else
             {
+                if(event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_F5)
+                {
+                    is_full_screen = !is_full_screen;
+                    if(is_full_screen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                    else SDL_SetWindowFullscreen(window, 0);
+                }
                 current_scene->handleEvent(event);
             }
         }
@@ -142,14 +163,19 @@ void GameMgr::switchScene(Scene* scene)
 void GameMgr::setRankingList(const std::string& name, int score)
 {
     ranking_list.insert({score, name});
-    if(ranking_list.size() >= 10) ranking_list.erase(--ranking_list.end());
+    if(ranking_list.size() > 10) ranking_list.erase(--ranking_list.end());
 }
 
-SDL_Point GameMgr::renderText(TTF_Font* font, const std::string& text, double pos_x_ratio, double pos_y_ratio, bool is_left)
+SDL_Point GameMgr::renderText(TTF_Font* font, const std::string& text, double pos_x_ratio, double pos_y_ratio, bool left_align)
 {
+    if(text.empty()) 
+    {
+        return {static_cast<int>(window_w * (left_align ? pos_x_ratio : 1.0 - pos_x_ratio)), 
+            static_cast<int>(window_h * pos_y_ratio)};
+    }
     SDL_Surface* suf = TTF_RenderUTF8_Solid(font, text.c_str(), {255,255,255,255});
     SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, suf);
-    SDL_Rect rect = {static_cast<int>(is_left ? window_w * pos_x_ratio : (window_w - suf->w) * (1.0 - pos_x_ratio)),
+    SDL_Rect rect = {static_cast<int>(left_align ? window_w * pos_x_ratio : (window_w - suf->w) * (1.0 - pos_x_ratio)),
                     static_cast<int>(window_h * pos_y_ratio), 
                     suf->w, suf->h};
     SDL_RenderCopy(renderer, tex, nullptr, &rect);
@@ -158,8 +184,21 @@ SDL_Point GameMgr::renderText(TTF_Font* font, const std::string& text, double po
     return {rect.x + rect.w, rect.y};
 }
 
+SDL_Point GameMgr::renderText(TTF_Font* font, const std::string& text, int pos_x, int pos_y)
+{
+    if(text.empty()) return {pos_x, pos_y};
+    SDL_Surface* suf = TTF_RenderUTF8_Solid(font, text.c_str(), {255,255,255,255});
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, suf);
+    SDL_Rect rect = {pos_x, pos_y, suf->w, suf->h};
+    SDL_RenderCopy(renderer, tex, nullptr, &rect);
+    SDL_DestroyTexture(tex);
+    SDL_FreeSurface(suf);
+    return {rect.x + rect.w, rect.y};
+}
+
 SDL_Point GameMgr::renderTextCenter(TTF_Font* font, const std::string& text, double pos_y_ratio)
 {
+    if(text.empty()) return {static_cast<int>(window_w / 2), static_cast<int>(window_h * pos_y_ratio)};
     SDL_Surface* suf = TTF_RenderUTF8_Solid(font, text.c_str(), {255,255,255,255});
     SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, suf);
     SDL_Rect rect = {static_cast<int>(window_w / 2 - suf->w / 2),

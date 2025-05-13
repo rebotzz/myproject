@@ -44,7 +44,7 @@ ResMgr::ResMgr()
     [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
     {
         // Mix_Music一边播放一边加载,适合bgm
-        if (path.stem().u8string().find("music") != std::string::npos)
+        if (path.u8string().find("music") != std::string::npos)
         {
             Mix_Music* mus = Mix_LoadMUS(path.u8string().c_str());
             if(!mus)
@@ -115,6 +115,7 @@ ResMgr::ResMgr()
         {"explosion3",	  ResID::Sound_Explosion3},
         {"laser_shoot4",	  ResID::Sound_LaserShoot4},
         {"xs_laser",	  ResID::Sound_XsLaser},
+        {"player_hurt",	  ResID::Sound_PlayerHurt},
 
         {"VonwaonBitmap_12px",	  ResID::Font_VonwaonBitmap12px},
         {"VonwaonBitmap_16px",	  ResID::Font_VonwaonBitmap16px},

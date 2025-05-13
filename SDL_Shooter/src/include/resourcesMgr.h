@@ -53,6 +53,7 @@ enum class ResID
     Sound_Explosion3,
     Sound_LaserShoot4,
     Sound_XsLaser,
+    Sound_PlayerHurt,
 	// 字体
     Font_VonwaonBitmap12px,
     Font_VonwaonBitmap16px,

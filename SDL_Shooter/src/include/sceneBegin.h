@@ -10,8 +10,8 @@ public:
     SceneBegin() = default;
     ~SceneBegin() {};
 
-    virtual void enter() {};
-    virtual void exit() {};
+    virtual void enter();
+    virtual void exit();
     virtual void handleEvent(const SDL_Event& event) override;
     virtual void update(double deltaTime) override;
     virtual void render() override;

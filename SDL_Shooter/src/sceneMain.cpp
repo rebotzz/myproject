@@ -2,6 +2,7 @@
 #include "resourcesMgr.h"
 #include "vector2.h"
 #include "gameMgr.h"
+#include "sceneBegin.h"
 #include "sceneEnd.h"
 #include <algorithm>
 
@@ -49,42 +50,60 @@ SceneMain::SceneMain()
 }
 
 SceneMain::~SceneMain()
-{
-
-}
+{}
 
 
 void SceneMain::enter()
 {
     player = player_template;
     score = 0;
-    player_dead_pass_time = 0;
+    timer_end_countdown = 3.0;
+    Mix_FadeInMusic(ResMgr::getInstance().find_music(ResID::Mus_RacingThroughAsteroidsLoop), -1, 300);
 }
 
 void SceneMain::exit()
 {
+    // 停止音乐
+    Mix_FadeOutMusic(300);
+
+    // 记录玩家得分
+    game_mgr.setScore(score);
+
+    // 清理资源
     for(auto& enemy : enemies)
         if(enemy) delete enemy;
     for(auto& bullet : player_bullets)
         if(bullet) delete bullet;
     for(auto& bullet : enemy_bullets)
         if(bullet) delete bullet;
+    for(auto& ptr : props)
+        if(ptr) delete ptr;
+    for(auto& ptr : explosion)
+        if(ptr) delete ptr;
     enemies.clear();
     player_bullets.clear();
     enemy_bullets.clear();
+    props.clear();
+    explosion.clear();
 }
 
-void SceneMain::handleEvent(const SDL_Event&)
-{}
+void SceneMain::handleEvent(const SDL_Event& event)
+{
+    if(event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+    {
+        game_mgr.switchScene(new SceneBegin);
+    }
+}
 
 void SceneMain::update(double deltaTime)
 {
     if(player.current_hp <= 0)
     {
-        player_dead_pass_time += deltaTime;
-        if(player_dead_pass_time > timer_end) 
+        timer_end_countdown -= deltaTime;
+        if(timer_end_countdown < 0) 
         {
             game_mgr.switchScene(new SceneEnd);
+            return;
         }
     }
     spawnEnemy();
@@ -96,8 +115,8 @@ void SceneMain::update(double deltaTime)
 
 void SceneMain::render()
 {
-    renderPlayer();
     renderEnemies();
+    renderPlayer();
     renderBullets();
     renderProps();
     renderExplode();
@@ -106,14 +125,15 @@ void SceneMain::render()
 
 void SceneMain::updatePlayer(double deltaTime)
 {
+    if(player.current_hp <= 0) return;
     auto key_array = SDL_GetKeyboardState(nullptr);
     player.direction = {static_cast<double>(key_array[SDL_SCANCODE_D] - key_array[SDL_SCANCODE_A]),
         static_cast<double>(key_array[SDL_SCANCODE_S] - key_array[SDL_SCANCODE_W])};
     player.pos += player.direction.normalize() * player.speed * deltaTime;
-    if(player.pos.x < 0) player.pos.x = 0;
-    if(player.pos.x + player.width > game_mgr.getWindowWidth()) player.pos.x = game_mgr.getWindowWidth() - player.width;
-    if(player.pos.y < 0) player.pos.y = 0;
-    if(player.pos.y + player.height > game_mgr.getWindowHeight()) player.pos.y = game_mgr.getWindowHeight() - player.height;
+    if(player.pos.x - player.width / 2 < 0) player.pos.x = player.width / 2;
+    if(player.pos.x + player.width / 2 > game_mgr.getWindowWidth()) player.pos.x = game_mgr.getWindowWidth() - player.width / 2;
+    if(player.pos.y - player.height / 2 < 0) player.pos.y = player.height / 2;
+    if(player.pos.y + player.height / 2 > game_mgr.getWindowHeight()) player.pos.y = game_mgr.getWindowHeight() - player.height / 2;
 
     player.last_shoot_passed_time += deltaTime;
     if(key_array[SDL_SCANCODE_J] && player.last_shoot_passed_time > player.shoot_cd)
@@ -147,6 +167,7 @@ void SceneMain::updateEnemies(double deltaTime)
             bullet->direction = (player.pos - enemy->pos).normalize();
             bullet->pos = enemy->pos;
             enemy_bullets.push_back(bullet);
+            Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff11), 0);
         }
 
         // 与玩家相撞
@@ -156,10 +177,11 @@ void SceneMain::updateEnemies(double deltaTime)
         SDL_Rect rect_enemy = {static_cast<int>(enemy->pos.x - enemy->width / 2),
             static_cast<int>(enemy->pos.y - enemy->height / 2),
             enemy->width, enemy->height};
-        if(SDL_HasIntersection(&rect_player, &rect_enemy))
+        if(player.current_hp > 0 && SDL_HasIntersection(&rect_player, &rect_enemy))
         {
             player.current_hp -= enemy->damage;
             if(player.current_hp < 0) player.current_hp = 0;
+            player_hurt();
             enemy->current_hp = 0;
         }
     }
@@ -177,6 +199,7 @@ void SceneMain::updateEnemies(double deltaTime)
                     auto anim_explosion = new ExplodeAnimation(explode_animtion_template);
                     anim_explosion->pos = enemy->pos;
                     explosion.push_back(anim_explosion);
+                    Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Explosion3), 0);
                 }
                 deletable = true;
                 delete enemy;
@@ -252,14 +275,14 @@ void SceneMain::updateBullets(double deltaTime)
         SDL_Rect rect_player = {static_cast<int>(player.pos.x - player.width / 2),
                                 static_cast<int>(player.pos.y - player.height / 2),
                                 player.width, player.height};
-        if(SDL_HasIntersection(&rect_bullet, &rect_player))
+        if(player.current_hp > 0 && SDL_HasIntersection(&rect_bullet, &rect_player))
         {
             player.current_hp -= bullet->damage;
             if(player.current_hp < 0) player.current_hp = 0;
+            player_hurt();
             bullet->valid = false;
             break;
         }
-        
     }
     enemy_bullets.erase(std::remove_if(enemy_bullets.begin(), enemy_bullets.end(),
         [](Bullet* bullet)
@@ -331,6 +354,7 @@ void SceneMain::updateProps(double deltaTime)
 
 void SceneMain::renderPlayer()
 {
+    if(player.current_hp <= 0) return;
     SDL_Rect rect = {static_cast<int>(player.pos.x - player.width / 2), 
                     static_cast<int>(player.pos.y - player.height / 2), 
                     player.width, player.height};
@@ -450,6 +474,7 @@ void SceneMain::spawnPlayerBullet()
     Bullet* bullet = new Bullet(player_bullet_template);
     bullet->pos = player.pos;
     player_bullets.push_back(bullet);
+    Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_LaserShoot4), 0);
 }
 
 
@@ -461,5 +486,21 @@ void SceneMain::spawnProp(const Vector2& pos)
         prop->pos = pos;
         prop->direction = Vector2(distribution(random_generator) * 2 * 3.1415962);
         props.push_back(prop);
+        Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff5), 0);
+    }
+}
+
+void SceneMain::player_hurt()
+{
+    if(player.current_hp > 0)
+    {
+        Mix_PlayChannel(0, ResMgr::getInstance().find_sound(ResID::Sound_PlayerHurt), 0);
+    }
+    else
+    {
+        auto anim_explosion = new ExplodeAnimation(explode_animtion_template);
+        anim_explosion->pos = player.pos;
+        explosion.push_back(anim_explosion);
+        Mix_PlayChannel(0, ResMgr::getInstance().find_sound(ResID::Sound_Explosion1), 0);
     }
 }

@@ -30,6 +30,7 @@ ResMgr::ResMgr()
     loader_pool[".png"] = loader_pool[".jpg"] = 
     [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
     {
+        if(!nameId_map.count(path.stem().u8string())) return false;
         SDL_Texture* tex = IMG_LoadTexture(renderer, path.u8string().c_str());
         if(!tex) 
         {
@@ -43,6 +44,7 @@ ResMgr::ResMgr()
     loader_pool[".mp3"] = loader_pool[".ogg"] = loader_pool[".wav"] = 
     [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
     {
+        if(!nameId_map.count(path.stem().u8string())) return false;
         // Mix_Music一边播放一边加载,适合bgm
         if (path.u8string().find("music") != std::string::npos)
         {
@@ -70,6 +72,7 @@ ResMgr::ResMgr()
 
     loader_pool[".ttf"] = [this](const std::filesystem::path& path, SDL_Renderer* renderer)->bool
     {
+        if(!nameId_map.count(path.stem().u8string())) return false;
         font_pool[nameId_map[path.stem().u8string()]] = new FontWrapper(path.u8string());
         return true;
     };

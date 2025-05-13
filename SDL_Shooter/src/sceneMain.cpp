@@ -10,25 +10,11 @@ SceneMain::SceneMain()
 {
     distribution = std::uniform_real_distribution<double>(0.0, 1.0);
 
-    player_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_SpaceShip);
-    SDL_QueryTexture(player_template.tex, nullptr, nullptr, &player_template.width, &player_template.height);
-    player_template.width /= 4;
-    player_template.height /= 4;
-    player_template.pos.x = game_mgr.getWindowWidth() / 2;
-    player_template.pos.y = game_mgr.getWindowHeight() - 100;
-
     enemy_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Insect2);
     SDL_QueryTexture(enemy_template.tex, nullptr, nullptr, &enemy_template.width, &enemy_template.height);
     enemy_template.width /= 4;
     enemy_template.height /= 4;
     enemy_template.direction = {0, 1};
-
-    player_bullet_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Laser1);
-    SDL_QueryTexture(player_bullet_template.tex, nullptr, nullptr, &player_bullet_template.width, &player_bullet_template.height);
-    player_bullet_template.width /= 5;
-    player_bullet_template.height /= 5;
-    player_bullet_template.direction = {0, -1};
-    player_bullet_template.damage = player_template.damage;
 
     enemy_bullet_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Bullet1);
     SDL_QueryTexture(enemy_bullet_template.tex, nullptr, nullptr, &enemy_bullet_template.width, &enemy_bullet_template.height);
@@ -37,16 +23,22 @@ SceneMain::SceneMain()
     enemy_bullet_template.damage = enemy_template.damage;
     enemy_bullet_template.speed *= 0.7;
 
+    explode_animtion_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Explosion);
+    SDL_QueryTexture(explode_animtion_template.tex, nullptr, nullptr, &explode_animtion_template.width, &explode_animtion_template.height);
+    explode_animtion_template.total_frame = explode_animtion_template.width / explode_animtion_template.height;
+    explode_animtion_template.width /= explode_animtion_template.total_frame;
+
     recover_prop_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_BonusLife);
     SDL_QueryTexture(recover_prop_template.tex, nullptr, nullptr, &recover_prop_template.width, &recover_prop_template.height);
     recover_prop_template.width /= 4;
     recover_prop_template.height /= 4;
     recover_prop_template.type = PropType::Recover;
 
-    explode_animtion_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Explosion);
-    SDL_QueryTexture(explode_animtion_template.tex, nullptr, nullptr, &explode_animtion_template.width, &explode_animtion_template.height);
-    explode_animtion_template.total_frame = explode_animtion_template.width / explode_animtion_template.height;
-    explode_animtion_template.width /= explode_animtion_template.total_frame;
+    shield_prop_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_BonusShield);
+    SDL_QueryTexture(shield_prop_template.tex, nullptr, nullptr, &shield_prop_template.width, &shield_prop_template.height);
+    shield_prop_template.width /= 4;
+    shield_prop_template.height /= 4;
+    shield_prop_template.type = PropType::Shield;
 }
 
 SceneMain::~SceneMain()
@@ -55,7 +47,7 @@ SceneMain::~SceneMain()
 
 void SceneMain::enter()
 {
-    player = player_template;
+    player = new BasePlayer();
     score = 0;
     timer_end_countdown = 3.0;
     Mix_FadeInMusic(ResMgr::getInstance().find_music(ResID::Mus_RacingThroughAsteroidsLoop), -1, 300);
@@ -72,8 +64,6 @@ void SceneMain::exit()
     // 清理资源
     for(auto& enemy : enemies)
         if(enemy) delete enemy;
-    for(auto& bullet : player_bullets)
-        if(bullet) delete bullet;
     for(auto& bullet : enemy_bullets)
         if(bullet) delete bullet;
     for(auto& ptr : props)
@@ -81,10 +71,10 @@ void SceneMain::exit()
     for(auto& ptr : explosion)
         if(ptr) delete ptr;
     enemies.clear();
-    player_bullets.clear();
     enemy_bullets.clear();
     props.clear();
     explosion.clear();
+    if(player) delete player;
 }
 
 void SceneMain::handleEvent(const SDL_Event& event)
@@ -97,7 +87,14 @@ void SceneMain::handleEvent(const SDL_Event& event)
 
 void SceneMain::update(double deltaTime)
 {
-    if(player.current_hp <= 0)
+    spawnEnemy();
+    player->update(deltaTime);
+    updateEnemies(deltaTime);
+    updateBullets(deltaTime);
+    updateProps(deltaTime);
+    updateExplode(deltaTime);
+
+    if(player->get_current_hp() <= 0)
     {
         timer_end_countdown -= deltaTime;
         if(timer_end_countdown < 0) 
@@ -106,41 +103,23 @@ void SceneMain::update(double deltaTime)
             return;
         }
     }
-    spawnEnemy();
-    updatePlayer(deltaTime);
-    updateEnemies(deltaTime);
-    updateBullets(deltaTime);
-    updateProps(deltaTime);
+    // Buff有效检测
+    if(!player->get_wrapper_valid())
+    {
+        auto internal_player = player->get_interal_player();
+        delete player;
+        player = internal_player;
+    }
 }
 
 void SceneMain::render()
 {
     renderEnemies();
-    renderPlayer();
+    player->render();
     renderBullets();
     renderProps();
     renderExplode();
     renderUI();
-}
-
-void SceneMain::updatePlayer(double deltaTime)
-{
-    if(player.current_hp <= 0) return;
-    auto key_array = SDL_GetKeyboardState(nullptr);
-    player.direction = {static_cast<double>(key_array[SDL_SCANCODE_D] - key_array[SDL_SCANCODE_A]),
-        static_cast<double>(key_array[SDL_SCANCODE_S] - key_array[SDL_SCANCODE_W])};
-    player.pos += player.direction.normalize() * player.speed * deltaTime;
-    if(player.pos.x - player.width / 2 < 0) player.pos.x = player.width / 2;
-    if(player.pos.x + player.width / 2 > game_mgr.getWindowWidth()) player.pos.x = game_mgr.getWindowWidth() - player.width / 2;
-    if(player.pos.y - player.height / 2 < 0) player.pos.y = player.height / 2;
-    if(player.pos.y + player.height / 2 > game_mgr.getWindowHeight()) player.pos.y = game_mgr.getWindowHeight() - player.height / 2;
-
-    player.last_shoot_passed_time += deltaTime;
-    if(key_array[SDL_SCANCODE_J] && player.last_shoot_passed_time > player.shoot_cd)
-    {
-        player.last_shoot_passed_time = 0;
-        spawnPlayerBullet();
-    }
 }
 
 void SceneMain::updateEnemies(double deltaTime)
@@ -160,27 +139,26 @@ void SceneMain::updateEnemies(double deltaTime)
 
         // 发射子弹
         enemy->last_shoot_passed_time += deltaTime;
-        if(enemy->current_hp > 0 && player.current_hp > 0 && enemy->last_shoot_passed_time > enemy->shoot_cd)
+        if(enemy->current_hp > 0 && player->get_current_hp() > 0 && enemy->last_shoot_passed_time > enemy->shoot_cd)
         {
             enemy->last_shoot_passed_time = 0;
             Bullet* bullet = new Bullet(enemy_bullet_template);
-            bullet->direction = (player.pos - enemy->pos).normalize();
+            bullet->direction = (player->get_pos() - enemy->pos).normalize();
             bullet->pos = enemy->pos;
             enemy_bullets.push_back(bullet);
             Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff11), 0);
         }
 
         // 与玩家相撞
-        SDL_Rect rect_player = {static_cast<int>(player.pos.x - player.width / 2),
-            static_cast<int>(player.pos.y - player.height / 2),
-            player.width, player.height};
+        SDL_Rect rect_player = {static_cast<int>(player->get_pos().x - player->get_width() / 2),
+            static_cast<int>(player->get_pos().y - player->get_height() / 2),
+            player->get_width(), player->get_height()};
         SDL_Rect rect_enemy = {static_cast<int>(enemy->pos.x - enemy->width / 2),
             static_cast<int>(enemy->pos.y - enemy->height / 2),
             enemy->width, enemy->height};
-        if(player.current_hp > 0 && SDL_HasIntersection(&rect_player, &rect_enemy))
+        if(player->get_current_hp() > 0 && SDL_HasIntersection(&rect_player, &rect_enemy))
         {
-            player.current_hp -= enemy->damage;
-            if(player.current_hp < 0) player.current_hp = 0;
+            player->decrease_hp(enemy->damage);
             player_hurt();
             enemy->current_hp = 0;
         }
@@ -213,6 +191,7 @@ void SceneMain::updateEnemies(double deltaTime)
 void SceneMain::updateBullets(double deltaTime)
 {
     // 更新玩家子弹
+    auto& player_bullets = player->get_bullets();
     for(auto& bullet : player_bullets)
     {
         bullet->pos += bullet->direction * bullet->speed * deltaTime;
@@ -272,13 +251,12 @@ void SceneMain::updateBullets(double deltaTime)
         SDL_Rect rect_bullet = {static_cast<int>(bullet->pos.x - bullet->width / 2),
                                 static_cast<int>(bullet->pos.y - bullet->height / 2),
                                 bullet->width, bullet->height};
-        SDL_Rect rect_player = {static_cast<int>(player.pos.x - player.width / 2),
-                                static_cast<int>(player.pos.y - player.height / 2),
-                                player.width, player.height};
-        if(player.current_hp > 0 && SDL_HasIntersection(&rect_bullet, &rect_player))
+        SDL_Rect rect_player = {static_cast<int>(player->get_pos().x - player->get_width() / 2),
+                                static_cast<int>(player->get_pos().y - player->get_height() / 2),
+                                player->get_width(), player->get_height()};
+        if(player->get_current_hp() > 0 && SDL_HasIntersection(&rect_bullet, &rect_player))
         {
-            player.current_hp -= bullet->damage;
-            if(player.current_hp < 0) player.current_hp = 0;
+            player->decrease_hp(bullet->damage);
             player_hurt();
             bullet->valid = false;
             break;
@@ -322,18 +300,19 @@ void SceneMain::updateProps(double deltaTime)
         SDL_Rect rect_prop = {static_cast<int>(prop->pos.x - prop->width / 2),
                             static_cast<int>(prop->pos.y - prop->height / 2),
                             prop->width, prop->height};
-        SDL_Rect rect_player = {static_cast<int>(player.pos.x -player.width / 2),
-                            static_cast<int>(player.pos.y -player.height / 2),
-                            player.width, player.height};
-        if(SDL_HasIntersection(&rect_prop, &rect_player))
+        SDL_Rect rect_player = {static_cast<int>(player->get_pos().x -player->get_width() / 2),
+                            static_cast<int>(player->get_pos().y -player->get_height() / 2),
+                            player->get_width(), player->get_height()};
+        if(player->get_current_hp() > 0 && SDL_HasIntersection(&rect_prop, &rect_player))
         {
             score += 5;
             prop->valid = false;
+            Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff5), 0);
             // TODO: 使用装饰模式实现玩家buff
             switch(prop->type)
             {
-            case PropType::Recover: player.current_hp = std::min(player.current_hp + 1, player.max_hp); break; 
-            case PropType::Shield:  break; 
+            case PropType::Recover: player->increase_hp(1); break; 
+            case PropType::Shield: player = new ShieldPlayer(player); break; 
             case PropType::Time:  break; 
             }
         }
@@ -352,13 +331,20 @@ void SceneMain::updateProps(double deltaTime)
     }), props.end());
 }
 
-void SceneMain::renderPlayer()
+void SceneMain::updateExplode(double deltaTime)
 {
-    if(player.current_hp <= 0) return;
-    SDL_Rect rect = {static_cast<int>(player.pos.x - player.width / 2), 
-                    static_cast<int>(player.pos.y - player.height / 2), 
-                    player.width, player.height};
-    SDL_RenderCopy(game_mgr.getInstance().getRenderer(), player.tex, nullptr, &rect);
+    for(auto iter = explosion.begin(); iter != explosion.end(); )
+    {
+        auto& anim = *iter;
+        anim->pass_time += deltaTime;
+        anim->frame_idx = static_cast<int>(anim->pass_time / anim->frame_delta);
+        if(anim->frame_idx >= anim->total_frame)
+        {
+            delete anim;
+            iter = explosion.erase(iter);
+        }
+        else ++iter;
+    }
 }
 
 void SceneMain::renderEnemies()
@@ -374,7 +360,7 @@ void SceneMain::renderEnemies()
 
 void SceneMain::renderBullets()
 {
-    for(auto& bullet : player_bullets)
+    for(auto& bullet : player->get_bullets())
     {
         SDL_Rect rect = {static_cast<int>(bullet->pos.x - bullet->width / 2),
                         static_cast<int>(bullet->pos.y - bullet->height / 2),
@@ -406,26 +392,15 @@ void SceneMain::renderProps()
 
 void SceneMain::renderExplode()
 {
-    for(auto iter = explosion.begin(); iter != explosion.end(); )
+    for(auto& anim : explosion)
     {
-        auto& anim = *iter;
-        if(anim->frame_idx >= anim->total_frame)
-        {
-            delete anim;
-            iter = explosion.erase(iter);
-        }
-        else
-        {
-            SDL_Rect rect_src = {anim->frame_idx * anim->width, 0,
-                anim->width, anim->height};
-            SDL_Rect rect_dst = {static_cast<int>(anim->pos.x - anim->width / 2),
-                            static_cast<int>(anim->pos.y - anim->height / 2),
-                            static_cast<int>(anim->width * anim->scale), 
-                            static_cast<int>(anim->height * anim->scale)};
-            SDL_RenderCopy(game_mgr.getRenderer(), anim->tex, &rect_src, &rect_dst);
-            anim->frame_idx++;
-            ++iter;
-        }
+        SDL_Rect rect_src = {anim->frame_idx * anim->width, 0,
+            anim->width, anim->height};
+        SDL_Rect rect_dst = {static_cast<int>(anim->pos.x - anim->width / 2),
+                        static_cast<int>(anim->pos.y - anim->height / 2),
+                        static_cast<int>(anim->width * anim->scale), 
+                        static_cast<int>(anim->height * anim->scale)};
+        SDL_RenderCopy(game_mgr.getRenderer(), anim->tex, &rect_src, &rect_dst);
     }
 }
 
@@ -440,13 +415,13 @@ void SceneMain::renderUI()
                               static_cast<int>(static_cast<double>(game_mgr.getWindowHeight()) * 0.01)};
 
     SDL_SetTextureColorMod(tex, 100, 100, 100);
-    for(int i = 0; i < player.max_hp; ++i)
+    for(int i = 0; i < player->get_max_hp(); ++i)
     {
         SDL_Rect rect_ui = {point.x + (w + 10) * i, point.y, w, h};
         SDL_RenderCopy(game_mgr.getRenderer(), tex, nullptr, &rect_ui);
     }
     SDL_SetTextureColorMod(tex, 255, 255, 255);
-    for(int i = 0; i < player.current_hp; ++i)
+    for(int i = 0; i < player->get_current_hp(); ++i)
     {
         SDL_Rect rect_ui = {point.x + (w + 10) * i, point.y, w, h};
         SDL_RenderCopy(game_mgr.getRenderer(), tex, nullptr, &rect_ui);
@@ -469,20 +444,14 @@ void SceneMain::spawnEnemy()
     }
 }
 
-void SceneMain::spawnPlayerBullet()
-{
-    Bullet* bullet = new Bullet(player_bullet_template);
-    bullet->pos = player.pos;
-    player_bullets.push_back(bullet);
-    Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_LaserShoot4), 0);
-}
-
-
 void SceneMain::spawnProp(const Vector2& pos)
 {
-    if(distribution(random_generator) < 0.1)
+    if(distribution(random_generator) < 0.8)
     {
-        auto prop = new Prop(recover_prop_template);
+        double random_num = distribution(random_generator);
+        Prop* prop = nullptr;
+        if(random_num < 0.2) prop = new Prop(recover_prop_template);
+        else prop = new Prop(shield_prop_template);
         prop->pos = pos;
         prop->direction = Vector2(distribution(random_generator) * 2 * 3.1415962);
         props.push_back(prop);
@@ -492,14 +461,14 @@ void SceneMain::spawnProp(const Vector2& pos)
 
 void SceneMain::player_hurt()
 {
-    if(player.current_hp > 0)
+    if(player->get_current_hp() > 0)
     {
         Mix_PlayChannel(0, ResMgr::getInstance().find_sound(ResID::Sound_PlayerHurt), 0);
     }
     else
     {
         auto anim_explosion = new ExplodeAnimation(explode_animtion_template);
-        anim_explosion->pos = player.pos;
+        anim_explosion->pos = player->get_pos();
         explosion.push_back(anim_explosion);
         Mix_PlayChannel(0, ResMgr::getInstance().find_sound(ResID::Sound_Explosion1), 0);
     }

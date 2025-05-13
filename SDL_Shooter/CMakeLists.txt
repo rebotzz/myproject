@@ -38,6 +38,7 @@ add_executable(${MyExecutable} src/main.cpp
                                 src/sceneMain.cpp
                                 src/sceneBegin.cpp
                                 src/sceneEnd.cpp
+                                src/player.cpp
                                 )
 
 # 链接库

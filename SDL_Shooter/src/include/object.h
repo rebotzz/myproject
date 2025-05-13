@@ -15,7 +15,7 @@ struct Object
     bool valid = true;
 };
 
-struct Player : Object
+struct PlayerAttribute : Object
 {
     int max_hp = 3;
     int current_hp = 3;
@@ -59,6 +59,7 @@ struct ExplodeAnimation : Object
     int frame_idx = 0;
     int total_frame = 0;
     double frame_delta = 0.1;
+    double pass_time = 0;
     double scale = 1.5; // 动画放大倍率
 };
 

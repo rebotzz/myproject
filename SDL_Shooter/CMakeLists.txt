@@ -36,6 +36,8 @@ add_executable(${MyExecutable} src/main.cpp
                                 src/resourcesMgr.cpp
                                 src/scene.cpp
                                 src/sceneMain.cpp
+                                src/sceneBegin.cpp
+                                src/sceneEnd.cpp
                                 )
 
 # 链接库

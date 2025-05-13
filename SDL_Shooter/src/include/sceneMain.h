@@ -4,6 +4,7 @@
 #include "scene.h"
 #include "object.h"
 #include <vector>
+#include <list>
 #include <random>
 
 class SceneMain : public Scene
@@ -21,33 +22,43 @@ public:
 private:
     // 更新相关
     void updatePlayer(double deltaTime);
-    void updatePlayerBullet();
-    void updateEnemyBullet();
-    void updateProp();
+    void updateEnemies(double deltaTime);
+    void updateBullets(double deltaTime);
+    void updateProps(double deltaTime);
 
     // 渲染相关
     void renderPlayer();
-    void renderPlayerBullet();
-    void renderEnemyBullet();
-    void renderProp();
+    void renderEnemies();
+    void renderBullets();
+    void renderProps();
+    void renderExplode();
+    void renderUI();
 
     // 其他
+    void spawnEnemy();
     void spawnPlayerBullet();
-    void spawnEnemyBullet();
-    void spawnProp();
+    void spawnProp(const Vector2& pos);
 
 private:
-    Player player;
+    Player player_template;
     Enemy enemy_template;
     Bullet player_bullet_template;
     Bullet enemy_bullet_template;
     Prop recover_prop_template;
+    ExplodeAnimation explode_animtion_template;
+    Player player;
     std::vector<Enemy*> enemies;
     std::vector<Bullet*> player_bullets;
     std::vector<Bullet*> enemy_bullets;
     std::vector<Prop*> props;
+    std::list<ExplodeAnimation*> explosion;
+    int score = 0;          // 玩家得分
+    double timer_end = 3;   // 玩家死亡场景调整定时器
+    double player_dead_pass_time = 0;
 
     // 随机数
+    std::default_random_engine random_generator;
+    std::uniform_real_distribution<double> distribution;
 };
 
 

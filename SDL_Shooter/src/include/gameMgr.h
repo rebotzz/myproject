@@ -9,6 +9,8 @@
 #include "SDL_mixer.h"
 #include "SDL_ttf.h"
 #include <string>
+#include <map>
+#include <functional>
 
 class GameMgr : public Singleton<GameMgr>
 {
@@ -16,20 +18,31 @@ class GameMgr : public Singleton<GameMgr>
 public:
     int run();
 
-    void switch_scene(Scene* scene);
+    void switchScene(Scene* scene);
 
     // set
+    void setRankingList(const std::string& name, int score);
+    void setScore(int val) { score = val; }
 
     // get
     int getWindowHeight() const { return window_h; }
     int getWindowWidth() const { return window_w; }
     SDL_Renderer* getRenderer() { return renderer; }
+    const std::map<int, std::string, std::greater<int>>& getRankingList() const { return ranking_list; }
+    int getScore() const { return score; }
+
+    // 其他
+    SDL_Point renderText(TTF_Font* font, const std::string& text, double pos_x_ratio, double pos_y_ratio, bool is_left = true);
+    SDL_Point renderTextCenter(TTF_Font* font, const std::string& text, double pos_y_ratio);
 
 private:
     GameMgr();
     ~GameMgr();
     void init();
     void clean();
+    void renderBackground();
+    void loadGame();
+    void saveGame();
 
 private:
     SDL_Window* window = nullptr;
@@ -40,6 +53,8 @@ private:
     int window_w = 600;
     const double FPS = 60;
     Scene* current_scene = nullptr;
+    std::map<int, std::string, std::greater<int>> ranking_list; // 排行榜
+    int score = 0;  // 当前玩家得分
 };
 
 

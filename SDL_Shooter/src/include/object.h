@@ -11,35 +11,55 @@ struct Object
     int width = 0;
     int height = 0;
     Vector2 pos;
+    Vector2 direction;
+    bool valid = true;
 };
 
 struct Player : Object
 {
     int max_hp = 3;
     int current_hp = 3;
-    double speed = 500;
+    double speed = 400;
     double shoot_cd = 0.1;
-    double last_shoot_time = 0;
+    double last_shoot_passed_time = 0;
+    int damage = 1;
 };
 
 struct Enemy : Object
 {
     int current_hp = 1;
     double speed = 200;
-    double shoot_cd = 0.3;
-    double last_shoot_time = 0;
+    double shoot_cd = 0.8;
+    double last_shoot_passed_time = 0;
+    int damage = 1;
 };
 
 struct Bullet : Object
 {
     double speed = 500;
-    bool valid = true;
+    int damage = 1;
+};
+
+enum class PropType
+{
+    Recover,
+    Shield,
+    Time
 };
 
 struct Prop : Object
 {
-    double speed = 500;
-    bool valid = true;
+    double speed = 150;
+    int bounce_count = 3;   // 反弹次数
+    PropType type = PropType::Recover;
+};
+
+struct ExplodeAnimation : Object
+{
+    int frame_idx = 0;
+    int total_frame = 0;
+    double frame_delta = 0.1;
+    double scale = 1.5; // 动画放大倍率
 };
 
 #endif //_OBJECT_H_

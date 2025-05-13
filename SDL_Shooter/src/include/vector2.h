@@ -8,6 +8,8 @@ class Vector2
 public:
 	Vector2() = default;
 	Vector2(double x, double y) : x(x), y(y) {}
+	Vector2(int x, int y) : x(x), y(y) {}
+	Vector2(double angle) : x(cos(angle)), y(sin(angle)){}
 	~Vector2() = default;
 
 	Vector2 normalize() const

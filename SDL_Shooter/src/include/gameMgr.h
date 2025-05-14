@@ -47,7 +47,7 @@ private:
 private:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
-    std::string window_tittle = "SDLShooter";
+    std::string window_tittle = "<SDLShooter> -By rebotzz";
     bool is_quit = false;
     int window_h = 800;
     int window_w = 600;

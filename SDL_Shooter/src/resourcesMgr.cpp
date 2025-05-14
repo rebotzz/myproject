@@ -108,6 +108,7 @@ ResMgr::ResMgr()
         {"Stars_A",	 ResID::Tex_StarsA},
         {"Stars_B",	 ResID::Tex_StarsB},
         {"support",	 ResID::Tex_Support},
+        {"plane",	 ResID::Tex_Plane},
 
         {"Battle_in_Space_Intro",	  ResID::Mus_BattleInSpaceIntro},
         {"Racing_Through_Asteroids_Loop",	  ResID::Mus_RacingThroughAsteroidsLoop},

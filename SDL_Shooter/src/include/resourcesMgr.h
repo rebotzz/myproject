@@ -43,6 +43,7 @@ enum class ResID
     Tex_StarsA,
     Tex_StarsB,
     Tex_Support,
+    Tex_Plane,
 	// 背景音乐
     Mus_BattleInSpaceIntro,
     Mus_RacingThroughAsteroidsLoop,

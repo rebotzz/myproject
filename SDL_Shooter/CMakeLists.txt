@@ -52,7 +52,7 @@ target_link_libraries(${MyExecutable} SDL2::SDL2 SDL2::SDL2main
 # 关闭控制台窗口
 if(MSVC)
     # set_target_properties(${MyExecutable} PROPERTIES LINK_LFAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCTRStarup")
-    # target_link_options(${MyExecutable} PRIVATE "/SUBSYSTEM:WINDOWS")
+    target_link_options(${MyExecutable} PRIVATE "/SUBSYSTEM:WINDOWS")
 endif()
 
 # 其他

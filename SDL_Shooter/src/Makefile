@@ -15,11 +15,7 @@ compile_flags = -Wall -g
 
 # json使用源码，所以需要编译
 jsoncpp_source_code = ../Thirdparty/jsoncpp/jsoncpp.cpp
-source_code = main.cpp resourcesMgr.cpp gameMgr.cpp scene.cpp sceneMain.cpp
-# preprocess_code = main.i resourcesMgr.i gameMgr.i scene.i sceneMain.i
-# compile_code = main.s resourcesMgr.s gameMgr.s scene.s sceneMain.s
-# assembly_code = main.o resourcesMgr.o gameMgr.o scene.o sceneMain.o
-
+source_code = main.cpp resourcesMgr.cpp gameMgr.cpp scene.cpp sceneMain.cpp sceneBegin.cpp sceneEnd.cpp  player.cpp
 
 # 这里window进程替换出错 cd / mv, 或许是进程替换不能识别“别名”? 为什么del就可以
 .PHONY:all
@@ -29,8 +25,15 @@ all: $(executable)
 $(executable): $(source_code)
 	g++ -o $@ $^ $(include_path) $(lib_path)  $(link_libs) $(CXX_STARDARD) $(compile_flags)
 
+.PHONY: clean
+clean:
+	del ./$(executable)
 
 # 分步:预处理/编译/汇编/链接 ESc iso 这里那里出错了?
+# preprocess_code = main.i resourcesMgr.i gameMgr.i scene.i sceneMain.i
+# compile_code = main.s resourcesMgr.s gameMgr.s scene.s sceneMain.s
+# assembly_code = main.o resourcesMgr.o gameMgr.o scene.o sceneMain.o
+
 # $(executable): assembly $(assembly_code)
 # 	g++ -o $@ $^ $(lib_path) $(link_libs)
 
@@ -43,10 +46,9 @@ $(executable): $(source_code)
 # preprocess: $(source_code)
 # 	g++ -E $@ $^ $(include_path) 
 
-
-.PHONY: clean
-clean:
-	del ./$(executable)
-# del $(preprocess_code)
-# del $(compile_code)
-# del $(assembly_code)
+# .PHONY: clean
+# clean:
+# 	del ./$(executable)
+# 	del $(preprocess_code)
+# 	del $(compile_code)
+# 	del $(assembly_code)

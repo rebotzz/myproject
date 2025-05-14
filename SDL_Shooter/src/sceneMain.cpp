@@ -39,6 +39,12 @@ SceneMain::SceneMain()
     shield_prop_template.width /= 4;
     shield_prop_template.height /= 4;
     shield_prop_template.type = PropType::Shield;
+
+    time_prop_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_BonusTime);
+    SDL_QueryTexture(time_prop_template.tex, nullptr, nullptr, &time_prop_template.width, &time_prop_template.height);
+    time_prop_template.width /= 4;
+    time_prop_template.height /= 4;
+    time_prop_template.type = PropType::Time;
 }
 
 SceneMain::~SceneMain()
@@ -74,7 +80,14 @@ void SceneMain::exit()
     enemy_bullets.clear();
     props.clear();
     explosion.clear();
-    if(player) delete player;
+
+    // 包装器层层析构
+    while(player)
+    {
+        auto internal_player = player->get_interal_player();
+        delete player;
+        player = internal_player;
+    }
 }
 
 void SceneMain::handleEvent(const SDL_Event& event)
@@ -282,9 +295,9 @@ void SceneMain::updateProps(double deltaTime)
     {
         prop->pos += prop->direction * prop->speed * deltaTime;
         // 可以反弹一定次数
-        if(prop->bounce_count > 0 && prop->pos.x < 0 || prop->pos.x + prop->width > game_mgr.getWindowWidth()) 
+        if(prop->bounce_count > 0 && (prop->pos.x < 0 || prop->pos.x + prop->width > game_mgr.getWindowWidth())) 
             prop->direction.x *= -1, prop->bounce_count--;
-        if(prop->bounce_count > 0 && prop->pos.y < 0 || prop->pos.y + prop->width > game_mgr.getWindowHeight()) 
+        if(prop->bounce_count > 0 && (prop->pos.y < 0 || prop->pos.y + prop->width > game_mgr.getWindowHeight())) 
             prop->direction.y *= -1, prop->bounce_count--;
 
         // 超过反弹次数超出屏幕失效
@@ -313,7 +326,7 @@ void SceneMain::updateProps(double deltaTime)
             {
             case PropType::Recover: player->increase_hp(1); break; 
             case PropType::Shield: player = new ShieldPlayer(player); break; 
-            case PropType::Time:  break; 
+            case PropType::Time: player = new TimePlayer(player); break; 
             }
         }
     }
@@ -446,12 +459,13 @@ void SceneMain::spawnEnemy()
 
 void SceneMain::spawnProp(const Vector2& pos)
 {
-    if(distribution(random_generator) < 0.8)
+    if(distribution(random_generator) < 0.2)
     {
         double random_num = distribution(random_generator);
         Prop* prop = nullptr;
-        if(random_num < 0.2) prop = new Prop(recover_prop_template);
-        else prop = new Prop(shield_prop_template);
+        if(random_num < 0.4) prop = new Prop(recover_prop_template);
+        else if(random_num < 0.7) prop = new Prop(shield_prop_template);
+        else prop = new Prop(time_prop_template);
         prop->pos = pos;
         prop->direction = Vector2(distribution(random_generator) * 2 * 3.1415962);
         props.push_back(prop);

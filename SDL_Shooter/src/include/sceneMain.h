@@ -45,6 +45,7 @@ private:
     Bullet enemy_bullet_template;
     Prop recover_prop_template;
     Prop shield_prop_template;
+    Prop time_prop_template;
     ExplodeAnimation explode_animtion_template;
     AbstractPlayer* player;
     std::vector<Enemy*> enemies;

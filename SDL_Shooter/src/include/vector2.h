@@ -9,7 +9,9 @@ public:
 	Vector2() = default;
 	Vector2(double x, double y) : x(x), y(y) {}
 	Vector2(int x, int y) : x(x), y(y) {}
-	Vector2(double angle) : x(cos(angle)), y(sin(angle)){}
+	Vector2(int angle) : x(cos(static_cast<double>(angle % 360) * 3.1415926 / 180.0)), 
+						y(sin(static_cast<double>(angle % 360) * 3.1415926 / 180.0)){}
+	Vector2(double radian) : x(cos(radian)), y(sin(radian)){}
 	~Vector2() = default;
 
 	Vector2 normalize() const

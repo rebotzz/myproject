@@ -134,7 +134,7 @@ TimePlayer::TimePlayer(AbstractPlayer *concrete_player)
     player->set_height(height);
     player->set_height(width);
 
-    // 修改射击cd,子弹发射逻辑
+    // 减少射击cd(效果可叠加),子弹发射逻辑
     bullet_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Laser3);
     SDL_QueryTexture(bullet_template.tex, nullptr, nullptr, &bullet_template.width, &bullet_template.height);
     bullet_template.width /= 5;
@@ -175,8 +175,7 @@ TimePlayer::~TimePlayer()
 void TimePlayer::update(double deltaTime)
 {
     player->update(deltaTime);
-    duration -= deltaTime;
-    if(tmp_hp <= 1 || duration < 0) wrapper_valid = false;
+    if(tmp_hp <= 1) wrapper_valid = false;
     if(!player->get_wrapper_valid())
     {
         auto internal_player = player->get_interal_player();

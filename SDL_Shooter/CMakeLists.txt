@@ -10,12 +10,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # 设置编译选项
 if(MSVC)
     add_compile_options(/W4)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 elseif()
     add_compile_options(-Wall -Wextra -Wpedantic)
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
-
-# # ctest ? 
-# enable_testing()
+set(CMAKE_BUILD_TYPE Release)
 
 # 设置编译输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/bin)
@@ -30,7 +31,7 @@ find_package(SDL2_image REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL2_image
 find_package(SDL2_mixer REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL2_mixer)
 find_package(SDL2_ttf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL2_ttf)
 
-# 添加可执行文件, 记得编译.cpp,尤其是刚写的              
+# 添加可执行文件, 记得编译.cpp,尤其是刚写的; 也可以*.cpp             
 add_executable(${MyExecutable} src/main.cpp
                                 src/gameMgr.cpp
                                 src/resourcesMgr.cpp
@@ -51,8 +52,9 @@ target_link_libraries(${MyExecutable} SDL2::SDL2 SDL2::SDL2main
 
 # 关闭控制台窗口
 if(MSVC)
-    # set_target_properties(${MyExecutable} PROPERTIES LINK_LFAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCTRStarup")
     target_link_options(${MyExecutable} PRIVATE "/SUBSYSTEM:WINDOWS")
+else()
+    target_link_options(${MyExecutable} PRIVATE -mwindows)
 endif()
 
 # 其他

@@ -66,7 +66,7 @@ protected:
     bool wrapper_valid = true;
 };
 
-// 装饰者最内层,永不失效,且内部没有指向的装饰者.
+// 装饰者最内层,永不失效,且内部没有指向的装饰者
 class BasePlayer : public AbstractPlayer
 {
 public:
@@ -77,7 +77,7 @@ public:
     virtual void render() override;
 };
 
-// 临时护盾
+// 临时护盾(叠加时仅重置护盾持续时间)
 class ShieldPlayer : public AbstractPlayer
 {
 public:
@@ -124,7 +124,7 @@ private:
     double duration = 5.0;
 };
 
-// 临时切换飞机,临时飞机生命值为1时销毁
+// 临时切换飞机,临时飞机生命值为1时销毁(可以无限叠加)
 class TimePlayer : public AbstractPlayer
 {
 public:
@@ -171,7 +171,6 @@ private:
     Bullet origin_bullet_template;
     int tmp_max_hp = 5;
     int tmp_hp = 5;         
-    double duration = 15.0;     // buff持续时间
 };
 
 // TODO:发射追踪导弹

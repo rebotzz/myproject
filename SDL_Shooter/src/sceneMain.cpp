@@ -10,18 +10,79 @@ SceneMain::SceneMain()
 {
     distribution = std::uniform_real_distribution<double>(0.0, 1.0);
 
-    enemy_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Insect2);
-    SDL_QueryTexture(enemy_template.tex, nullptr, nullptr, &enemy_template.width, &enemy_template.height);
-    enemy_template.width /= 4;
-    enemy_template.height /= 4;
-    enemy_template.direction = {0, 1};
+    // 敌人模板初始化:敌人,敌人子弹,敌人子弹发射逻辑
+    enemy_template1.tex = ResMgr::getInstance().find_texture(ResID::Tex_Insect2);
+    SDL_QueryTexture(enemy_template1.tex, nullptr, nullptr, &enemy_template1.width, &enemy_template1.height);
+    enemy_template1.width /= 4;
+    enemy_template1.height /= 4;
+    enemy_template1.direction = {0, 1};
+    enemy_template1.current_hp = 2;
 
-    enemy_bullet_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Bullet1);
-    SDL_QueryTexture(enemy_bullet_template.tex, nullptr, nullptr, &enemy_bullet_template.width, &enemy_bullet_template.height);
-    enemy_bullet_template.width /= 4;
-    enemy_bullet_template.height /= 4;
-    enemy_bullet_template.damage = enemy_template.damage;
-    enemy_bullet_template.speed *= 0.7;
+    enemy_template2.tex = ResMgr::getInstance().find_texture(ResID::Tex_Insect1);
+    SDL_QueryTexture(enemy_template2.tex, nullptr, nullptr, &enemy_template2.width, &enemy_template2.height);
+    enemy_template2.width /= 4;
+    enemy_template2.height /= 4;
+    enemy_template2.shoot_cd = 0.25;
+    enemy_template2.current_hp = 1;
+    enemy_template2.direction = {0, 1};
+
+    // 为了简便,陨石也当作敌人,只不过不能发射子弹
+    enemy_template3_stone.tex = ResMgr::getInstance().find_texture(ResID::Tex_SmallA);
+    SDL_QueryTexture(enemy_template3_stone.tex, nullptr, nullptr, &enemy_template3_stone.width, &enemy_template3_stone.height);
+    enemy_template3_stone.width /= 1;
+    enemy_template3_stone.height /= 1;
+    enemy_template3_stone.shoot_cd = INT_MAX;
+    enemy_template3_stone.current_hp = 3;
+    enemy_template3_stone.direction = {0, 1};
+
+    enemy_template4_stone.tex = ResMgr::getInstance().find_texture(ResID::Tex_SmallB);
+    SDL_QueryTexture(enemy_template4_stone.tex, nullptr, nullptr, &enemy_template4_stone.width, &enemy_template4_stone.height);
+    enemy_template4_stone.width /= 2;
+    enemy_template4_stone.height /= 2;
+    enemy_template4_stone.shoot_cd = INT_MAX;
+    enemy_template4_stone.current_hp = 1;
+    enemy_template4_stone.direction = {0, 1};
+
+    auto& enemy_bullet_template1 = enemy_template1.bullet_template;
+    enemy_bullet_template1.tex = ResMgr::getInstance().find_texture(ResID::Tex_Bullet1);
+    SDL_QueryTexture(enemy_bullet_template1.tex, nullptr, nullptr, &enemy_bullet_template1.width, &enemy_bullet_template1.height);
+    enemy_bullet_template1.width /= 4;
+    enemy_bullet_template1.height /= 4;
+    enemy_bullet_template1.damage = enemy_template1.damage;
+    enemy_bullet_template1.speed *= 0.7;
+
+    auto& enemy_bullet_template2 = enemy_template2.bullet_template;
+    enemy_bullet_template2.tex = ResMgr::getInstance().find_texture(ResID::Tex_Fire);
+    SDL_QueryTexture(enemy_bullet_template2.tex, nullptr, nullptr, &enemy_bullet_template2.width, &enemy_bullet_template2.height);
+    enemy_bullet_template2.width /= 5;
+    enemy_bullet_template2.height /= 5;
+    enemy_bullet_template2.damage = enemy_template2.damage;
+    enemy_bullet_template2.speed *= 0.5;
+
+    // 为了确保lambda捕获字段有效: 方法1.每次enter初始化一次lambda; 方法2.改为形式参数
+    enemy_template1.spawn_bullet = [](Enemy* enemy, std::vector<Bullet*>& bullets, AbstractPlayer* player)
+    {
+        Bullet* bullet = new Bullet(enemy->bullet_template);
+        bullet->direction = (player->get_pos() - enemy->pos).normalize();
+        bullet->pos = enemy->pos;
+        bullets.push_back(bullet);
+        Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff11), 0);
+    };
+    enemy_template2.spawn_bullet = [](Enemy* enemy, std::vector<Bullet*>& bullets, AbstractPlayer* player)
+    {
+        const int bullet_count = 3;
+        const double angle_speed = 90;
+        for(int i = 0; i < bullet_count; ++i)
+        {
+            Bullet* bullet = new Bullet(enemy->bullet_template);
+            int angle = enemy->bullet_angle + i * 360 / bullet_count;
+            bullet->direction = Vector2(angle);
+            bullet->pos = enemy->pos + bullet->direction * enemy->width / 2;
+            bullets.push_back(bullet);
+        }
+        enemy->bullet_angle = (enemy->bullet_angle + static_cast<int>(angle_speed * enemy->shoot_cd)) % 360;
+        Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff11), 0);
+    };
 
     explode_animtion_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Explosion);
     SDL_QueryTexture(explode_animtion_template.tex, nullptr, nullptr, &explode_animtion_template.width, &explode_animtion_template.height);
@@ -155,11 +216,8 @@ void SceneMain::updateEnemies(double deltaTime)
         if(enemy->current_hp > 0 && player->get_current_hp() > 0 && enemy->last_shoot_passed_time > enemy->shoot_cd)
         {
             enemy->last_shoot_passed_time = 0;
-            Bullet* bullet = new Bullet(enemy_bullet_template);
-            bullet->direction = (player->get_pos() - enemy->pos).normalize();
-            bullet->pos = enemy->pos;
-            enemy_bullets.push_back(bullet);
-            Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff11), 0);
+            if(enemy->spawn_bullet)
+                enemy->spawn_bullet(enemy, enemy_bullets, player);
         }
 
         // 与玩家相撞
@@ -448,11 +506,18 @@ void SceneMain::renderUI()
 
 void SceneMain::spawnEnemy()
 {
-    if(distribution(random_generator) < 1.0 / 50.0)
+    // 简单点,没用定时器,每一帧有一定概率生成敌人;目前FPS=60
+    if(distribution(random_generator) < 1.0 / 30.0)
     {
-        auto enemy = new Enemy(enemy_template);
+        Enemy* enemy = nullptr; 
+        double random_num = distribution(random_generator);
+        if(random_num < 0.5) enemy = new Enemy(enemy_template1);
+        else if(random_num < 0.7) enemy = new Enemy(enemy_template2);
+        else if(random_num < 0.8) enemy = new Enemy(enemy_template3_stone);
+        else enemy = new Enemy(enemy_template4_stone);
+
         enemy->pos.y = -enemy->height;
-        enemy->pos.x = (game_mgr.getWindowWidth() - enemy->width) * distribution(random_generator);
+        enemy->pos.x = enemy->width / 2 + (game_mgr.getWindowWidth() - enemy->width) * distribution(random_generator);
         enemies.push_back(enemy);
     }
 }
@@ -464,7 +529,7 @@ void SceneMain::spawnProp(const Vector2& pos)
         double random_num = distribution(random_generator);
         Prop* prop = nullptr;
         if(random_num < 0.4) prop = new Prop(recover_prop_template);
-        else if(random_num < 0.7) prop = new Prop(shield_prop_template);
+        else if(random_num < 0.4) prop = new Prop(shield_prop_template);
         else prop = new Prop(time_prop_template);
         prop->pos = pos;
         prop->direction = Vector2(distribution(random_generator) * 2 * 3.1415962);

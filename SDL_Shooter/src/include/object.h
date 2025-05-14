@@ -3,7 +3,8 @@
 
 #include "SDL.h"
 #include "vector2.h"
-
+#include <functional>
+#include <vector>
 
 struct Object
 {
@@ -25,6 +26,13 @@ struct PlayerAttribute : Object
     int damage = 1;
 };
 
+struct Bullet : Object
+{
+    double speed = 500;
+    int damage = 1;
+};
+
+class AbstractPlayer;
 struct Enemy : Object
 {
     int current_hp = 1;
@@ -32,12 +40,9 @@ struct Enemy : Object
     double shoot_cd = 0.8;
     double last_shoot_passed_time = 0;
     int damage = 1;
-};
-
-struct Bullet : Object
-{
-    double speed = 500;
-    int damage = 1;
+    int bullet_angle = 0;   // 角度制
+    Bullet bullet_template;
+    std::function<void(Enemy*, std::vector<Bullet*>&, AbstractPlayer*)> spawn_bullet;
 };
 
 enum class PropType

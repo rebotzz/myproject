@@ -41,8 +41,10 @@ private:
 
 private:
     // 用于复制生成的模板
-    Enemy enemy_template;
-    Bullet enemy_bullet_template;
+    Enemy enemy_template1;
+    Enemy enemy_template2;
+    Enemy enemy_template3_stone;
+    Enemy enemy_template4_stone;
     Prop recover_prop_template;
     Prop shield_prop_template;
     Prop time_prop_template;

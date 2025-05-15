@@ -7,11 +7,13 @@
 #include <functional>
 
 class GameMgr;
+class MiddlePlayer;
 class ShieldPlayer;
 class TimePlayer;
 
 class AbstractPlayer : protected PlayerAttribute
 {
+    friend class MiddlePlayer;
     friend class ShieldPlayer;
     friend class TimePlayer;
 public:
@@ -77,17 +79,11 @@ public:
     virtual void render() override;
 };
 
-// 临时护盾(叠加时仅重置护盾持续时间)
-class ShieldPlayer : public AbstractPlayer
+// 只是为了避免后续每个继承类都重写虚函数,无其他作用;
+// 其实也可以放在基类AbstractPlayer,不过需要判断player是否为空
+class MiddlePlayer : public AbstractPlayer
 {
 public:
-    ShieldPlayer(AbstractPlayer* concrete_player);
-    ~ShieldPlayer();
-
-    virtual void update(double deltaTime);
-    virtual void render() override;
-    virtual void decrease_hp(int val);
-    
     // 因为装饰者是"层层调用",所以这里需要手动写,不能再基类里搞定,因为不是"层层调用",每层都有一个player
     // get
     virtual const Vector2& get_pos() const { return player->get_pos(); }
@@ -117,7 +113,19 @@ protected:
     virtual void set_height(int val) { player->set_height(val); }
     virtual void set_width(int val) { player->set_width(val); }
     virtual void set_bullet_template(const Bullet& val) { player->set_bullet_template(val); }
+};
 
+// 临时护盾(叠加时仅重置护盾持续时间)
+class ShieldPlayer : public MiddlePlayer
+{
+public:
+    ShieldPlayer(AbstractPlayer* concrete_player);
+    ~ShieldPlayer();
+
+    virtual void update(double deltaTime);
+    virtual void render() override;
+    virtual void decrease_hp(int val);
+    
 private:
     SDL_Texture* tex_shield = nullptr;
     int shield_w = 0, shield_h = 0;
@@ -125,7 +133,7 @@ private:
 };
 
 // 临时切换飞机,临时飞机生命值为1时销毁(可以无限叠加)
-class TimePlayer : public AbstractPlayer
+class TimePlayer : public MiddlePlayer
 {
 public:
     TimePlayer(AbstractPlayer* concrete_player);
@@ -137,30 +145,6 @@ public:
     virtual void decrease_hp(int val) { tmp_hp -= val; if(tmp_hp < 0) tmp_hp = 0; }
     virtual int get_current_hp() const { return tmp_hp; }
     virtual int get_max_hp() const { return tmp_max_hp; }
-
-    virtual const Vector2& get_pos() const { return player->get_pos(); }
-    virtual int get_height() const { return player->get_height(); }
-    virtual int get_width() const { return player->get_width(); }
-    virtual std::vector<Bullet*>& get_bullets() { return player->get_bullets(); }
-
-protected:
-    virtual SDL_Texture* get_texture() { return player->get_texture(); }
-    virtual double get_speed() { return player->get_speed(); }
-    virtual double get_shoot_cd() { return player->get_shoot_cd(); }
-    virtual int get_damage() { return player->get_damage(); }
-    virtual const SpawnBulletCallback& get_spawn_bullet_callback() { return player->get_spawn_bullet_callback(); }
-    virtual const Bullet& get_bullet_template() { return player->get_bullet_template(); }
-
-    virtual void set_spawn_bullet_callback(const SpawnBulletCallback& callback) 
-    { player->set_spawn_bullet_callback(callback); }
-    virtual void set_texture(SDL_Texture* texture) { player->set_texture(texture); }
-    virtual void set_speed(double val) { player->set_speed(val); }
-    virtual void set_shoot_cd(double val) { player->set_shoot_cd(val); }
-    virtual void set_max_hp(double val) { player->set_max_hp(val); }
-    virtual void set_damage(double val) { player->set_damage(val); }
-    virtual void set_height(int val) { player->set_height(val); }
-    virtual void set_width(int val) { player->set_width(val); }
-    virtual void set_bullet_template(const Bullet& val) { player->set_bullet_template(val); }
 
 private:
     // 临时飞机属性

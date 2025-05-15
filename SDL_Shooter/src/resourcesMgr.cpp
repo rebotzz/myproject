@@ -109,6 +109,7 @@ ResMgr::ResMgr()
         {"Stars_B",	 ResID::Tex_StarsB},
         {"support",	 ResID::Tex_Support},
         {"plane",	 ResID::Tex_Plane},
+        {"bonus_time2",	 ResID::Tex_BonusTime2},
 
         {"Battle_in_Space_Intro",	  ResID::Mus_BattleInSpaceIntro},
         {"Racing_Through_Asteroids_Loop",	  ResID::Mus_RacingThroughAsteroidsLoop},
@@ -120,6 +121,7 @@ ResMgr::ResMgr()
         {"laser_shoot4",	  ResID::Sound_LaserShoot4},
         {"xs_laser",	  ResID::Sound_XsLaser},
         {"player_hurt",	  ResID::Sound_PlayerHurt},
+        {"hit",	  ResID::Sound_Hit},
 
         {"VonwaonBitmap_12px",	  ResID::Font_VonwaonBitmap12px},
         {"VonwaonBitmap_16px",	  ResID::Font_VonwaonBitmap16px},

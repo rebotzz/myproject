@@ -49,7 +49,8 @@ enum class PropType
 {
     Recover,
     Shield,
-    Time
+    Time,
+    Time2
 };
 
 struct Prop : Object

@@ -12,6 +12,7 @@
 #include <functional>
 
 // 枚举，减少资源查找时字符串hash过程
+// 或许可以添加Tex_Begin, Tex_End这样的字段用于区分素材种类
 enum class ResID
 {
 	// 图片纹理
@@ -20,6 +21,7 @@ enum class ResID
     Tex_BonusLife,
     Tex_BonusShield,
     Tex_BonusTime,
+    Tex_BonusTime2,
     Tex_Bullet,
     Tex_Bullet1,
     Tex_Bullet2,
@@ -55,6 +57,7 @@ enum class ResID
     Sound_LaserShoot4,
     Sound_XsLaser,
     Sound_PlayerHurt,
+    Sound_Hit,
 	// 字体
     Font_VonwaonBitmap12px,
     Font_VonwaonBitmap16px,

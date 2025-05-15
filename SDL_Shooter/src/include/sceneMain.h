@@ -37,7 +37,7 @@ private:
     // 其他
     void spawnEnemy();
     void spawnProp(const Vector2& pos);
-    void player_hurt();
+    void player_hurt_effect();
 
 private:
     // 用于复制生成的模板
@@ -48,15 +48,19 @@ private:
     Prop recover_prop_template;
     Prop shield_prop_template;
     Prop time_prop_template;
+    Prop time2_prop_template;
     ExplodeAnimation explode_animtion_template;
+    // 对象实例
     AbstractPlayer* player;
     std::vector<Enemy*> enemies;
     std::vector<Bullet*> enemy_bullets;
     std::vector<Prop*> props;
     std::list<ExplodeAnimation*> explosion;
-    int score = 0;                    // 玩家得分
-    double timer_end_countdown = 3.0; // 玩家死亡场景跳转定时器
-
+    int score = 0;                          // 玩家得分
+    double timer_end_countdown = 3.0;       // 玩家死亡场景跳转定时器
+    double timer_stop_time_countdown = 0;   // Buff时停玩家之外实例
+    const double STOP_TIME = 5.0;
+    
     // 随机数
     std::default_random_engine random_generator;
     std::uniform_real_distribution<double> distribution;

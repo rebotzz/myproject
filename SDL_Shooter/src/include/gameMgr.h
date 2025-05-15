@@ -28,7 +28,7 @@ public:
     int getWindowHeight() const { return window_h; }
     int getWindowWidth() const { return window_w; }
     SDL_Renderer* getRenderer() { return renderer; }
-    const std::map<int, std::string, std::greater<int>>& getRankingList() const { return ranking_list; }
+    const std::multimap<int, std::string, std::greater<int>>& getRankingList() const { return ranking_list; }
     int getScore() const { return score; }
 
     // 其他
@@ -53,7 +53,7 @@ private:
     int window_w = 600;
     const double FPS = 60;
     Scene* current_scene = nullptr;
-    std::map<int, std::string, std::greater<int>> ranking_list; // 排行榜
+    std::multimap<int, std::string, std::greater<int>> ranking_list; // 排行榜
     int score = 0;  // 当前玩家得分
     bool is_full_screen = false;
 };

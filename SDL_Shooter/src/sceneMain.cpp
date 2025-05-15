@@ -10,54 +10,46 @@ SceneMain::SceneMain()
 {
     distribution = std::uniform_real_distribution<double>(0.0, 1.0);
 
+    auto init_texture = [](SDL_Texture*& tex, ResID res_id, int& w, int& h, double w_scale, double h_scale)
+    {
+        tex = ResMgr::getInstance().find_texture(res_id);
+        SDL_QueryTexture(tex, nullptr, nullptr, &w, &h);
+        w = static_cast<int>(w * w_scale);
+        h = static_cast<int>(h * h_scale);
+    };
+
     // 敌人模板初始化:敌人,敌人子弹,敌人子弹发射逻辑
-    enemy_template1.tex = ResMgr::getInstance().find_texture(ResID::Tex_Insect2);
-    SDL_QueryTexture(enemy_template1.tex, nullptr, nullptr, &enemy_template1.width, &enemy_template1.height);
-    enemy_template1.width /= 4;
-    enemy_template1.height /= 4;
+    init_texture(enemy_template1.tex, ResID::Tex_Insect2, enemy_template1.width, enemy_template1.height, 0.25, 0.25);
     enemy_template1.direction = {0, 1};
     enemy_template1.current_hp = 2;
 
-    enemy_template2.tex = ResMgr::getInstance().find_texture(ResID::Tex_Insect1);
-    SDL_QueryTexture(enemy_template2.tex, nullptr, nullptr, &enemy_template2.width, &enemy_template2.height);
-    enemy_template2.width /= 4;
-    enemy_template2.height /= 4;
-    enemy_template2.shoot_cd = 0.25;
+    init_texture(enemy_template2.tex, ResID::Tex_Insect1, enemy_template2.width, enemy_template2.height, 0.25, 0.25);
+    enemy_template2.shoot_cd = 0.2;
     enemy_template2.current_hp = 1;
     enemy_template2.direction = {0, 1};
+    enemy_template2.speed *= 0.5;
 
     // 为了简便,陨石也当作敌人,只不过不能发射子弹
-    enemy_template3_stone.tex = ResMgr::getInstance().find_texture(ResID::Tex_SmallA);
-    SDL_QueryTexture(enemy_template3_stone.tex, nullptr, nullptr, &enemy_template3_stone.width, &enemy_template3_stone.height);
-    enemy_template3_stone.width /= 1;
-    enemy_template3_stone.height /= 1;
+    init_texture(enemy_template3_stone.tex, ResID::Tex_SmallA, enemy_template3_stone.width, enemy_template3_stone.height, 1.0, 1.0);
     enemy_template3_stone.shoot_cd = INT_MAX;
     enemy_template3_stone.current_hp = 3;
     enemy_template3_stone.direction = {0, 1};
+    enemy_template3_stone.speed *= 0.7;
 
-    enemy_template4_stone.tex = ResMgr::getInstance().find_texture(ResID::Tex_SmallB);
-    SDL_QueryTexture(enemy_template4_stone.tex, nullptr, nullptr, &enemy_template4_stone.width, &enemy_template4_stone.height);
-    enemy_template4_stone.width /= 2;
-    enemy_template4_stone.height /= 2;
+    init_texture(enemy_template4_stone.tex, ResID::Tex_SmallB, enemy_template4_stone.width, enemy_template4_stone.height, 0.5, 0.5);
     enemy_template4_stone.shoot_cd = INT_MAX;
     enemy_template4_stone.current_hp = 1;
     enemy_template4_stone.direction = {0, 1};
 
     auto& enemy_bullet_template1 = enemy_template1.bullet_template;
-    enemy_bullet_template1.tex = ResMgr::getInstance().find_texture(ResID::Tex_Bullet1);
-    SDL_QueryTexture(enemy_bullet_template1.tex, nullptr, nullptr, &enemy_bullet_template1.width, &enemy_bullet_template1.height);
-    enemy_bullet_template1.width /= 4;
-    enemy_bullet_template1.height /= 4;
+    init_texture(enemy_bullet_template1.tex, ResID::Tex_Bullet1, enemy_bullet_template1.width, enemy_bullet_template1.height, 0.25, 0.25);
     enemy_bullet_template1.damage = enemy_template1.damage;
     enemy_bullet_template1.speed *= 0.7;
 
     auto& enemy_bullet_template2 = enemy_template2.bullet_template;
-    enemy_bullet_template2.tex = ResMgr::getInstance().find_texture(ResID::Tex_Fire);
-    SDL_QueryTexture(enemy_bullet_template2.tex, nullptr, nullptr, &enemy_bullet_template2.width, &enemy_bullet_template2.height);
-    enemy_bullet_template2.width /= 5;
-    enemy_bullet_template2.height /= 5;
+    init_texture(enemy_bullet_template2.tex, ResID::Tex_Fire, enemy_bullet_template2.width, enemy_bullet_template2.height, 0.2, 0.2);
     enemy_bullet_template2.damage = enemy_template2.damage;
-    enemy_bullet_template2.speed *= 0.5;
+    enemy_bullet_template2.speed *= 0.3;
 
     // 为了确保lambda捕获字段有效: 方法1.每次enter初始化一次lambda; 方法2.改为形式参数
     enemy_template1.spawn_bullet = [](Enemy* enemy, std::vector<Bullet*>& bullets, AbstractPlayer* player)
@@ -84,28 +76,25 @@ SceneMain::SceneMain()
         Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Eff11), 0);
     };
 
+    // 初始化爆炸动画
     explode_animtion_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_Explosion);
     SDL_QueryTexture(explode_animtion_template.tex, nullptr, nullptr, &explode_animtion_template.width, &explode_animtion_template.height);
     explode_animtion_template.total_frame = explode_animtion_template.width / explode_animtion_template.height;
     explode_animtion_template.width /= explode_animtion_template.total_frame;
 
-    recover_prop_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_BonusLife);
-    SDL_QueryTexture(recover_prop_template.tex, nullptr, nullptr, &recover_prop_template.width, &recover_prop_template.height);
-    recover_prop_template.width /= 4;
-    recover_prop_template.height /= 4;
-    recover_prop_template.type = PropType::Recover;
-
-    shield_prop_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_BonusShield);
-    SDL_QueryTexture(shield_prop_template.tex, nullptr, nullptr, &shield_prop_template.width, &shield_prop_template.height);
-    shield_prop_template.width /= 4;
-    shield_prop_template.height /= 4;
-    shield_prop_template.type = PropType::Shield;
-
-    time_prop_template.tex = ResMgr::getInstance().find_texture(ResID::Tex_BonusTime);
-    SDL_QueryTexture(time_prop_template.tex, nullptr, nullptr, &time_prop_template.width, &time_prop_template.height);
-    time_prop_template.width /= 4;
-    time_prop_template.height /= 4;
-    time_prop_template.type = PropType::Time;
+    // 初始化道具模板
+    auto init_prop_template = [](Prop& prop_template, ResID red_id, PropType prop_type)
+        {
+            prop_template.tex = ResMgr::getInstance().find_texture(red_id);
+            SDL_QueryTexture(prop_template.tex, nullptr, nullptr, &prop_template.width, &prop_template.height);
+            prop_template.width /= 4;
+            prop_template.height /= 4;
+            prop_template.type = prop_type;
+        };
+    init_prop_template(recover_prop_template, ResID::Tex_BonusLife, PropType::Recover);
+    init_prop_template(shield_prop_template, ResID::Tex_BonusShield, PropType::Shield);
+    init_prop_template(time_prop_template, ResID::Tex_BonusTime, PropType::Time);
+    init_prop_template(time2_prop_template, ResID::Tex_BonusTime2, PropType::Time2);
 }
 
 SceneMain::~SceneMain()
@@ -161,12 +150,14 @@ void SceneMain::handleEvent(const SDL_Event& event)
 
 void SceneMain::update(double deltaTime)
 {
-    spawnEnemy();
     player->update(deltaTime);
-    updateEnemies(deltaTime);
-    updateBullets(deltaTime);
-    updateProps(deltaTime);
-    updateExplode(deltaTime);
+    timer_stop_time_countdown -= deltaTime;
+    double scaledDeltaTime = deltaTime * (timer_stop_time_countdown > 0 ? 0 : 1);
+    spawnEnemy();
+    updateEnemies(scaledDeltaTime);
+    updateBullets(scaledDeltaTime);
+    updateProps(scaledDeltaTime);
+    updateExplode(scaledDeltaTime);
 
     if(player->get_current_hp() <= 0)
     {
@@ -230,7 +221,7 @@ void SceneMain::updateEnemies(double deltaTime)
         if(player->get_current_hp() > 0 && SDL_HasIntersection(&rect_player, &rect_enemy))
         {
             player->decrease_hp(enemy->damage);
-            player_hurt();
+            player_hurt_effect();
             enemy->current_hp = 0;
         }
     }
@@ -289,6 +280,7 @@ void SceneMain::updateBullets(double deltaTime)
             {
                 enemy->current_hp -= bullet->damage;
                 bullet->valid = false;
+                Mix_PlayChannel(-1, ResMgr::getInstance().find_sound(ResID::Sound_Hit), 0);
                 break;
             }
         }
@@ -328,7 +320,7 @@ void SceneMain::updateBullets(double deltaTime)
         if(player->get_current_hp() > 0 && SDL_HasIntersection(&rect_bullet, &rect_player))
         {
             player->decrease_hp(bullet->damage);
-            player_hurt();
+            player_hurt_effect();
             bullet->valid = false;
             break;
         }
@@ -385,6 +377,7 @@ void SceneMain::updateProps(double deltaTime)
             case PropType::Recover: player->increase_hp(1); break; 
             case PropType::Shield: player = new ShieldPlayer(player); break; 
             case PropType::Time: player = new TimePlayer(player); break; 
+            case PropType::Time2: timer_stop_time_countdown = STOP_TIME; break; 
             }
         }
     }
@@ -529,8 +522,9 @@ void SceneMain::spawnProp(const Vector2& pos)
         double random_num = distribution(random_generator);
         Prop* prop = nullptr;
         if(random_num < 0.4) prop = new Prop(recover_prop_template);
-        else if(random_num < 0.4) prop = new Prop(shield_prop_template);
-        else prop = new Prop(time_prop_template);
+        else if(random_num < 0.7) prop = new Prop(shield_prop_template);
+        else if(random_num < 0.9) prop = new Prop(time_prop_template);
+        else prop = new Prop(time2_prop_template);
         prop->pos = pos;
         prop->direction = Vector2(distribution(random_generator) * 2 * 3.1415962);
         props.push_back(prop);
@@ -538,7 +532,7 @@ void SceneMain::spawnProp(const Vector2& pos)
     }
 }
 
-void SceneMain::player_hurt()
+void SceneMain::player_hurt_effect()
 {
     if(player->get_current_hp() > 0)
     {

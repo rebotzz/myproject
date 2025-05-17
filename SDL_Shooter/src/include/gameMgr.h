@@ -17,7 +17,6 @@ class GameMgr : public Singleton<GameMgr>
     friend class Singleton<GameMgr>;
 public:
     int run();
-
     void switchScene(Scene* scene);
 
     // set

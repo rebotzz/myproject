@@ -26,6 +26,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin)
 include_directories(${PROJECT_SOURCE_DIR}/src/include)
 
 # 查找并载入cmake预设:if/elseif + include_directories/target_link_directories()
+# 注意这里下载的库是minGW的SDL2,不是VC的SDL2,如果用VS编译,需要替换库
 find_package(SDL2 REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL2)
 find_package(SDL2_image REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL2_image)
 find_package(SDL2_mixer REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL2_mixer)

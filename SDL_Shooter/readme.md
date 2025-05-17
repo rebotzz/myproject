@@ -13,7 +13,7 @@
     相对而言，使用make能更好的查看报错。还是make更熟悉。
 ```
 
-- 2.`cmake`使用
+- 2.`cmake`使用 注意:cmake中指定的库是minGW的SDL2,不是VC的SDL2,如果用VS编译,需要更改库
 ```
     cmake在vs和make/g++之上，之后可以配置试试cmake;
     cmake尝试之后，确实不错，编写CmakeLists.txt比makefile简单一些

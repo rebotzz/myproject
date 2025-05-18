@@ -1,5 +1,10 @@
 # 我的忽略
 
+# 幽灵逃生
+GhostEscape/.vscode
+GhostEscape/bin
+GhostEscape/build
+
 # SDL2与太空战机
 SDL_Shooter/bin
 SDL_Shooter/.vscode

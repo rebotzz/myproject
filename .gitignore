@@ -4,6 +4,7 @@
 GhostEscape/.vscode
 GhostEscape/bin
 GhostEscape/build
+GhostEscape/ThirdParty
 
 # SDL2与太空战机
 SDL_Shooter/bin

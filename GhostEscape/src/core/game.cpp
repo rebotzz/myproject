@@ -14,9 +14,30 @@ void Game::clean()
     SDL_Quit();
 }
 
-void Game::drawGrid(glm::vec2 start, glm::vec2 end, float grid_w, float grid_h)
+void Game::drawGrid(glm::vec2 start, glm::vec2 end, float grid_w, float grid_h, SDL_FColor color)
 {
-    // todo
+    SDL_SetRenderDrawColorFloat(renderer_, color.a, color.g, color.b, color.a);
+    for(float x = start.x; x <= end.x; x += grid_w)
+    {
+        SDL_RenderLine(renderer_, x, start.y, x, end.y);
+    }
+
+    for(float y = start.y; y <= end.y; y += grid_h)
+    {
+        SDL_RenderLine(renderer_, start.x, y, end.x, y);
+    }
+    SDL_SetRenderDrawColorFloat(renderer_, 0, 0, 0, 1);
+}
+
+void Game::drawBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color)
+{
+    SDL_SetRenderDrawColorFloat(renderer_, color.a, color.g, color.b, color.a);
+    for(int i = 0; i < width; ++i)
+    {
+        SDL_FRect rect = {start.x - i, start.y - i, end.x - start.x + 2 * i, end.y - start.y + 2 * i};
+        SDL_RenderRect(renderer_, &rect);
+    }
+    SDL_SetRenderDrawColorFloat(renderer_, 0, 0, 0, 1);
 }
 
 void Game::changeScene(Scene *scene)
@@ -95,13 +116,8 @@ void Game::init(const std::string &tittle, int window_w, int window_h, int fps)
         exit(-1);
     }
 
-    // 设置逻辑分辨率
-    SDL_SetRenderLogicalPresentation(renderer_,  window_w, window_h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
-    if(!renderer_ || !window_)
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL_CreateWindowAndRenderer failed: %s", SDL_GetError());
-        exit(-1);
-    }
+    // // 设置逻辑分辨率
+    // SDL_SetRenderLogicalPresentation(renderer_,  window_w, window_h, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     // 创建字体渲染引擎
     text_engine_ = TTF_CreateRendererTextEngine(renderer_);

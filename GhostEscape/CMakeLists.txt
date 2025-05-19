@@ -24,7 +24,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin)
 
 # 添加三方库include/lib
 # 查找并载入cmake预设:if/elseif + include_directories/target_link_directories()
-# 注意这里下载的库是VC的SDL3
+# 注意这里下载的库是VC的SDL3;.gitignore忽略了库文件，也行吧
 find_package(SDL3 REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(SDL3_image REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(SDL3_mixer REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
@@ -32,7 +32,7 @@ find_package(SDL3_ttf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(glm CONFIG REQUIRED PATHS ${CMAKE_SOURCE_DIR}/ThirdParty/glm)
 
 # 添加可执行文件      
-aux_source_directory(src some_sources)
+aux_source_directory(src some_sources)  # 可有可无
 file(GLOB_RECURSE my_sources src/*.cpp src/*.h)
 message(STATUS "源文件: ${my_sources}")
 add_executable(${MyExecutable} ${my_sources})

@@ -1,35 +1,35 @@
 #include "object.h"
 
+
 Object::~Object()
 {
-    for(auto& child : children_)
+    for(auto object : children_)
     {
-        if(child) delete child;
-        child = nullptr;
+        if(object) delete object;
     }
     children_.clear();
 }
-
-void Object::handleEvent(const SDL_Event &event)
+void Object::handleEvent(const SDL_Event& event)
 {
-    for(auto child : children_)
+    for(auto object : children_)
     {
-        if(child) child->handleEvent(event);
+        if(object->is_active_)
+            object->handleEvent(event);
     }
 }
-
-void Object::update(float delta_time)
+void Object::update(float dt)
 {
-    for(auto child : children_)
+    for(auto object : children_)
     {
-        if(child) child->update(delta_time);
+        if(object->is_active_)
+            object->update(dt);
     }
 }
-
 void Object::render()
 {
-    for(auto child : children_)
+    for(auto object : children_)
     {
-        if(child) child->render();
+        if(object->is_active_)
+            object->render();
     }
 }

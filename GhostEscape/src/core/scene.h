@@ -3,20 +3,36 @@
 
 #include "object.h"
 #include "glm/glm.hpp"
-
+#include <vector>
 
 class Scene : public Object
 {
 protected:
     glm::vec2 camera_position_ = glm::vec2(0.0f);   // 摄像位置
-    float camera_zoom_ = 1.0f;      // 摄像机缩放系数
+    float camera_zoom_ = 1.0f;                      // 摄像机缩放系数todo
+    // std::vector<Object*> world_object_;          // 不同渲染层级
+    // std::vector<Object*> screen_object_;
 
 public:
     Scene() = default;
-    virtual ~Scene() {};
+    virtual ~Scene();
 
     virtual void init() {};
     virtual void clean() {};
+    virtual void handleEvent(const SDL_Event& event) override;
+    virtual void update(float dt) override;
+    virtual void render() override;
+
+    // 工具函数
+    void addChild(Object* object) { children_.push_back(object); }
+    void cameraFollow(const glm::vec2& target, float speed, float dt);  // 摄像机跟随，结束时有抖动，弃用，直接修改位置
+
+    // setters and getters
+    void setCameraZoom(float camera_zoom) { camera_zoom_ = camera_zoom; }
+    const glm::vec2& getCameraPosition() const { return camera_position_; }
+    void setCameraPosition(const glm::vec2& position) { camera_position_ = position; }
+
+
 };
 
 #endif // _SCENE_H_

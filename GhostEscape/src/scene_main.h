@@ -3,10 +3,12 @@
 
 #include "core/scene.h"
 
+class Player;
 class SceneMain : public Scene
 {
 protected:
     glm::vec2 world_size_ = glm::vec2(0);  // 世界大小
+    Player* player_ = nullptr;
 
 public:
     SceneMain();
@@ -17,6 +19,9 @@ public:
     virtual void handleEvent(const SDL_Event& event);
     virtual void update(float dt);
     virtual void render();
+
+protected:
+    void renderBackground();
 };
 
 

@@ -6,14 +6,25 @@
 
 
 // 屏幕对象
-class ObjectScreen 
+class ObjectScreen : public Object
 {
 protected:
     glm::vec2 render_position_;
+    Object* parent_ = nullptr;
 
 public:
-    ObjectScreen() {};
+    ObjectScreen() = default;
     virtual ~ObjectScreen() {};
+
+    // virtual void handleEvent(const SDL_Event& event) override;
+    // virtual void update(float dt) override;
+    // virtual void render() override;
+
+
+    // getters and setters
+    void setRenderPosition(const glm::vec2& position) { render_position_ = position; }
+    const glm::vec2& getRenderPosition() const { return render_position_; }
+    void setParent(Object* parent) { parent_ = parent; }
 };
 
 

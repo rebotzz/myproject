@@ -130,6 +130,7 @@ ResMgr::ResMgr()
 
 bool ResMgr::load(SDL_Renderer* renderer, const std::string& resources_path)
 {
+    bool flag = true;
     if (!std::filesystem::exists(std::filesystem::path(resources_path))) return false;
     for (auto& entry : std::filesystem::recursive_directory_iterator(resources_path))
     {
@@ -143,11 +144,11 @@ bool ResMgr::load(SDL_Renderer* renderer, const std::string& resources_path)
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "load resources [%s] failed: %s", 
                 path.u8string().c_str(), SDL_GetError());
-            return false;
+            flag = false;
         }
     }
 
-    return true;
+    return flag;
 }
 
 void ResMgr::unload()

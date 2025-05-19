@@ -34,15 +34,21 @@ public:
     
     // 渲染函数
     void renderText(TTF_Text* text, glm::vec2 pos) { TTF_DrawRendererText(text, pos.x, pos.y); }
-    void renderTexture(ResID res_id, SDL_FRect* src_rect, SDL_FRect* dst_rect) { SDL_RenderTexture(renderer_, asset_store_.getTexture(res_id), src_rect, dst_rect); }
-
+    void renderTexture(ResID res_id, SDL_FRect* src_rect, SDL_FRect* dst_rect) 
+        { SDL_RenderTexture(renderer_, asset_store_.getTexture(res_id), src_rect, dst_rect); }
+    void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect) 
+        { SDL_RenderTexture(renderer_, tex, src_rect, dst_rect); }
+    void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect, double angle, bool flip) 
+        { SDL_RenderTextureRotated(renderer_, tex, src_rect, dst_rect, angle, nullptr, flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE); }
+    void drawGrid(glm::vec2 start, glm::vec2 end, float grid_w, float grid_h, SDL_FColor color = {1,1,1,1});
+    void drawBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color = {1,1,1,1});
 
     // 工具函数
-    TTF_Text* createText(const std::string& text, TTF_Font* font, size_t text_lenth = 0) { return TTF_CreateText(text_engine_, font, text.c_str(), text_lenth); }
+    TTF_Text* createText(const std::string& text, TTF_Font* font, size_t text_length = 0) { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
     void changeScene(Scene* scene);
 
     // getters and setters
-    const glm::ivec2& getScreenSize() const { return screen_size_; }
+    glm::vec2 getScreenSize() const { return screen_size_; }
     SDL_Renderer* getRenderer() { return renderer_; }
     AssetStore& getAssetStore() { return asset_store_; }
 

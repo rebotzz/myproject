@@ -10,15 +10,25 @@ class Object
 {
 protected:
     Game& game_ = Game::getInstance();
-    Object* parent_ = nullptr;
-    std::vector<Object*> children_;
+    std::vector<Object*> children_;     // 子节点：组件
+    Object* parent_ = nullptr;          // 父节点
+    bool is_active_ = true;             // 是否启用
 
 public:
     Object() = default;
     virtual ~Object();
     virtual void handleEvent(const SDL_Event& event);
-    virtual void update(float delta_time);
+    virtual void update(float dt);
     virtual void render();
+
+    // 工具函数
+    void addChild(Object* object) { children_.push_back(object); }
+
+    // setters and getters
+    void setParent(Object* parent) { parent_ = parent; }
+    Object* getParent() const { return parent_; }
+    void setActive(bool flag) { is_active_ = flag; }
+    bool getIsActive() const { return is_active_; }
 };
 
 #endif // _OBJECT_H_

@@ -4,6 +4,7 @@
 void ObjectAffiliate::setAchorMode(AchorMode mode)
 {
     // 可能在锚点模式下还有偏移量，这里偏移累加
+    achor_mode_ = mode;
     switch(achor_mode_)
     {
         case AchorMode::TOP_LEFT: offset_ += glm::vec2(0.0f); break;

@@ -17,7 +17,7 @@ public:
     { 
         if(parent)
         {
-            parent->addChild(this);
+            parent->safeAddChild(this);
             setParent(parent);
         }
     }

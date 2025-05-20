@@ -26,6 +26,7 @@ public:
 
     // 工具函数
     virtual void addChild(Object* object) override;
+    virtual void safeAddChild(Object* object) override;
     void cameraFollow(const glm::vec2& target) { camera_position_ = target; }
 
 

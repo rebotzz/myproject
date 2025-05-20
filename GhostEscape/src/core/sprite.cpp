@@ -13,7 +13,7 @@ Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, floa
     if(parent)
     {
         sprite->parent_ = parent;
-        parent->addChild(sprite);
+        parent->safeAddChild(sprite);
     }
     return sprite;
 }

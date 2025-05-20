@@ -6,12 +6,13 @@
 
 #include <vector>
 
-// 所有游戏对象都继承自Object
+// 所有游戏对象都继承自Object,实体/功能组件
 class Object
 {
 protected:
     Game& game_ = Game::getInstance();
     std::vector<Object*> children_;     // 子节点：组件
+    std::vector<Object*> children_to_add_;     
     Object* parent_ = nullptr;          // 父节点
     bool is_active_ = true;             // 是否启用
     ObjectType type_ = ObjectType::None;
@@ -25,6 +26,7 @@ public:
 
     // 工具函数
     virtual void addChild(Object* object) { children_.push_back(object); }
+    virtual void safeAddChild(Object* object) { children_to_add_.push_back(object); };  // 避免update时更新vector，迭代器失效
 
     // setters and getters
     void setParent(Object* parent) { parent_ = parent; }

@@ -19,6 +19,14 @@ void Object::handleEvent(const SDL_Event& event)
 }
 void Object::update(float dt)
 {
+    if(!children_to_add_.empty())
+    {
+        for(auto object : children_to_add_)
+        {
+            if(object) addChild(object);
+        }
+        children_to_add_.clear();
+    }
     for(auto object : children_)
     {
         if(object->is_active_)

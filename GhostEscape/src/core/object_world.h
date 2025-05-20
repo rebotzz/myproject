@@ -17,7 +17,7 @@ public:
     virtual void update(float dt) override;
 
     // setters and getters
-    void setWorldPosition(const glm::vec2& position) { world_position_ = position; }
+    void setPosition(const glm::vec2& position) { world_position_ = position; }
     const glm::vec2& getPosition() const { return world_position_; }
 
 protected:

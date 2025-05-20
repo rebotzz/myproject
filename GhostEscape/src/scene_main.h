@@ -24,6 +24,7 @@ public:
 
     // getters and setters
     Player* getPlayer() const { return player_; }
+    std::vector<Object*>& getWorldObjects() { return world_objects_; }
 
 protected:
     void renderBackground();

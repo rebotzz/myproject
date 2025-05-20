@@ -29,7 +29,18 @@ void Scene::handleEvent(const SDL_Event& event)
 }
 void Scene::update(float dt)
 {
-    Object::update(dt);
+    if(!children_to_add_.empty())
+    {
+        for(auto obj : children_to_add_)
+        {
+            if(obj) addChild(obj);
+        }
+        children_to_add_.clear();
+    }
+    for(auto obj : children_)
+    {
+        if(obj->getIsActive()) obj->update(dt);
+    }
 
     for(auto obj : screen_objects_)
     {
@@ -67,4 +78,9 @@ void Scene::addChild(Object* object)
         world_objects_.push_back(object); 
         break;
     }
+}
+
+void Scene::safeAddChild(Object* object)
+{
+    Object::safeAddChild(object);
 }

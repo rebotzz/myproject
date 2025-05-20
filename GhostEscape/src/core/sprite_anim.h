@@ -32,7 +32,7 @@ public:
     float getFrameInterval() const { return frame_interval_; }
     void setFrameInterval(float interval) { frame_interval_ = interval; }
     void setLoop(bool flag) { is_loop_ = flag; }
-    bool checkIsFinished() const { return frame_idx_ >= total_frame_count_; }
+    bool getIsFinished() const { return frame_idx_ >= total_frame_count_; }
     void setFlip(bool flag) { is_flip_ = flag; }
     void setFrameIdx(int idx) { frame_idx_ = idx; }
     int getFrameIdx() const { return frame_idx_; }

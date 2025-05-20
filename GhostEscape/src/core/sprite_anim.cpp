@@ -15,7 +15,7 @@ SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID 
     if(parent)
     {
         sprite_anim->parent_ = parent;
-        parent->addChild(sprite_anim);
+        parent->safeAddChild(sprite_anim);
     }
     return sprite_anim;
 }

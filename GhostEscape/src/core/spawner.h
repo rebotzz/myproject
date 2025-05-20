@@ -25,9 +25,9 @@ public:
         {
             auto pos = game_.getRandomVec2(start_position_, end_position_);
             auto object = dynamic_cast<ObjectWorld*>(new T());
-            object->setWorldPosition(pos);
+            object->setPosition(pos);
             object->setParent(parent);
-            parent->addChild(object);
+            parent->safeAddChild(object);
         }
     }
 };

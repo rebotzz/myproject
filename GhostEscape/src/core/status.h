@@ -13,6 +13,7 @@ protected:
     float max_mana_ = 100.0f;    
     float mana_timer_ = 0.0f;
     float mana_recover_cd_ = 0.1f;
+    float damage_ = 50.0f;      // 攻击力
     bool invincible_ = false;   // 无敌帧
     float invincible_timer_ = 0.0f;
     float invincible_cd_ = 0.5f;
@@ -26,6 +27,7 @@ public:
     virtual void update(float dt);
 
     void useMana(float val) { mana_ -= val; }
+    bool takeDamage(float val);
 
     // setters and getters
     void setHP(float val) { hp_ = val; }
@@ -37,11 +39,14 @@ public:
     void setMaxMana(float val) { max_mana_ = val; }
     float getMaxMana() const { return max_mana_; }
     void setManaRecoverCD(float val) { mana_recover_cd_ = val; }
+    void setDamage(float val) { damage_ = val; }
+    float getDamage() const { return damage_; }
 
     void setInvincible(bool flag) { invincible_ = flag; }
     bool getIsInvincible() const { return invincible_; }
     void setInvincibleCD(float val) { invincible_cd_ = val; }
     float getInvincibleProgress() const { return invincible_timer_ / invincible_cd_; }
+    bool getIsDead() const { return hp_ <= 0.0f; }
 };
 
 

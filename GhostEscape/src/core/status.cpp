@@ -11,7 +11,7 @@ Status *Status::createAndAddStatusChild(Object *parent, float max_hp, float max_
     status->setInvincibleCD(invincible_cd);
     if(parent)
     {
-        parent->addChild(status);
+        parent->safeAddChild(status);
         status->setParent(parent);
     }
     return status;
@@ -36,4 +36,12 @@ void Status::update(float dt)
             invincible_ = false;
         }
     }
+}
+
+bool Status::takeDamage(float val)
+{
+    if(invincible_) return false;
+    hp_ -= val;
+    invincible_ = true;
+    return true;
 }

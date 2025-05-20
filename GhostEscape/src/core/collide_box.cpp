@@ -11,7 +11,7 @@ CollideBox *CollideBox::createAndAddCollideBoxChild(Object *parent, CollideShape
     collide_box->setRelativeOffset(offset);
     if(parent)
     {
-        parent->addChild(collide_box);
+        parent->safeAddChild(collide_box);
         collide_box->setParent(parent);
     }
     return collide_box;

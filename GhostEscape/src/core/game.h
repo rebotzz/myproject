@@ -10,6 +10,7 @@
 #include "SDL3_ttf/SDL_ttf.h"
 #include "glm/glm.hpp"
 #include <string>
+#include <random>
 
 class Scene;
 
@@ -26,6 +27,7 @@ private:
     TTF_TextEngine* text_engine_ = nullptr;     // 字体渲染引擎
     AssetStore asset_store_;                    // 素材资源
     Scene* current_scene_ = nullptr;            
+    std::mt19937 random_gen_;                   // 随机数生成器
 
 public:
     void init(const std::string& tittle, int window_w, int window_h, int fps);
@@ -44,8 +46,11 @@ public:
     void drawBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color = {1,1,1,1});
 
     // 工具函数
-    TTF_Text* createText(const std::string& text, TTF_Font* font, size_t text_length = 0) { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
     void changeScene(Scene* scene);
+    TTF_Text* createText(const std::string& text, TTF_Font* font, size_t text_length = 0) { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
+    float getRandom(float begin, float end) { return std::uniform_real_distribution<float>(begin, end)(random_gen_); }
+    int getRandom(int begin, int end) { return std::uniform_int_distribution<int>(begin, end)(random_gen_); }
+    glm::vec2 getRandomVec2(const glm::vec2& begin, const glm::vec2& end);
 
     // getters and setters
     glm::vec2 getScreenSize() const { return screen_size_; }

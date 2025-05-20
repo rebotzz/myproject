@@ -51,6 +51,13 @@ void Game::changeScene(Scene *scene)
     current_scene_->init();
 }
 
+glm::vec2 Game::getRandomVec2(const glm::vec2 &begin, const glm::vec2 &end)
+{
+    float x = getRandom(begin.x, end.x);
+    float y = getRandom(begin.y, end.y);
+    return glm::vec2(x, y);
+}
+
 void Game::handleEvent()
 {
     SDL_Event event;
@@ -86,6 +93,9 @@ void Game::init(const std::string &tittle, int window_w, int window_h, int fps)
     screen_size_.x = window_w;
     screen_size_.y = window_h;
     FPS_ = fps;
+
+    // 初始化随机数生成器
+    random_gen_ = std::mt19937(std::random_device{}());
 
     // SDL初始化（SDL3默认初始化图片，不用手动处理）
     if(!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO))

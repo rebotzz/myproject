@@ -2,27 +2,69 @@
 
 Scene::~Scene()
 {
-
+    for(auto obj : screen_objects_)
+    {
+        if(obj) delete obj;
+    }
+    for(auto obj : world_objects_)
+    {
+        if(obj) delete obj;
+    }
+    screen_objects_.clear();
+    world_objects_.clear();
 }
 
 void Scene::handleEvent(const SDL_Event& event)
 {
     Object::handleEvent(event);
+    for(auto obj : screen_objects_)
+    {
+        if(obj->getIsActive()) obj->handleEvent(event);
+    }
+
+    for(auto obj : world_objects_)
+    {
+        if(obj->getIsActive()) obj->handleEvent(event);
+    }
 }
 void Scene::update(float dt)
 {
     Object::update(dt);
+
+    for(auto obj : screen_objects_)
+    {
+        if(obj->getIsActive()) obj->update(dt);
+    }
+
+    for(auto obj : world_objects_)
+    {
+        if(obj->getIsActive()) obj->update(dt);
+    }
 }
 void Scene::render()
 {
     Object::render();
+
+    for(auto obj : world_objects_)
+    {
+        if(obj->getIsActive()) obj->render();
+    }
+    for(auto obj : screen_objects_)
+    {
+        if(obj->getIsActive()) obj->render();
+    }
 }
 
-void Scene::cameraFollow(const glm::vec2 &target, float speed, float dt)
+void Scene::addChild(Object* object)
 {
-    auto distance = glm::length(target - camera_position_);
-    if(distance < 0.1) return;
-
-    auto direction = glm::normalize(target - camera_position_);
-    camera_position_ += direction * speed * dt;
+    switch(object->getObjectType())
+    {
+        case ObjectType::None: children_.push_back(object); break;
+        case ObjectType::Screen: screen_objects_.push_back(object); break;
+        case ObjectType::World: 
+        case ObjectType::Enemy: 
+        case ObjectType::Player: 
+        world_objects_.push_back(object); 
+        break;
+    }
 }

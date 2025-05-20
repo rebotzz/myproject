@@ -18,11 +18,16 @@ Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, floa
     return sprite;
 }
 
+void  Sprite::update(float)
+{
+    // 更新渲染坐标
+    render_position_ = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;    
+}
+
 void Sprite::render()
 {
-    auto render_pos = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
     SDL_FRect src_rect = {0.0f, 0.0f, tex_size_.x, tex_size_.y};
-    SDL_FRect dst_rect = {render_pos.x, render_pos.y, size_.x, size_.y};
+    SDL_FRect dst_rect = {render_position_.x, render_position_.y, size_.x, size_.y};
     game_.renderTexture(tex_, &src_rect, &dst_rect);
 }
 

@@ -183,7 +183,8 @@ const std::string& AssetStore::getText(ResID id)
 {
     if(text_pool.find(id) != text_pool.end()) return text_pool[id];
     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "not find resources: %s", IDname_map[id].c_str());
-    return "";
+    static std::string str_empty = "";
+    return str_empty;
 }
 
 

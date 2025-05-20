@@ -8,11 +8,12 @@ class Actor : public ObjectWorld
 {
 protected:
     glm::vec2 velocity_ = glm::vec2(0);
-    float speed_ = 500.0f;
+    float speed_ = 300.0f;
 
 public:
     Actor() = default;
     virtual ~Actor() {};
+
 
     // getters and setters
     float getSpeed() const { return speed_; }

@@ -16,6 +16,19 @@ enum class AchorMode
     BOTTOM_RIGHT
 };
 
+enum class ObjectType
+{
+    None, 
+    Screen,
+    World,
+    Enemy,
+    Player
+};
 
+enum class CollideShape
+{
+    Circle,
+    Rectangle
+};
 
 #endif // _DEFS_H_

@@ -9,9 +9,6 @@ SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID 
     sprite_anim->tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
     SDL_GetTextureSize(sprite_anim->tex_, &sprite_anim->tex_size_.x, &sprite_anim->tex_size_.y);
     sprite_anim->tex_size_.x /= frame_count;
-
-    SDL_Log("anim_size:[%f,%f]", sprite_anim->tex_size_.x, sprite_anim->tex_size_.y);
-
     sprite_anim->setSize(sprite_anim->tex_size_ * scale);
     sprite_anim->setAchorModeAndSize(mode, sprite_anim->size_);
     sprite_anim->setRelativeOffset(offset);
@@ -25,6 +22,8 @@ SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID 
 
 void SpriteAnim::update(float dt)
 {
+    Sprite::update(dt); 
+
     timer_ += dt;
     if(timer_ >= frame_interval_)
     {
@@ -40,8 +39,7 @@ void SpriteAnim::update(float dt)
 void SpriteAnim::render()
 {
     if(frame_idx_ >= total_frame_count_) return;
-    auto render_pos = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
     SDL_FRect src_rect = { frame_idx_ * tex_size_.x, 0, tex_size_.x, tex_size_.y};
-    SDL_FRect dst_rect = { render_pos.x, render_pos.y, size_.x, size_.y};
+    SDL_FRect dst_rect = { render_position_.x, render_position_.y, size_.x, size_.y};
     game_.renderTexture(tex_, &src_rect, &dst_rect, 0.0, is_flip_);
 }

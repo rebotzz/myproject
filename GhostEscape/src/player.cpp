@@ -1,10 +1,19 @@
 #include "player.h"
 #include "core/scene.h"
 #include "core/sprite_anim.h"
+#include "core/collide_box.h"
+#include "core/status.h"
 
 Player::Player()
 {
-    SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostMove, 8, 3.0f);
+    setObjectType(ObjectType::Player);
+    // 初始化动画
+    anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostMove, 8, 3.0f);
+    anim_idle_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostIdle, 8, 3.0f);
+    // 初始化碰撞箱体
+    CollideBox::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
+    // 初始化状态
+    status_ = Status::createAndAddStatusChild(this, 200.0f, 300.0f, 0.1f, 0.7f);
 }
 Player::~Player()
 {
@@ -31,18 +40,17 @@ void Player::update(float dt)
 {
     Actor::update(dt);
 
-    velocity_ *= 0.9;
+    velocity_ *= 0.9f;
     updateKeyboardControl();
     updateMotion(dt);
-
-    // 玩家必须挂载到场景，不然没有意义。
-    updateRenderPosition(dynamic_cast<Scene*>(parent_)->getCameraPosition());
+    updateSpriteAnim();
 }
 
 void Player::render() 
 {
     Actor::render();
 
+    // game_.drawBoundary(render_position_, render_position_ + glm::vec2(5), 5);
 }
 
 void Player::updateKeyboardControl()
@@ -57,4 +65,33 @@ void Player::updateKeyboardControl()
 void Player::updateMotion(float dt)
 {
     world_position_ += velocity_ * dt;
+}
+
+void Player::updateSpriteAnim()
+{
+    // 动画左右方向
+    if(velocity_.x > 0)
+    {
+        anim_move_->setFlip(false);
+        anim_idle_->setFlip(false);
+    }
+    else if(velocity_.x < 0)
+    {
+        anim_move_->setFlip(true);
+        anim_idle_->setFlip(true);
+    }
+
+    // 切换动画
+    if(glm::length(velocity_) < 0.1) 
+    {
+        anim_move_->setActive(false);
+        anim_idle_->setActive(true);
+        anim_move_->syncFrameTime(anim_idle_);
+    }
+    else
+    {
+        anim_move_->setActive(true);
+        anim_idle_->setActive(false);
+        anim_idle_->syncFrameTime(anim_move_);
+    }
 }

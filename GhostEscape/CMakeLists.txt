@@ -32,7 +32,7 @@ find_package(SDL3_ttf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(glm CONFIG REQUIRED PATHS ${CMAKE_SOURCE_DIR}/ThirdParty/glm)
 
 # 添加可执行文件      
-aux_source_directory(src some_sources)  # 可有可无
+aux_source_directory(src some_sources)  # 可有可无,为了方便编辑器检测新添加源文件
 file(GLOB_RECURSE my_sources src/*.cpp src/*.h)
 message(STATUS "源文件: ${my_sources}")
 add_executable(${MyExecutable} ${my_sources})

@@ -3,10 +3,19 @@
 
 #include "core/actor.h"
 
+class SpriteAnim;
+class Status;
+
 // 角色
 class Player : public Actor
 {
 protected:
+    // 动画
+    SpriteAnim* anim_move_ = nullptr;
+    SpriteAnim* anim_idle_ = nullptr;
+    // 状态
+    Status* status_ = nullptr;
+
 
 public:
     Player();
@@ -18,6 +27,9 @@ public:
 
     // 工具函数
     static Player* createAndAddPlayerChild(Object* parent, glm::vec2 position);
+
+    // getters and setters
+    Status* getStatus() const { return status_; }
 
 protected:
     void updateKeyboardControl();

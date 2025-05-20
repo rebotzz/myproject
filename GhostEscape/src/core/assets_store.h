@@ -12,9 +12,10 @@
 #include <filesystem>
 #include <functional>
 
-
+class Game;
 class AssetStore
 {
+	friend class Game;
 private:
     // 字体包装器，实现不同字体大小
     class FontWrapper
@@ -36,9 +37,12 @@ public:
 	typedef std::unordered_map<ResID, std::string> TextPool;		// 文本
     typedef std::function<bool(const std::filesystem::path&, SDL_Renderer*)> Loader;   // 加载器
 
-public:
+private:
 	AssetStore();
+	AssetStore(const AssetStore&) = delete;
+	AssetStore& operator=(const AssetStore&) = delete;
 	~AssetStore() = default;
+public:
 	void load(SDL_Renderer* renderer, const std::string& resources_path);
     void unload();
 	SDL_Texture* getTexture(ResID id);

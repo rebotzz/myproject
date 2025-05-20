@@ -20,7 +20,7 @@ public:
     const glm::vec2& getSize() const { return size_; }
     void setOffset(const glm::vec2& offset) { offset_ = offset; }
     const glm::vec2& getOffset() const { return offset_; }
-    void setAchorMode(AchorMode mode) { achor_mode_ = mode; }
+    void setAchorMode(AchorMode mode);
     AchorMode getAchorMode() const { return achor_mode_; }
     void setAchorModeAndSize(AchorMode mode, const glm::vec2& size);
     void setRelativeOffset(const glm::vec2& relative_offset) { offset_ += relative_offset; }  // 现有偏移上累加

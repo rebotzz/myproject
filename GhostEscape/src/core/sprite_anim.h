@@ -34,6 +34,10 @@ public:
     void setLoop(bool flag) { is_loop_ = flag; }
     bool checkIsFinished() const { return frame_idx_ >= total_frame_count_; }
     void setFlip(bool flag) { is_flip_ = flag; }
+    void setFrameIdx(int idx) { frame_idx_ = idx; }
+    int getFrameIdx() const { return frame_idx_; }
+    void syncFrameTime(SpriteAnim* sprite_anim) { frame_idx_ = sprite_anim->frame_idx_; timer_ = sprite_anim->timer_; }
+    void restart() { frame_idx_ = 0; timer_ = 0; }
 };
 
 

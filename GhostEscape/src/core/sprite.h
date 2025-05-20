@@ -12,12 +12,13 @@ class Sprite : public ObjectAffiliate
 protected:
     SDL_Texture* tex_ = nullptr;
     glm::vec2 tex_size_ = glm::vec2(0);
-    glm::vec2 render_position_ = glm::vec2(0);
+    glm::vec2 render_position_ = glm::vec2(0);  // 位置 = 父节点位置 + 偏移
 
 public:
     static Sprite* createAndAddSpriteChild(ObjectScreen* parent, ResID tex_id, float scale = 1.0f, const glm::vec2& offset = glm::vec2(0.0f), AchorMode mode = AchorMode::CENTER);
 
-    virtual void render();
+    virtual void update(float) override;
+    virtual void render() override;
 
 };
 

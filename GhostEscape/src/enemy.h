@@ -14,12 +14,13 @@ private:
     SpriteAnim* current_anim_ = nullptr;
 
 public:
-    Enemy();
     Enemy(Object *parent, const glm::vec2 &position);
     ~Enemy();
     static Enemy* createAndAddEnemyChild(Object* parent, const glm::vec2& position);
 
     virtual void update(float dt);
+
+    void takeDamage(float damage);
 
 protected:
     void updateMotion(float dt);

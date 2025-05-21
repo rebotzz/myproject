@@ -4,23 +4,33 @@
 #include "core/status.h"
 #include "scene_main.h"
 #include "player.h"
+#include "ui/ui_enemy_hp_bar.h"
 
-
-Enemy::Enemy()
+Enemy::Enemy(Object *parent, const glm::vec2 &position)
 {
+    // 基础设置
+    if(parent)
+    {
+        setParent(parent);
+        parent->safeAddChild(this);
+    }
+    setPosition(position);
     setSpeed(100.f);
     setObjectType(ObjectType::Enemy);
     // 初始化动画
     anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostSheet, 4, 3.0f);
     anim_hurt_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostHurtSheet, 4, 3.0f);
-    anim_dead_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostDeadSheet, 8, 3.0f);
+    anim_dead_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostDeadSheet, 8, 3.0f, 0.1f, false);
     anim_hurt_->setActive(false);
     anim_dead_->setActive(false);
     current_anim_ = anim_move_;
     // 碰撞盒子
     collide_box_ = CollideBox::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
     // 状态
-    status_ = Status::createAndAddStatusChild(this, 120.0f, 0.0f, 100.0f, 0.5f);
+    status_ = Status::createAndAddStatusChild(this, 120.0f, 0.0f, 100.0f, 1.4f);
+
+    // 血条UI  最后添加，最上层最后绘制
+    UIEnemyHPBar::createAndAddUIHPBarChild(this, glm::vec2(anim_move_->getSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getSize().y / 2.0f));
 }
 
 Enemy::~Enemy()
@@ -29,13 +39,7 @@ Enemy::~Enemy()
 
 Enemy *Enemy::createAndAddEnemyChild(Object *parent, const glm::vec2 &position)
 {
-    auto enemy = new Enemy();
-    enemy->setPosition(position);
-    if(parent)
-    {
-        enemy->setParent(parent);
-        parent->safeAddChild(enemy);
-    }
+    auto enemy = new Enemy(parent, position);
     return enemy;
 }
 
@@ -81,8 +85,16 @@ void Enemy::updateAnim()
         old_anim->setActive(false);
         current_anim_->restart();
         current_anim_->setActive(true);
+        // 同步动画位置
+        current_anim_->setRenderPosition(old_anim->getRenderPosition());
     }
     
+    // 死亡动画结束，场景需要移除敌人
+    if(anim_dead_->getIsFinished()) 
+    {
+        setCanRemove(true);
+        setActive(false);
+    }
 }
 
 void Enemy::updateCollide()
@@ -92,4 +104,9 @@ void Enemy::updateCollide()
     {
         player->getStatus()->takeDamage(status_->getDamage());
     }
+}
+
+void Enemy::takeDamage(float damage)
+{
+    status_->takeDamage(damage);
 }

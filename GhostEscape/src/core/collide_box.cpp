@@ -20,7 +20,7 @@ CollideBox *CollideBox::createAndAddCollideBoxChild(Object *parent, CollideShape
 void CollideBox::update(float)
 {
     // 更新位置: 渲染坐标？ 还是世界坐标？ 如果所有都偏移了，那么相交判断可以进行; 结论：都行
-    position_ = dynamic_cast<ObjectWorld*>(parent_)->getRenderPosition() + offset_;
+    position_ = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
 }
 
 void CollideBox::render()
@@ -40,7 +40,7 @@ bool CollideBox::checkCollision(CollideBox *target)
     if(shape_ == CollideShape::Circle && target->getCollideShape() == CollideShape::Circle)
     {
         float distance = glm::length(position_ - target->getPosition());
-        if(distance <= (size_.x + target->getSize().x)) 
+        if(distance <= (size_.x / 2 + target->getSize().x / 2)) 
             return true;
     }
     else if(shape_ == CollideShape::Rectangle && target->getCollideShape() == CollideShape::Rectangle)

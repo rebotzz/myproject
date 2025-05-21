@@ -3,12 +3,20 @@
 #include "core/sprite_anim.h"
 #include "core/collide_box.h"
 #include "core/status.h"
-#include "raw/weapon_thunder.h"
 #include "scene_main.h"
 #include "enemy.h"
+#include "ui/ui_player_status.h"
 
-Player::Player()
+#include "weapon_thunder.h"
+
+Player::Player(Scene* parent, const glm::vec2& position)
 {
+    setPosition(position);
+    if(parent) 
+    {
+        parent->safeAddChild(this);
+        setParent(parent);
+    }
     setObjectType(ObjectType::Player);
     // 初始化动画
     anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostMove, 8, 3.0f);
@@ -16,24 +24,21 @@ Player::Player()
     // 初始化碰撞箱体
     collide_box_ = CollideBox::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
     // 初始化状态
-    status_ = Status::createAndAddStatusChild(this, 200.0f, 300.0f, 0.1f, 0.7f);
-    // 武器
-    weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 200.0f, 2.0f);
+    status_ = Status::createAndAddStatusChild(this, 200.0f, 300.0f, 0.1f, 1.5f);
+    // 武器, 武器挂载到玩家，跟随玩家；武器生成的法术挂载到场景，不随玩家移动
+    weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 2.0f);
+
+    // UI界面 挂载到场景
+    UIPlayerStatus::createAndAddUIPlayerStatusChild(parent);
 }
 Player::~Player()
 {
 
 }
 
-Player *Player::createAndAddPlayerChild(Object *parent, glm::vec2 position)
+Player *Player::createAndAddPlayerChild(Scene *parent, const glm::vec2& position)
 {
-    auto player = new Player();
-    player->setPosition(position);
-    if(parent) 
-    {
-        parent->safeAddChild(player);
-        player->parent_ = parent;
-    }
+    auto player = new Player(parent, position);
     return player;
 }
 
@@ -45,11 +50,12 @@ void Player::handleEvent(const SDL_Event& event)
     switch(event.type)
     {
         case SDL_EVENT_MOUSE_BUTTON_UP:
-        // 世界 = 
+        if(!weapon_thunder_->canAttack()) break;
+        // 世界 = 渲染 + 相机
         // 渲染坐标 = 世界 - 相机
         glm::vec2 cursor_pos = glm::vec2(event.motion.x, event.motion.y);
-        weapon_thunder_->setRenderPosition(cursor_pos);
-        weapon_thunder_->enableAttack();
+        auto target = cursor_pos + dynamic_cast<Scene*>(parent_)->getCameraPosition();
+        weapon_thunder_->attack(target);
         break;
     }
 }
@@ -63,8 +69,6 @@ void Player::update(float dt)
     updateMotion(dt);
     updateSpriteAnim();
 
-    // 攻击敌人
-    updateWeapon();
 }
 
 void Player::render() 
@@ -72,7 +76,7 @@ void Player::render()
     if(status_->getIsInvincible() && (static_cast<int>(status_->getInvincibleProgress() * 10.0f) % 5 < 2)) return;
     Actor::render();
 
-    // game_.drawBoundary(render_position_, render_position_ + glm::vec2(5), 5);
+    // game_.renderBoundary(render_position_, render_position_ + glm::vec2(5), 5);
 }
 
 void Player::updateKeyboardControl()
@@ -118,15 +122,3 @@ void Player::updateSpriteAnim()
     }
 }
 
-void Player::updateWeapon()
-{
-    if(!weapon_thunder_->getEnable()) return;
-    auto world_objects = dynamic_cast<SceneMain*>(parent_)->getWorldObjects();
-    for(auto obj : world_objects)
-    {
-        if(obj->getObjectType() == ObjectType::Enemy)
-        {
-            weapon_thunder_->attack(dynamic_cast<Enemy*>(obj));
-        }
-    }
-}

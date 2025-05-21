@@ -3,6 +3,7 @@
 
 
 #include "object_world.h"
+#include "scene.h"
 #include <vector>
 
 // 生成器
@@ -24,10 +25,9 @@ public:
         for(int i = 0; i < count_; ++i)
         {
             auto pos = game_.getRandomVec2(start_position_, end_position_);
-            auto object = dynamic_cast<ObjectWorld*>(new T());
-            object->setPosition(pos);
-            object->setParent(parent);
-            parent->safeAddChild(object);
+            new T(parent, pos);     // 构造函数完成了节点挂载,虽然看起来像是内存泄漏
+            // // 更新渲染坐标，避免生成后闪现,不，不应该是这样的，毕竟safeAddChild延时添加，在渲染之前一定跟新的渲染坐标
+            // object->updateRenderPosition(dynamic_cast<Scene*>(parent)->getCameraPosition());
         }
     }
 };

@@ -2,18 +2,19 @@
 #include "object_screen.h"
 
 
-Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, float scale, const glm::vec2 &offset, AchorMode mode)
+Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, const glm::vec2 scale, const glm::vec2 &offset, AchorMode mode)
 {
     auto sprite = new Sprite();
     sprite->tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
     SDL_GetTextureSize(sprite->tex_, &sprite->tex_size_.x, &sprite->tex_size_.y);
-    sprite->setSize(sprite->tex_size_ * scale);
+    sprite->setSize({sprite->tex_size_.x * scale.x, sprite->tex_size_.y * scale.y});
     sprite->setAchorModeAndSize(mode, sprite->size_);
     sprite->setRelativeOffset(offset);
     if(parent)
     {
         sprite->parent_ = parent;
         parent->safeAddChild(sprite);
+        sprite->render_position_ = parent->getRenderPosition() + sprite->offset_;  
     }
     return sprite;
 }
@@ -26,8 +27,16 @@ void  Sprite::update(float)
 
 void Sprite::render()
 {
-    SDL_FRect src_rect = {0.0f, 0.0f, tex_size_.x, tex_size_.y};
-    SDL_FRect dst_rect = {render_position_.x, render_position_.y, size_.x, size_.y};
+    SDL_FRect src_rect = {0.0f, 
+        tex_size_.y * (1.0f - render_percentage_.y), 
+        tex_size_.x * render_percentage_.x, 
+        tex_size_.y * render_percentage_.y};
+    SDL_FRect dst_rect = {render_position_.x, 
+        render_position_.y + size_.y * (1.0f - render_percentage_.y), 
+        size_.x * render_percentage_.x, 
+        size_.y * render_percentage_.y};
+    SDL_SetTextureAlphaModFloat(tex_, alpha_);
     game_.renderTexture(tex_, &src_rect, &dst_rect);
+    SDL_SetTextureAlphaModFloat(tex_, 1.0f);
 }
 

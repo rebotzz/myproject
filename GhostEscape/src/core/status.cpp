@@ -1,6 +1,6 @@
 #include "status.h"
 
-Status *Status::createAndAddStatusChild(Object *parent, float max_hp, float max_mana, float mana_recover_cd, float invincible_cd)
+Status *Status::createAndAddStatusChild(Object *parent, float max_hp, float max_mana, float mana_recover_cd, float invincible_interval)
 {
     auto status = new Status;
     status->setHP(max_hp);
@@ -8,7 +8,7 @@ Status *Status::createAndAddStatusChild(Object *parent, float max_hp, float max_
     status->setMana(max_mana);
     status->setMaxMana(max_mana);
     status->setManaRecoverCD(mana_recover_cd);
-    status->setInvincibleCD(invincible_cd);
+    status->setInvincibleInterval(invincible_interval);
     if(parent)
     {
         parent->safeAddChild(status);
@@ -30,7 +30,7 @@ void Status::update(float dt)
     if(invincible_)
     {
         invincible_timer_ += dt;
-        if(invincible_timer_ >= invincible_cd_)
+        if(invincible_timer_ >= invincible_interval_)
         {
             invincible_timer_ = 0.0f;
             invincible_ = false;

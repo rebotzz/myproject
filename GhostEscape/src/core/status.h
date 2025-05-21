@@ -16,13 +16,13 @@ protected:
     float damage_ = 50.0f;      // 攻击力
     bool invincible_ = false;   // 无敌帧
     float invincible_timer_ = 0.0f;
-    float invincible_cd_ = 0.5f;
+    float invincible_interval_ = 0.5f;
 
 public:
     Status() = default;
     ~Status() = default;
     static Status* createAndAddStatusChild(Object* parent, float max_hp, float max_mana, 
-        float mana_recover_cd, float invincible_cd); 
+        float mana_recover_cd, float invincible_interval); 
 
     virtual void update(float dt);
 
@@ -44,8 +44,8 @@ public:
 
     void setInvincible(bool flag) { invincible_ = flag; }
     bool getIsInvincible() const { return invincible_; }
-    void setInvincibleCD(float val) { invincible_cd_ = val; }
-    float getInvincibleProgress() const { return invincible_timer_ / invincible_cd_; }
+    void setInvincibleInterval(float val) { invincible_interval_ = val; }
+    float getInvincibleProgress() const { return invincible_timer_ / invincible_interval_; }
     bool getIsDead() const { return hp_ <= 0.0f; }
 };
 

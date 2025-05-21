@@ -29,7 +29,7 @@ void Game::drawGrid(glm::vec2 start, glm::vec2 end, float grid_w, float grid_h, 
     SDL_SetRenderDrawColorFloat(renderer_, 0, 0, 0, 1);
 }
 
-void Game::drawBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color)
+void Game::renderBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color)
 {
     SDL_SetRenderDrawColorFloat(renderer_, color.a, color.g, color.b, color.a);
     for(int i = 0; i < width; ++i)
@@ -37,6 +37,14 @@ void Game::drawBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor co
         SDL_FRect rect = {start.x - i, start.y - i, end.x - start.x + 2 * i, end.y - start.y + 2 * i};
         SDL_RenderRect(renderer_, &rect);
     }
+    SDL_SetRenderDrawColorFloat(renderer_, 0, 0, 0, 1);
+}
+
+void Game::renderFillRect(glm::vec2 position, glm::vec2 size, SDL_FColor color)
+{
+    SDL_SetRenderDrawColorFloat(renderer_, color.r, color.g, color.b, color.a);
+    SDL_FRect rect = {position.x, position.y, size.x, size.y};
+    SDL_RenderFillRect(renderer_, &rect);
     SDL_SetRenderDrawColorFloat(renderer_, 0, 0, 0, 1);
 }
 

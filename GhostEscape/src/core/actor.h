@@ -2,6 +2,7 @@
 #define _ACTOR_H_
 
 #include "object_world.h"
+#include "scene.h"
 
 class Status;
 class CollideBox;
@@ -25,6 +26,7 @@ public:
     void setSpeed(float val) { speed_ = val; }
     Status* getStatus() const { return status_; }
     CollideBox* getCollideBox() const { return collide_box_; }
+    Scene* getScene() const { return dynamic_cast<Scene*>(parent_); }
 };
 
 

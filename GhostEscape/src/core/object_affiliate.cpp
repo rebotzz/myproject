@@ -4,6 +4,7 @@
 void ObjectAffiliate::setAchorMode(AchorMode mode)
 {
     // 可能在锚点模式下还有偏移量，这里偏移累加
+    // 需要清楚：偏移是依据自生size，还是父节点size,这里是依据自生size，如果需要在父节点size上偏移，使用setRelativeOffset
     achor_mode_ = mode;
     switch(achor_mode_)
     {

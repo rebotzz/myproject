@@ -8,7 +8,7 @@ class CollideBox : public ObjectAffiliate
 private:
     CollideShape shape_ = CollideShape::Circle; // 碰撞外形    
     glm::vec2 position_ = glm::vec2(0);
-    // 如果碰撞外形为圆时,size_.x = size_.y = 半径
+    // 如果碰撞外形为圆时,size_.x = size_.y = 直径
 
 public:
     CollideBox() = default;

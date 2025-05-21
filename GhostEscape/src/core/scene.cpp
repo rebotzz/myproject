@@ -1,4 +1,5 @@
 #include "scene.h"
+#include <algorithm>
 
 Scene::~Scene()
 {
@@ -29,6 +30,7 @@ void Scene::handleEvent(const SDL_Event& event)
 }
 void Scene::update(float dt)
 {
+    removeInvalidObject();
     if(!children_to_add_.empty())
     {
         for(auto obj : children_to_add_)
@@ -37,10 +39,7 @@ void Scene::update(float dt)
         }
         children_to_add_.clear();
     }
-    for(auto obj : children_)
-    {
-        if(obj->getIsActive()) obj->update(dt);
-    }
+    Object::update(dt);
 
     for(auto obj : screen_objects_)
     {
@@ -51,6 +50,9 @@ void Scene::update(float dt)
     {
         if(obj->getIsActive()) obj->update(dt);
     }
+
+    // // 限制摄像机位置, 似乎限制玩家位置就可以了, 有bug，坐标位置映射不对
+    // camera_position_ = glm::clamp(camera_position_, glm::vec2(-100), world_size_ + glm::vec2(100));
 }
 void Scene::render()
 {
@@ -83,4 +85,23 @@ void Scene::addChild(Object* object)
 void Scene::safeAddChild(Object* object)
 {
     Object::safeAddChild(object);
+}
+
+void Scene::removeInvalidObject()
+{
+    world_objects_.erase(std::remove_if(world_objects_.begin(), world_objects_.end(), [](Object* obj)
+    {
+        bool deletable = false;
+        if(obj->getCanRemove()) deletable = true;
+        if(deletable) delete obj;
+        return deletable;
+    }), world_objects_.end());
+
+    screen_objects_.erase(std::remove_if(screen_objects_.begin(), screen_objects_.end(), [](Object* obj)
+    {
+        bool deletable = false;
+        if(obj->getCanRemove()) deletable = true;
+        if(deletable) delete obj;
+        return deletable;
+    }), screen_objects_.end());
 }

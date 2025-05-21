@@ -43,7 +43,8 @@ public:
     void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect, double angle, bool flip) 
         { SDL_RenderTextureRotated(renderer_, tex, src_rect, dst_rect, angle, nullptr, flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE); }
     void drawGrid(glm::vec2 start, glm::vec2 end, float grid_w, float grid_h, SDL_FColor color = {1,1,1,1});
-    void drawBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color = {1,1,1,1});
+    void renderBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color = {1,1,1,1});
+    void renderFillRect(glm::vec2 position, glm::vec2 size, SDL_FColor color = {1,1,1,1});
 
     // 工具函数
     void changeScene(Scene* scene);

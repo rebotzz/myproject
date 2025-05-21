@@ -16,6 +16,7 @@ SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID 
     {
         sprite_anim->parent_ = parent;
         parent->safeAddChild(sprite_anim);
+        sprite_anim->render_position_ = parent->getRenderPosition() + sprite_anim->offset_;
     }
     return sprite_anim;
 }

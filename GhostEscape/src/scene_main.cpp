@@ -30,17 +30,18 @@ void SceneMain::handleEvent(const SDL_Event& event)
 }
 void SceneMain::update(float dt)
 {
-    Scene::update(dt);
     spawnEnemy(dt);
     auto target = player_->getPosition() - glm::vec2{game_.getScreenSize().x / 2, game_.getScreenSize().y / 2};
     cameraFollow(target);
+
+    removeInvalidObject();
+    Scene::update(dt);
 }
 void SceneMain::render()
 {
     // TODO: 超出摄像机范围不绘制，范围检测；背景改为texture或者修改绘制方法
     renderBackground();
     Scene::render();
-
 }
 
 void SceneMain::renderBackground()
@@ -50,7 +51,7 @@ void SceneMain::renderBackground()
     auto pos = - camera_position_;
     // 渲染整个世界网格；可以渲染超出屏幕的区域
     game_.drawGrid(pos, pos + world_size_, 80, 80);
-    game_.drawBoundary(pos, pos + world_size_, 5);
+    game_.renderBoundary(pos, pos + world_size_, 5);
 }
 
 void SceneMain::spawnEnemy(float dt)
@@ -59,7 +60,11 @@ void SceneMain::spawnEnemy(float dt)
     if(spawn_enemy_timer_ >= spawn_enemy_cd_)
     {
         spawn_enemy_timer_ -= spawn_enemy_cd_;
-        auto spawner = Spawner<Enemy>(game_.getRandom(3, 7), camera_position_, camera_position_ + game_.getScreenSize());
+        auto pos_start =  glm::clamp(camera_position_, glm::vec2(0), world_size_);
+        auto pos_end = glm::clamp(camera_position_ + game_.getScreenSize(), glm::vec2(0), world_size_);
+        auto spawner = Spawner<Enemy>(game_.getRandom(min_spawn_count, max_spawn_count), pos_start, pos_end);
         spawner.spawnAndAddChild(this);
     }
 }
+
+

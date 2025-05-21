@@ -1,4 +1,5 @@
 #include "object.h"
+#include <algorithm>
 
 
 Object::~Object()
@@ -19,6 +20,9 @@ void Object::handleEvent(const SDL_Event& event)
 }
 void Object::update(float dt)
 {
+    // 移除失效子节点
+    removeInvalidObject();
+    // 加入待添加子节点，更新
     if(!children_to_add_.empty())
     {
         for(auto object : children_to_add_)
@@ -40,4 +44,15 @@ void Object::render()
         if(object->is_active_)
             object->render();
     }
+}
+
+void Object::removeInvalidObject()
+{
+    children_.erase(std::remove_if(children_.begin(), children_.end(), [](Object* obj)
+    {
+        bool deletable = false;
+        if(obj->getCanRemove()) deletable = true;
+        if(deletable) delete obj;
+        return deletable;
+    }), children_.end());
 }

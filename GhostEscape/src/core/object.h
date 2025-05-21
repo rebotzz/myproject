@@ -11,11 +11,12 @@ class Object
 {
 protected:
     Game& game_ = Game::getInstance();
-    std::vector<Object*> children_;     // 子节点：组件
-    std::vector<Object*> children_to_add_;     
-    Object* parent_ = nullptr;          // 父节点
-    bool is_active_ = true;             // 是否启用
-    ObjectType type_ = ObjectType::None;
+    std::vector<Object*> children_;         // 子节点：组件
+    std::vector<Object*> children_to_add_;  // 临时容器，放置迭代器失效
+    Object* parent_ = nullptr;              // 父节点
+    bool is_active_ = true;                 // 是否启用
+    ObjectType type_ = ObjectType::None;    // 类型
+    bool can_remove_ = false;               // 是否需要移除
 
 public:
     Object() = default;
@@ -35,6 +36,11 @@ public:
     bool getIsActive() const { return is_active_; }
     void setObjectType(ObjectType type) { type_ = type; }
     ObjectType getObjectType() const { return type_; }
+    bool getCanRemove() const { return can_remove_; }
+    void setCanRemove(bool flag) { can_remove_ = flag; }
+
+protected:
+    void removeInvalidObject();
 };
 
 #endif // _OBJECT_H_

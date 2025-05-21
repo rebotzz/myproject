@@ -94,6 +94,7 @@ void Enemy::updateAnim()
     {
         setCanRemove(true);
         setActive(false);
+        dynamic_cast<SceneMain*>(parent_)->getPlayer()->addScore(10);
     }
 }
 

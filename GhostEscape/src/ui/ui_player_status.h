@@ -11,19 +11,23 @@ class Scene;
 class UIPlayerStatus : public ObjectScreen
 {
 protected:
-    UIPlayerBar* ui_hp_bar_ = nullptr;
-    UIPlayerBar* ui_mana_bar_ = nullptr;
-    UIPlayerSkillBar* ui_skill_bar_ = nullptr;
+    UIPlayerBar* ui_hp_bar_ = nullptr;      // 血条
+    UIPlayerBar* ui_mana_bar_ = nullptr;    // 蓝条
+    UIPlayerSkillBar* ui_skill_bar_ = nullptr;  // 技能条
+    TTF_Text* text_ = nullptr;      // 得分
+    glm::vec2 text_position_ = glm::vec2(0);    // 得分渲染位置
 
 public:
     UIPlayerStatus(Scene* parent);
-    ~UIPlayerStatus() = default;
+    ~UIPlayerStatus();
     static UIPlayerStatus* createAndAddUIPlayerStatusChild(Scene* parent);
 
     virtual void update(float dt);
+    virtual void render();
 
 protected:
     void updateBar();
+    void updateScore();
 };
 
 

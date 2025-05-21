@@ -26,12 +26,9 @@ public:
         {
             auto pos = game_.getRandomVec2(start_position_, end_position_);
             new T(parent, pos);     // 构造函数完成了节点挂载,虽然看起来像是内存泄漏
-            // // 更新渲染坐标，避免生成后闪现,不，不应该是这样的，毕竟safeAddChild延时添加，在渲染之前一定跟新的渲染坐标
-            // object->updateRenderPosition(dynamic_cast<Scene*>(parent)->getCameraPosition());
         }
     }
 };
-
 
 
 

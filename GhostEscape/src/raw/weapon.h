@@ -17,7 +17,7 @@ protected:
 public:
     virtual void update(float dt) override;
 
-    bool canAttack() const { return attack_timer_ >= attack_cd_; }
+    virtual bool canAttack() const { return attack_timer_ >= attack_cd_; }
     virtual void attack(const glm::vec2& ) { attack_timer_ = 0.0f; }
 
     // setters and getters

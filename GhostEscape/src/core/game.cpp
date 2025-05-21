@@ -5,7 +5,7 @@
 void Game::clean()
 {
     asset_store_.unload();
-
+    TTF_DestroyRendererTextEngine(text_engine_);
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);
     TTF_Quit();

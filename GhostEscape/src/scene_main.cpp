@@ -2,6 +2,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "core/spawner.h"
+#include "raw/effect_enemy_spawn.h"
 
 
 SceneMain::SceneMain()
@@ -60,9 +61,10 @@ void SceneMain::spawnEnemy(float dt)
     if(spawn_enemy_timer_ >= spawn_enemy_cd_)
     {
         spawn_enemy_timer_ -= spawn_enemy_cd_;
+        // 世界坐标
         auto pos_start =  glm::clamp(camera_position_, glm::vec2(0), world_size_);
         auto pos_end = glm::clamp(camera_position_ + game_.getScreenSize(), glm::vec2(0), world_size_);
-        auto spawner = Spawner<Enemy>(game_.getRandom(min_spawn_count, max_spawn_count), pos_start, pos_end);
+        auto spawner = Spawner<EffectEnemySpawn>(game_.getRandom(min_spawn_count, max_spawn_count), pos_start, pos_end);
         spawner.spawnAndAddChild(this);
     }
 }

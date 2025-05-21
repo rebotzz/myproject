@@ -18,6 +18,7 @@ protected:
     SpriteAnim* anim_idle_ = nullptr;
     // 武器
     WeaponThunder* weapon_thunder_ = nullptr;
+    int score_ = 0;     // 得分，暂时放在玩家类，应该放在状态类吗？还是场景类？
 
 public:
     Player(Scene* parent, const glm::vec2& position);
@@ -32,6 +33,9 @@ public:
 
     // getters and setters
     float getAttackCDPercentage() const { return weapon_thunder_->getAttackCDPercentage(); }
+    int getScore() const { return score_; }
+    void setScore(int val) { score_ = val; }
+    void addScore(int val) { score_ += val; }
 
 protected:
     void updateKeyboardControl();

@@ -19,6 +19,7 @@ Status *Status::createAndAddStatusChild(Object *parent, float max_hp, float max_
 
 void Status::update(float dt)
 {
+    // 发力恢复
     mana_timer_ += dt;
     if(mana_timer_ >= mana_recover_cd_)
     {
@@ -27,6 +28,7 @@ void Status::update(float dt)
         if(mana_ > max_mana_) mana_ = max_mana_;
     }
 
+    // 更新无敌帧
     if(invincible_)
     {
         invincible_timer_ += dt;

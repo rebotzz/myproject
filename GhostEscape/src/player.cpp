@@ -24,9 +24,9 @@ Player::Player(Scene* parent, const glm::vec2& position)
     // 初始化碰撞箱体
     collide_box_ = CollideBox::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
     // 初始化状态
-    status_ = Status::createAndAddStatusChild(this, 200.0f, 300.0f, 0.1f, 1.5f);
+    status_ = Status::createAndAddStatusChild(this, 200.0f, 300.0f, 0.03f, 1.5f);
     // 武器, 武器挂载到玩家，跟随玩家；武器生成的法术挂载到场景，不随玩家移动
-    weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 2.0f);
+    weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 1.5f, 100.f);
 
     // UI界面 挂载到场景
     UIPlayerStatus::createAndAddUIPlayerStatusChild(parent);

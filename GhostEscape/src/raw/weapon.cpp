@@ -11,4 +11,3 @@ void Weapon::update(float dt)
     ObjectAffiliate::update(dt);
     attack_timer_ += dt;
 }
-

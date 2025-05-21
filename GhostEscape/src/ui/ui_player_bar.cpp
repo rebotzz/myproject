@@ -10,7 +10,7 @@ UIPlayerBar::UIPlayerBar(Object *parent, const glm::vec2 &position, ResID tex_ic
     }
     setObjectType(ObjectType::Screen);
     setRenderPosition(position);
-    auto x_offset = 20.0f;
+    auto x_offset = 40.0f;
     sprite_bar_bg_ = Sprite::createAndAddSpriteChild(this, tex_bar_bg, bar_scale, glm::vec2(x_offset, 0.0f), AchorMode::CENTER_LEFT);
     sprite_bar_fg_ = Sprite::createAndAddSpriteChild(this, tex_bar_fg, bar_scale, glm::vec2(x_offset, 0.0f), AchorMode::CENTER_LEFT);
     sprite_icon_ = Sprite::createAndAddSpriteChild(this, tex_icon, icon_scale, glm::vec2(0.0f), AchorMode::CENTER_LEFT);

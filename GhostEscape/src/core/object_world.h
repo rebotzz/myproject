@@ -11,7 +11,8 @@ protected:
     glm::vec2 world_position_;
     
 public:
-    ObjectWorld() = default;
+    ObjectWorld() { setObjectType(ObjectType::World); };
+    ObjectWorld(Object* parent):ObjectScreen(parent)  { setObjectType(ObjectType::World); };
     virtual ~ObjectWorld() {};
 
     virtual void update(float dt) override;

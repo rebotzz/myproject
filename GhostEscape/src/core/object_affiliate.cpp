@@ -1,6 +1,13 @@
 #include "object_affiliate.h"
 #include "object_screen.h"
 
+void ObjectAffiliate::setSize(const glm::vec2 &size)
+{
+    size_ = size;
+    offset_ = glm::vec2(0);
+    setAchorMode(achor_mode_);
+}
+
 void ObjectAffiliate::setAchorMode(AchorMode mode)
 {
     // 可能在锚点模式下还有偏移量，这里偏移累加

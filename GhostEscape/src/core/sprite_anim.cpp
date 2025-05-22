@@ -9,8 +9,7 @@ SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID 
     sprite_anim->tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
     SDL_GetTextureSize(sprite_anim->tex_, &sprite_anim->tex_size_.x, &sprite_anim->tex_size_.y);
     sprite_anim->tex_size_.x /= frame_count;
-    sprite_anim->setSize(sprite_anim->tex_size_ * scale);
-    sprite_anim->setAchorModeAndSize(mode, sprite_anim->size_);
+    sprite_anim->setAchorModeAndSize(mode, sprite_anim->tex_size_ * scale);
     sprite_anim->setRelativeOffset(offset);
     if(parent)
     {

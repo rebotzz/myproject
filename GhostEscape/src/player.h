@@ -2,10 +2,10 @@
 #define _PLAYER_H_
 
 #include "core/actor.h"
+#include "core/status.h"
 #include "weapon_thunder.h"
 
 class SpriteAnim;
-class Status;
 class WeaponThunder;
 class Scene;
 
@@ -24,7 +24,7 @@ public:
     Player(Scene* parent, const glm::vec2& position);
     virtual ~Player();
 
-    virtual void handleEvent(const SDL_Event& event) override;
+    virtual bool handleEvent(const SDL_Event& event) override;
     virtual void update(float dt) override;
     virtual void render() override;
 
@@ -36,6 +36,7 @@ public:
     int getScore() const { return score_; }
     void setScore(int val) { score_ = val; }
     void addScore(int val) { score_ += val; }
+    bool getIsDead() const { return status_->getIsDead(); }
 
 protected:
     void updateKeyboardControl();

@@ -25,6 +25,8 @@ Player::Player(Scene* parent, const glm::vec2& position)
     collide_box_ = CollideBox::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
     // 初始化状态
     status_ = Status::createAndAddStatusChild(this, 200.0f, 300.0f, 0.03f, 1.5f);
+    status_->setOnHurtCallback([this](){ game_.playSound(ResID::Sound_FemaleScream0289290); });
+
     // 武器, 武器挂载到玩家，跟随玩家；武器生成的法术挂载到场景，不随玩家移动
     weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 1.5f, 100.f);
 
@@ -42,10 +44,10 @@ Player *Player::createAndAddPlayerChild(Scene *parent, const glm::vec2& position
     return player;
 }
 
-void Player::handleEvent(const SDL_Event& event)
+bool Player::handleEvent(const SDL_Event& event)
 {
-    Actor::handleEvent(event);
-
+    if(Actor::handleEvent(event)) return true;
+    bool event_handled = false;
     // 技能释放
     switch(event.type)
     {
@@ -53,11 +55,14 @@ void Player::handleEvent(const SDL_Event& event)
         if(!weapon_thunder_->canAttack()) break;
         // 世界 = 渲染 + 相机
         // 渲染坐标 = 世界 - 相机
-        glm::vec2 cursor_pos = glm::vec2(event.motion.x, event.motion.y);
+        glm::vec2 cursor_pos;
+        game_.getMouseState(cursor_pos);    // 不能直接SDL_获取，因为屏幕缩放会导致鼠标位置错位
         auto target = cursor_pos + dynamic_cast<Scene*>(parent_)->getCameraPosition();
         weapon_thunder_->attack(target);
+        event_handled = true;
         break;
     }
+    return event_handled;
 }
 
 void Player::update(float dt) 

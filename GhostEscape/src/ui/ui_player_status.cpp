@@ -14,11 +14,11 @@ UIPlayerStatus::UIPlayerStatus(Scene* parent)
     setObjectType(ObjectType::Screen);
     ui_hp_bar_ = new UIPlayerBar(this, glm::vec2(30.f, 60.0f), ResID::Tex_RedPotion, ResID::Tex_BarBg, 
         ResID::Tex_BarRed, glm::vec2(1.0f), glm::vec2(3.0f));
-    ui_mana_bar_ = new UIPlayerBar(this, glm::vec2(400.f, 60.0f), ResID::Tex_BluePotion, ResID::Tex_BarBg, 
+    ui_mana_bar_ = new UIPlayerBar(this, glm::vec2(350.f, 60.0f), ResID::Tex_BluePotion, ResID::Tex_BarBg, 
         ResID::Tex_BarBlue, glm::vec2(1.0f), glm::vec2(3.0f));
     ui_skill_bar_ = new UIPlayerSkillBar(this, glm::vec2(700.f, 60.0f), ResID::Tex_ElectricIcon, glm::vec2(0.3f));
 
-    text_ = game_.createText("Score:", game_.getAssetStore().getFont(ResID::Font_VonwaonBitmap16px, 48), 0);
+    text_ = game_.createText("Score:", game_.getAssetStore().getFont(ResID::Font_VonwaonBitmap16px, 36), 0);
 }
 
 UIPlayerStatus::~UIPlayerStatus()
@@ -64,5 +64,5 @@ void UIPlayerStatus::updateScore()
     TTF_SetTextString(text_, str.c_str(), 0);
     int text_w = 0, text_h = 0; 
     TTF_GetTextSize(text_, &text_w, &text_h);
-    text_position_ = glm::vec2(game_.getScreenSize().x - text_w - 50.f, 30.0f);
+    text_position_ = glm::vec2(game_.getScreenSize().x - text_w - 20.f, 60.0f - text_h / 2);
 }

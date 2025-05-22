@@ -9,14 +9,23 @@ Object::~Object()
         if(object) delete object;
     }
     children_.clear();
+    
+    for(auto object : children_to_add_)
+    {
+        if(object) delete object;
+    }
+    children_to_add_.clear();
 }
-void Object::handleEvent(const SDL_Event& event)
+bool Object::handleEvent(const SDL_Event& event)
 {
     for(auto object : children_)
     {
         if(object->is_active_)
-            object->handleEvent(event);
+        {
+            if(object->handleEvent(event)) return true;
+        }
     }
+    return false;
 }
 void Object::update(float dt)
 {

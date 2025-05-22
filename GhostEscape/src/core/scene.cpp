@@ -15,18 +15,31 @@ Scene::~Scene()
     world_objects_.clear();
 }
 
-void Scene::handleEvent(const SDL_Event& event)
+bool Scene::handleEvent(const SDL_Event& event)
 {
-    Object::handleEvent(event);
+    if(Object::handleEvent(event)) return true;
+
+    // 优先处理屏幕事件，然后世界事件
     for(auto obj : screen_objects_)
     {
-        if(obj->getIsActive()) obj->handleEvent(event);
+        if(obj->getIsActive()) 
+        {
+            if(obj->handleEvent(event)) return true;
+        }
     }
 
-    for(auto obj : world_objects_)
+    if(!pause_time_)
     {
-        if(obj->getIsActive()) obj->handleEvent(event);
+        for(auto obj : world_objects_)
+        {
+            if(obj->getIsActive()) 
+            {
+                if(obj->handleEvent(event)) return true;
+            }
+        }
     }
+
+    return false;
 }
 void Scene::update(float dt)
 {
@@ -46,9 +59,13 @@ void Scene::update(float dt)
         if(obj->getIsActive()) obj->update(dt);
     }
 
-    for(auto obj : world_objects_)
+    // 时间暂停时不更新世界对象
+    if(!pause_time_)
     {
-        if(obj->getIsActive()) obj->update(dt);
+        for(auto obj : world_objects_)
+        {
+            if(obj->getIsActive()) obj->update(dt);
+        }
     }
 
     // // 限制摄像机位置, 似乎限制玩家位置就可以了, 有bug，坐标位置映射不对

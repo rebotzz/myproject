@@ -9,4 +9,5 @@ EffectEnemySpawn::EffectEnemySpawn(Object *parent, const glm::vec2 &position)
     {
         Enemy::createAndAddEnemyChild(parent, position);
     });
+    game_.playSound(ResID::Sound_SillyGhostSound242342);
 }

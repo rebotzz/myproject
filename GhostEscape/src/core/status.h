@@ -2,6 +2,7 @@
 #define _STATUS_H_
 
 #include "object.h"
+#include <functional>
 
 // 状态类
 class Status : public Object
@@ -17,6 +18,7 @@ protected:
     bool invincible_ = false;   // 无敌帧
     float invincible_timer_ = 0.0f;
     float invincible_interval_ = 0.5f;
+    std::function<void()> on_hurt_;  // 受击执行另外逻辑，例如播放受击音效
 
 public:
     Status() = default;
@@ -47,6 +49,7 @@ public:
     void setInvincibleInterval(float val) { invincible_interval_ = val; }
     float getInvincibleProgress() const { return invincible_timer_ / invincible_interval_; }
     bool getIsDead() const { return hp_ <= 0.0f; }
+    void setOnHurtCallback(const std::function<void()>& callback) { on_hurt_ = callback; }
 };
 
 

@@ -4,6 +4,8 @@
 #include "core/scene.h"
 
 class Player;
+class UICursor;
+class UIButton;
 class SceneMain : public Scene
 {
 protected:
@@ -11,16 +13,20 @@ protected:
     float spawn_enemy_timer_ = 0.0f;
     float spawn_enemy_cd_ = 8.0f;
     int min_spawn_count = 1, max_spawn_count = 5;
+    UICursor* ui_cursor_ = nullptr;
+    UIButton* button_restart_ = nullptr;
+    UIButton* button_back_ = nullptr;
+    bool player_alive_ = true;
 
 public:
     SceneMain();
     virtual ~SceneMain();
 
-    virtual void init();
-    virtual void clean();
-    virtual void handleEvent(const SDL_Event& event);
-    virtual void update(float dt);
-    virtual void render();
+    virtual void init() override;
+    virtual void clean() override;
+    virtual bool handleEvent(const SDL_Event& event) override;
+    virtual void update(float dt) override;
+    virtual void render() override;
 
     // getters and setters
     Player* getPlayer() const { return player_; }

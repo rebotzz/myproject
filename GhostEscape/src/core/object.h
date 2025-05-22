@@ -20,8 +20,9 @@ protected:
 
 public:
     Object() = default;
+    Object(Object* parent) { if(parent) { setParent(parent); parent->safeAddChild(this); } }
     virtual ~Object();
-    virtual void handleEvent(const SDL_Event& event);
+    virtual bool handleEvent(const SDL_Event& event);
     virtual void update(float dt);
     virtual void render();
 

@@ -28,6 +28,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position)
     collide_box_ = CollideBox::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
     // 状态
     status_ = Status::createAndAddStatusChild(this, 120.0f, 0.0f, 100.0f, 1.4f);
+    status_->setOnHurtCallback([this](){ game_.playSound(ResID::Sound_HitFlesh02266309); });
 
     // 血条UI  最后添加，最上层最后绘制
     UIEnemyHPBar::createAndAddUIHPBarChild(this, glm::vec2(anim_move_->getSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getSize().y / 2.0f));

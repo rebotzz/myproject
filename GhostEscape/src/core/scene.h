@@ -13,6 +13,7 @@ protected:
     float camera_zoom_ = 1.0f;                      // 摄像机缩放系数todo
     std::vector<Object*> screen_objects_;           // 区分不同渲染层级，屏幕物体
     std::vector<Object*> world_objects_;            // 世界物体
+    bool pause_time_ = false;                       // 时间暂停
 
 public:
     Scene() = default;
@@ -20,7 +21,7 @@ public:
 
     virtual void init() {};
     virtual void clean() {};
-    virtual void handleEvent(const SDL_Event& event) override;
+    virtual bool handleEvent(const SDL_Event& event) override;
     virtual void update(float dt) override;
     virtual void render() override;
 
@@ -38,6 +39,8 @@ public:
     void setWorldSize(const glm::vec2& size) { world_size_ = size; }
     std::vector<Object*>& getWorldObjects() { return world_objects_; }
     std::vector<Object*>& getScreenObjects() { return screen_objects_; }
+    void setPauseTime(bool flag) { pause_time_ = flag; }
+    bool getIsPauseTime() const { return pause_time_; }
 
 protected:
     void removeInvalidObject(); // 隐藏父类接口，这里似乎没有必要用虚函数

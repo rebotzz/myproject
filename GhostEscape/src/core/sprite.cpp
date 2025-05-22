@@ -7,8 +7,7 @@ Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, cons
     auto sprite = new Sprite();
     sprite->tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
     SDL_GetTextureSize(sprite->tex_, &sprite->tex_size_.x, &sprite->tex_size_.y);
-    sprite->setSize({sprite->tex_size_.x * scale.x, sprite->tex_size_.y * scale.y});
-    sprite->setAchorModeAndSize(mode, sprite->size_);
+    sprite->setAchorModeAndSize(mode, glm::vec2{sprite->tex_size_.x * scale.x, sprite->tex_size_.y * scale.y});
     sprite->setRelativeOffset(offset);
     if(parent)
     {

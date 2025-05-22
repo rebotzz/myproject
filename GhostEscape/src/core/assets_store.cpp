@@ -92,6 +92,7 @@ AssetStore::AssetStore()
         while(std::getline(str_stream, tmp))
         {
             text += tmp;
+            text += "\n";
         }
         text_pool.insert({nameID_map[path.stem().u8string()], text});
         return true;

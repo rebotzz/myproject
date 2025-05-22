@@ -45,5 +45,6 @@ bool Status::takeDamage(float val)
     if(invincible_) return false;
     hp_ -= val;
     invincible_ = true;
+    if(on_hurt_) on_hurt_();
     return true;
 }

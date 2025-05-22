@@ -3,7 +3,7 @@
 #include "../enemy.h"
 
 Spell::Spell(Object *parent, float damage, const glm::vec2& target, CollideShape shape, ResID tex_id, 
-    int frame_count, float scale, float frame_interval)
+    int frame_count, float scale, float frame_interval, AchorMode mode)
     :damage_(damage)
 {
     if(parent)
@@ -12,8 +12,8 @@ Spell::Spell(Object *parent, float damage, const glm::vec2& target, CollideShape
         setParent(parent);
     }
     setPosition(target);
-    anim_ = SpriteAnim::createAndAddSpriteAnimChild(this, tex_id, frame_count, scale, frame_interval, false);
-    collide_box_ = CollideBox::createAndAddCollideBoxChild(this, shape, anim_->getSize());
+    anim_ = SpriteAnim::createAndAddSpriteAnimChild(this, tex_id, frame_count, scale, frame_interval, false, glm::vec2(0.0f), mode);
+    collide_box_ = CollideBox::createAndAddCollideBoxChild(this, shape, anim_->getSize(), glm::vec2(0), mode);
 }
 
 void Spell::update(float dt)

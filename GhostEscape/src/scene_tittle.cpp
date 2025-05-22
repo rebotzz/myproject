@@ -5,10 +5,16 @@
 
 SceneTittle::SceneTittle()
 {
+    stars_count = 500;
+    world_size_ = game_.getScreenSize();
     auto tittle_pos = glm::vec2(game_.getScreenSize().x / 2, game_.getScreenSize().y * 0.3);
     text_tittle_ = new HUDText(this, tittle_pos, "幽灵逃生", 128, ResID::Tex_Textfield01);
 
-    auto button_pos = glm::vec2(game_.getScreenSize().x / 2, game_.getScreenSize().y - 100.f);
+    std::string high_score = "历史最高分:" + std::to_string(game_.getGameData());
+    auto score_pos = glm::vec2(game_.getScreenSize().x / 2, game_.getScreenSize().y * 0.6);
+    text_high_score_ = new HUDText(this, score_pos, high_score, 32, ResID::Tex_Textfield01);
+
+    auto button_pos = glm::vec2(game_.getScreenSize().x / 2, game_.getScreenSize().y * 0.8);
     auto button_offset = glm::vec2(200.f, 0);
     button_start_ = new UIButton(this, button_pos - button_offset, glm::vec2(2.0f), ResID::Tex_AStart1, 
         ResID::Tex_AStart2, ResID::Tex_AStart3);
@@ -18,7 +24,7 @@ SceneTittle::SceneTittle()
         ResID::Tex_AQuit2, ResID::Tex_AQuit3);
 
     text_credits_ = new HUDText(this, game_.getScreenSize() * 0.5f, game_.getAssetStore().getText(ResID::Text_Credits), 
-        24, ResID::Tex_Textfield01);
+        16, ResID::Tex_Textfield01);
     text_credits_->setActive(false);
 
     button_start_->setOnClickCallback([this](){ game_.safeChangeScene(new SceneMain()); });
@@ -30,8 +36,9 @@ SceneTittle::SceneTittle()
 
 void SceneTittle::init()
 {
-    SDL_ShowCursor();
+    SDL_HideCursor();
     game_.playMusic(ResID::Mus_OhMyGhost);
+    text_high_score_->setText("历史最高分:" + std::to_string(game_.getGameData()));
 }
 
 void SceneTittle::clean()
@@ -57,6 +64,7 @@ void SceneTittle::update(float dt)
 }
 void SceneTittle::render()
 {
+    renderStarsBackGround();
     Scene::render();
 }
 

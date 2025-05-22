@@ -37,7 +37,8 @@ private:
     uint64_t frame_interval_ = 0;
     // 其他
     std::mt19937 random_gen_;                   // 随机数生成器
-
+    // 游戏存档
+    int high_score_ = 0;    // 游戏数据暂时只有分数，所以只用一个int，之后可以改为string配合json
 
 private:
     Game() = default;
@@ -47,6 +48,8 @@ private:
     void render();
     void controlFrameDelta();
     void updateWindowScale();     // 更新因为屏幕缩放导致鼠标错位问题
+    void saveGame();
+    void loadGame();
 
 public:
     void init(const std::string& tittle, int window_w, int window_h, int fps);
@@ -54,7 +57,7 @@ public:
     void clean();
     
     // 渲染函数
-    void renderText(TTF_Text* text, glm::vec2 pos) { TTF_DrawRendererText(text, pos.x, pos.y); }
+    void renderTTF_Text(TTF_Text* text, glm::vec2 pos, SDL_FColor color = {1.0f, 1.0f, 1.0f, 1.0f});
     void renderTexture(ResID res_id, SDL_FRect* src_rect, SDL_FRect* dst_rect) 
         { SDL_RenderTexture(renderer_, asset_store_.getTexture(res_id), src_rect, dst_rect); }
     void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect) 
@@ -68,7 +71,8 @@ public:
     // 工具函数
     void changeScene(Scene* scene);        // 不安全，可能会出现delete this，类调用的函数delete自生，如果接下来还有逻辑，可能出错
     void safeChangeScene(Scene* scene) { scene_to_change_ = scene; }
-    TTF_Text* createText(const std::string& text, TTF_Font* font, size_t text_length = 0) { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
+    TTF_Text* createTTF_Text(const std::string& text, TTF_Font* font, size_t text_length = 0)  //debug:这里length是文本长度，不是一行长度
+        { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
     float getRandom(float begin, float end) { return std::uniform_real_distribution<float>(begin, end)(random_gen_); }
     int getRandom(int begin, int end) { return std::uniform_int_distribution<int>(begin, end)(random_gen_); }
     glm::vec2 getRandomVec2(const glm::vec2& begin, const glm::vec2& end);
@@ -79,13 +83,14 @@ public:
     void playMusic(ResID mus_id) { Mix_PlayMusic(asset_store_.getMusic(mus_id), -1); }
     void playSound(ResID sound_id) { Mix_PlayChannel(-1, asset_store_.getSound(sound_id), 0); }
     void quit() { is_running_ = false; }
-
-    // todo: 加入屏幕缩放
+    void updateGameData(int score) { high_score_ = std::max(high_score_, score); }
+    int getGameData() { return high_score_; }
     SDL_MouseButtonFlags getMouseState(glm::vec2& mouse_position);
 
     // getters and setters
     glm::vec2 getScreenSize() const { return screen_size_; }
     AssetStore& getAssetStore() { return asset_store_; }
+    void setRenderColor(SDL_FColor color = {1.0f, 1.0f, 1.0f, 1.0f}) { SDL_SetRenderDrawColorFloat(renderer_, color.r, color.g, color.b, color.a); }
 };
 
 #endif // _GAME_H_

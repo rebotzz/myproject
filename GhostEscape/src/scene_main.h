@@ -32,7 +32,7 @@ public:
     Player* getPlayer() const { return player_; }
 
 protected:
-    void renderBackground();
+    void renderBackgroundGrid();
 
     // 工具函数
     void spawnEnemy(float dt);

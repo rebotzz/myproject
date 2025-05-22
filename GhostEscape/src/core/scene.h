@@ -15,6 +15,11 @@ protected:
     std::vector<Object*> world_objects_;            // 世界物体
     bool pause_time_ = false;                       // 时间暂停
 
+    // 其他：有纵深的星空背景
+    int stars_count = 2000;
+    std::vector<glm::vec2> bg_stars, mid_stars, fg_stars;  // 星星坐标
+    bool init_stars = false;
+
 public:
     Scene() = default;
     virtual ~Scene();
@@ -44,6 +49,7 @@ public:
 
 protected:
     void removeInvalidObject(); // 隐藏父类接口，这里似乎没有必要用虚函数
+    virtual void renderStarsBackGround();
 };
 
 #endif // _SCENE_H_

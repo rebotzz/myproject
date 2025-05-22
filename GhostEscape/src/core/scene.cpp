@@ -122,3 +122,41 @@ void Scene::removeInvalidObject()
         return deletable;
     }), screen_objects_.end());
 }
+
+void Scene::renderStarsBackGround()
+{
+    // 初始化星星世界坐标
+    std::vector<std::vector<glm::vec2>*> stars_ptr_arr = {&bg_stars, &mid_stars, &fg_stars};
+    if(!init_stars)
+    {
+        init_stars = true;
+        bg_stars.reserve(stars_count);
+        mid_stars.reserve(stars_count);
+        fg_stars.reserve(stars_count);
+        for(auto& stars_ptr : stars_ptr_arr)
+        {
+            auto& stars = *stars_ptr;
+            for(int i = 0; i < stars_count; ++i)
+            {
+                stars.push_back(game_.getRandomVec2(glm::vec2(0), world_size_));
+            }
+        }
+    }
+
+    // 渲染星星
+    static std::vector<float> scale = {0.3f, 0.6f, 1.0f};
+    static std::vector<SDL_FColor> color = {SDL_FColor{1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.5f, 0.0f, 1.0f}};
+    int idx = 0;
+    for(auto& stars_ptr : stars_ptr_arr)
+    {
+        auto& stars = *stars_ptr;
+        for(int i = 0; i < stars_count; ++i)
+        {
+            // 渲染坐标 = 世界坐标 - 相机位置 * 系数
+            auto pos = stars[i] - camera_position_ * scale[idx];
+            game_.renderFillRect(pos, glm::vec2(1), color[idx]);
+        }
+        idx++;
+    }
+
+}

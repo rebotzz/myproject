@@ -13,10 +13,11 @@ protected:
 
 public:
     ObjectAffiliate() = default;
+     ObjectAffiliate(Object* parent):Object(parent) {}
     virtual ~ObjectAffiliate() {};
 
     // setters and getters
-    void setSize(const glm::vec2& size);
+    virtual void setSize(const glm::vec2& size);
     const glm::vec2& getSize() const { return size_; }
     void setOffset(const glm::vec2& offset) { offset_ = offset; }
     const glm::vec2& getOffset() const { return offset_; }

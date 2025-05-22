@@ -3,7 +3,7 @@
 
 #include "core/scene.h"
 #include "ui/ui_button.h"
-#include "ui/ui_text.h"
+#include "ui/hud_text.h"
 
 class SceneTittle : public Scene
 {
@@ -13,6 +13,7 @@ protected:
     UIButton* button_quit_ = nullptr;
     HUDText* text_tittle_ = nullptr;
     HUDText* text_credits_ = nullptr;
+    HUDText* text_high_score_ = nullptr;
     bool show_credits_ = false;
 
 public:

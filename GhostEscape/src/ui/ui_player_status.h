@@ -4,7 +4,9 @@
 #include "ui_player_bar.h"
 #include "ui_player_skill_bar.h"
 
+
 class Scene;
+class HUDText;
 
 // 玩家UI界面
 // 挂载到场景
@@ -14,8 +16,7 @@ protected:
     UIPlayerBar* ui_hp_bar_ = nullptr;      // 血条
     UIPlayerBar* ui_mana_bar_ = nullptr;    // 蓝条
     UIPlayerSkillBar* ui_skill_bar_ = nullptr;  // 技能条
-    TTF_Text* text_ = nullptr;      // 得分
-    glm::vec2 text_position_ = glm::vec2(0);    // 得分渲染位置
+    HUDText* hud_text_ = nullptr;       // 得分
 
 public:
     UIPlayerStatus(Scene* parent);

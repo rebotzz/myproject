@@ -28,14 +28,8 @@ SceneMain::SceneMain()
     button_pause->setOnClickCallback([this]() 
         { 
             setPauseTime(!getIsPauseTime()); 
-            if(pause_time_) 
-            {
-                game_.pauseSound();
-            }
-            else
-            {
-                game_.resumeSound();
-            }
+            if(pause_time_) game_.pauseSound();
+            else game_.resumeSound();
         });
     button_restart_->setOnClickCallback([this]() { game_.safeChangeScene(new SceneMain()); });
     button_back_->setOnClickCallback([this]() { game_.safeChangeScene(new SceneTittle()); });
@@ -50,7 +44,7 @@ void SceneMain::init()
 {
     // 恢复状态
     // 这里的工作都放在了构造
-    // SDL_HideCursor();
+    SDL_HideCursor();
     game_.playMusic(ResID::Mus_SpookyMusic);
     player_alive_ = true;
 }
@@ -59,6 +53,7 @@ void SceneMain::clean()
     // 清理资源
     // 这里的工作都放在了析构
     game_.pauseMusic();
+    game_.updateGameData(player_->getScore());
 }
 bool SceneMain::handleEvent(const SDL_Event& event)
 {
@@ -66,9 +61,15 @@ bool SceneMain::handleEvent(const SDL_Event& event)
 }
 void SceneMain::update(float dt)
 {
-    // 生成敌人，相机跟随
-    spawnEnemy(dt);
-    cameraFollow(player_->getPosition() - glm::vec2{game_.getScreenSize().x / 2, game_.getScreenSize().y / 2});
+    removeInvalidObject();
+    Scene::update(dt);
+
+    if(player_alive_)
+    {
+        // 生成敌人，相机跟随
+        spawnEnemy(dt);
+        cameraFollow(player_->getPosition() - glm::vec2{game_.getScreenSize().x / 2, game_.getScreenSize().y / 2});
+    }
 
     if(player_alive_ && player_->getIsDead())
     {
@@ -79,18 +80,16 @@ void SceneMain::update(float dt)
         button_restart_->setRenderPosition(game_.getScreenSize() / 2.0f - glm::vec2(button_back_->getSize().x * 0.7f, 0.0f));
         button_back_->setRenderPosition(game_.getScreenSize() / 2.0f + glm::vec2(button_back_->getSize().x * 0.7f, 0.0f));
     }
-
-    removeInvalidObject();
-    Scene::update(dt);
 }
 void SceneMain::render()
 {
     // TODO: 超出摄像机范围不绘制，范围检测；背景改为texture或者修改绘制方法
-    renderBackground();
+    renderStarsBackGround();
+    renderBackgroundGrid();
     Scene::render();
 }
 
-void SceneMain::renderBackground()
+void SceneMain::renderBackgroundGrid()
 {
     // 渲染坐标 = 世界坐标 - 摄像机坐标
     // 摄像机移动，相当于世界反向移动

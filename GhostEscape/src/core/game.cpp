@@ -1,6 +1,8 @@
 #include "game.h"
 #include "../scene_main.h"
 #include "../scene_tittle.h"
+#include <fstream>
+#include <memory>
 
 void Game::handleEvent()
 {
@@ -47,15 +49,42 @@ void Game::updateWindowScale()
     SDL_GetWindowSize(window_, &window_w, &window_h);
     // 设置屏幕宽高比不变
     SDL_SetWindowAspectRatio(window_, screen_size_.x / screen_size_.y, screen_size_.x / screen_size_.y);
-    // 如果是全屏那么宽高比会改变，所以设置y轴缩放比例
+    // 如果是全屏那么宽高比会改变，所以也设置y轴缩放比例
     window_scale_.x = static_cast<float>(window_w) / screen_size_.x;    
     window_scale_.y = static_cast<float>(window_h) / screen_size_.y;
     SDL_SyncWindow(window_);
 }
 
+void Game::saveGame()
+{
+    std::ofstream output("save.dat", std::ios::binary | std::ios::trunc);
+    if(output.fail()) return;
+    output.write(reinterpret_cast<char*>(&high_score_), sizeof(high_score_));
+    output.close();
+}
+
+void Game::loadGame()
+{
+    std::ifstream input("save.dat", std::ios::binary);
+    if(input.fail()) return;
+    input.seekg(0, input.end);
+    int length = static_cast<int>(input.tellg());
+    input.seekg(0, input.beg);
+    std::unique_ptr<char[]> buffer(new char[length]{0});   // 奇怪的语法,这种模板类型char[]
+    input.read(buffer.get(), length);
+    if(!input) 
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "load game failed, only read %d byte.", input.gcount());
+    }
+    else
+    {
+        high_score_ = *(reinterpret_cast<int*>(buffer.get()));
+    }
+    input.close();
+}
+
 void Game::run()
 {
-    SDL_Log("Game::run()");
     while(is_running_)
     {
         if(scene_to_change_)
@@ -77,6 +106,7 @@ void Game::run()
 
 void Game::clean()
 {
+    saveGame();
     asset_store_.unload();
     TTF_DestroyRendererTextEngine(text_engine_);
     SDL_DestroyRenderer(renderer_);
@@ -85,6 +115,13 @@ void Game::clean()
     Mix_CloseAudio();
     Mix_Quit();
     SDL_Quit();
+}
+
+void Game::renderTTF_Text(TTF_Text *text, glm::vec2 pos, SDL_FColor color)
+{
+    setRenderColor(color);
+    TTF_DrawRendererText(text, pos.x, pos.y);
+    setRenderColor({1.0f, 1.0f, 1.0f, 1.0f});
 }
 
 void Game::init(const std::string &tittle, int window_w, int window_h, int fps)
@@ -140,7 +177,10 @@ void Game::init(const std::string &tittle, int window_w, int window_h, int fps)
     // 加载资源
     asset_store_.load(renderer_, "assets");
 
-    // 创建场景 TODO
+    // 读取存档
+    loadGame();
+
+    // 创建场景 
     current_scene_ = new SceneTittle;
     current_scene_->init();
 }

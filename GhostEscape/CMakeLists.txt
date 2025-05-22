@@ -24,7 +24,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin)
 
 # 添加三方库include/lib
 # 查找并载入cmake预设:if/elseif + include_directories/target_link_directories()
-# 注意这里下载的库是VC的SDL3;.gitignore忽略了库文件，也行吧
+# 注意这里下载的库是VC的SDL3;.gitignore忽略了库文件，也行吧,用到是下载复制到文件夹就行
 find_package(SDL3 REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(SDL3_image REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(SDL3_mixer REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
@@ -32,7 +32,7 @@ find_package(SDL3_ttf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(glm CONFIG REQUIRED PATHS ${CMAKE_SOURCE_DIR}/ThirdParty/glm)
 
 # 添加可执行文件      
-aux_source_directory(src some_sources)  # 可有可无,为了方便编辑器检测新添加源文件
+aux_source_directory(src some_sources)  # 可有可无,为了方便编辑器检测新添加源文件，新加文件检测还是不够及时
 file(GLOB_RECURSE my_sources src/*.cpp src/*.h)
 message(STATUS "源文件: ${my_sources}")
 add_executable(${MyExecutable} ${my_sources})
@@ -48,10 +48,12 @@ target_link_libraries(${MyExecutable}   ${SDL3_LIBRARIES}
                             )
 
 
-# # 关闭控制台窗口
-# if(MSVC)
-#     Set_Target_Properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-# else()
-#     target_link_options(${MyExecutable} PRIVATE -mwindows)
-# endif()
+# 关闭控制台窗口
+if(MSVC)
+    # Set_Target_Properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    # target_link_options(${MyExecutable} PRIVATE "/SUBSYSTEM:WINDOWS")
+    target_link_options(${MyExecutable} PRIVATE -mwindows)
+else()
+    target_link_options(${MyExecutable} PRIVATE -mwindows)
+endif()
 

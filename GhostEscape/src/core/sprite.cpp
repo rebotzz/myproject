@@ -39,3 +39,9 @@ void Sprite::render()
     SDL_SetTextureAlphaModFloat(tex_, 1.0f);
 }
 
+void Sprite::setSize(const glm::vec2& size)
+{
+    ObjectAffiliate::setSize(size);
+    // 更新渲染坐标
+    render_position_ = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;    
+}

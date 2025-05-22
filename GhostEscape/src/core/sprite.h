@@ -25,6 +25,7 @@ public:
 
     // setters and getters
     // 一般不用手动设置，自动跟新，手动更新，避免切换动画时闪现
+    virtual void setSize(const glm::vec2& size) override;
     void setRenderPosition(const glm::vec2& position) { render_position_ = position; }  
     const glm::vec2& getRenderPosition() const { return render_position_; }
     void setRenderPercentage(const glm::vec2& percentage) { render_percentage_ = percentage; }

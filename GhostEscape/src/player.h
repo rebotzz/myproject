@@ -40,7 +40,7 @@ public:
 
 protected:
     void updateKeyboardControl();
-    void updateMotion(float dt);
+    void motion(float dt);
     void updateSpriteAnim();
 };
 

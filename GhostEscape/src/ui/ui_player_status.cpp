@@ -17,7 +17,7 @@ UIPlayerStatus::UIPlayerStatus(Scene* parent)
         ResID::Tex_BarRed, glm::vec2(1.0f), glm::vec2(3.0f));
     ui_mana_bar_ = new UIPlayerBar(this, glm::vec2(350.f, 60.0f), ResID::Tex_BluePotion, ResID::Tex_BarBg, 
         ResID::Tex_BarBlue, glm::vec2(1.0f), glm::vec2(3.0f));
-    ui_skill_bar_ = new UIPlayerSkillBar(this, glm::vec2(700.f, 60.0f), ResID::Tex_ElectricIcon, glm::vec2(0.3f));
+    ui_skill_bar_ = new UIPlayerSkillBar(this, glm::vec2(700.f, 60.0f), ResID::Tex_ElectricIcon, glm::vec2(0.23f));
 
     auto text_pos = glm::vec2(game_.getScreenSize().x - 20.f, 60.0f); 
     hud_text_ = new HUDText(this, text_pos, "Score:0", 36, ResID::Tex_Textfield01, AchorMode::CENTER_RIGHT);

@@ -2,6 +2,16 @@
 #include <algorithm>
 
 
+Object::Object(Object* parent, ObjectType type) 
+    :type_(type)
+{ 
+    if(parent) 
+    { 
+        setParent(parent); 
+        parent->safeAddChild(this); 
+    } 
+}
+
 Object::~Object()
 {
     for(auto object : children_)

@@ -15,7 +15,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position)
         parent->safeAddChild(this);
     }
     setPosition(position);
-    setSpeed(100.f);
+    setMaxSpeed(100.f);
     setObjectType(ObjectType::Enemy);
     // 初始化动画
     anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostSheet, 4, 3.0f);
@@ -48,19 +48,19 @@ void Enemy::update(float dt)
 {
     Actor::update(dt);
     velocity_ *= 0.9f;
-    updateMotion(dt);
+    motion(dt);
     updateAnim();
     updateCollide();
 }
 
-void Enemy::updateMotion(float dt)
+void Enemy::motion(float dt)
 {
     auto player = dynamic_cast<SceneMain*>(parent_)->getPlayer();
     auto player_pos = player->getPosition();
     float distance = glm::length(getPosition() - player_pos);
     if(distance < 0.1) return;
-    velocity_ = glm::normalize(player_pos - getPosition()) * speed_;
-    world_position_ += velocity_ * dt;
+    velocity_ = glm::normalize(player_pos - getPosition()) * max_speed_;
+    setPosition(world_position_ + velocity_ * dt);
 }
 
 void Enemy::updateAnim()

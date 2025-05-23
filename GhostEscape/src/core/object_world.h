@@ -2,7 +2,7 @@
 #define _OBJECT_WORLD_H_
 
 #include "object_screen.h"
-
+#include "scene.h"
 
 // 世界对象
 class ObjectWorld : public ObjectScreen
@@ -17,17 +17,15 @@ public:
 
     virtual void update(float dt) override;
 
-    void updateRenderPosition(const glm::vec2& camera_position) 
-        { render_position_ = worldPositionToRenderPosition(camera_position); }
-
     // setters and getters
-    void setPosition(const glm::vec2& position) { world_position_ = position; }
     const glm::vec2& getPosition() const { return world_position_; }
+    // 同时修改渲染、世界坐标
+    virtual void setRenderPosition(const glm::vec2& position) override; 
+    void setPosition(const glm::vec2& position);    
 
 protected:
     // 工具函数
-    glm::vec2 worldPositionToRenderPosition(glm::vec2 camera_position) { return world_position_ - camera_position; }
-
+    void syncRenderPosition() { render_position_ = game_.getCurrentScene()->worldToScreen(world_position_); } 
 };
 
 

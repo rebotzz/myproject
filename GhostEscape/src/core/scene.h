@@ -9,7 +9,7 @@ class Scene : public Object
 {
 protected:
     glm::vec2 world_size_ = glm::vec2(0);           // 世界大小
-    glm::vec2 camera_position_ = glm::vec2(0.0f);   // 摄像位置
+    glm::vec2 camera_position_ = glm::vec2(0);      // 摄像位置
     float camera_zoom_ = 1.0f;                      // 摄像机缩放系数todo
     std::vector<Object*> screen_objects_;           // 区分不同渲染层级，屏幕物体
     std::vector<Object*> world_objects_;            // 世界物体
@@ -32,14 +32,14 @@ public:
 
     // 工具函数
     virtual void addChild(Object* object) override;
-    virtual void safeAddChild(Object* object) override;
     void cameraFollow(const glm::vec2& target) { camera_position_ = target; }
-
+    glm::vec2 worldToScreen(const glm::vec2& world_position) { return world_position - camera_position_; }
+    glm::vec2 screenToWorld(const glm::vec2& screen_position) { return screen_position + camera_position_; }
 
     // setters and getters
-    void setCameraZoom(float camera_zoom) { camera_zoom_ = camera_zoom; }
+    void setCameraZoom(float camera_zoom);
     const glm::vec2& getCameraPosition() const { return camera_position_; }
-    void setCameraPosition(const glm::vec2& position) { camera_position_ = position; }
+    void setCameraPosition(const glm::vec2& position);
     const glm::vec2& getWorldSize() const { return world_size_; }
     void setWorldSize(const glm::vec2& size) { world_size_ = size; }
     std::vector<Object*>& getWorldObjects() { return world_objects_; }

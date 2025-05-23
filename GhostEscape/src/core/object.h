@@ -20,7 +20,7 @@ protected:
 
 public:
     Object() = default;
-    Object(Object* parent) { if(parent) { setParent(parent); parent->safeAddChild(this); } }
+    Object(Object* parent, ObjectType type = ObjectType::None);
     virtual ~Object();
     virtual bool handleEvent(const SDL_Event& event);
     virtual void update(float dt);

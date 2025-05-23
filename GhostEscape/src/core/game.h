@@ -71,21 +71,24 @@ public:
     // 工具函数
     void changeScene(Scene* scene);        // 不安全，可能会出现delete this，类调用的函数delete自生，如果接下来还有逻辑，可能出错
     void safeChangeScene(Scene* scene) { scene_to_change_ = scene; }
-    TTF_Text* createTTF_Text(const std::string& text, TTF_Font* font, size_t text_length = 0)  //debug:这里length是文本长度，不是一行长度
-        { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
+    Scene* getCurrentScene() const { return current_scene_; }
     float getRandom(float begin, float end) { return std::uniform_real_distribution<float>(begin, end)(random_gen_); }
     int getRandom(int begin, int end) { return std::uniform_int_distribution<int>(begin, end)(random_gen_); }
     glm::vec2 getRandomVec2(const glm::vec2& begin, const glm::vec2& end);
+    void quit() { is_running_ = false; }
+    void updateGameData(int score) { high_score_ = std::max(high_score_, score); }
+    int getGameData() { return high_score_; }
+
+    TTF_Text* createTTF_Text(const std::string& text, TTF_Font* font, size_t text_length = 0)//debug:这里length是文本长度,不是一行长度
+        { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
     void pauseMusic() { Mix_PausedMusic(); }
     void pauseSound() { Mix_Pause(-1); }
     void resumeMusic() { Mix_ResumeMusic(); }
     void resumeSound() { Mix_Resume(-1); }
     void playMusic(ResID mus_id) { Mix_PlayMusic(asset_store_.getMusic(mus_id), -1); }
     void playSound(ResID sound_id) { Mix_PlayChannel(-1, asset_store_.getSound(sound_id), 0); }
-    void quit() { is_running_ = false; }
-    void updateGameData(int score) { high_score_ = std::max(high_score_, score); }
-    int getGameData() { return high_score_; }
     SDL_MouseButtonFlags getMouseState(glm::vec2& mouse_position);
+    void setSDL_RenderScale(float scale) { SDL_SetRenderScale(renderer_, scale, scale); }
 
     // getters and setters
     glm::vec2 getScreenSize() const { return screen_size_; }

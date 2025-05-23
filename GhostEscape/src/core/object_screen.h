@@ -12,12 +12,12 @@ protected:
     glm::vec2 render_position_;
 
 public:
-    ObjectScreen() { setObjectType(ObjectType::Screen); };
-    ObjectScreen(Object* parent):Object(parent) { setObjectType(ObjectType::Screen); };
-    virtual ~ObjectScreen() {};
+    ObjectScreen() { setObjectType(ObjectType::Screen); }
+    ObjectScreen(Object* parent):Object(parent, ObjectType::Screen) {}
+    virtual ~ObjectScreen() {}
 
     // getters and setters
-    void setRenderPosition(const glm::vec2& position) { render_position_ = position; }
+    virtual void setRenderPosition(const glm::vec2& position) { render_position_ = position; }
     const glm::vec2& getRenderPosition() const { return render_position_; }
 };
 

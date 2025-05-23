@@ -71,9 +71,8 @@ void Player::update(float dt)
 
     velocity_ *= 0.9f;
     updateKeyboardControl();
-    updateMotion(dt);
+    motion(dt);
     updateSpriteAnim();
-
 }
 
 void Player::render() 
@@ -81,7 +80,6 @@ void Player::render()
     if(status_->getIsInvincible() && (static_cast<int>(status_->getInvincibleProgress() * 10.0f) % 5 < 2)) return;
     Actor::render();
 
-    // game_.renderBoundary(render_position_, render_position_ + glm::vec2(5), 5);
 }
 
 void Player::updateKeyboardControl()
@@ -90,12 +88,15 @@ void Player::updateKeyboardControl()
     auto direction = glm::normalize(glm::vec2(keystats[SDL_SCANCODE_D] - keystats[SDL_SCANCODE_A], 
         keystats[SDL_SCANCODE_S] - keystats[SDL_SCANCODE_W]));
     if(glm::length(direction) > 0.1)
-        velocity_ = direction * speed_;
+        velocity_ = direction * max_speed_;
 }
 
-void Player::updateMotion(float dt)
+void Player::motion(float dt)
 {
-    world_position_ += velocity_ * dt;
+    // 限制玩家位置
+    auto position = glm::clamp(world_position_ + velocity_ * dt, anim_move_->getSize() * 0.2f, 
+        dynamic_cast<Scene*>(parent_)->getWorldSize() - anim_move_->getSize() * 0.2f);
+    setPosition(position);
 }
 
 void Player::updateSpriteAnim()

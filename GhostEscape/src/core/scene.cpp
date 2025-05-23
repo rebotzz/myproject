@@ -41,6 +41,7 @@ bool Scene::handleEvent(const SDL_Event& event)
 
     return false;
 }
+
 void Scene::update(float dt)
 {
     removeInvalidObject();
@@ -69,7 +70,7 @@ void Scene::update(float dt)
     }
 
     // // 限制摄像机位置, 似乎限制玩家位置就可以了, 有bug，坐标位置映射不对
-    // camera_position_ = glm::clamp(camera_position_, glm::vec2(-100), world_size_ + glm::vec2(100));
+    // camera_position_ = glm::clamp(camera_position_, glm::vec2(-50), world_size_ - game_.getScreenSize() + glm::vec2(50));
 }
 void Scene::render()
 {
@@ -99,9 +100,17 @@ void Scene::addChild(Object* object)
     }
 }
 
-void Scene::safeAddChild(Object* object)
+void Scene::setCameraZoom(float camera_zoom)
 {
-    Object::safeAddChild(object);
+    camera_zoom_ = camera_zoom;
+    game_.setSDL_RenderScale(camera_zoom_); // todo: 修改渲染坐标
+}
+
+void Scene::setCameraPosition(const glm::vec2 &position)
+{
+    camera_position_ = position;
+    // 对相机位置进行限制,不超出世界边界太多
+    camera_position_ = glm::clamp(camera_position_, glm::vec2(-50), world_size_ - game_.getScreenSize() + glm::vec2(50));
 }
 
 void Scene::removeInvalidObject()

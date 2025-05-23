@@ -68,7 +68,7 @@ void SceneMain::update(float dt)
     {
         // 生成敌人，相机跟随
         spawnEnemy(dt);
-        cameraFollow(player_->getPosition() - glm::vec2{game_.getScreenSize().x / 2, game_.getScreenSize().y / 2});
+        setCameraPosition(player_->getPosition() - glm::vec2{game_.getScreenSize().x / 2, game_.getScreenSize().y / 2});
     }
 
     if(player_alive_ && player_->getIsDead())

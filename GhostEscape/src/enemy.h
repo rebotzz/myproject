@@ -23,7 +23,7 @@ public:
     void takeDamage(float damage);
 
 protected:
-    void updateMotion(float dt);
+    void motion(float dt);
     void updateAnim();
     void updateCollide();
 };

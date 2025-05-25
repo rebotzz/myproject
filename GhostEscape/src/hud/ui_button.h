@@ -2,7 +2,7 @@
 #define _UI_BUTTON_H_
 
 #include "../core/object_screen.h"
-#include "../core/sprite.h"
+#include "../affiliate/sprite.h"
 #include <functional>
 
 // 按键类   屏幕对象，挂载到场景

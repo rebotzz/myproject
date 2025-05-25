@@ -13,11 +13,6 @@ WeaponThunder *WeaponThunder::createAndAddWeaponThunderChild(Object *parent, flo
     return weapon_thunder;
 }
 
-void WeaponThunder::update(float dt)
-{
-    Weapon::update(dt);
-}
-
 bool WeaponThunder::canAttack() const 
 {
     // 技能冷却结束，并且法力值足够
@@ -28,10 +23,10 @@ bool WeaponThunder::canAttack() const
     return false;
 }
 
-void WeaponThunder::attack(const glm::vec2& target)
+void WeaponThunder::attack(const glm::vec2& position)
 {
-    Weapon::attack(target);
+    Weapon::attack(position);
     dynamic_cast<Actor*>(parent_)->getStatus()->useMana(mana_cost_);
-    new SpellThunder(dynamic_cast<Actor*>(parent_)->getScene(), damage_, target);
+    new SpellThunder(dynamic_cast<Actor*>(parent_)->getScene(), damage_, position);
 }
 

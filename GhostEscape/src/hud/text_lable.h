@@ -1,7 +1,7 @@
 #ifndef _TEXT_LABLE_
 #define _TEXT_LABLE_
 
-#include "../core/object_affiliate.h"
+#include "../affiliate/object_affiliate.h"
 
 // 文本标签
 class TextLable : public ObjectAffiliate

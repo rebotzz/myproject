@@ -17,9 +17,8 @@ public:
     ~WeaponThunder() = default;
     static WeaponThunder* createAndAddWeaponThunderChild(Object* parent, float damage, float attack_cd, float mana_cost);
 
-    virtual void update(float dt) override;
     virtual bool canAttack() const override;
-    virtual void attack(const glm::vec2& target) override;
+    virtual void attack(const glm::vec2& position) override;
 
 protected:
     

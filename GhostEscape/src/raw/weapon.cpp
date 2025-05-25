@@ -1,13 +1,16 @@
 #include "weapon.h"
-#include "../core/collide_box.h"
+#include "../affiliate/collide_box.h"
 
 
-Weapon::Weapon(float damage, float attack_cd):damage_(damage), attack_cd_(attack_cd)
-{
-}
 
 void Weapon::update(float dt)
 {
     ObjectAffiliate::update(dt);
     attack_timer_ += dt;
+}
+
+void Weapon::attack(const glm::vec2& )
+{
+    attack_timer_ = 0.0f;
+    if(attack_callback_) attack_callback_();
 }

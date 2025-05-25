@@ -1,29 +1,27 @@
 #include "spell.h"
 #include "../core/scene.h"
-#include "../enemy.h"
+#include "../core/actor.h"
 
-Spell::Spell(Object *parent, float damage, const glm::vec2& target, CollideShape shape, ResID tex_id, 
+Spell::Spell(Object *parent, float damage, const glm::vec2& target_position, CollideShape shape, ResID tex_id, 
     int frame_count, float scale, float frame_interval, AchorMode mode)
-    :damage_(damage)
+    :ObjectWorld(parent), damage_(damage)
 {
-    if(parent)
-    {
-        parent->addChild(this);
-        setParent(parent);
-    }
-    setPosition(target);
+    setPosition(target_position);
     anim_ = SpriteAnim::createAndAddSpriteAnimChild(this, tex_id, frame_count, scale, frame_interval, false, glm::vec2(0.0f), mode);
     collide_box_ = CollideBox::createAndAddCollideBoxChild(this, shape, anim_->getSize(), glm::vec2(0), mode);
+    collide_box_->setOnCollideCallback([this]()
+    {
+        auto target = collide_box_->getOnCollideBox()->getParent();
+        dynamic_cast<Actor*>(target)->takeDamage(damage_);
+    });
 }
 
 void Spell::update(float dt)
 {
     ObjectWorld::update(dt);
+    move(dt);
     updateCollide();
-    if(anim_ && anim_->getIsFinished())
-    {
-        setCanRemove(true);
-    }
+    checkAndRemove();
 }
 
 void Spell::updateCollide()
@@ -31,11 +29,20 @@ void Spell::updateCollide()
     auto objects = dynamic_cast<Scene*>(parent_)->getWorldObjects();
     for(auto obj : objects)
     {
-        if(obj->getObjectType() != ObjectType::Enemy) continue;
-        auto enemy = dynamic_cast<Enemy*>(obj);
-        if(collide_box_->checkCollision(enemy->getCollideBox()))
+        if(obj->getObjectType() != attack_target_type_) continue;
+        auto target = dynamic_cast<Actor*>(obj);
+        if(collide_box_->checkCollision(target->getCollideBox()))
         {
-            enemy->takeDamage(damage_);
+            target->takeDamage(damage_);
+            collide_box_->processCollide();
         }
+    }
+}
+
+void Spell::checkAndRemove()
+{
+    if(anim_ && anim_->getIsFinished())
+    {
+        setCanRemove(true);
     }
 }

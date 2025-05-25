@@ -1,6 +1,4 @@
 #include "core/game.h"
-#include "glm/glm.hpp"
-
 
 int main(int, char**)
 {
@@ -10,5 +8,6 @@ int main(int, char**)
     Game::getInstance().clean();
 
     // AssetStore::createFilenameResIDMap("assets");
+
     return 0;
 }

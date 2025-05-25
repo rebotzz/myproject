@@ -1,9 +1,7 @@
 #ifndef _UI_BAR_H_
 #define _UI_BAR_H_
 
-#include "../core/object_affiliate.h"
-// #include "../core/status.h"
-// #include "../core/sprite.h"
+#include "../affiliate/object_affiliate.h"
 
 class Actor;
 

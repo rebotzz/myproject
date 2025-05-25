@@ -2,7 +2,7 @@
 #define _EFFECT_H_
 
 #include "../core/object_world.h"
-#include "../core/sprite_anim.h"
+#include "../affiliate/sprite_anim.h"
 #include <functional>
 
 class Scene;

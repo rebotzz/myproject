@@ -1,5 +1,6 @@
 #ifndef _GAME_H_
 #define _GAME_H_
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include "singleton.h"
 #include "assets_store.h"
@@ -9,6 +10,7 @@
 #include "SDL3_mixer/SDL_mixer.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "glm/glm.hpp"
+#include "glm/gtx/vector_angle.hpp"
 #include <string>
 #include <random>
 
@@ -24,7 +26,7 @@ private:
     SDL_Window* window_ = nullptr;
     bool is_running_ = true;
     TTF_TextEngine* text_engine_ = nullptr;     // 字体渲染引擎
-    AssetStore asset_store_;                    // 素材资源
+    AssetStore asset_store_;                    // 素材资源（可改为指针）
     glm::vec2 window_scale_ = glm::vec2(1.0f);  // 当前窗口缩放比例
 
     // 场景管理

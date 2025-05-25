@@ -106,6 +106,17 @@ void Game::run()
 
 void Game::clean()
 {
+    if(current_scene_)
+    {
+        current_scene_->clean();
+        delete current_scene_;
+    }
+    if(scene_to_change_)
+    {
+        scene_to_change_->clean();
+        delete scene_to_change_;
+    }
+
     saveGame();
     asset_store_.unload();
     TTF_DestroyRendererTextEngine(text_engine_);
@@ -189,7 +200,7 @@ void Game::init(const std::string &tittle, int window_w, int window_h, int fps)
 
 void Game::renderGrid(glm::vec2 start, glm::vec2 end, float grid_w, float grid_h, SDL_FColor color)
 {
-    SDL_SetRenderDrawColorFloat(renderer_, color.a, color.g, color.b, color.a);
+    SDL_SetRenderDrawColorFloat(renderer_, color.r, color.g, color.b, color.a);
     for(float x = start.x; x <= end.x; x += grid_w)
     {
         SDL_RenderLine(renderer_, x, start.y, x, end.y);
@@ -221,6 +232,7 @@ void Game::renderFillRect(glm::vec2 position, glm::vec2 size, SDL_FColor color)
     SDL_SetRenderDrawColorFloat(renderer_, 0, 0, 0, 1);
 }
 
+// 场景过于简单，所以就直接new/delete
 void Game::changeScene(Scene *scene)
 {
     if(current_scene_)

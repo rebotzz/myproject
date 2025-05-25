@@ -1,6 +1,6 @@
 #include "scene_tittle.h"
-#include "ui/ui_button.h"
-#include "ui/ui_cursor.h"
+#include "hud/ui_button.h"
+#include "hud/ui_cursor.h"
 #include "scene_main.h"
 
 SceneTittle::SceneTittle()

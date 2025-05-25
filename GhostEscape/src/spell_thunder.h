@@ -8,7 +8,10 @@ class SpellThunder : public Spell
 public:
     SpellThunder(Object* parent, float damage, const glm::vec2& target)
         :Spell(parent, damage, target, CollideShape::Circle, ResID::Tex_ThunderstrikeWBlur, 13, 3.0, 0.1f)
-    { game_.playSound(ResID::Sound_BigThunder); }
+    { 
+        game_.playSound(ResID::Sound_BigThunder); 
+        collide_box_->setHitLayer(CollideLayer::Enemy);
+    }
     ~SpellThunder() = default;
 };
 

@@ -1,5 +1,5 @@
 #include "sprite.h"
-#include "object_screen.h"
+#include "../core/object_screen.h"
 
 
 Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, const glm::vec2 scale, const glm::vec2 &offset, AchorMode mode)
@@ -26,6 +26,8 @@ void  Sprite::update(float)
 
 void Sprite::render()
 {
+    assert(tex_ != nullptr && parent_ != nullptr);
+    if(!is_showing_) return;
     SDL_FRect src_rect = {0.0f, 
         tex_size_.y * (1.0f - render_percentage_.y), 
         tex_size_.x * render_percentage_.x, 
@@ -35,7 +37,7 @@ void Sprite::render()
         size_.x * render_percentage_.x, 
         size_.y * render_percentage_.y};
     SDL_SetTextureAlphaModFloat(tex_, alpha_);
-    game_.renderTexture(tex_, &src_rect, &dst_rect);
+    game_.renderTexture(tex_, &src_rect, &dst_rect, angle_, is_flip_);
     SDL_SetTextureAlphaModFloat(tex_, 1.0f);
 }
 

@@ -1,5 +1,5 @@
 #include "object_affiliate.h"
-#include "object_screen.h"
+#include "../core/object_screen.h"
 
 void ObjectAffiliate::setSize(const glm::vec2 &size)
 {

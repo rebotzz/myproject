@@ -40,7 +40,8 @@ AssetStore::AssetStore()
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "load texture [%s] failed: %s", path.u8string().c_str(), SDL_GetError());
             return false;
         }
-        texture_pool[nameID_map[path.stem().u8string()]] = tex;
+        // texture_pool[nameID_map[path.stem().u8string()]] = tex; // []可能会覆盖之前插入的值，虽然用了enum可能很小
+        texture_pool.emplace(nameID_map[path.stem().u8string()], tex);  // 如果已经存在，就不插入了
         return true;
     };
 
@@ -57,7 +58,8 @@ AssetStore::AssetStore()
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "load Mix_Music [%s] failed: %s", path.u8string().c_str(), SDL_GetError());
                 return false;
             }
-            music_pool[nameID_map[path.stem().u8string()]] = mus;
+            // music_pool[nameID_map[path.stem().u8string()]] = mus;
+            music_pool.emplace(nameID_map[path.stem().u8string()], mus);
         }
         // Mix_Chunk直接加载，适合短的音效
         else 
@@ -68,7 +70,8 @@ AssetStore::AssetStore()
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "load Mix_Chunk [%s] failed: %s", path.u8string().c_str(), SDL_GetError());
                 return false;
             }
-            sound_pool[nameID_map[path.stem().u8string()]] = chunk;
+            // sound_pool[nameID_map[path.stem().u8string()]] = chunk;
+            sound_pool.emplace(nameID_map[path.stem().u8string()], chunk);
         }
         return true;
     };
@@ -91,10 +94,9 @@ AssetStore::AssetStore()
         std::string text, tmp;
         while(std::getline(str_stream, tmp))
         {
-            text += tmp;
-            text += "\n";
+            text += tmp + "\n";
         }
-        text_pool.insert({nameID_map[path.stem().u8string()], text});
+        text_pool.emplace(nameID_map[path.stem().u8string()], text);
         return true;
     };
 
@@ -265,6 +267,7 @@ void AssetStore::createFilenameResIDMap(const std::string& resources_dir)
     output << "#ifndef _RES_ID_H_\n";
     output << "#define _RES_ID_H_\n\n";
     output << "enum class ResID\n{" << std::endl;
+    output << "\tNone," << std::endl;
     output << "\t//图片纹理" << std::endl;
     for (auto& s : vs_tex)
         output << "\t" << s.second << "," << std::endl;

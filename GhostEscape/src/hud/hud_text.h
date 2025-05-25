@@ -2,7 +2,7 @@
 #define _HUD_TEXT_H_
 
 #include "../core/object_screen.h"
-#include "../core/sprite.h"
+#include "../affiliate/sprite.h"
 #include "text_lable.h"
 
 // HUD文字   屏幕对象，挂载到场景

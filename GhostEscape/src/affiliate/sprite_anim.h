@@ -11,7 +11,6 @@ protected:
     int frame_idx_ = 0;
     float frame_interval_ = 0.1f;
     bool is_loop_ = true;
-    bool is_flip_ = false;
     float timer_ = 0;   // 计时器
 
 public:
@@ -33,10 +32,9 @@ public:
     void setFrameInterval(float interval) { frame_interval_ = interval; }
     void setLoop(bool flag) { is_loop_ = flag; }
     bool getIsFinished() const { return frame_idx_ >= total_frame_count_; }
-    void setFlip(bool flag) { is_flip_ = flag; }
     void setFrameIdx(int idx) { frame_idx_ = idx; }
     int getFrameIdx() const { return frame_idx_; }
-    void syncFrameTime(SpriteAnim* sprite_anim) { frame_idx_ = sprite_anim->frame_idx_; timer_ = sprite_anim->timer_; }
+    void syncFrameTime(SpriteAnim* sprite_anim);
     void restart() { frame_idx_ = 0; timer_ = 0; }
 };
 

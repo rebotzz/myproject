@@ -14,9 +14,11 @@ protected:
     float spawn_enemy_cd_ = 8.0f;
     int min_spawn_count = 1, max_spawn_count = 5;
     UICursor* ui_cursor_ = nullptr;
+    UIButton* button_pause_ = nullptr;
     UIButton* button_restart_ = nullptr;
     UIButton* button_back_ = nullptr;
     bool player_alive_ = true;
+    float timer_finish_countdown_ = 3.0f;
 
 public:
     SceneMain();
@@ -32,6 +34,7 @@ public:
     Player* getPlayer() const { return player_; }
 
 protected:
+    void updateWhenGameOver(float dt);
     void renderBackgroundGrid();
 
     // 工具函数

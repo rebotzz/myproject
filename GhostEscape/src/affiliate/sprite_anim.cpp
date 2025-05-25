@@ -1,5 +1,5 @@
 #include "sprite_anim.h"
-#include "object_screen.h"
+#include "../core/object_screen.h"
 
 
 SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID tex_id, int frame_count, float scale,
@@ -20,6 +20,13 @@ SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID 
     return sprite_anim;
 }
 
+void SpriteAnim::syncFrameTime(SpriteAnim *sprite_anim)
+{
+    frame_idx_ = sprite_anim->frame_idx_;
+    timer_ = sprite_anim->timer_;
+    is_flip_ = sprite_anim->is_flip_;
+}
+
 void SpriteAnim::update(float dt)
 {
     Sprite::update(dt); 
@@ -38,8 +45,10 @@ void SpriteAnim::update(float dt)
 
 void SpriteAnim::render()
 {
+    assert(tex_ != nullptr && parent_ != nullptr);
+    if(!is_showing_) return;
     if(frame_idx_ >= total_frame_count_) return;
     SDL_FRect src_rect = { frame_idx_ * tex_size_.x, 0, tex_size_.x, tex_size_.y};
     SDL_FRect dst_rect = { render_position_.x, render_position_.y, size_.x, size_.y};
-    game_.renderTexture(tex_, &src_rect, &dst_rect, 0.0, is_flip_);
+    game_.renderTexture(tex_, &src_rect, &dst_rect, angle_, is_flip_);
 }

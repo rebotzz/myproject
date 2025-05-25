@@ -2,7 +2,7 @@
 #define _UI_CURSOR_H_
 
 #include "../core/object_screen.h"
-#include "../core/sprite.h"
+#include "../affiliate/sprite.h"
 
 class UICursor : public ObjectScreen
 {

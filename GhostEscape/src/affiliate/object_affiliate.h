@@ -1,8 +1,8 @@
 #ifndef _OBJECT_AFFILIATE_H_
 #define _OBJECT_AFFILIATE_H_
 
-#include "object.h"
-#include "defs.h"
+#include "../core/object.h"
+#include "../core/defs.h"
 
 class ObjectAffiliate : public Object
 {

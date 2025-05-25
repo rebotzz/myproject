@@ -3,6 +3,7 @@
 
 enum class ResID
 {
+	None,
 	//图片纹理
 	Tex_1764,
 	Tex_1843,
@@ -13,6 +14,7 @@ enum class ResID
 	Tex_GhostIdle,
 	Tex_GhostMove,
 	Tex_GhostSheet,
+	Tex_Laser3,
 	Tex_29,
 	Tex_30,
 	Tex_ABack1,
@@ -54,6 +56,7 @@ enum class ResID
 	Sound_SillyGhostSound242342,
 	Sound_UIButton08,
 	Sound_UIButton12,
+	Sound_XsLaser,
 	//字体
 	Font_VonwaonBitmap16px,
 	//文本

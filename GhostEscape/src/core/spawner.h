@@ -28,6 +28,17 @@ public:
             new T(parent, pos);     // 构造函数完成了节点挂载,虽然看起来像是内存泄漏
         }
     }
+
+    void spawnAndAddChild(T copy_template, Object* parent)
+    {
+        for(int i = 0; i < count_; ++i)
+        {
+            auto pos = game_.getRandomVec2(start_position_, end_position_);
+            auto child = dynamic_cast<ObjectWorld*>(new T(copy_template)); 
+            child->setParent(parent);
+            child->setPosition(pos);
+        }
+    }
 };
 
 

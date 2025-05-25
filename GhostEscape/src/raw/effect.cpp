@@ -1,13 +1,9 @@
 #include "effect.h"
 #include "../core/scene.h"
 
-Effect::Effect(Object *parent, const glm::vec2& position, ResID tex_anim, int total_frame_count, float scale, float frame_interval)
+Effect::Effect(Object *parent, const glm::vec2& position, ResID tex_anim, int total_frame_count, float scale, 
+    float frame_interval):ObjectWorld(parent)
 {
-    if(parent)
-    {
-        parent->addChild(this);
-        setParent(parent);
-    }
     setPosition(position);
     anim_ = SpriteAnim::createAndAddSpriteAnimChild(this, tex_anim, total_frame_count, scale, frame_interval, false);
 

@@ -557,7 +557,7 @@ extern SDL_DECLSPEC bool SDLCALL SDL_RequestAndroidPermission(const char *permis
  *
  * Toasts are a sort of lightweight notification that are unique to Android.
  *
- * https://developer.android.com/guide/topics/ui/notifiers/toasts
+ * https://developer.android.com/guide/topics/hud/notifiers/toasts
  *
  * Shows toast in UI thread.
  *

@@ -16,6 +16,7 @@ std::unordered_map<std::string, ResID> filename_resID =
 	{"ghost_idle",	 ResID::Tex_GhostIdle},
 	{"ghost_move",	 ResID::Tex_GhostMove},
 	{"ghost_Sheet",	 ResID::Tex_GhostSheet},
+	{"laser_3",	 ResID::Tex_Laser3},
 	{"29",	 ResID::Tex_29},
 	{"30",	 ResID::Tex_30},
 	{"A_Back1",	 ResID::Tex_ABack1},
@@ -57,6 +58,7 @@ std::unordered_map<std::string, ResID> filename_resID =
 	{"silly_ghost_sound_242342",	  ResID::Sound_SillyGhostSound242342},
 	{"UI_button08",	  ResID::Sound_UIButton08},
 	{"UI_button12",	  ResID::Sound_UIButton12},
+	{"xs_laser",	  ResID::Sound_XsLaser},
 
 	{"VonwaonBitmap_16px",	  ResID::Font_VonwaonBitmap16px},
 	{"credits",	  ResID::Text_Credits},

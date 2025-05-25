@@ -32,11 +32,45 @@ find_package(SDL3_ttf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/Thirdparty/SDL3)
 find_package(glm CONFIG REQUIRED PATHS ${CMAKE_SOURCE_DIR}/ThirdParty/glm)
 
 # 添加可执行文件      
-aux_source_directory(src some_sources)  # 可有可无,为了方便编辑器检测新添加源文件，新加文件检测还是不够及时
-file(GLOB_RECURSE my_sources src/*.cpp src/*.h)
-message(STATUS "源文件: ${my_sources}")
-add_executable(${MyExecutable} ${my_sources})
+# aux_source_directory(src some_sources)  # 可有可无,为了方便编辑器检测新添加源文件，新加文件检测还是不够及时
+# file(GLOB_RECURSE my_sources src/*.cpp src/*.h)
+# message(STATUS "源文件: ${my_sources}")
+# add_executable(${MyExecutable} ${my_sources})
 
+# 前面的写法每次更改文件：新建、移动都需要重新清理，不方便，所以手写
+add_executable(${MyExecutable} 
+                    src/enemy.cpp
+                    src/main.cpp
+                    src/player.cpp
+                    src/scene_main.cpp
+                    src/scene_tittle.cpp
+                    src/weapon_thunder.cpp
+                    src/affiliate/object_affiliate.cpp
+                    src/affiliate/sprite_anim.cpp
+                    src/affiliate/sprite.cpp
+                    src/affiliate/collide_box.cpp
+                    src/core/actor.cpp
+                    src/core/assets_store.cpp
+                    src/core/game.cpp
+                    src/core/object_world.cpp
+                    src/core/object.cpp
+                    src/core/scene.cpp
+                    src/core/status.cpp
+                    src/raw/effect_enemy_spawn.cpp
+                    src/raw/effect.cpp
+                    src/raw/spell.cpp
+                    src/raw/spell_bullet.cpp
+                    src/raw/weapon.cpp
+                    src/hud/hud_text.cpp
+                    src/hud/text_lable.cpp
+                    src/hud/ui_bar.cpp
+                    src/hud/ui_button.cpp
+                    src/hud/ui_cursor.cpp
+                    src/hud/ui_enemy_hp_bar.cpp
+                    src/hud/ui_player_bar.cpp
+                    src/hud/ui_player_skill_bar.cpp
+                    src/hud/ui_player_status.cpp
+)
 
 
 # 链接库
@@ -52,7 +86,6 @@ target_link_libraries(${MyExecutable}   ${SDL3_LIBRARIES}
 if(MSVC)
     # Set_Target_Properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
     # target_link_options(${MyExecutable} PRIVATE "/SUBSYSTEM:WINDOWS")
-    target_link_options(${MyExecutable} PRIVATE -mwindows)
 else()
     target_link_options(${MyExecutable} PRIVATE -mwindows)
 endif()

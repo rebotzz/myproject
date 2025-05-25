@@ -5,13 +5,8 @@
 #include "../raw/weapon.h"
 #include "hud_text.h"
 
-UIPlayerStatus::UIPlayerStatus(Scene* parent)
+UIPlayerStatus::UIPlayerStatus(Scene* parent):ObjectScreen(parent)
 {
-    if(parent)
-    {
-        parent->addChild(this);
-        setParent(parent);
-    }
     setObjectType(ObjectType::Screen);
     ui_hp_bar_ = new UIPlayerBar(this, glm::vec2(30.f, 60.0f), ResID::Tex_RedPotion, ResID::Tex_BarBg, 
         ResID::Tex_BarRed, glm::vec2(1.0f), glm::vec2(3.0f));

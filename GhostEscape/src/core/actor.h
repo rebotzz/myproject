@@ -3,6 +3,7 @@
 
 #include "object_world.h"
 #include "scene.h"
+#include "status.h"
 
 class Status;
 class CollideBox;
@@ -18,8 +19,10 @@ protected:
 
 public:
     Actor() = default;
+    Actor(Object* parent):ObjectWorld(parent) {};
     virtual ~Actor() {};
 
+    virtual void takeDamage(float damage) { status_->takeDamage(damage); };
 
     // getters and setters
     float getMaxSpeed() const { return max_speed_; }
@@ -27,6 +30,9 @@ public:
     Status* getStatus() const { return status_; }
     CollideBox* getCollideBox() const { return collide_box_; }
     Scene* getScene() const { return dynamic_cast<Scene*>(parent_); }   // 可以删掉，从game获取当前scene
+
+protected:
+    virtual void move(float dt);
 };
 
 

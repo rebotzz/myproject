@@ -21,8 +21,15 @@ enum class ObjectType
     None, 
     Screen,
     World,
-    Enemy,
-    Player
+    Enemy,      
+    Player,
+};
+
+enum class CollideLayer
+{
+    None,
+    Enemy,      
+    Player,
 };
 
 enum class CollideShape

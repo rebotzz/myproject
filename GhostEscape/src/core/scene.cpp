@@ -3,16 +3,16 @@
 
 Scene::~Scene()
 {
-    for(auto obj : screen_objects_)
+    for(auto obj : screen_children_)
     {
         if(obj) delete obj;
     }
-    for(auto obj : world_objects_)
+    for(auto obj : world_children_)
     {
         if(obj) delete obj;
     }
-    screen_objects_.clear();
-    world_objects_.clear();
+    screen_children_.clear();
+    world_children_.clear();
 }
 
 bool Scene::handleEvent(const SDL_Event& event)
@@ -20,7 +20,7 @@ bool Scene::handleEvent(const SDL_Event& event)
     if(Object::handleEvent(event)) return true;
 
     // 优先处理屏幕事件，然后世界事件
-    for(auto obj : screen_objects_)
+    for(auto obj : screen_children_)
     {
         if(obj->getIsActive()) 
         {
@@ -30,7 +30,7 @@ bool Scene::handleEvent(const SDL_Event& event)
 
     if(!pause_time_)
     {
-        for(auto obj : world_objects_)
+        for(auto obj : world_children_)
         {
             if(obj->getIsActive()) 
             {
@@ -55,7 +55,7 @@ void Scene::update(float dt)
     }
     Object::update(dt);
 
-    for(auto obj : screen_objects_)
+    for(auto obj : screen_children_)
     {
         if(obj->getIsActive()) obj->update(dt);
     }
@@ -63,24 +63,24 @@ void Scene::update(float dt)
     // 时间暂停时不更新世界对象
     if(!pause_time_)
     {
-        for(auto obj : world_objects_)
+        for(auto obj : world_children_)
         {
             if(obj->getIsActive()) obj->update(dt);
         }
     }
 
-    // // 限制摄像机位置, 似乎限制玩家位置就可以了, 有bug，坐标位置映射不对
-    // camera_position_ = glm::clamp(camera_position_, glm::vec2(-50), world_size_ - game_.getScreenSize() + glm::vec2(50));
+    updateCamera(dt);
 }
+
 void Scene::render()
 {
     Object::render();
 
-    for(auto obj : world_objects_)
+    for(auto obj : world_children_)
     {
         if(obj->getIsActive()) obj->render();
     }
-    for(auto obj : screen_objects_)
+    for(auto obj : screen_children_)
     {
         if(obj->getIsActive()) obj->render();
     }
@@ -91,13 +91,52 @@ void Scene::addChild(Object* object)
     switch(object->getObjectType())
     {
         case ObjectType::None: children_.push_back(object); break;
-        case ObjectType::Screen: screen_objects_.push_back(object); break;
+        case ObjectType::Screen: screen_children_.push_back(object); break;
         case ObjectType::World: 
         case ObjectType::Enemy: 
         case ObjectType::Player: 
-        world_objects_.push_back(object); 
+        default:
+        world_children_.push_back(object); 
         break;
     }
+}
+
+void Scene::removeChild(Object* object) 
+{
+    switch(object->getObjectType())
+    {
+        case ObjectType::None: 
+        Object::removeChild(object); 
+        break;
+        case ObjectType::Screen: 
+        screen_children_.erase(std::remove(screen_children_.begin(),screen_children_.end(), object), screen_children_.end());
+        break;
+        case ObjectType::World: 
+        case ObjectType::Enemy: 
+        case ObjectType::Player: 
+        world_children_.erase(std::remove(world_children_.begin(),world_children_.end(), object), world_children_.end());
+        break;
+    }
+}
+
+void Scene::cameraFollow(float dt, const glm::vec2 &target)
+{
+    // 使用线性插值实现平滑移动
+    float smoothness = 5.0f;    // 平滑系数，值越大移动越快
+    camera_position_ += (target - camera_position_) * smoothness * dt;
+}
+
+bool Scene::checkBeyoundScreen(const glm::vec2 &world_position, const glm::vec2 &size, const glm::vec2 &margin)
+{
+    auto screen_size = game_.getScreenSize();
+    if(world_position.x - size.x / 2 < camera_position_.x - margin.x || 
+       world_position.y - size.y / 2 < camera_position_.y - margin.y ||
+       world_position.x + size.x / 2 > camera_position_.x + screen_size.x + margin.x || 
+       world_position.y + size.y / 2 > camera_position_.y + screen_size.y + margin.y)
+    {
+        return true;
+    }
+    return false;
 }
 
 void Scene::setCameraZoom(float camera_zoom)
@@ -113,23 +152,29 @@ void Scene::setCameraPosition(const glm::vec2 &position)
     camera_position_ = glm::clamp(camera_position_, glm::vec2(-50), world_size_ - game_.getScreenSize() + glm::vec2(50));
 }
 
+void Scene::updateCamera(float)
+{
+    // 限制摄像机位置
+    camera_position_ = glm::clamp(camera_position_, glm::vec2(-50), world_size_ - game_.getScreenSize() + glm::vec2(50));
+}
+
 void Scene::removeInvalidObject()
 {
-    world_objects_.erase(std::remove_if(world_objects_.begin(), world_objects_.end(), [](Object* obj)
+    world_children_.erase(std::remove_if(world_children_.begin(), world_children_.end(), [](Object* obj)
     {
         bool deletable = false;
         if(obj->getCanRemove()) deletable = true;
         if(deletable) delete obj;
         return deletable;
-    }), world_objects_.end());
+    }), world_children_.end());
 
-    screen_objects_.erase(std::remove_if(screen_objects_.begin(), screen_objects_.end(), [](Object* obj)
+    screen_children_.erase(std::remove_if(screen_children_.begin(), screen_children_.end(), [](Object* obj)
     {
         bool deletable = false;
         if(obj->getCanRemove()) deletable = true;
         if(deletable) delete obj;
         return deletable;
-    }), screen_objects_.end());
+    }), screen_children_.end());
 }
 
 void Scene::renderStarsBackGround()
@@ -153,8 +198,9 @@ void Scene::renderStarsBackGround()
     }
 
     // 渲染星星
-    static std::vector<float> scale = {0.3f, 0.6f, 1.0f};
-    static std::vector<SDL_FColor> color = {SDL_FColor{1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.5f, 0.0f, 1.0f}};
+    static std::vector<float> distance_scale = {0.3f, 0.6f, 1.0f};
+    static std::vector<SDL_FColor> color = { SDL_FColor{1.0f, 0.5f, 0.0f, 1.0f}, 
+        SDL_FColor{0.0f, 1.0f, 1.0f, 1.0f}, SDL_FColor{1.0f, 1.0f, 1.0f, 1.0f}};
     int idx = 0;
     for(auto& stars_ptr : stars_ptr_arr)
     {
@@ -162,8 +208,8 @@ void Scene::renderStarsBackGround()
         for(int i = 0; i < stars_count; ++i)
         {
             // 渲染坐标 = 世界坐标 - 相机位置 * 系数
-            auto pos = stars[i] - camera_position_ * scale[idx];
-            game_.renderFillRect(pos, glm::vec2(1), color[idx]);
+            auto pos = stars[i] - camera_position_ * distance_scale[idx];
+            game_.renderFillRect(pos, glm::vec2(static_cast<float>(1 + idx / 2)), color[idx]);
         }
         idx++;
     }

@@ -1,13 +1,21 @@
 #include "spell_bullet.h"
 #include "../core/scene.h"
+#include "../core/actor.h"
 
 SpellBullet::SpellBullet(Object *parent, float damage, const glm::vec2 &init_position, ResID tex_id, 
     int frame_count, float scale, float frame_interval)
     :Spell(parent, damage, init_position, CollideShape::Circle, tex_id, frame_count, scale, frame_interval)
 {
     anim_->setLoop(true);
-    collide_box_->setOnCollideCallback([this]() { setActive(false); });
+    collide_box_->setOnCollideCallback([this]() 
+    {
+        auto target = collide_box_->getOnCollideBox()->getParent();
+        if(!target) return;
+        dynamic_cast<Actor*>(target)->takeDamage(damage_);
+        setActive(false); 
+    });
     collide_box_->setHitLayer(CollideLayer::Player);
+    collide_box_->setSize(collide_box_->getSize() * 0.5f);
     game_.playSound(ResID::Sound_XsLaser);
 }
 

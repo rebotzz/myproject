@@ -1,5 +1,11 @@
 #include "scene.h"
+#include "../affiliate/collide_manager.h"
 #include <algorithm>
+
+Scene::Scene()
+{
+    collide_mgr_ = new CollideMgr(this);
+}
 
 Scene::~Scene()
 {
@@ -103,6 +109,13 @@ void Scene::addChild(Object* object)
 
 void Scene::removeChild(Object* object) 
 {
+    // 可能孩子节点还在待添加列表
+    if(!children_to_add_.empty())
+    {
+        children_to_add_.erase(std::remove(children_to_add_.begin(), children_to_add_.end(), object), 
+        children_to_add_.end());
+    }
+    
     switch(object->getObjectType())
     {
         case ObjectType::None: 

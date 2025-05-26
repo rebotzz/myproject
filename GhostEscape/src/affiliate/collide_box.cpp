@@ -1,20 +1,16 @@
 #include "collide_box.h"
 #include "../core/object_world.h"
+#include "collide_manager.h"
+#include "../core/scene.h"
 
-
-CollideBox *CollideBox::createAndAddCollideBoxChild(Object *parent, CollideShape shape, const glm::vec2 &size, 
-    const glm::vec2 &offset, AchorMode achor_mode)
+CollideBox::CollideBox(Object *parent, CollideShape shape, const glm::vec2 &size, const glm::vec2 &offset, 
+    AchorMode achor_mode)
+    :ObjectAffiliate(parent)
 {
-    auto collide_box = new CollideBox();
-    collide_box->setCollideShape(shape);
-    collide_box->setAchorModeAndSize(achor_mode, size);
-    collide_box->setRelativeOffset(offset);
-    if(parent)
-    {
-        parent->safeAddChild(collide_box);
-        collide_box->setParent(parent);
-    }
-    return collide_box;
+    setCollideShape(shape);
+    setAchorModeAndSize(achor_mode, size);
+    setRelativeOffset(offset);
+    SDL_Log("CollideBox(): %p", this);
 }
 
 void CollideBox::update(float)
@@ -102,4 +98,30 @@ bool CollideBox::checkIntersectRectCircle(const glm::vec2 &rect_position, const 
     if(min_distance.x < 0) min_distance.x = 0.f;
     if(min_distance.y < 0) min_distance.y = 0.f;
     return glm::dot(min_distance, min_distance) <= circle_size * circle_size;
+}
+
+
+
+CollideBoxWrapper::CollideBoxWrapper(Object *parent, CollideShape shape, const glm::vec2 &size, 
+    const glm::vec2 &offset, AchorMode achor_mode)
+    :Object(parent)
+{
+    // 避免碰撞盒子被挂载自动删除,所以将碰撞盒子从持有者手中移除，
+    // 但碰撞盒子还能持有父节点指针，碰撞盒子更新需要用到父节点
+    collide_box_ = game_.getCurrentScene()->getCollideMgr()->createAndInsertCollideBox(parent, shape, size, offset, achor_mode);
+    parent->removeChild(collide_box_);
+}
+
+CollideBoxWrapper::~CollideBoxWrapper()
+{
+    if(collide_box_) 
+    {
+        game_.getCurrentScene()->getCollideMgr()->eraseCollideBox(collide_box_);
+    }
+}
+
+CollideBoxWrapper* CollideBoxWrapper::createAndAddCollideBoxChild(Object* parent, CollideShape shape, 
+    const glm::vec2& size, const glm::vec2& offset, AchorMode achor_mode)
+{
+    return new CollideBoxWrapper(parent, shape, size, offset, achor_mode);
 }

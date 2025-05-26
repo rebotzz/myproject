@@ -5,6 +5,8 @@
 #include "glm/glm.hpp"
 #include <vector>
 
+
+class CollideMgr;
 class Scene : public Object
 {
 protected:
@@ -14,6 +16,9 @@ protected:
     std::vector<Object*> world_children_;            // 世界物体
     bool pause_time_ = false;                       // 时间暂停
 
+    // 碰撞管理器
+    CollideMgr* collide_mgr_ = nullptr;
+
     // 其他：有纵深的星空背景
     int stars_count = 2000;
     std::vector<glm::vec2> bg_stars, mid_stars, fg_stars;  // 星星坐标
@@ -21,10 +26,10 @@ protected:
 
     // 摄像机缩放系数TODO，SDL的设置逻辑分辨率窗口缩放也有类似效果，但是不够方便；位置、尺寸都要修改。
     // 或许需要单独一个摄像机类，由摄像机类绘制，计算缩放后的位置、尺寸。
-    float camera_zoom_ = 1.0f;                      
+    float camera_zoom_ = 1.0f;
 
 public:
-    Scene() = default;
+    Scene();
     virtual ~Scene();
 
     virtual void init() {};
@@ -52,6 +57,7 @@ public:
     std::vector<Object*>& getScreenObjects() { return screen_children_; }
     void setPauseTime(bool flag) { pause_time_ = flag; }
     bool getIsPauseTime() const { return pause_time_; }
+    CollideMgr* getCollideMgr() const { return collide_mgr_; }
 
 protected:
     void updateCamera(float dt);

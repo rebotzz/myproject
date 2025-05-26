@@ -39,6 +39,15 @@ public:
             child->setPosition(pos);
         }
     }
+
+    static void spawnAndAddChild(Object* parent, int count)
+    {
+        for(int i = 0; i < count; ++i)
+        {
+            auto pos = Game::getInstance().getRandomVec2(start_position_, end_position_);
+            new T(parent, pos);     // 构造函数完成了节点挂载,虽然看起来像是内存泄漏
+        }
+    }
 };
 
 

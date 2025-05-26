@@ -10,7 +10,7 @@
 class Spell : public ObjectWorld
 {
 protected:
-    CollideBox* collide_box_ = nullptr;
+    CollideBoxWrapper* collide_box_ = nullptr;
     SpriteAnim* anim_ = nullptr;
     float damage_ = 20.0f;
     ObjectType attack_target_type_ = ObjectType::Enemy; // TODO 修改为碰撞层
@@ -24,7 +24,7 @@ public:
     virtual void update(float dt);
 
     // getters and setters
-    CollideBox* getCollideBox() const { return collide_box_; }
+    CollideBoxWrapper* getCollideBox() const { return collide_box_; }
     SpriteAnim* getSpriteAnim() const { return anim_; }
     void setAttackTargetType(ObjectType type) { attack_target_type_ = type; }
     ObjectType getAttackTargetType() const { return attack_target_type_; }

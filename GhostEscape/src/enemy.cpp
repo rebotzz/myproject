@@ -22,12 +22,13 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     anim_dead_->setActive(false);
     current_anim_ = anim_move_;
     // 碰撞盒子
-    collide_box_ = CollideBox::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
+    collide_box_ = CollideBoxWrapper::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
     collide_box_->setHitLayer(CollideLayer::Player);
     collide_box_->setHurtLayer(CollideLayer::Enemy);
     collide_box_->setOnCollideCallback([this]()
     {
         auto target_box = collide_box_->getOnCollideBox();
+        if(!target_box) return;
         if(target_box->getHitLayer() == CollideLayer::Enemy)
         {
             takeDamage(dynamic_cast<Spell*>(target_box->getParent())->getDamage());
@@ -72,7 +73,9 @@ void Enemy::update(float dt)
     Actor::update(dt);
     velocity_ *= 0.9f;
     updateVelocity();
-    move(dt);
+    // debug
+    // move(dt);
+
     updateState();
     updateCollide();
     attack();
@@ -140,10 +143,10 @@ void Enemy::updateState()
 
 void Enemy::updateCollide()
 {
-    if(!target_->getStatus()->getIsInvincible() && collide_box_->checkCollision(target_->getCollideBox()))
-    {
-        target_->takeDamage(status_->getDamage());
-    }
+    // if(!target_->getStatus()->getIsInvincible() && collide_box_->checkCollision(target_->getCollideBox()))
+    // {
+    //     target_->takeDamage(status_->getDamage());
+    // }
 }
 
 void Enemy::checkAndRemove()

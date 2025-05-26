@@ -8,9 +8,11 @@ Spell::Spell(Object *parent, float damage, const glm::vec2& target_position, Col
 {
     setPosition(target_position);
     anim_ = SpriteAnim::createAndAddSpriteAnimChild(this, tex_id, frame_count, scale, frame_interval, false, glm::vec2(0.0f), mode);
-    collide_box_ = CollideBox::createAndAddCollideBoxChild(this, shape, anim_->getSize(), glm::vec2(0), mode);
-    collide_box_->setOnCollideCallback([this]()
+    collide_box_ = CollideBoxWrapper::createAndAddCollideBoxChild(this, shape, anim_->getSize(), glm::vec2(0), mode);
+    collide_box_->setHitLayer(CollideLayer::Enemy); // 法术默认攻击对象
+    collide_box_->setOnCollideCallback([&]()
     {
+        if(!collide_box_->getOnCollideBox()) return;
         auto target = collide_box_->getOnCollideBox()->getParent();
         dynamic_cast<Actor*>(target)->takeDamage(damage_);
     });
@@ -26,17 +28,17 @@ void Spell::update(float dt)
 
 void Spell::updateCollide()
 {
-    auto objects = dynamic_cast<Scene*>(parent_)->getWorldObjects();
-    for(auto obj : objects)
-    {
-        if(obj->getObjectType() != attack_target_type_) continue;
-        auto target = dynamic_cast<Actor*>(obj);
-        if(collide_box_->checkCollision(target->getCollideBox()))
-        {
-            target->takeDamage(damage_);
-            collide_box_->processCollide();
-        }
-    }
+    // auto objects = dynamic_cast<Scene*>(parent_)->getWorldObjects();
+    // for(auto obj : objects)
+    // {
+    //     if(obj->getObjectType() != attack_target_type_) continue;
+    //     auto target = dynamic_cast<Actor*>(obj);
+    //     if(collide_box_->checkCollision(target->getCollideBox()))
+    //     {
+    //         target->takeDamage(damage_);
+    //         collide_box_->processCollide();
+    //     }
+    // }
 }
 
 void Spell::checkAndRemove()

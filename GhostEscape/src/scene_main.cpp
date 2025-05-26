@@ -6,13 +6,12 @@
 #include "hud/ui_button.h"
 #include "scene_tittle.h"
 #include "hud/ui_cursor.h"
+#include "affiliate/collide_manager.h"
 
 SceneMain::SceneMain()
 {
-    // 初始化世界大小
+    // 初始化世界大小和相机位置
     world_size_ = game_.getScreenSize() * 3.0f;
-    // 初始化玩家和相机
-    player_ = Player::createAndAddPlayerChild(this, world_size_ * 0.5f);
     camera_position_ = world_size_ / 2.0f - game_.getScreenSize() / 2.0f;
 
     // UI界面 按键 光标
@@ -42,16 +41,22 @@ SceneMain::~SceneMain()
 }
 void SceneMain::init()
 {
-    // 恢复状态
-    // 创建场景工作太少，所以，这里的工作都放在了构造
+    // 初始化场景，恢复状态
+    // 创建场景工作太少，所以，这里的大部分工作都放在了构造
     SDL_HideCursor();
     game_.playMusic(ResID::Mus_SpookyMusic);
     player_alive_ = true;
+
+    // 初始化碰撞管理器
+    getCollideMgr()->reinit();
+
+    // 引入碰撞管理器后，玩家等持有碰撞盒的对象需要在碰撞管理器之后初始化
+    // 初始化玩家
+    player_ = Player::createAndAddPlayerChild(this, world_size_ * 0.5f);
 }
 void SceneMain::clean()
 {
     // 清理资源
-    // 这里的工作都放在了析构
     game_.pauseMusic();
     game_.updateGameData(player_->getScore());
 }

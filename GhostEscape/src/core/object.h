@@ -31,8 +31,8 @@ public:
     // 工具函数
     virtual void addChild(Object* object) { children_.push_back(object); }
     virtual void safeAddChild(Object* object) { children_to_add_.push_back(object); };  // 避免update时更新vector，迭代器失效
-    virtual void removeChild(Object* object) 
-    { children_.erase(std::remove(children_.begin(), children_.end(), object), children_.end()); }
+    virtual void removeChild(Object* object); 
+
 
     // setters and getters
     void setParent(Object* parent) { parent_ = parent; }

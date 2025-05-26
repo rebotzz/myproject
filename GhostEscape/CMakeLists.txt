@@ -49,6 +49,8 @@ add_executable(${MyExecutable}
                     src/affiliate/sprite_anim.cpp
                     src/affiliate/sprite.cpp
                     src/affiliate/collide_box.cpp
+                    src/affiliate/collide_manager.cpp
+                    src/affiliate/quad_tree.cpp
                     src/core/actor.cpp
                     src/core/assets_store.cpp
                     src/core/game.cpp

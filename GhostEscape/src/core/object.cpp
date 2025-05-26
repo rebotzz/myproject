@@ -65,6 +65,13 @@ void Object::render()
     }
 }
 
+void Object::removeChild(Object* object)
+{ 
+    children_.erase(std::remove(children_.begin(), children_.end(), object), children_.end());
+    children_to_add_.erase(std::remove(children_to_add_.begin(), children_to_add_.end(), object), 
+    children_to_add_.end());
+}
+
 void Object::removeInvalidObject()
 {
     children_.erase(std::remove_if(children_.begin(), children_.end(), [](Object* obj)

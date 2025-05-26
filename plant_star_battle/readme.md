@@ -1,5 +1,7 @@
 # 植物明星大乱斗
 
+[参考教程](https://www.bilibili.com/video/BV1jx4y1t7eP)
+
 ## 使用知识
 - 1.使用easyX图形库和windows API实现游戏功能
 - 2.数据逻辑和渲染分离,程序的主框架(初始化->循环[消息处理->数据处理->渲染处理])

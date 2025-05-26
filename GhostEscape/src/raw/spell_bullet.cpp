@@ -7,10 +7,9 @@ SpellBullet::SpellBullet(Object *parent, float damage, const glm::vec2 &init_pos
     :Spell(parent, damage, init_position, CollideShape::Circle, tex_id, frame_count, scale, frame_interval)
 {
     anim_->setLoop(true);
-    collide_box_->setOnCollideCallback([this]() 
+    collide_box_->setOnCollideCallback([this](CollideBox * target_box) 
     {
-        auto target = collide_box_->getOnCollideBox()->getParent();
-        if(!target) return;
+        auto target = target_box->getParent();
         dynamic_cast<Actor*>(target)->takeDamage(damage_);
         setActive(false); 
     });

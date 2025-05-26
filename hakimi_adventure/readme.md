@@ -1,5 +1,6 @@
 # 游戏: 哈基米大冒险
 
+[参考教程](https://www.bilibili.com/video/BV1yjsoeREdZ)
 
 ## 简单写写
 

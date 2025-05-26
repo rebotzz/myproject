@@ -22,7 +22,7 @@ class CollideBox : public ObjectAffiliate
 private:
     CollideShape shape_ = CollideShape::Circle; // 碰撞外形    
     glm::vec2 position_ = glm::vec2(0); // 如果碰撞外形为圆时,size_.x = size_.y = 直径
-    std::function<void()> on_collide_;   // 碰撞发生时处理逻辑
+    std::function<void(CollideBox *)> on_collide_;   // 碰撞发生时处理逻辑
     CollideBox *intersection_box_ = nullptr;
     CollideLayer hit_layer = CollideLayer::None;
     CollideLayer hurt_layer = CollideLayer::None;
@@ -40,7 +40,7 @@ public:
     
     // 工具函数
     bool checkCollision(CollideBox* target);
-    void processCollide() { if(on_collide_) on_collide_(); }
+    void processCollide(CollideBox * target) { if(on_collide_) on_collide_(target); }
     static bool checkIntersectRectCircle(const glm::vec2& rect_position, const glm::vec2& rect_size, 
         const glm::vec2& circle_position, float circle_size);
 
@@ -49,7 +49,7 @@ public:
     CollideShape getCollideShape() const { return shape_; }
     void setPosition(const glm::vec2& position) { position_ = position; }
     const glm::vec2& getPosition() const { return position_; }
-    void setOnCollideCallback(const std::function<void()>& callback) { on_collide_ = callback; }
+    void setOnCollideCallback(const std::function<void(CollideBox *)>& callback) { on_collide_ = callback; }
     CollideBox* getOnCollideBox() const { return intersection_box_; }
     void setOnCollideBox(CollideBox* box) { intersection_box_ = box; }
     void setHitLayer(CollideLayer type) { hit_layer = type; }
@@ -77,14 +77,14 @@ public:
     virtual void render() override { collide_box_->render(); };
     
     bool checkCollision(CollideBoxWrapper* target) { return collide_box_->checkCollision(target->collide_box_); };
-    void processCollide() { if(collide_box_->on_collide_) collide_box_->on_collide_(); }
+    void processCollide(CollideBox * target) { if(collide_box_->on_collide_) collide_box_->on_collide_(target); }
 
     // setters and getters
     void setCollideShape(CollideShape shape) { collide_box_->setCollideShape(shape); }
     CollideShape getCollideShape() const { return collide_box_->getCollideShape(); }
     void setPosition(const glm::vec2& position) { collide_box_->setPosition(position); }
     const glm::vec2& getPosition() const { return collide_box_->getPosition(); }
-    void setOnCollideCallback(const std::function<void()>& callback) { collide_box_->setOnCollideCallback(callback); }
+    void setOnCollideCallback(const std::function<void(CollideBox *)>& callback) { collide_box_->setOnCollideCallback(callback); }
     CollideBox* getOnCollideBox() const { return collide_box_->getOnCollideBox(); }
     void setOnCollideBox(CollideBox* box) { collide_box_->setOnCollideBox(box); }
     void setHitLayer(CollideLayer type) { collide_box_->setHitLayer(type); }

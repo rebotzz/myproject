@@ -1,6 +1,9 @@
 # myproject
 项目练习代码
 
+## 游戏:幽灵逃生
+[项目地址](GhostEscape)
+
 ## 游戏:SDL与太空战机
 [项目地址](SDL_Shooter)
 

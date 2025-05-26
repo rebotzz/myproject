@@ -10,10 +10,11 @@ Spell::Spell(Object *parent, float damage, const glm::vec2& target_position, Col
     anim_ = SpriteAnim::createAndAddSpriteAnimChild(this, tex_id, frame_count, scale, frame_interval, false, glm::vec2(0.0f), mode);
     collide_box_ = CollideBoxWrapper::createAndAddCollideBoxChild(this, shape, anim_->getSize(), glm::vec2(0), mode);
     collide_box_->setHitLayer(CollideLayer::Enemy); // 法术默认攻击对象
-    collide_box_->setOnCollideCallback([&]()
+    SDL_Log("spell box: %p", collide_box_);
+    collide_box_->setOnCollideCallback([this](CollideBox * target_box)
     {
-        if(!collide_box_->getOnCollideBox()) return;
-        auto target = collide_box_->getOnCollideBox()->getParent();
+        SDL_Log("spell box [setOnCollideCallback]: %p", collide_box_);
+        auto target = target_box->getParent();
         dynamic_cast<Actor*>(target)->takeDamage(damage_);
     });
 }

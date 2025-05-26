@@ -46,7 +46,7 @@ void QuadTree::debug_print(QuadTreeNode* node, int deep)
         std::cout << "box_list: ";
         for(auto& ptr : node->objects_)
         {
-            std::cout << ptr.get() << "\t";
+            std::cout << ptr << "\t";
         }
         std::cout << std::endl;
     }
@@ -57,7 +57,7 @@ void QuadTree::debug_print(QuadTreeNode* node, int deep)
     debug_print(node->bottom_right_, deep + 1);
 }
 
-void QuadTree::update(float )
+void QuadTree::update(float dt)
 {
     // 如果erase后，这里失效，就变成野指针了
     // if(!to_insert_.empty())
@@ -73,64 +73,92 @@ void QuadTree::update(float )
     // }
 
     // debug
-    static size_t old_size = box_list_.size();
-    if(old_size != box_list_.size())
-    {
-        old_size = box_list_.size();
-        std::cout << "----------QuadTree:begin-----------" << std::endl;
-        std::cout << "all_box_count: " << box_list_.size() << std::endl;
-        debug_print(root_, 0);
-        std::cout << "----------QuadTree:end-----------" << std::endl;
-    }
+    // static size_t old_size = box_list_.size();
+    // if(old_size != box_list_.size())
+    // {
+    //     old_size = box_list_.size();
+    //     std::cout << "----------QuadTree:begin-----------" << std::endl;
+    //     std::cout << "all_box_count: " << box_list_.size() << std::endl;
+    //     debug_print(root_, 0);
+    //     std::cout << "----------QuadTree:end-----------" << std::endl;
+    // }
 
+
+    // 重构
+    timer_ += dt;
+    if(timer_ > timer_update_cd_)
+    {
+        timer_ = 0.f;
+        clear(root_);
+        for(auto& [box_ptr, count] : box_refcount_)
+        {
+            _insert(root_, box_ptr);
+        }
+    }
 }
 
+void QuadTree::clear(QuadTreeNode *node)
+{
+    auto rect = root_->rect_;
+    delete root_;
+    root_ = new QuadTreeNode(rect);
+    // if(!node) return;
+
+    // clear(node->top_left_);
+    // clear(node->top_right_);
+    // clear(node->bottom_left_);
+    // clear(node->bottom_right_);
+
+    // for(auto ptr : node->objects_)
+    // {
+    //     box_refcount_[ptr]--;
+    // }    
+    // node->objects_.clear();
+    // node->top_left_ = nullptr;
+    // node->top_right_ = nullptr;
+    // node->bottom_left_ = nullptr;
+    // node->bottom_right_ = nullptr;
+    // delete node;
+}
 
 bool QuadTree::insert(CollideBox* collide_box)
 {
-    // SDL_Log("QuadTree::insert -------------\nrect[x,y,w,h]:\t"
-    //     "quad_tree_rect[%f,%f,%f,%f], collide_box_rect:[%f,%f,%f,%f]",
-    //     root_->rect_.x, root_->rect_.y, root_->rect_.w, root_->rect_.h,
-    // collide_box->getPosition().x, collide_box->getPosition().y,
-    // collide_box->getSize().x, collide_box->getSize().y);
-    // SDL_Log("QuadTree::insert-std::shared_ptr<CollideBox> [%p] count: %d", collide_box.get(), collide_box.use_count());
-    auto ptr = std::shared_ptr<CollideBox>(collide_box);
-    box_list_.push_back(ptr);
-    if(!_insert(root_, ptr))
+    if(box_refcount_.count(collide_box) != 0) return false;
+    box_refcount_[collide_box] = 0;
+    if(!_insert(root_, collide_box))
     {
         return false;
     }
-    // SDL_Log("QuadTree::insert-std::shared_ptr<CollideBox> [%p] count: %d", collide_box.get(), collide_box.use_count());
     return true;
 }
 
-bool QuadTree::_insert(QuadTreeNode *node, const std::shared_ptr<CollideBox>& collide_box)
+bool QuadTree::_insert(QuadTreeNode *node, CollideBox* collide_box)
 {
     assert(node != nullptr);
-    if(!node->hasIntersection(collide_box.get())) return false;
-    // SDL_Log("_insert()-begin: std::shared_ptr<CollideBox> [%p] count: %d", collide_box.get(), collide_box.use_count());
+    if(!node->hasIntersection(collide_box)) return false;
 
+
+    SDL_Log("node_objects-size: %u refcount: %u | insert: %p", node->objects_.size(), 
+        box_refcount_[collide_box], collide_box);
     // 不是叶子节点，到叶子节点插入
     if(!node->isLeaf())
     {
-        _insert(node->top_left_, collide_box);
-        _insert(node->top_right_, collide_box);
-        _insert(node->bottom_left_, collide_box);
-        _insert(node->bottom_right_, collide_box);
+        if(_insert(node->top_left_, collide_box)) return true;
+        if(_insert(node->top_right_, collide_box)) return true;
+        if(_insert(node->bottom_left_, collide_box)) return true;
+        if(_insert(node->bottom_right_, collide_box)) return true;
+        return false;
     }
     // 当前是叶子,只有叶子存储物体
     else
     {
         node->objects_.emplace_back(collide_box);
-        // SDL_Log("\n递达叶子节点,插入 ptr: %p, size: %u\n", collide_box.get(), node->objects_.size());
+        box_refcount_[collide_box]++;
         // 超过最大容量，细分区间，重新分配物体所在区间
         if(node->objects_.size() > max_node_count_ && node->subdevide(grid_min_w_, grid_min_h_))
         {
-            SDL_Log("\n超过最大容量\n");
-
             // 如果与多个区域重叠，那每个区域都记录
             // Debug:关键，由于物体移动，可以移除了边界，所以每个子区域都可能插入失败:这只能应对不能动的物体
-            
             // v0.1 插入新开辟的子区间（缺点：物体可能移动后一个都不相交，智能指针释放）
             // for(const auto& old_box : node->objects_)
             // {
@@ -143,15 +171,17 @@ bool QuadTree::_insert(QuadTreeNode *node, const std::shared_ptr<CollideBox>& co
             // v0.2 从根节点找合适的位置插入    // 此时非叶子节点，不会插入node
             for(auto& old_box : node->objects_)
             {
+                SDL_Log("sub insert: %p", old_box);
                 if(!_insert(root_, old_box)) SDL_Log("扩容插入失败.");
-                old_box = nullptr;
+                if(--box_refcount_[old_box] <= 0)   // 移除原有计数
+                {
+                    SDL_Log("re insert box failed: %p", old_box);
+                }
             }
             node->objects_.clear();
-
         }
+        return true;
     }
-
-    return true;
 }
 
 
@@ -159,18 +189,19 @@ bool QuadTree::erase(CollideBox* collide_box)
 {
     // 这里不能用智能指针，因为shared_ptr只管理拷贝于自生的，新建的智能指针是一个单独的个体，
     // 与原来的没有关联，虽然指向同一对象地址：这会导致delete两次报错。
-    for(auto iter = box_list_.begin(); iter != box_list_.end(); )
+    if(box_refcount_.count(collide_box) == 0) return false;
+    _erase(root_, collide_box);
+    if(box_refcount_[collide_box] <= 0)
     {
-        if(iter->get() == collide_box)
-        {
-            iter = box_list_.erase(iter);
-        }
-        else 
-        {
-            ++iter;
-        }
+        std::cout << "delete collide box refcount: " << box_refcount_[collide_box] << std::endl;
+        delete collide_box;
+        box_refcount_.erase(collide_box);
+        return true;
     }
-    return _erase(root_, collide_box);
+    else 
+    {
+        return false;
+    }
 }
 
 bool QuadTree::_erase(QuadTreeNode *node, CollideBox* collide_box)
@@ -192,12 +223,16 @@ bool QuadTree::_erase(QuadTreeNode *node, CollideBox* collide_box)
         //     return box.get() == collide_box;
         // }), node->objects_.end());
 
-        for(auto iter = node->objects_.begin(); iter != node->objects_.end(); ++iter)
+        for(auto iter = node->objects_.begin(); iter != node->objects_.end(); )
         {
-            if(iter->get() == collide_box)
+            if(*iter == collide_box)
             {
                 iter = node->objects_.erase(iter);
                 break;
+            }
+            else
+            {
+                ++iter;
             }
         }
     }
@@ -206,39 +241,41 @@ bool QuadTree::_erase(QuadTreeNode *node, CollideBox* collide_box)
 }
 
 
-void QuadTree::processCollide()
+void QuadTree::checkAndProcessCollide()
 {
-    _processCollide(root_);
+    _checkAndProcessCollide(root_);
 }
 
-void QuadTree::_processCollide(QuadTreeNode *node)
+void QuadTree::_checkAndProcessCollide(QuadTreeNode *node)
 {
     if(!node) return;
 
     if(!node->isLeaf())
     {
-        _processCollide(node->top_left_);
-        _processCollide(node->top_right_);
-        _processCollide(node->bottom_left_);
-        _processCollide(node->bottom_right_);
+        _checkAndProcessCollide(node->top_left_);
+        _checkAndProcessCollide(node->top_right_);
+        _checkAndProcessCollide(node->bottom_left_);
+        _checkAndProcessCollide(node->bottom_right_);
     }
     else 
     {
         // 非叶子节点不存储对象，所以到叶子节点检测碰撞
         for(auto& src_box : node->objects_)
         {
-            if(src_box->getHitLayer() == CollideLayer::None) continue;
+            if(src_box->getHitLayer() == CollideLayer::None || !src_box->getIsActive()
+                || src_box->getCanRemove()) continue;
             for(auto& dst_box : node->objects_)
             {
-                if(src_box == dst_box || src_box->getHitLayer() != dst_box->getHurtLayer()) continue;
+                if(src_box == dst_box || src_box->getHitLayer() != dst_box->getHurtLayer()
+                  || !dst_box->getIsActive() || dst_box->getCanRemove()) continue;
 
-                if(src_box->checkCollision(dst_box.get()))
+                if(src_box->checkCollision(dst_box))
                 {
                     // 记录相撞的碰撞盒子，执行碰撞回调
-                    src_box->setOnCollideBox(dst_box.get());
-                    dst_box->setOnCollideBox(src_box.get());
-                    src_box->processCollide();
-                    dst_box->processCollide();
+                    src_box->setOnCollideBox(dst_box);
+                    dst_box->setOnCollideBox(src_box);
+                    src_box->processCollide(dst_box);
+                    dst_box->processCollide(src_box);
                 }
             }
         }
@@ -249,6 +286,8 @@ void QuadTree::render()
 {
     _render(root_);
 }
+
+
 
 void QuadTree::_render(QuadTreeNode* node)
 {
@@ -321,10 +360,7 @@ bool QuadTreeNode::hasIntersection(const CollideBox *box)
 
 bool QuadTreeNode::subdevide(float grid_min_w, float grid_min_h)
 {    
-    if(rect_.w < grid_min_w && rect_.h < grid_min_h) return false;
-    SDL_Log("\n区间细分 count: %u rect:[%f,%f,%f,%f]\n", objects_.size(),
-        rect_.x, rect_.y, rect_.w, rect_.h);
-
+    if(rect_.w <= grid_min_w && rect_.h <= grid_min_h) return false;
     if(!top_left_)
         top_left_ = new QuadTreeNode({rect_.x, rect_.y, rect_.w / 2.f, rect_.h / 2.f});
     if(!top_right_)

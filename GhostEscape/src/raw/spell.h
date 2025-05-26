@@ -19,7 +19,7 @@ public:
     // 父节点是具体场景
     Spell(Object* parent, float damage, const glm::vec2& target_position, CollideShape shape, ResID tex_id, 
         int frame_count, float scale = 1.0, float frame_interval = 0.1f, AchorMode mode = AchorMode::CENTER);
-    ~Spell() = default;
+    ~Spell() {SDL_Log("~spell: box_ptr: %p", collide_box_); };
  
     virtual void update(float dt);
 

@@ -1,5 +1,7 @@
 # 游戏:SDL2与太空战机
 
+[参考教程](https://cppgamedev.top/courses/sdl-space-shooter)
+
 ## 简介
 - 1.改用`vscode`/`g++`/`make`编译代码,这次不用`visual stuio`
 ```

@@ -25,10 +25,8 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     collide_box_ = CollideBoxWrapper::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
     collide_box_->setHitLayer(CollideLayer::Player);
     collide_box_->setHurtLayer(CollideLayer::Enemy);
-    collide_box_->setOnCollideCallback([this]()
+    collide_box_->setOnCollideCallback([this](CollideBox * target_box)
     {
-        auto target_box = collide_box_->getOnCollideBox();
-        if(!target_box) return;
         if(target_box->getHitLayer() == CollideLayer::Enemy)
         {
             takeDamage(dynamic_cast<Spell*>(target_box->getParent())->getDamage());
@@ -74,7 +72,7 @@ void Enemy::update(float dt)
     velocity_ *= 0.9f;
     updateVelocity();
     // debug
-    // move(dt);
+    move(dt);
 
     updateState();
     updateCollide();

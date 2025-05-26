@@ -67,7 +67,7 @@ void CollideMgr::update(float dt)
 {
     if(!quad_tree_) return;
     quad_tree_->update(dt);
-    quad_tree_->processCollide();
+    quad_tree_->checkAndProcessCollide();
 }
 
 void CollideMgr::render()

@@ -27,10 +27,8 @@ Player::Player(Scene* parent, const glm::vec2& position)
     // 初始化碰撞箱体
     collide_box_ = CollideBoxWrapper::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
     collide_box_->setHurtLayer(CollideLayer::Player);
-    collide_box_->setOnCollideCallback([this]()
+    collide_box_->setOnCollideCallback([this](CollideBox * target_box)
     {
-        auto target_box = collide_box_->getOnCollideBox();
-        if(!target_box) return;
         auto target_type = target_box->getParent()->getObjectType();
         if(target_type == ObjectType::Enemy)
         {

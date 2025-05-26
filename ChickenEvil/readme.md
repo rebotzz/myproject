@@ -1,5 +1,7 @@
 # 游戏：生化危鸡
 
+[参考教程](https://www.bilibili.com/video/BV1wDUcYBEQB/)
+
 ## 简介
 - 1.从easyX图形库过度到SDL库
 - 2.脱离了windows API,所以窗口创建方式也变了

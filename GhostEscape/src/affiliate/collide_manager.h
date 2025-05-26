@@ -15,6 +15,7 @@ private:
     // 空间四叉树
     QuadTree* quad_tree_ = nullptr;
 
+
 public:
     CollideMgr(Object* parent):Object(parent){}
     ~CollideMgr() override;

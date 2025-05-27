@@ -22,7 +22,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     anim_dead_->setActive(false);
     current_anim_ = anim_move_;
     // 碰撞盒子
-    collide_box_ = CollideBoxWrapper::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
+    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
     collide_box_->setHitLayer(CollideLayer::Player);
     collide_box_->setHurtLayer(CollideLayer::Enemy);
     collide_box_->setOnCollideCallback([this](CollideBox * target_box)
@@ -75,7 +75,6 @@ void Enemy::update(float dt)
     move(dt);
 
     updateState();
-    updateCollide();
     attack();
     checkAndRemove();
 }
@@ -137,14 +136,6 @@ void Enemy::updateState()
     {
         weapon_->setActive(true);
     }
-}
-
-void Enemy::updateCollide()
-{
-    // if(!target_->getStatus()->getIsInvincible() && collide_box_->checkCollision(target_->getCollideBox()))
-    // {
-    //     target_->takeDamage(status_->getDamage());
-    // }
 }
 
 void Enemy::checkAndRemove()

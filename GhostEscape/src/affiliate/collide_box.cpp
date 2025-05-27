@@ -10,14 +10,23 @@ CollideBox::CollideBox(Object *parent, CollideShape shape, const glm::vec2 &size
     setCollideShape(shape);
     setAchorModeAndSize(achor_mode, size);
     setRelativeOffset(offset);
-#ifdef DEBUG_MODE
+
     SDL_Log("CollideBox(): %p", this);
-#endif
+
+    game_.getCurrentScene()->getCollideMgr()->registerCollideBox(this);
+
 }
+
+CollideBox::~CollideBox()
+{
+    SDL_Log("~CollideBox(): %p", this);
+    game_.getCurrentScene()->getCollideMgr()->detachCollideBox(this);
+}
+
 
 void CollideBox::update(float)
 {
-    // 更新位置: 渲染坐标/世界坐标都行。都偏移了相交判断可以进行
+    // 更新位置， 碰撞检测：渲染坐标/世界坐标都行，都偏移了相交判断可以进行
     auto render_pos = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
     position_ = game_.getCurrentScene()->screenToWorld(render_pos);
 }
@@ -81,11 +90,6 @@ bool CollideBox::checkCollision(CollideBox *target)
             is_collide = true;
     }
 
-    if(is_collide)
-    {
-        setOnCollideBox(target);
-        target->setOnCollideBox(this);
-    }
     return is_collide;
 }
 
@@ -104,35 +108,4 @@ bool CollideBox::checkIntersectRectCircle(const glm::vec2 &rect_position, const 
 
 
 
-CollideBoxWrapper::CollideBoxWrapper(Object *parent, CollideShape shape, const glm::vec2 &size, 
-    const glm::vec2 &offset, AchorMode achor_mode)
-    :Object(parent)
-{
-    // 特殊处理：避免碰撞盒子被挂载自动删除,所以将碰撞盒子从持有者手中移除，
-    // 但碰撞盒子要持有父节点指针，因为碰撞盒子更新需要用到父节点
-    auto collideMgr = game_.getCurrentScene()->getCollideMgr();
-    collide_box_ = collideMgr->createAndInsertCollideBox(nullptr, shape, size, offset, achor_mode);
-    // parent->removeChild(collide_box_);
-    collide_box_->setParent(parent);
-    collideMgr->attachObserver(this, [this, collideMgr]()
-    {
-        // bug:为什么设置了后还会调用update?    // 或许update需要保护
-        setActive(false);
-        setCanRemove(true);
-        collideMgr->detachObserver(this);
-    });
-}
 
-CollideBoxWrapper::~CollideBoxWrapper()
-{
-    if(collide_box_) 
-    {
-        game_.getCurrentScene()->getCollideMgr()->eraseCollideBox(collide_box_);
-    }
-}
-
-CollideBoxWrapper* CollideBoxWrapper::createAndAddCollideBoxChild(Object* parent, CollideShape shape, 
-    const glm::vec2& size, const glm::vec2& offset, AchorMode achor_mode)
-{
-    return new CollideBoxWrapper(parent, shape, size, offset, achor_mode);
-}

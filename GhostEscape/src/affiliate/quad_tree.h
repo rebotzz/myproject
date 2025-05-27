@@ -16,11 +16,8 @@ class QuadTreeNode
     friend class QuadTree;
 private:
     SDL_FRect rect_ = { 0 };                // 所在的矩形区域
-    std::vector<CollideBox*> objects_;      // 矩形区域的物体,碰撞盒子
-    QuadTreeNode* top_left_ = nullptr;      // 子节点
-    QuadTreeNode* top_right_ = nullptr;
-    QuadTreeNode* bottom_left_ = nullptr;
-    QuadTreeNode* bottom_right_ = nullptr;
+    std::vector<CollideBox*> colliders_;    // 矩形区域的物体,碰撞盒子
+    QuadTreeNode* next_[4] = {nullptr};     // 子节点
 
 public:
     QuadTreeNode(const SDL_FRect& rect):rect_(rect) {}
@@ -28,7 +25,7 @@ public:
 
     bool isLeaf();
     bool hasIntersection(const CollideBox* box);
-    bool subdevide(float grid_min_w, float grid_min_h);  // 空间细分
+    bool split(float grid_min_w, float grid_min_h);  // 空间细分
 };
 
 
@@ -41,8 +38,6 @@ private:
     QuadTreeNode* root_ = nullptr;                          // 根节点
     std::unordered_map<CollideBox*, int> box_refcount_;     // 注册的碰撞盒子
     std::vector<CollideBox*> to_insert_;                    // 临时容器，准备下一次插入
-    float timer_update_tree_ = 0.f;                         // 更新四叉树定时器
-    float time_update_tree_cd_ = 0.05f;
     std::unordered_set<long long> collide_done_set_;        // 避免重复碰撞，标记已经碰撞的集合TODO:有hash冲突
 
     CollideMgr* collide_mgr_ = nullptr;
@@ -68,7 +63,6 @@ public:
     void setMinGridSize(const glm::vec2& min_grid_size) { min_grid_size_ = min_grid_size; }
     const glm::vec2& getMinGridSize() const { return min_grid_size_; }
     void setCollideMgr(CollideMgr* collide_mgr) { collide_mgr_ = collide_mgr; }
-    void setUpdateTreeNodeCD(float interval) { time_update_tree_cd_ = interval; }
 
 private:
     void destroy(QuadTreeNode*& node);
@@ -78,7 +72,6 @@ private:
     void _checkAndProcessCollide(QuadTreeNode* node);
     void _render(QuadTreeNode* node);
     void _clear(QuadTreeNode*& node);
-    void deleteCollideBox(CollideBox* collide_box);
 };
 
 

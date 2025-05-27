@@ -10,7 +10,7 @@
 class Spell : public ObjectWorld
 {
 protected:
-    CollideBoxWrapper* collide_box_ = nullptr;
+    CollideBox* collide_box_ = nullptr;
     SpriteAnim* anim_ = nullptr;
     float damage_ = 20.0f;
     ObjectType attack_target_type_ = ObjectType::Enemy; // TODO 修改为碰撞层
@@ -19,12 +19,12 @@ public:
     // 父节点是具体场景
     Spell(Object* parent, float damage, const glm::vec2& target_position, CollideShape shape, ResID tex_id, 
         int frame_count, float scale = 1.0, float frame_interval = 0.1f, AchorMode mode = AchorMode::CENTER);
-    ~Spell() {SDL_Log("~spell: box_ptr: %p", collide_box_->getInternalCollideBox()); };
+    ~Spell() = default;
  
     virtual void update(float dt);
 
     // getters and setters
-    CollideBoxWrapper* getCollideBox() const { return collide_box_; }
+    CollideBox* getCollideBox() const { return collide_box_; }
     SpriteAnim* getSpriteAnim() const { return anim_; }
     void setAttackTargetType(ObjectType type) { attack_target_type_ = type; }
     ObjectType getAttackTargetType() const { return attack_target_type_; }

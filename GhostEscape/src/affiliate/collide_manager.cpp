@@ -3,24 +3,21 @@
 #include "../core/scene.h"
 #include "collide_box.h"
 
-void CollideMgr::insertCollideBox(CollideBox *box)
+void CollideMgr::registerCollideBox(CollideBox *box)
 {
-    // 直接插入到四叉树中，由四叉树管理生命周期； 超出边界移除
-    quad_tree_->safeInsert(box);
+    if(quad_tree_)
+        quad_tree_->safeInsert(box);
 }
 
-void CollideMgr::eraseCollideBox(CollideBox *box)
+void CollideMgr::detachCollideBox(CollideBox *box)
 {
-    quad_tree_->erase(box);
+    if(quad_tree_)
+        quad_tree_->erase(box);
 }
 
 void CollideMgr::reinit() 
 {
-    if(quad_tree_)
-    {
-        delete quad_tree_;
-        quad_tree_ = nullptr;
-    }
+    clean();
     SDL_FRect init_rect = { 0.f, 0.f, game_.getCurrentScene()->getWorldSize().x, game_.getCurrentScene()->getWorldSize().y};
     quad_tree_ = new QuadTree(init_rect);
     quad_tree_->setCollideMgr(this);
@@ -32,30 +29,19 @@ void CollideMgr::clean()
     // 而场景结束时先调用CollideMgr::clean()，
     // 然后场景析构调用销毁碰撞盒子CollideMgr::eraseCollideBox()
     // 这是bug就出现了：quad_tree_已经是空指针了.
-    // if(quad_tree_)
-    // {
-    //     delete quad_tree_;
-    //     quad_tree_ = nullptr;
-    // }
+
+    // 改了一下，如果quad_tree_空了，那么CollideMgr::eraseCollideBox()就什么也不做
+    if(quad_tree_)
+    {
+        delete quad_tree_;
+        quad_tree_ = nullptr;
+    }
 }
 
-
-CollideBox *CollideMgr::createAndInsertCollideBox(Object *parent, CollideShape shape, const glm::vec2 &size, 
-    const glm::vec2 &offset, AchorMode achor_mode)
-{
-    auto collide_box = new CollideBox(parent, shape, size, offset, achor_mode);
-    insertCollideBox(collide_box);
-    return collide_box;
-}
-
-void CollideMgr::notifyCollideBoxIsdeleted(CollideBox *box)
-{
-    notifyOneObserver(register_wrappers_[box]);
-}
 
 CollideMgr::~CollideMgr()
 {
-    if(quad_tree_) delete quad_tree_;
+    clean();
 }
 
 void CollideMgr::update(float dt)
@@ -73,7 +59,7 @@ void CollideMgr::update(float dt)
 void CollideMgr::render()
 {
 #ifdef DEBUG_MODE
-    if(!quad_tree_) return;
-    quad_tree_->render();
+    if(quad_tree_)
+        quad_tree_->render();
 #endif
 }   

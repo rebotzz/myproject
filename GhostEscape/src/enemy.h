@@ -37,7 +37,6 @@ public:
 protected:
     void updateVelocity();
     void updateState();
-    void updateCollide();
     void checkAndRemove();
     void attack();
 };

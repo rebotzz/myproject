@@ -25,7 +25,7 @@ Player::Player(Scene* parent, const glm::vec2& position)
     anim_idle_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));  
     anim_move_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));    
     // 初始化碰撞箱体
-    collide_box_ = CollideBoxWrapper::createAndAddCollideBoxChild(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
+    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
     collide_box_->setHurtLayer(CollideLayer::Player);
     collide_box_->setOnCollideCallback([this](CollideBox * target_box)
     {

@@ -6,10 +6,7 @@
 void CollideMgr::insertCollideBox(CollideBox *box)
 {
     // 直接插入到四叉树中，由四叉树管理生命周期； 超出边界移除
-    if(!quad_tree_->insert(box))
-    {
-        SDL_Log("插入失败");
-    }
+    quad_tree_->safeInsert(box);
 }
 
 void CollideMgr::eraseCollideBox(CollideBox *box)
@@ -26,8 +23,7 @@ void CollideMgr::reinit()
     }
     SDL_FRect init_rect = { 0.f, 0.f, game_.getCurrentScene()->getWorldSize().x, game_.getCurrentScene()->getWorldSize().y};
     quad_tree_ = new QuadTree(init_rect);
-
-    SDL_Log("CollideMgr::init() : %p", quad_tree_);
+    quad_tree_->setCollideMgr(this);
 }
 
 void CollideMgr::clean()
@@ -43,12 +39,6 @@ void CollideMgr::clean()
     // }
 }
 
-void CollideMgr::removeInvalid()
-{
-    // for()
-
-    // 如果智能指针引用计数只有一个，那么不再四叉树内，可以移除
-}
 
 CollideBox *CollideMgr::createAndInsertCollideBox(Object *parent, CollideShape shape, const glm::vec2 &size, 
     const glm::vec2 &offset, AchorMode achor_mode)
@@ -56,6 +46,11 @@ CollideBox *CollideMgr::createAndInsertCollideBox(Object *parent, CollideShape s
     auto collide_box = new CollideBox(parent, shape, size, offset, achor_mode);
     insertCollideBox(collide_box);
     return collide_box;
+}
+
+void CollideMgr::notifyCollideBoxIsdeleted(CollideBox *box)
+{
+    notifyOneObserver(register_wrappers_[box]);
 }
 
 CollideMgr::~CollideMgr()
@@ -66,14 +61,19 @@ CollideMgr::~CollideMgr()
 void CollideMgr::update(float dt)
 {
     if(!quad_tree_) return;
-    quad_tree_->update(dt);
-    quad_tree_->checkAndProcessCollide();
+
+    timer_collide_ += dt;
+    if(timer_collide_ >= time_collide_cd_)
+    {
+        timer_collide_ = 0.f;
+        quad_tree_->update(dt);
+    }
 }
 
 void CollideMgr::render()
 {
-// #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
     if(!quad_tree_) return;
     quad_tree_->render();
-// #endif
+#endif
 }   

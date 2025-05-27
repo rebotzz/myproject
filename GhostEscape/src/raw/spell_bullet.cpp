@@ -12,6 +12,7 @@ SpellBullet::SpellBullet(Object *parent, float damage, const glm::vec2 &init_pos
         auto target = target_box->getParent();
         dynamic_cast<Actor*>(target)->takeDamage(damage_);
         setActive(false); 
+        setCanRemove(true); // debug:这里应该是移除，而不仅仅是不激活
     });
     collide_box_->setHitLayer(CollideLayer::Player);
     collide_box_->setSize(collide_box_->getSize() * 0.5f);

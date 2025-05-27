@@ -10,7 +10,9 @@ CollideBox::CollideBox(Object *parent, CollideShape shape, const glm::vec2 &size
     setCollideShape(shape);
     setAchorModeAndSize(achor_mode, size);
     setRelativeOffset(offset);
+#ifdef DEBUG_MODE
     SDL_Log("CollideBox(): %p", this);
+#endif
 }
 
 void CollideBox::update(float)
@@ -106,10 +108,19 @@ CollideBoxWrapper::CollideBoxWrapper(Object *parent, CollideShape shape, const g
     const glm::vec2 &offset, AchorMode achor_mode)
     :Object(parent)
 {
-    // 避免碰撞盒子被挂载自动删除,所以将碰撞盒子从持有者手中移除，
-    // 但碰撞盒子还能持有父节点指针，碰撞盒子更新需要用到父节点
-    collide_box_ = game_.getCurrentScene()->getCollideMgr()->createAndInsertCollideBox(parent, shape, size, offset, achor_mode);
-    parent->removeChild(collide_box_);
+    // 特殊处理：避免碰撞盒子被挂载自动删除,所以将碰撞盒子从持有者手中移除，
+    // 但碰撞盒子要持有父节点指针，因为碰撞盒子更新需要用到父节点
+    auto collideMgr = game_.getCurrentScene()->getCollideMgr();
+    collide_box_ = collideMgr->createAndInsertCollideBox(nullptr, shape, size, offset, achor_mode);
+    // parent->removeChild(collide_box_);
+    collide_box_->setParent(parent);
+    collideMgr->attachObserver(this, [this, collideMgr]()
+    {
+        // bug:为什么设置了后还会调用update?    // 或许update需要保护
+        setActive(false);
+        setCanRemove(true);
+        collideMgr->detachObserver(this);
+    });
 }
 
 CollideBoxWrapper::~CollideBoxWrapper()

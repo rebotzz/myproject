@@ -3,14 +3,15 @@
 
 #include "object_affiliate.h"
 #include "../core/object.h"
+#include "../core/observer.h"
 #include <functional>
 
 // v1.0碰撞盒子作为组件由主体直接管理内存和生命周期
 // 特点：直接使用简单方便，但引入碰撞管理器和空间四叉树对于生命周期控制不方便
 // 移除碰撞盒子需要通知持有方（碰撞主体、碰撞管理器），需要观察者模式
-// v2.0由碰撞管理器处理所有碰撞盒子生命周期,
+// v2.0由碰撞管理器处理所有碰撞盒子生命周期,  
 // 特点：改用一个包装器包装碰撞盒子，当自动挂载delete包装器时，析构函数给碰撞管理器发送信号，
-// 然后实际删除碰撞盒子。避免了多个观察者
+// 然后实际删除碰撞盒子。避免了多个观察者.但是更加复杂更容易写bug
 
 
 class CollideBox : public ObjectAffiliate
@@ -33,7 +34,12 @@ private:
                 const glm::vec2& offset = glm::vec2(0), AchorMode achor_mode = AchorMode::CENTER);
 
 public:
-    ~CollideBox(){SDL_Log("~CollideBox(): %p", this);}
+    ~CollideBox()
+    {
+#ifdef DEBUG_MODE
+        SDL_Log("~CollideBox(): %p", this);
+#endif
+    }
 
     virtual void update(float) override;
     virtual void render() override;
@@ -61,7 +67,7 @@ public:
 
 // 碰撞盒包装器，只是做一个中转，辅助碰撞管理器管理碰撞盒子生命周期；
 // 因为直接改原有代码太麻烦了，所以加入一个中间层
-class CollideBoxWrapper : public Object
+class CollideBoxWrapper : public Object, public Observer
 {
 private:
     CollideBox* collide_box_ = nullptr;
@@ -91,6 +97,9 @@ public:
     CollideLayer getHitLayer() const { return collide_box_->getHitLayer(); }
     void setHurtLayer(CollideLayer type) { collide_box_->setHurtLayer(type); }
     CollideLayer getHurtLayer() const { return collide_box_->getHurtLayer(); }
+
+    // 临时debug
+    CollideBox* getInternalCollideBox() const { return collide_box_; }
 
     // 基类隐藏
     Object* getParent() const { return collide_box_->getParent(); }

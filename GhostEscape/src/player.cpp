@@ -74,14 +74,15 @@ bool Player::handleEvent(const SDL_Event& event)
     switch(event.type)
     {
         case SDL_EVENT_MOUSE_BUTTON_UP:
-        if(!weapon_thunder_->canAttack()) break;
-        // 世界 = 渲染 + 相机
-        // 渲染坐标 = 世界 - 相机
-        glm::vec2 cursor_pos;
-        game_.getMouseState(cursor_pos);    // 不能直接SDL_获取，因为屏幕缩放会导致鼠标位置错位
-        auto target = cursor_pos + dynamic_cast<Scene*>(parent_)->getCameraPosition();
-        weapon_thunder_->attack(target);
-        event_handled = true;
+        glm::vec2 cursor_pos;       // 不能直接SDL_获取鼠标位置，因为屏幕缩放会导致鼠标位置错位，game_.getMouseState接口进行了映射
+        if((game_.getMouseState(cursor_pos) & SDL_BUTTON_LMASK) && weapon_thunder_->canAttack())    
+        {
+            // 世界 = 渲染 + 相机； 渲染坐标 = 世界 - 相机
+            auto target = cursor_pos + dynamic_cast<Scene*>(parent_)->getCameraPosition();
+            weapon_thunder_->attack(target);
+            event_handled = true;
+        }
+
         break;
     }
     return event_handled;

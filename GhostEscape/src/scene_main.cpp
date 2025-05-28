@@ -67,14 +67,12 @@ bool SceneMain::handleEvent(const SDL_Event& event)
 void SceneMain::update(float dt)
 {
     removeInvalidObject();
+    checkSlowdown(dt);
     Scene::update(dt);
     updateWhenGameOver(dt);
 
     // 生成敌人
-    if(player_alive_)
-    {
-        spawnEnemy(dt);
-    }
+    if(player_alive_) spawnEnemy(dt);
 }
 
 void SceneMain::render()
@@ -131,4 +129,11 @@ void SceneMain::spawnEnemy(float dt)
     }
 }
 
-
+void SceneMain::checkSlowdown(float& dt)
+{
+    glm::vec2 mouse_pos;
+    if(game_.getMouseState(mouse_pos) & SDL_BUTTON_RMASK)
+    {
+        dt *= 0.4f;
+    }
+}

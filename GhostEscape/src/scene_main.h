@@ -39,6 +39,7 @@ protected:
 
     // 工具函数
     void spawnEnemy(float dt);
+    void checkSlowdown(float& dt);   // 时间减速
 };
 
 

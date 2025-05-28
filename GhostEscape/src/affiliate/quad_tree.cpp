@@ -125,9 +125,13 @@ void QuadTree::update(float dt)
     {
         _insert(root_, box_ptr);
     }
-    // 更新物体所在区域v2.0：边界检测
+    // // 更新物体所在区域v2.0：边界检测
     // updateCollidersRegion(root_);
     // reblanceTree(root_);
+    // for(auto& [box_ptr, count] : colliders_refcount_) // 尝试插入之前更新过程中插入失败的。
+    // {
+    //     if(count <= 0) _insert(root_, box_ptr);
+    // }
 
     // 处理碰撞
     checkAndProcessCollide();

@@ -212,8 +212,15 @@ void Scene::renderStarsBackGround()
 
     // 渲染星星
     static std::vector<float> distance_scale = {0.3f, 0.6f, 1.0f};
-    static std::vector<SDL_FColor> color = { SDL_FColor{1.0f, 0.5f, 0.0f, 1.0f}, 
+    static std::vector<SDL_FColor> colors = { SDL_FColor{1.0f, 0.5f, 0.0f, 1.0f}, 
         SDL_FColor{0.0f, 1.0f, 1.0f, 1.0f}, SDL_FColor{1.0f, 1.0f, 1.0f, 1.0f}};
+    uint64_t time = SDL_GetTicks();
+    for(size_t i = 0; i < colors.size(); ++i)
+    {
+        colors[i].r = static_cast<float>(0.5 * sin(time * 0.0003 + i * 3.1415926 / 4.0) + 0.5);
+        colors[i].g = static_cast<float>(0.5 * sin(time * 0.0006 + i * 3.1415926 / 4.0) + 0.5);
+        colors[i].b = static_cast<float>(0.5 * sin(time * 0.0008 + i * 3.1415926 / 4.0) + 0.5);
+    }
     int idx = 0;
     for(auto& stars_position_ptr : stars_ptr_arr)
     {
@@ -222,7 +229,7 @@ void Scene::renderStarsBackGround()
         {
             // 渲染坐标 = 世界坐标 - 相机位置 * 系数
             auto render_pos = stars_position[i] - camera_position_ * distance_scale[idx];
-            game_.renderFillRect(render_pos, glm::vec2(static_cast<float>(1 + idx / 2)), color[idx]);
+            game_.renderFillRect(render_pos, glm::vec2(static_cast<float>(1 + idx / 2)), colors[idx]);
         }
         idx++;
     }

@@ -20,7 +20,6 @@ void CollideMgr::reinit()
     clean();
     SDL_FRect init_rect = { 0.f, 0.f, game_.getCurrentScene()->getWorldSize().x, game_.getCurrentScene()->getWorldSize().y};
     quad_tree_ = new QuadTree(init_rect);
-    quad_tree_->setCollideMgr(this);
 }
 
 void CollideMgr::clean()

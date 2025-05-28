@@ -7,12 +7,12 @@
 
 QuadTree::~QuadTree()
 {
-    destroy(root_);
-    box_refcount_.clear();
-    to_insert_.clear();
+    destroyTreeNode(root_);
+    colliders_refcount_.clear();
+    colliders_to_insert_.clear();
 }
 
-void QuadTree::destroy(QuadTreeNode *&node)
+void QuadTree::destroyTreeNode(QuadTreeNode *&node)
 {
     if(!node) return;
     // 不是叶子节点，先递归叶子节点
@@ -20,19 +20,17 @@ void QuadTree::destroy(QuadTreeNode *&node)
     {
         for(int i = 0; i < sizeof(node->next_) / sizeof(QuadTreeNode*); ++i)
         {
-            destroy(node->next_[i]);
+            destroyTreeNode(node->next_[i]);
         }
     }
-    // 递归结束，变成叶子节点：清理区域物体
-    // 不能直接delete,因为一个碰撞盒子可能会跨越多个区域。使用hash引用计数，或者智能指针。 
+    // 递归结束，变成叶子节点：清理区域物体，因为一个碰撞盒子可能会跨越多个区域，使用引用计数判断是否被引用
     for(auto box : node->colliders_) 
     {
         if(box->getCanRemove()) continue;
-        --box_refcount_[box];
+        --colliders_refcount_[box];
     }
     node->colliders_.clear();
-
-    // 不需要上面这些，node到这里就一定是叶子,没有子区间，子区间在递归途中解决了
+    // 删除节点
     delete node;
     node = nullptr;
 }
@@ -61,24 +59,23 @@ void QuadTree::debug_print(QuadTreeNode* node, int deep, const std::string& desc
 
 void QuadTree::update(float dt)
 {
-    // 碰撞盒子位置更新
-    for(auto& [box, count] : box_refcount_)
-    {
-       box->update(dt);
-    }
-
     // 加入待添加碰撞盒子
-    if(!to_insert_.empty())
+    if(!colliders_to_insert_.empty())
     {
-        for(auto& box_ptr : to_insert_)
+        for(auto& box_ptr : colliders_to_insert_)
         {
             insert(box_ptr);
         }
-        to_insert_.clear();
+        colliders_to_insert_.clear();
     }
-    // 重构
+    // 碰撞盒子位置更新
+    for(auto& [collider, count] : colliders_refcount_)
+    {
+       collider->update(dt);
+    }
+    // 重构四叉树（更新物体所在区域）
     clear();
-    for(auto& [box_ptr, count] : box_refcount_)
+    for(auto& [box_ptr, count] : colliders_refcount_)
     {
         _insert(root_, box_ptr);
     }
@@ -118,17 +115,14 @@ void QuadTree::_clear(QuadTreeNode *& node)
         _clear(node->next_[i]);
     }
 
+    // 到了叶子节点：清理区域碰撞盒子，删除节点，置空Node指针
     for(auto ptr : node->colliders_)
     {
-        // debug: 待移除的标记前已经减少了引用计数，这里再减少就变成负数了。
+        // debug: 待移除的标记前已经减少了引用计数，这里再减少就变成负数了。 to update comments
         if (ptr->getCanRemove()) continue;  
-        box_refcount_[ptr]--;
+        --colliders_refcount_[ptr];
     }    
     node->colliders_.clear();
-    for(int i = 0; i < sizeof(node->next_) / sizeof(QuadTreeNode*); ++i)
-    {
-        node->next_[i] = nullptr;
-    }
     delete node;
     node = nullptr;
 }
@@ -136,19 +130,19 @@ void QuadTree::_clear(QuadTreeNode *& node)
 
 void QuadTree::safeInsert(CollideBox* collide_box)
 {
-    if(box_refcount_.count(collide_box)) return;
-    to_insert_.push_back(collide_box);
+    if(colliders_refcount_.count(collide_box)) return;
+    if(std::find(colliders_to_insert_.begin(), colliders_to_insert_.end(), collide_box) != colliders_to_insert_.end()) return;
+    colliders_to_insert_.push_back(collide_box);
 }
 
 bool QuadTree::insert(CollideBox* collide_box)
 {
     // 这是首次插入，初始化引用计数
-    if(box_refcount_.count(collide_box)) return false;
-    box_refcount_[collide_box] = 0;
+    if(colliders_refcount_.count(collide_box)) return false;
+    colliders_refcount_[collide_box] = 0;
     if(!_insert(root_, collide_box))
     {
-
-        box_refcount_.erase(collide_box);
+        colliders_refcount_.erase(collide_box);
         return false;
     }
     return true;
@@ -178,7 +172,7 @@ bool QuadTree::_insert(QuadTreeNode *node, CollideBox* collide_box)
             return true;
         }
         node->colliders_.emplace_back(collide_box);
-        ++box_refcount_[collide_box];
+        ++colliders_refcount_[collide_box];
         // 超过最大容量，细分区间，重新分配物体所在区间
         if(node->colliders_.size() > max_node_count_ && node->split(min_grid_size_.x, min_grid_size_.y))
         {
@@ -188,12 +182,11 @@ bool QuadTree::_insert(QuadTreeNode *node, CollideBox* collide_box)
             // v0.2 从根节点找合适的位置插入    此时非叶子节点，不会插入node
             for(auto& old_box : node->colliders_)
             {
-                --box_refcount_[old_box];
-                if(!_insert(root_, old_box))     // 插入成功，移除原有计数
+                --colliders_refcount_[old_box];
+                if(!_insert(root_, old_box))
                 {
                     // 这里需要处理插入失败的情况，为什么会插入失败？
-                    // 一般来说不会插入失败，除非物体脱离了世界边界，那么就应该移除物体。
-                    // 子弹？
+                    // 一般来说不会插入失败，除非物体脱离了世界边界，那么就应该移除物体。子弹？
                     SDL_Log("re insert failed: %p", old_box);
                 }
             }
@@ -210,11 +203,11 @@ bool QuadTree::erase(CollideBox* collide_box)
     // if(box_refcount_.count(collide_box) == 0) return false;
 
     // 没有找到，可能物体超过世界边界，碰撞管理器将其移除了
-    SDL_Log("[before] erase box, ptr: %p, refcount: %d\n", collide_box, box_refcount_[collide_box]);
+    SDL_Log("[before] erase box, ptr: %p, refcount: %d\n", collide_box, colliders_refcount_[collide_box]);
     _erase(root_, collide_box);
-    SDL_Log("[after] erase box, ptr: %p, refcount: %d\n", collide_box, box_refcount_[collide_box]);
-    box_refcount_.erase(collide_box);
-    to_insert_.erase(std::remove(to_insert_.begin(), to_insert_.end(), collide_box), to_insert_.end());
+    SDL_Log("[after] erase box, ptr: %p, refcount: %d\n", collide_box, colliders_refcount_[collide_box]);
+    colliders_refcount_.erase(collide_box);
+    colliders_to_insert_.erase(std::remove(colliders_to_insert_.begin(), colliders_to_insert_.end(), collide_box), colliders_to_insert_.end());
 
     return true;
 }
@@ -237,7 +230,7 @@ bool QuadTree::_erase(QuadTreeNode *node, CollideBox* collide_box)
         {
             if(box == collide_box)
             {
-                box_refcount_[box]--;   // 引用计数减少,不然最后不移除会野指针
+                colliders_refcount_[box]--;   // 引用计数减少,不然最后不移除会野指针
                 return true;
             }
             else return false;
@@ -274,7 +267,7 @@ void QuadTree::_checkAndProcessCollide(QuadTreeNode *node)
             auto& src_box = node->colliders_[src_idx];
             if(src_box->getHitLayer() == CollideLayer::None || !src_box->getIsActive()
                 || src_box->getCanRemove()) continue;
-            for(size_t dst_idx = 0; dst_idx < node->colliders_.size(); ++dst_idx) // 之前的受击者这次可能作为攻击者，所以可能碰撞两次
+            for(size_t dst_idx = 0; dst_idx < node->colliders_.size(); ++dst_idx) // 之前的受击者这次可能作为攻击者，所以可能碰撞两次,A->B,B->A
             {
                 auto& dst_box = node->colliders_[dst_idx];
                 if(src_box == dst_box || src_box->getHitLayer() != dst_box->getHurtLayer()

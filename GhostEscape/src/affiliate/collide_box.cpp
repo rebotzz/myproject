@@ -10,16 +10,14 @@ CollideBox::CollideBox(Object *parent, CollideShape shape, const glm::vec2 &size
     setCollideShape(shape);
     setAchorModeAndSize(achor_mode, size);
     setRelativeOffset(offset);
-
-    SDL_Log("CollideBox(): %p", this);
-
+    // SDL_Log("CollideBox(): %p", this);
     game_.getCurrentScene()->getCollideMgr()->registerCollideBox(this);
 
 }
 
 CollideBox::~CollideBox()
 {
-    SDL_Log("~CollideBox(): %p", this);
+    // SDL_Log("~CollideBox(): %p", this);
     game_.getCurrentScene()->getCollideMgr()->detachCollideBox(this);
 }
 
@@ -86,7 +84,7 @@ bool CollideBox::checkCollision(CollideBox *target)
             circle_pos = position_;
             circle_size = size_.x;
         }
-        if(checkIntersectRectCircle(rect_pos, rect_size, circle_pos, circle_size))
+        if(hasIntersectionRectAndCircle(rect_pos, rect_size, circle_pos, circle_size))
             is_collide = true;
     }
 
@@ -94,10 +92,10 @@ bool CollideBox::checkCollision(CollideBox *target)
 }
 
 // 判断圆与矩形相交
-bool CollideBox::checkIntersectRectCircle(const glm::vec2 &rect_position, const glm::vec2 &rect_size, 
+bool CollideBox::hasIntersectionRectAndCircle(const glm::vec2 &rect_position, const glm::vec2 &rect_size, 
     const glm::vec2 &circle_position, float circle_size)
 {
-    // 方法1：基于圆心到矩形最短距离的算法；方法2：依据矩形边划分为9个区域，分类讨论
+    // 方法1：基于圆心到矩形最短距离的算法；方法2：依据矩形边划分为9个区域，分类讨论. 这里选用方法1
     auto rect_center = rect_position + rect_size / 2.0f;
     auto delta = glm::abs(circle_position - rect_center);
     auto min_distance = delta - rect_size / 2.0f;

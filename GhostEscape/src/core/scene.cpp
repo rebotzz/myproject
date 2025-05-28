@@ -215,14 +215,14 @@ void Scene::renderStarsBackGround()
     static std::vector<SDL_FColor> color = { SDL_FColor{1.0f, 0.5f, 0.0f, 1.0f}, 
         SDL_FColor{0.0f, 1.0f, 1.0f, 1.0f}, SDL_FColor{1.0f, 1.0f, 1.0f, 1.0f}};
     int idx = 0;
-    for(auto& stars_ptr : stars_ptr_arr)
+    for(auto& stars_position_ptr : stars_ptr_arr)
     {
-        auto& stars = *stars_ptr;
+        auto& stars_position = *stars_position_ptr;
         for(int i = 0; i < stars_count; ++i)
         {
             // 渲染坐标 = 世界坐标 - 相机位置 * 系数
-            auto pos = stars[i] - camera_position_ * distance_scale[idx];
-            game_.renderFillRect(pos, glm::vec2(static_cast<float>(1 + idx / 2)), color[idx]);
+            auto render_pos = stars_position[i] - camera_position_ * distance_scale[idx];
+            game_.renderFillRect(render_pos, glm::vec2(static_cast<float>(1 + idx / 2)), color[idx]);
         }
         idx++;
     }

@@ -48,7 +48,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
         bullet->setMaxSpeed(500.f);
         float deg = glm::degrees(std::atan2(direction.y, direction.x)); // glm::angle的角度没有方向
         bullet->getSpriteAnim()->setAngle(deg);
-        bullet->setAttackTargetType(ObjectType::Player);
+        bullet->setHitCollideLayer(CollideLayer::Player);
     });
     weapon_->setActive(false);
 
@@ -91,7 +91,6 @@ void Enemy::updateVelocity()
 
 void Enemy::updateState()
 {
-    // TODO: 受击，死亡切换动画：stat类
     // 更换current_anim_
     auto old_state = current_state_;
     auto old_anim = current_anim_;

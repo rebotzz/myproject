@@ -67,8 +67,3 @@ void SceneTittle::render()
     renderStarsBackGround();
     Scene::render();
 }
-
-void SceneTittle::renderBackground()
-{
-    // todo
-}

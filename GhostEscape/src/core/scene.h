@@ -7,6 +7,7 @@
 
 
 class CollideMgr;
+// 场景
 class Scene : public Object
 {
 protected:

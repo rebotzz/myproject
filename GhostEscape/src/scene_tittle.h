@@ -25,9 +25,6 @@ public:
     virtual bool handleEvent(const SDL_Event& event) override;
     virtual void update(float dt) override;
     virtual void render() override;
-
-private:
-    void renderBackground();
 };
 
 

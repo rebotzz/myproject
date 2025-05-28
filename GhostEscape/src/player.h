@@ -17,9 +17,8 @@ protected:
     // 动画
     SpriteAnim* anim_move_ = nullptr;
     SpriteAnim* anim_idle_ = nullptr;
-    // 武器
-    WeaponThunder* weapon_thunder_ = nullptr;
-    Effect* effect_dead_ = nullptr;
+    WeaponThunder* weapon_thunder_ = nullptr;   // 武器
+    Effect* effect_dead_ = nullptr;             // 特效
     Effect* effect_born_ = nullptr;
     int score_ = 0;     // 得分，暂时放在玩家类，应该放在状态类吗？还是场景类？
 
@@ -32,9 +31,6 @@ public:
     virtual void update(float dt) override;
     virtual void render() override;
 
-    // 工具函数
-    void syncCamera(float dt);  // 相机跟随，放在玩家类比场景类更合理
-
     // getters and setters
     float getAttackCDPercentage() const { return weapon_thunder_->getAttackCDPercentage(); }
     int getScore() const { return score_; }
@@ -46,6 +42,8 @@ protected:
     void updateKeyboardControl();
     virtual void move(float dt) override;
     void updateSpriteAnim();
+    // 工具函数
+    void syncCamera(float dt);  // 相机跟随，放在玩家类比场景类更合理
 };
 
 

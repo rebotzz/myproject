@@ -22,7 +22,6 @@ public:
 protected:
     virtual void move(float dt) override;
     virtual void checkAndRemove() override;
-
 };
 
 

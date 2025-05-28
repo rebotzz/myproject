@@ -13,7 +13,6 @@ protected:
     CollideBox* collide_box_ = nullptr;
     SpriteAnim* anim_ = nullptr;
     float damage_ = 20.0f;
-    ObjectType attack_target_type_ = ObjectType::Enemy; // TODO 修改为碰撞层
 
 public:
     // 父节点是具体场景
@@ -26,13 +25,12 @@ public:
     // getters and setters
     CollideBox* getCollideBox() const { return collide_box_; }
     SpriteAnim* getSpriteAnim() const { return anim_; }
-    void setAttackTargetType(ObjectType type) { attack_target_type_ = type; }
-    ObjectType getAttackTargetType() const { return attack_target_type_; }
     float getDamage() const { return damage_; }
+    void setHitCollideLayer(CollideLayer layer);
+    void setHurtCollideLayer(CollideLayer layer);
 
 protected:
     // 数据更新
-    virtual void updateCollide();
     virtual void move(float ) {};
     virtual void checkAndRemove();
 };

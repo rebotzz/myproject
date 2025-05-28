@@ -11,8 +11,8 @@ class SceneMain : public Scene
 protected:
     Player* player_ = nullptr;
     float spawn_enemy_timer_ = 0.0f;
-    float spawn_enemy_cd_ = 4.0f;
-    int min_spawn_count = 10, max_spawn_count = 20;
+    float spawn_enemy_cd_ = 5.0f;
+    int min_spawn_count = 3, max_spawn_count = 10;
     UICursor* ui_cursor_ = nullptr;
     UIButton* button_pause_ = nullptr;
     UIButton* button_restart_ = nullptr;

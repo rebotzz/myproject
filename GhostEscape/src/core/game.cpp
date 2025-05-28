@@ -174,7 +174,7 @@ void Game::init(const std::string &tittle, int window_w, int window_h, int fps)
         exit(-1);
     }
 
-    // 设置逻辑分辨率 TODO
+    // 设置逻辑分辨率
     SDL_SetRenderLogicalPresentation(renderer_,  window_w, window_h, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     // 创建字体渲染引擎

@@ -3,13 +3,13 @@
 #include "collide_manager.h"
 #include "../core/scene.h"
 
-CollideBox::CollideBox(Object *parent, CollideShape shape, const glm::vec2 &size, const glm::vec2 &offset, 
+CollideBox::CollideBox(Object *parent, CollideShape shape, const glm::vec2 &size, const glm::vec2 &relative_offset, 
     AchorMode achor_mode)
     :ObjectAffiliate(parent)
 {
     setCollideShape(shape);
     setAchorModeAndSize(achor_mode, size);
-    setRelativeOffset(offset);
+    setRelativeOffset(relative_offset);
     // SDL_Log("CollideBox(): %p", this);
     game_.getCurrentScene()->getCollideMgr()->registerCollideBox(this);
 
@@ -50,6 +50,7 @@ void CollideBox::render()
 
 bool CollideBox::checkCollision(CollideBox *target)
 {
+    assert(target != nullptr);
     bool is_collide = false;
     if(shape_ == CollideShape::Circle && target->getCollideShape() == CollideShape::Circle)
     {

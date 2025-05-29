@@ -2,7 +2,7 @@
 #define _PLAYER_H_
 
 #include "core/actor.h"
-#include "core/status.h"
+#include "raw/status.h"
 #include "weapon_thunder.h"
 
 class SpriteAnim;

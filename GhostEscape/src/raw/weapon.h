@@ -4,7 +4,7 @@
 #include "../affiliate/object_affiliate.h"
 #include <functional>
 
-// 改为继承附属对象，跟随玩家移动
+// 改为继承附属对象，跟随玩家移动   (教程中武器继承自Object，我觉得继承自ObjectAffiliate也行，可以处理武器有动画的情况)
 class Weapon : public ObjectAffiliate   
 {
 protected:

@@ -8,7 +8,7 @@
 class CollideBox;
 class QuadTree;
 
-#define COLLIDE_MGR_VERSION_QUADTREE_    // 是否启用四叉树碰撞检测版本
+// #define COLLIDE_MGR_VERSION_QUADTREE_    // 是否启用四叉树碰撞检测版本
 
 
 // (纯功能组件)这里碰撞管理器挂载到场景

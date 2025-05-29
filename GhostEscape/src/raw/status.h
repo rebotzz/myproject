@@ -1,7 +1,7 @@
 #ifndef _STATUS_H_
 #define _STATUS_H_
 
-#include "object.h"
+#include "../core/object.h"
 #include <functional>
 
 // 状态类
@@ -12,8 +12,7 @@ protected:
     float max_hp_ = 100.0f;     
     float mana_ = 100.0f;       // 法力
     float max_mana_ = 100.0f;    
-    float mana_timer_ = 0.0f;
-    float mana_recover_cd_ = 0.1f;
+    float mana_regen_ = 10.f;   // 法力恢复速率
     float damage_ = 50.0f;      // 攻击力
     bool invincible_ = false;   // 无敌帧
     float invincible_timer_ = 0.0f;
@@ -24,7 +23,7 @@ public:
     Status() = default;
     ~Status() = default;
     static Status* createAndAddStatusChild(Object* parent, float max_hp, float max_mana, 
-        float mana_recover_cd, float invincible_interval); 
+        float mana_recover_intensity, float invincible_interval); 
 
     virtual void update(float dt);
 
@@ -40,7 +39,7 @@ public:
     float getMana() const { return mana_; }
     void setMaxMana(float val) { max_mana_ = val; }
     float getMaxMana() const { return max_mana_; }
-    void setManaRecoverCD(float val) { mana_recover_cd_ = val; }
+    void setManaRecoverIntensity(float val) { mana_regen_ = val; }
     void setDamage(float val) { damage_ = val; }
     float getDamage() const { return damage_; }
 

@@ -11,6 +11,7 @@ protected:
     int frame_idx_ = 0;
     float frame_interval_ = 0.1f;
     bool is_loop_ = true;
+    bool is_finished_ = false;
     float timer_ = 0;   // 计时器
 
 public:
@@ -25,13 +26,13 @@ public:
     virtual void render();
 
     static SpriteAnim* createAndAddSpriteAnimChild(ObjectScreen* parent, ResID tex_id, int frame_count, float scale = 1.0, 
-        float frame_interval = 0.1f, float is_loop = true, const glm::vec2 &offset = glm::vec2(0), AchorMode mode = AchorMode::CENTER);
+        float frame_interval = 0.1f, float is_loop = true, const glm::vec2 &relative_offset = glm::vec2(0), AchorMode mode = AchorMode::CENTER);
 
     // setters and getters
     float getFrameInterval() const { return frame_interval_; }
     void setFrameInterval(float interval) { frame_interval_ = interval; }
     void setLoop(bool flag) { is_loop_ = flag; }
-    bool getIsFinished() const { return frame_idx_ >= total_frame_count_; }
+    bool getIsFinished() const { return is_finished_; }
     void setFrameIdx(int idx) { frame_idx_ = idx; }
     int getFrameIdx() const { return frame_idx_; }
     void syncFrameTime(SpriteAnim* sprite_anim);

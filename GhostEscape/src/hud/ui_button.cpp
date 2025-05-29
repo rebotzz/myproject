@@ -29,23 +29,38 @@ bool UIButton::handleEvent(const SDL_Event& event)
 { 
     if(ObjectScreen::handleEvent(event)) return true;
 
+    bool is_on_button = game_.isMouseInRect(sprite_idle_->getRenderPosition(), sprite_idle_->getRenderPosition() + sprite_idle_->getSize());
+    glm::vec2 mouse_pos;
+    bool is_mouse_left_down = game_.getMouseState(mouse_pos) & SDL_BUTTON_LMASK;
     switch(event.type)
     {
+        case SDL_EVENT_MOUSE_MOTION:
+        switch(button_status_)
+        {
+            case ButtonStatus::IDLE: if(is_on_button && !is_mouse_left_down) button_status_ = ButtonStatus::HOVER; break;
+            case ButtonStatus::HOVER: if(!is_on_button) button_status_ = ButtonStatus::IDLE; break;
+            case ButtonStatus::CLICKED: if(is_on_button && !is_mouse_left_down) button_status_ = ButtonStatus::IDLE; break;
+        }
+        break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        if(event.button.button == SDL_BUTTON_LEFT && button_status_ == ButtonStatus::HOVER)
+        {
+            button_status_ = ButtonStatus::CLICKED;
+            game_.playSound(ResID::Sound_UIButton08);
+            return true;
+        }
+        break;
         case SDL_EVENT_MOUSE_BUTTON_UP:
-        glm::vec2 mouse_pos;
-        game_.getMouseState(mouse_pos);
-        SDL_FPoint cursor_point = {mouse_pos.x, mouse_pos.y};
-        SDL_FRect button_rect = { sprite_idle_->getRenderPosition().x,
-            sprite_idle_->getRenderPosition().y,
-            sprite_idle_->getSize().x,
-            sprite_idle_->getSize().y};
-        if(button_status_ == ButtonStatus::CLICKED && SDL_PointInRectFloat(&cursor_point, &button_rect))
+        bool is_on_button = game_.isMouseInRect(sprite_idle_->getRenderPosition(), 
+            sprite_idle_->getRenderPosition() + sprite_idle_->getSize());
+        if(button_status_ == ButtonStatus::CLICKED && is_on_button)
         {
             if(on_clicked_) on_clicked_();
             return true;
         }
         break;
     }
+
     return false;
 }
 
@@ -58,34 +73,7 @@ void UIButton::update(float dt)
 
 void UIButton::updateButton()
 {
-    auto button_pos = sprite_idle_->getRenderPosition();
-    auto button_size = sprite_idle_->getSize();
-    SDL_FRect button_rect = {button_pos.x, button_pos.y, button_size.x, button_size.y};
-    glm::vec2 cursor_pos;
-    auto mouse_button_state = game_.getMouseState(cursor_pos);
-    SDL_FPoint cursor_point = {cursor_pos.x, cursor_pos.y};
-    bool is_on_button = SDL_PointInRectFloat(&cursor_point, &button_rect); 
-    // 按键状态切换
-    switch(button_status_)
-    {
-        case ButtonStatus::IDLE:
-        if(is_on_button && !mouse_button_state) button_status_ = ButtonStatus::HOVER;
-        break;
-        case ButtonStatus::HOVER:
-        if(!is_on_button) button_status_ = ButtonStatus::IDLE;
-        else if(mouse_button_state & SDL_BUTTON_LMASK) 
-        {
-            button_status_ = ButtonStatus::CLICKED;
-            game_.playSound(ResID::Sound_UIButton08);
-        }
-        break;
-        case ButtonStatus::CLICKED:
-        if(!is_on_button) button_status_ = ButtonStatus::IDLE;
-        // 按钮点击执行的逻辑放在了handleEvent()
-        break;
-    }
-
-    // 跟新按键图片
+    // 更新按键图片
     auto old_sprite = current_sprite_;
     switch(button_status_)
     {

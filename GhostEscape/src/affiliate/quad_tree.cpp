@@ -117,7 +117,8 @@ void QuadTree::update(float dt)
     // 碰撞盒子位置更新
     for(auto [collider, count] : colliders_refcount_)
     {
-       collider->update(dt);
+        if(collider->getIsActive())
+            collider->update(dt);
     }
     // 更新物体所在区域v1.0: 重构四叉树
     clear();
@@ -134,7 +135,8 @@ void QuadTree::update(float dt)
     // }
 
     // 处理碰撞
-    checkAndProcessCollide();
+    // checkAndProcessCollide();
+    checkAndProcessCollide2();
     // debugPrint(root_, 0, "root", true);
 }
 
@@ -257,6 +259,33 @@ void QuadTree::checkAndProcessCollide()
     _checkAndProcessCollide(root_);
 }
 
+void QuadTree::checkAndProcessCollide2()
+{
+    std::unordered_set<CollideBox*> visited;    // 标记已经访问过的
+    // 遍历管理的碰撞盒子，检索与它再统一区域的其他碰撞盒，执行碰撞
+    for(auto [collider, count] : colliders_refcount_)
+    {
+        if(count <= 0 || !collider->getIsActive() || collider->getCanRemove()) continue;
+        std::unordered_set<CollideBox*> same_rect_colliders;
+        retrieve(root_, collider, same_rect_colliders);
+        if(same_rect_colliders.empty()) continue;
+        for(auto other_collider : same_rect_colliders)
+        {
+            if(visited.count(other_collider) || !other_collider->getIsActive() || other_collider->getCanRemove()) continue;
+            if(collider->checkCollision(other_collider))
+            {
+                if((collider->getHitLayer() != CollideLayer::None && collider->getHitLayer() == other_collider->getHurtLayer())
+                || (collider->getHurtLayer() != CollideLayer::None && collider->getHurtLayer() == other_collider->getHitLayer()))
+                {
+                    collider->processCollide(other_collider);
+                    other_collider->processCollide(collider);
+                }
+            }
+        }
+        visited.insert(collider);
+    }
+}
+
 void QuadTree::_checkAndProcessCollide(QuadTreeNode *node)
 {
     if(!node) return;
@@ -344,7 +373,8 @@ void QuadTree::retrieve(QuadTreeNode* node, CollideBox* box, std::unordered_set<
     if(nullptr == node || nullptr == box || !node->hasInRectIntersection(box)) return;
     if(node->isLeaf()) 
     {
-        for(auto collider : node->colliders_) result.insert(collider);
+        for(auto collider : node->colliders_) 
+            if(collider != box) result.insert(collider);
     } 
     else 
     {

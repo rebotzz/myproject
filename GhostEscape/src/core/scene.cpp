@@ -23,9 +23,7 @@ Scene::~Scene()
 
 bool Scene::handleEvent(const SDL_Event& event)
 {
-    if(Object::handleEvent(event)) return true;
-
-    // 优先处理屏幕事件，然后世界事件
+    // 优先处理屏幕事件，然后自身事件，最后是世界事件
     for(auto obj : screen_children_)
     {
         if(obj->getIsActive()) 
@@ -34,18 +32,17 @@ bool Scene::handleEvent(const SDL_Event& event)
         }
     }
 
-    if(!pause_time_)
+    if(pause_time_) return false;   // 如果场景暂停，则不处理世界元素的事件
+    if(Object::handleEvent(event)) return true; // 处理场景自身的事件
+    for(auto obj : world_children_) // 处理世界元素的事件
     {
-        for(auto obj : world_children_)
+        if(obj->getIsActive()) 
         {
-            if(obj->getIsActive()) 
-            {
-                if(obj->handleEvent(event)) return true;
-            }
+            if(obj->handleEvent(event)) return true;
         }
     }
 
-    return false;
+    return false;   // 表示事件未被任何元素处理
 }
 
 void Scene::update(float dt)
@@ -59,16 +56,16 @@ void Scene::update(float dt)
         }
         children_to_add_.clear();
     }
-    Object::update(dt);
 
     for(auto obj : screen_children_)
     {
         if(obj->getIsActive()) obj->update(dt);
     }
 
-    // 时间暂停时不更新世界对象
+    // 时间暂停时不更新世界对象、功能组件
     if(!pause_time_)
     {
+        Object::update(dt);
         for(auto obj : world_children_)
         {
             if(obj->getIsActive()) obj->update(dt);
@@ -96,10 +93,14 @@ void Scene::addChild(Object* object)
 {
     switch(object->getObjectType())
     {
-        case ObjectType::None: children_.push_back(object); break;
-        case ObjectType::Screen: screen_children_.push_back(object); break;
+        case ObjectType::None: 
+        children_.push_back(object); 
+        break;
+        case ObjectType::Screen: 
+        screen_children_.push_back(object); 
+        break;
         case ObjectType::World: 
-        case ObjectType::Enemy: 
+        case ObjectType::Enemy:
         case ObjectType::Player: 
         default:
         world_children_.push_back(object); 
@@ -217,9 +218,9 @@ void Scene::renderStarsBackGround()
     uint64_t time = SDL_GetTicks();
     for(size_t i = 0; i < colors.size(); ++i)
     {
-        colors[i].r = static_cast<float>(0.5 * sin(time * 0.0003 + i * 3.1415926 / 4.0) + 0.5);
-        colors[i].g = static_cast<float>(0.5 * sin(time * 0.0006 + i * 3.1415926 / 4.0) + 0.5);
-        colors[i].b = static_cast<float>(0.5 * sin(time * 0.0008 + i * 3.1415926 / 4.0) + 0.5);
+        colors[i].r = static_cast<float>(0.5 * sin(time * 0.0004 + i * 3.1415926 / 4.0) + 0.5);
+        colors[i].g = static_cast<float>(0.5 * sin(time * 0.0005 + i * 3.1415926 / 4.0) + 0.5);
+        colors[i].b = static_cast<float>(0.5 * sin(time * 0.0006 + i * 3.1415926 / 4.0) + 0.5);
     }
     int idx = 0;
     for(auto& stars_position_ptr : stars_ptr_arr)

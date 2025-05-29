@@ -2,7 +2,6 @@
 #define _WEAPON__THUNDER_H_
 
 #include "raw/weapon.h"
-#include "spell_thunder.h"
 
 class SpriteAnim;
 class Enemy;
@@ -17,6 +16,7 @@ public:
     ~WeaponThunder() = default;
     static WeaponThunder* createAndAddWeaponThunderChild(Object* parent, float damage, float attack_cd, float mana_cost);
 
+    virtual bool handleEvent(const SDL_Event& event) override;      // 武器攻击:（可以玩家处理handleEvent，由武器处理更自动些）
     virtual bool canAttack() const override;
     virtual void attack(const glm::vec2& position) override;
 

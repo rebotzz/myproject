@@ -45,7 +45,7 @@ private:
     QuadTreeNode* root_ = nullptr;                                  // 根节点
     std::unordered_map<CollideBox*, int> colliders_refcount_;       // 注册的碰撞盒子
     std::vector<CollideBox*> colliders_to_insert_;                  // 临时容器，准备下一次插入
-    std::unordered_set<long long> collide_done_set_;                // 避免重复碰撞，标记已经碰撞的集合TODO:小概率可能有hash冲突
+    std::unordered_set<long long> collide_done_set_;                // v.01碰撞检测:避免重复碰撞，标记已经碰撞的集合TODO:小概率可能有hash冲突
 
 public:
     QuadTree(const SDL_FRect& init_rect) { root_ = new QuadTreeNode(init_rect); }
@@ -71,7 +71,8 @@ private:
     void _render(QuadTreeNode* node);
     void _clear(QuadTreeNode*& node);
 
-    void checkAndProcessCollide();              // 处理碰撞，递归每一个小区间
+    void checkAndProcessCollide();              // 处理碰撞，递归每一个小区间，然后两层for (缺点，需要检测是否是重复碰撞对)
+    void checkAndProcessCollide2();             // 处理碰撞2，获取与每个碰撞盒子可能相交的盒子列表，然后检测 (天然避免了重复碰撞对)
     void clear();                               // 删除旧节点，重建新节点
     void debugPrint(QuadTreeNode* node, int deep, const std::string& desc, bool print_first = false);
     void retrieve(QuadTreeNode* node, CollideBox* box, std::unordered_set<CollideBox*>& result);   // 获取在同一分割区间的碰撞盒子

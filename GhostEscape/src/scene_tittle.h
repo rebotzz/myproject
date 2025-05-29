@@ -14,7 +14,6 @@ protected:
     HUDText* text_tittle_ = nullptr;
     HUDText* text_credits_ = nullptr;
     HUDText* text_high_score_ = nullptr;
-    bool show_credits_ = false;
 
 public:
     SceneTittle();

@@ -5,6 +5,7 @@
 
 enum class AchorMode
 {
+    NONE,   // 不用偏移
     TOP_LEFT,
     TOP_CENTER,
     TOP_RIGHT,

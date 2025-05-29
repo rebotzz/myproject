@@ -1,9 +1,40 @@
 #include "ui_player_status.h"
 #include "../scene_main.h"
 #include "../player.h"
-#include "../core/status.h"
+#include "../raw/status.h"
 #include "../raw/weapon.h"
 #include "hud_text.h"
+
+
+UIPlayerBar::UIPlayerBar(Object *parent, const glm::vec2 &position, ResID tex_icon, ResID tex_bar_bg, ResID tex_bar_fg, 
+    const glm::vec2 &icon_scale, const glm::vec2 &bar_scale)
+{
+    if(parent)
+    {
+        parent->safeAddChild(this);
+        setParent(parent);
+    }
+    setObjectType(ObjectType::Screen);
+    setRenderPosition(position);
+    auto x_offset = 40.0f;
+    sprite_bar_bg_ = Sprite::createAndAddSpriteChild(this, tex_bar_bg, bar_scale, glm::vec2(x_offset, 0.0f), AchorMode::CENTER_LEFT);
+    sprite_bar_fg_ = Sprite::createAndAddSpriteChild(this, tex_bar_fg, bar_scale, glm::vec2(x_offset, 0.0f), AchorMode::CENTER_LEFT);
+    sprite_icon_ = Sprite::createAndAddSpriteChild(this, tex_icon, icon_scale, glm::vec2(0.0f), AchorMode::CENTER_LEFT);
+}
+
+UIPlayerSkillBar::UIPlayerSkillBar(Object *parent, const glm::vec2 &position, ResID tex_icon, const glm::vec2 &icon_scale)
+{
+    if(parent)
+    {
+        parent->safeAddChild(this);
+        setParent(parent);
+    }
+    setObjectType(ObjectType::Screen);
+    setRenderPosition(position);
+    sprite_icon_bg_ = Sprite::createAndAddSpriteChild(this, tex_icon, icon_scale, glm::vec2(0.0f), AchorMode::CENTER_LEFT);
+    sprite_icon_fg_ = Sprite::createAndAddSpriteChild(this, tex_icon, icon_scale, glm::vec2(0.0f), AchorMode::CENTER_LEFT);
+    sprite_icon_bg_->setTextureAlpha(0.5f);
+}
 
 UIPlayerStatus::UIPlayerStatus(Scene* parent):ObjectScreen(parent)
 {
@@ -16,10 +47,6 @@ UIPlayerStatus::UIPlayerStatus(Scene* parent):ObjectScreen(parent)
 
     auto text_pos = glm::vec2(game_.getScreenSize().x - 20.f, 60.0f); 
     hud_text_ = new HUDText(this, text_pos, "Score:0", 36, ResID::Tex_Textfield01, AchorMode::CENTER_RIGHT);
-}
-
-UIPlayerStatus::~UIPlayerStatus()
-{
 }
 
 

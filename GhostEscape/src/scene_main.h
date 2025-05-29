@@ -6,6 +6,7 @@
 class Player;
 class UICursor;
 class UIButton;
+class EnemySpawner;
 class SceneMain : public Scene
 {
 protected:
@@ -38,7 +39,6 @@ protected:
     void renderBackgroundGrid();
 
     // 工具函数
-    void spawnEnemy(float dt);
     void checkSlowdown(float& dt);   // 时间减速
 };
 

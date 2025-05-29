@@ -45,6 +45,7 @@ void HUDText::setMargin(const glm::vec2 margin_scale)
 
 void HUDText::updateBackgroundSpriteSize()
 {
+    // 确保无论是中心锚点还是左右锚点，文本都在背景图中间，偏移是整体的
     auto boundary = text_lable_->getSize() * margin_scale_;
     sprite_bg_->setSize(text_lable_->getSize() + boundary);
     text_lable_->setRenderCenterPosition(sprite_bg_->getRenderPosition() + sprite_bg_->getSize() / 2.0f);

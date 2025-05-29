@@ -1,12 +1,12 @@
 #include "enemy.h"
 #include "affiliate/sprite_anim.h"
 #include "affiliate/collide_box.h"
-#include "core/status.h"
+#include "raw/status.h"
 #include "scene_main.h"
-#include "player.h"
-#include "hud/ui_enemy_hp_bar.h"
+#include "affiliate/affiliate_bar.h"
 #include "raw/weapon.h"
-#include "raw/spell_bullet.h"
+#include "world/spell_bullet.h"
+#include "player.h"
 
 Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
 {
@@ -15,9 +15,9 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     setMaxSpeed(100.f);
     setObjectType(ObjectType::Enemy);
     // 初始化动画
-    anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostSheet, 4, 3.0f);
-    anim_hurt_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostHurtSheet, 4, 3.0f);
-    anim_dead_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostDeadSheet, 8, 3.0f, 0.1f, false);
+    anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostSheet, 4, 2.0f);
+    anim_hurt_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostHurtSheet, 4, 2.0f);
+    anim_dead_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostDeadSheet, 8, 2.0f, 0.1f, false);
     anim_hurt_->setActive(false);
     anim_dead_->setActive(false);
     current_anim_ = anim_move_;
@@ -40,7 +40,8 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     weapon_->setAttackCallback([&]()
     {
         // 发射子弹
-        auto target_pos = dynamic_cast<SceneMain*>(parent_)->getPlayer()->getPosition();
+        if(!target_ || target_->getIsDead() || !target_->getIsActive()) return;
+        auto target_pos = target_->getPosition();
         auto direction = glm::normalize(target_pos - getPosition());
         if(glm::length(direction) > 2.0f) direction = glm::vec2(1, 0);
         auto bullet = new SpellBullet(parent_, 10.f, world_position_, ResID::Tex_Laser3, 1, 0.5f);
@@ -52,8 +53,8 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     });
     weapon_->setActive(false);
 
-    // 血条UI  最后添加，最上层最后绘制
-    UIEnemyHPBar::createAndAddUIHPBarChild(this, glm::vec2(anim_move_->getSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getSize().y / 2.0f));
+    // 血条  最后添加，最上层最后绘制
+    health_bar_ = new AffilateBar(this, glm::vec2(anim_move_->getSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getSize().y / 2.0f));
 }
 
 Enemy::~Enemy()
@@ -68,11 +69,9 @@ Enemy *Enemy::createAndAddEnemyChild(Object *parent, const glm::vec2 &position)
 
 void Enemy::update(float dt)
 {
-    Actor::update(dt);
     velocity_ *= 0.9f;
+    Actor::update(dt);
     updateVelocity();
-    // debug
-    move(dt);
 
     updateState();
     attack();
@@ -81,12 +80,12 @@ void Enemy::update(float dt)
 
 void Enemy::updateVelocity()
 {
+    if(!target_ || !target_->getIsActive()) return;
     if(current_state_ != EnemyState::NORMAL) return;
-    auto player = dynamic_cast<SceneMain*>(parent_)->getPlayer();
-    auto player_pos = player->getPosition();
-    float distance = glm::length(getPosition() - player_pos);
+    auto target_pos = target_->getPosition();
+    float distance = glm::length(getPosition() - target_pos);
     if(distance < 0.1) return;
-    velocity_ = glm::normalize(player_pos - getPosition()) * max_speed_;
+    velocity_ = glm::normalize(target_pos - getPosition()) * max_speed_;
 }
 
 void Enemy::updateState()
@@ -94,18 +93,9 @@ void Enemy::updateState()
     // 更换current_anim_
     auto old_state = current_state_;
     auto old_anim = current_anim_;
-    if(status_->getIsDead())
-    {
-        current_state_ = EnemyState::DEAD;
-    }
-    else if(status_->getIsInvincible())
-    {
-        current_state_ = EnemyState::HURT;
-    }
-    else
-    {
-        current_state_ = EnemyState::NORMAL;
-    }
+    if(status_->getIsDead()) current_state_ = EnemyState::DEAD;
+    else if(status_->getIsInvincible()) current_state_ = EnemyState::HURT;
+    else  current_state_ = EnemyState::NORMAL;
 
     if(old_state != current_state_)
     {
@@ -115,14 +105,13 @@ void Enemy::updateState()
             case EnemyState::HURT: current_anim_ = anim_hurt_; break;
             case EnemyState::DEAD: current_anim_ = anim_dead_; break;
         }
-    }
-
-    if(current_anim_ != old_anim)
-    {
-        old_anim->setActive(false);
-        current_anim_->restart();
-        current_anim_->setActive(true);
-        current_anim_->setRenderPosition(old_anim->getRenderPosition());    // 同步动画位置
+        if(current_anim_ != old_anim)
+        {
+            old_anim->setActive(false);
+            current_anim_->restart();
+            current_anim_->setActive(true);
+            current_anim_->setRenderPosition(old_anim->getRenderPosition());    // 同步动画位置
+        }
     }
 
     // 血量较低时:增加移速,发射子弹

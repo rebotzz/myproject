@@ -2,12 +2,12 @@
 #include "core/scene.h"
 #include "affiliate/sprite_anim.h"
 #include "affiliate/collide_box.h"
-#include "core/status.h"
+#include "raw/status.h"
 #include "scene_main.h"
 #include "enemy.h"
 #include "hud/ui_player_status.h"
-#include "raw/effect.h"
-
+#include "world/effect.h"
+#include "world/spell.h"
 #include "weapon_thunder.h"
 
 Player::Player(Scene* parent, const glm::vec2& position)
@@ -20,8 +20,8 @@ Player::Player(Scene* parent, const glm::vec2& position)
     }
     setObjectType(ObjectType::Player);
     // 初始化动画
-    anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostMove, 8, 3.0f);
-    anim_idle_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostIdle, 8, 3.0f);
+    anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostMove, 8, 2.0f);
+    anim_idle_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostIdle, 8, 2.0f);
     anim_idle_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));  
     anim_move_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));    
     // 初始化碰撞箱体
@@ -40,7 +40,7 @@ Player::Player(Scene* parent, const glm::vec2& position)
         }
     });
     // 初始化状态
-    status_ = Status::createAndAddStatusChild(this, 200.0f, 300.0f, 0.03f, 1.5f);
+    status_ = Status::createAndAddStatusChild(this, 200.0f, 400.0f, 50.f, 1.5f);
     status_->setOnHurtCallback([this](){ game_.playSound(ResID::Sound_FemaleScream0289290); });
     // 武器, 武器挂载到玩家，跟随玩家；武器生成的法术挂载到场景，不随玩家移动
     weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 1.5f, 100.f);
@@ -68,30 +68,13 @@ Player *Player::createAndAddPlayerChild(Scene *parent, const glm::vec2& position
 
 bool Player::handleEvent(const SDL_Event& event)
 {
-    if(Actor::handleEvent(event)) return true;
-    bool event_handled = false;
-    // 技能释放
-    switch(event.type)
-    {
-        case SDL_EVENT_MOUSE_BUTTON_UP:
-        glm::vec2 cursor_pos;       // 不能直接SDL_获取鼠标位置，因为屏幕缩放会导致鼠标位置错位，game_.getMouseState接口进行了映射
-        if((game_.getMouseState(cursor_pos) & SDL_BUTTON_LMASK) && weapon_thunder_->canAttack())    
-        {
-            // 世界 = 渲染 + 相机； 渲染坐标 = 世界 - 相机
-            auto target = cursor_pos + dynamic_cast<Scene*>(parent_)->getCameraPosition();
-            weapon_thunder_->attack(target);
-            event_handled = true;
-        }
-
-        break;
-    }
-    return event_handled;
+    return Actor::handleEvent(event);
 }
 
 void Player::update(float dt) 
 {
+    velocity_ *= 0.9f;
     Actor::update(dt);
-
     if(status_->getIsDead())
     {
         effect_dead_->setActive(true);
@@ -99,10 +82,7 @@ void Player::update(float dt)
         setActive(false);
         return;
     }
-
-    velocity_ *= 0.9f;
     updateKeyboardControl();
-    move(dt);
     updateSpriteAnim();
     syncCamera(dt);
 }
@@ -174,6 +154,6 @@ void Player::updateSpriteAnim()
 
 void Player::syncCamera(float dt)
 {
-    auto camera_pos = getPosition() - game_.getScreenSize() * 0.5f; // 不需要 + anim_move_->getSize() * 0.5f，玩家默认中心锚点
+    auto camera_pos = getPosition() - game_.getScreenSize() * 0.5f; // 不需要+anim_move_->getSize() * 0.5f，玩家默认中心锚点
     game_.getCurrentScene()->cameraFollow(dt, camera_pos);
 }

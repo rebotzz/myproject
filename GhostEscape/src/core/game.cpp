@@ -142,9 +142,6 @@ void Game::init(const std::string &tittle, int window_w, int window_h, int fps)
     FPS_ = fps;
     frame_interval_ = static_cast<int>(1e9) / FPS_;
 
-    // 初始化随机数生成器
-    random_gen_ = std::mt19937(std::random_device{}());
-
     // SDL初始化（SDL3默认初始化图片，不用手动处理）
     if(!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO))
     {
@@ -257,6 +254,17 @@ glm::vec2 Game::getRandomVec2(const glm::vec2 &begin, const glm::vec2 &end)
     float x = getRandom(begin.x, end.x);
     float y = getRandom(begin.y, end.y);
     return glm::vec2(x, y);
+}
+
+bool Game::isMouseInRect(const glm::vec2 &top_left, const glm::vec2 &botton_right)
+{
+    glm::vec2 mouse_position;
+    getMouseState(mouse_position);
+    if (mouse_position.x >= top_left.x && mouse_position.x <= botton_right.x && 
+        mouse_position.y >= top_left.y && mouse_position.y <= botton_right.y){
+        return true;
+    }
+    return false;
 }
 
 SDL_MouseButtonFlags Game::getMouseState(glm::vec2 &mouse_position)

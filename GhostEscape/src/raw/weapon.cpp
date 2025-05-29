@@ -2,7 +2,6 @@
 #include "../affiliate/collide_box.h"
 
 
-
 void Weapon::update(float dt)
 {
     ObjectAffiliate::update(dt);

@@ -2,13 +2,14 @@
 #include "../core/object_screen.h"
 
 
-Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, const glm::vec2 scale, const glm::vec2 &offset, AchorMode mode)
+Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, const glm::vec2 scale, const glm::vec2 &relative_offset, AchorMode mode)
 {
     auto sprite = new Sprite();
     sprite->tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
     SDL_GetTextureSize(sprite->tex_, &sprite->tex_size_.x, &sprite->tex_size_.y);
-    sprite->setAchorModeAndSize(mode, glm::vec2{sprite->tex_size_.x * scale.x, sprite->tex_size_.y * scale.y});
-    sprite->setRelativeOffset(offset);
+    sprite->setAchorModeAndSize(mode, sprite->tex_size_);
+    sprite->setScale(scale);
+    sprite->setRelativeOffset(relative_offset);
     if(parent)
     {
         sprite->parent_ = parent;

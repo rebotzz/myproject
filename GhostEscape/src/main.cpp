@@ -15,7 +15,6 @@ int main(int, char**)
     }
     
 
-
     // AssetStore::createFilenameResIDMap("assets");
 
     return 0;

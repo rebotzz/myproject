@@ -1,12 +1,12 @@
 #include "scene_main.h"
 #include "player.h"
 #include "enemy.h"
-#include "core/spawner.h"
-#include "raw/effect_enemy_spawn.h"
+#include "raw/spawner.h"
 #include "hud/ui_button.h"
 #include "scene_tittle.h"
 #include "hud/ui_cursor.h"
 #include "affiliate/collide_manager.h"
+#include "raw/spawner.h"
 
 SceneMain::SceneMain()
 {
@@ -34,6 +34,7 @@ SceneMain::SceneMain()
         });
     button_restart_->setOnClickCallback([this]() { game_.safeChangeScene(new SceneMain()); });
     button_back_->setOnClickCallback([this]() { game_.safeChangeScene(new SceneTittle()); });
+
 }
 SceneMain::~SceneMain()
 {
@@ -53,6 +54,9 @@ void SceneMain::init()
     // 引入碰撞管理器后，玩家等持有碰撞盒的对象需要在碰撞管理器之后初始化
     // 初始化玩家
     player_ = Player::createAndAddPlayerChild(this, world_size_ * 0.5f);
+
+    // 初始化敌人生成器
+    new EnemySpawner(this, player_, glm::ivec2{3, 6}, glm::vec2(5, 7));
 }
 void SceneMain::clean()
 {
@@ -70,9 +74,6 @@ void SceneMain::update(float dt)
     checkSlowdown(dt);
     Scene::update(dt);
     updateWhenGameOver(dt);
-
-    // 生成敌人
-    if(player_alive_) spawnEnemy(dt);
 }
 
 void SceneMain::render()
@@ -113,20 +114,6 @@ void SceneMain::renderBackgroundGrid()
     // 渲染整个世界网格；可以渲染超出屏幕的区域
     game_.renderGrid(pos, pos + world_size_, 80, 80, SDL_FColor{0.5f, 0.5f, 0.5f, 1.0f});
     game_.renderBoundary(pos, pos + world_size_, 5);
-}
-
-void SceneMain::spawnEnemy(float dt)
-{
-    spawn_enemy_timer_ += dt;
-    if(spawn_enemy_timer_ >= spawn_enemy_cd_)
-    {
-        spawn_enemy_timer_ -= spawn_enemy_cd_;
-        // 世界坐标
-        auto pos_start =  glm::clamp(camera_position_, glm::vec2(0), world_size_);
-        auto pos_end = glm::clamp(camera_position_ + game_.getScreenSize(), glm::vec2(0), world_size_);
-        auto spawner = Spawner<EffectEnemySpawn>(game_.getRandom(min_spawn_count, max_spawn_count), pos_start, pos_end);
-        spawner.spawnAndAddChild(this);
-    }
 }
 
 void SceneMain::checkSlowdown(float& dt)

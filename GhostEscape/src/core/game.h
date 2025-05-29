@@ -39,7 +39,7 @@ private:
     uint64_t delta_time_ = 0;
     uint64_t frame_interval_ = 0;
     // 其他
-    std::mt19937 random_gen_;                   // 随机数生成器
+    std::mt19937 random_gen_ = std::mt19937{std::random_device{}()}; // 随机数生成器
     // 游戏存档
     int high_score_ = 0;    // 游戏数据暂时只有分数，所以只用一个int，之后可以改为string配合json
 
@@ -81,7 +81,8 @@ public:
     float getRandom(float begin, float end) { return std::uniform_real_distribution<float>(begin, end)(random_gen_); }
     int getRandom(int begin, int end) { return std::uniform_int_distribution<int>(begin, end)(random_gen_); }
     glm::vec2 getRandomVec2(const glm::vec2& begin, const glm::vec2& end);
-    
+    bool isMouseInRect(const glm::vec2& top_left, const glm::vec2& botton_right);
+
     // 游戏逻辑
     void quit() { is_running_ = false; }
     void updateGameData(int score) { high_score_ = std::max(high_score_, score); }
@@ -90,6 +91,8 @@ public:
     // 音频控制
     void pauseMusic() { Mix_PausedMusic(); }
     void pauseSound() { Mix_Pause(-1); }
+    void stopMusic() { Mix_HaltMusic(); }
+    void stopSound() { Mix_HaltChannel(-1); }
     void resumeMusic() { Mix_ResumeMusic(); }
     void resumeSound() { Mix_Resume(-1); }
     void playMusic(ResID mus_id) { Mix_PlayMusic(asset_store_.getMusic(mus_id), -1); }

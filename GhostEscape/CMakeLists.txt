@@ -39,39 +39,40 @@ find_package(glm CONFIG REQUIRED PATHS ${CMAKE_SOURCE_DIR}/ThirdParty/glm)
 
 # 前面的写法每次更改文件：新建、移动都需要重新清理，不方便，所以手写
 add_executable(${MyExecutable} 
-                    src/enemy.cpp
-                    src/main.cpp
-                    src/player.cpp
-                    src/scene_main.cpp
-                    src/scene_tittle.cpp
-                    src/weapon_thunder.cpp
-                    src/affiliate/object_affiliate.cpp
-                    src/affiliate/sprite_anim.cpp
-                    src/affiliate/sprite.cpp
-                    src/affiliate/collide_box.cpp
-                    src/affiliate/collide_manager.cpp
-                    src/affiliate/quad_tree.cpp
                     src/core/actor.cpp
                     src/core/assets_store.cpp
                     src/core/game.cpp
                     src/core/object_world.cpp
                     src/core/object.cpp
                     src/core/scene.cpp
-                    src/core/status.cpp
-                    src/raw/effect_enemy_spawn.cpp
-                    src/raw/effect.cpp
-                    src/raw/spell.cpp
-                    src/raw/spell_bullet.cpp
+
+                    src/affiliate/object_affiliate.cpp
+                    src/affiliate/sprite_anim.cpp
+                    src/affiliate/sprite.cpp
+                    src/affiliate/collide_box.cpp
+                    src/affiliate/collide_manager.cpp
+                    src/affiliate/quad_tree.cpp
+                    src/affiliate/affiliate_bar.cpp
+
+                    src/world/effect.cpp
+                    src/world/spell.cpp
+                    src/world/spell_bullet.cpp
                     src/raw/weapon.cpp
+                    src/raw/status.cpp
+                    src/raw/spawner.cpp
+
                     src/hud/hud_text.cpp
                     src/hud/text_lable.cpp
-                    src/hud/ui_bar.cpp
                     src/hud/ui_button.cpp
                     src/hud/ui_cursor.cpp
-                    src/hud/ui_enemy_hp_bar.cpp
-                    src/hud/ui_player_bar.cpp
-                    src/hud/ui_player_skill_bar.cpp
                     src/hud/ui_player_status.cpp
+
+                    src/enemy.cpp
+                    src/main.cpp
+                    src/player.cpp
+                    src/scene_main.cpp
+                    src/scene_tittle.cpp
+                    src/weapon_thunder.cpp
 )
 
 

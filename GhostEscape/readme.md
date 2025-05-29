@@ -215,7 +215,7 @@ protected:
 
 public:
     static SpriteAnim* createAndAddSpriteAnimChild(ObjectScreen* parent, ResID tex_id, int frame_count, float scale = 1.0, 
-        float frame_interval = 0.1f, float is_loop = true, const glm::vec2 &offset = glm::vec2(0), AchorMode mode = AchorMode::CENTER);
+        float frame_interval = 0.1f, float is_loop = true, const glm::vec2 &relative_offset = glm::vec2(0), AchorMode mode = AchorMode::CENTER);
 
     virtual void update(float dt);
     virtual void render();
@@ -558,7 +558,7 @@ game_.drawPoints(star_near_, - game_.getCurrentScene()->getCameraPosition() * sc
 3. 特效类优化，提高泛用性，一如敌人生成特效。
 4. spell优化，提高泛用性。
 5. 有了碰撞可以实现反弹、推动等物理效果。
-
+6. 检查是否内存泄漏
 
 
 ## Debug
@@ -596,10 +596,13 @@ version0.1完成,俺寻思这样写可以
 理解和习惯这种模式花费了一些时间。虽然代码量增长不多，但是比上一个SDL_Shooter难写多了。
 当我看完一遍教程后，有种感觉忘记的差不多了……(￣_￣|||)
 然后呢，自己借着部分印象 + 俺寻思可以这样写 = 最终的成果有点地方可能和原教程差距较大。
-接下来，该看看原教程代码和自己的区别。
+接下来，该看看原教程代码和自己的区别。  
+对照完成，我都忘了原教程原来博客这么长，好用心。
 
 version0.2完成,增加敌人行为模式，加入空间四叉树(有bug，但能运行)
-debug了好久，就像没头苍蝇一样
+debug了好久，就像没头苍蝇一样. 
+一些问题随着时间与经验的积累会解决。
+
 ```
 
 ## 游戏截图

@@ -28,7 +28,7 @@ SceneTittle::SceneTittle()
     text_credits_->setActive(false);
 
     button_start_->setOnClickCallback([this](){ game_.safeChangeScene(new SceneMain()); });
-    button_credits_->setOnClickCallback([this](){ show_credits_ = true; text_credits_->setActive(true); });
+    button_credits_->setOnClickCallback([this](){ text_credits_->setActive(true); });
     button_quit_->setOnClickCallback([this](){ game_.quit(); });
 
     new UICursor(this, ResID::Tex_PointerCShaded, ResID::Tex_PointerCShaded);
@@ -49,10 +49,10 @@ void SceneTittle::clean()
 
 bool SceneTittle::handleEvent(const SDL_Event& event)
 {
-    if(show_credits_ && event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+    if(text_credits_->getIsActive())
     {
-        show_credits_ = false;
-        text_credits_->setActive(false);
+        if(event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+            text_credits_->setActive(false);
         return true;
     }
 

@@ -6,7 +6,7 @@ class Scene
 {
 public:
 	Scene() = default;
-	~Scene() = default;
+	virtual ~Scene() {};
 	virtual void on_enter() = 0;
 	virtual void on_input(const ExMessage& msg) { };
 	virtual void on_update(float delta_time) { };

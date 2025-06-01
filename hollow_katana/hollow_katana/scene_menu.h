@@ -6,6 +6,8 @@
 #include "resources_manager.h"
 #include "animation.h"
 
+
+
 class SceneMenu : public Scene
 {
 private:
@@ -19,7 +21,7 @@ private:
 	Animation animation_ui_choose_right;
 	Animation animation_bug[5];
 	Vector2 postion_bug[5];
-	Timer timer;
+	Timer timer_bug_fly;
 	Choice choice = Choice::Game;
 	float position_ui_y = 0.f;
 
@@ -50,9 +52,9 @@ public:
 		postion_bug[3] = { (float)getwidth() - 140.f, (float)getheight() - 420.f };
 		postion_bug[4] = { (float)getwidth() - 80.f, (float)getheight() - 190.f };
 
-		timer.set_one_shot(false);
-		timer.set_wait_time(0.2f);
-		timer.set_on_timeout([&]
+		timer_bug_fly.set_one_shot(false);
+		timer_bug_fly.set_wait_time(0.2f);
+		timer_bug_fly.set_on_timeout([&]
 			{
 				for (int i = 0; i < 5; ++i)
 				{
@@ -68,6 +70,11 @@ public:
 					bug.set_position(postion_bug[i] + pos_offset);
 				}
 			});
+	}
+
+	~SceneMenu()
+	{
+		cout << "~SceneMenu()" << endl;
 	}
 
 	virtual void on_enter() override 
@@ -124,7 +131,7 @@ public:
 		animation_ui_choose_left.on_update(delta);
 		animation_ui_choose_right.on_update(delta);
 
-		timer.on_update(delta);
+		timer_bug_fly.on_update(delta);
 		for (auto& bug : animation_bug)
 			bug.on_update(delta);
 	}

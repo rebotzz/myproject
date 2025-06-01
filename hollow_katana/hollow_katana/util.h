@@ -3,9 +3,14 @@
 #pragma comment(lib, "MSIMG32.LIB")		// AlphaBlend()
 
 #include <vector>
-#include <graphics.h>	//老版本easyx图形库,似乎peekmessage鼠标消息更好一点?
+#include <graphics.h>	//老版本easyx图形库
 //#include <easyx.h>
 #include "camera.h"
+
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 // 临时摄像机方案
 extern Camera* main_camera;

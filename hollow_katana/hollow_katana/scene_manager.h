@@ -2,6 +2,8 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
+#include <functional>
+#include <queue>
 #include "scene.h"
 #include "camera.h"
 
@@ -17,6 +19,13 @@ private:
 	std::string prev_scene_id;												// 上一个场景id
 	bool need_init = true;													// 是否需要初始化
 	Camera camera;															// 主摄像机
+
+	// 其他：
+	// 场景加载器，用于动态加载释放场景
+	std::unordered_map<std::string, std::function<void()>> scene_loader;
+	std::deque<std::string> scene_cache;	// 场景缓存队列，缓存一定数量场景，超过数量后就释放最早的
+	const int SCENE_CACHE_SIZE = 4;			// 场景缓存队列容量
+
 
 private:
 	SceneManager();

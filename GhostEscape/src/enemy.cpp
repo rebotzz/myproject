@@ -15,9 +15,10 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     setMaxSpeed(100.f);
     setObjectType(ObjectType::Enemy);
     // 初始化动画
-    anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostSheet, 4, 2.0f);
-    anim_hurt_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostHurtSheet, 4, 2.0f);
-    anim_dead_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostDeadSheet, 8, 2.0f, 0.1f, false);
+    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostSheet, 4, AchorMode::CENTER, glm::vec2(2));
+    anim_hurt_ = new SpriteAnim(this, ResID::Tex_GhostHurtSheet, 4, AchorMode::CENTER, glm::vec2(2));
+    anim_dead_ = new SpriteAnim(this, ResID::Tex_GhostDeadSheet, 8, AchorMode::CENTER, glm::vec2(2));
+    anim_dead_->setLoop(false);
     anim_hurt_->setActive(false);
     anim_dead_->setActive(false);
     current_anim_ = anim_move_;
@@ -44,7 +45,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
         auto target_pos = target_->getPosition();
         auto direction = glm::normalize(target_pos - getPosition());
         if(glm::length(direction) > 2.0f) direction = glm::vec2(1, 0);
-        auto bullet = new SpellBullet(parent_, 10.f, world_position_, ResID::Tex_Laser3, 1, 0.5f);
+        auto bullet = new SpellBullet(parent_, 10.f, world_position_, ResID::Tex_Laser3, 1, glm::vec2(0.5f));
         bullet->setDirection(direction);
         bullet->setMaxSpeed(500.f);
         float deg = glm::degrees(std::atan2(direction.y, direction.x)); // glm::angle的角度没有方向

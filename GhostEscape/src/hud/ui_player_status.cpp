@@ -16,10 +16,9 @@ UIPlayerBar::UIPlayerBar(Object *parent, const glm::vec2 &position, ResID tex_ic
     }
     setObjectType(ObjectType::Screen);
     setRenderPosition(position);
-    auto x_offset = 40.0f;
-    sprite_bar_bg_ = Sprite::createAndAddSpriteChild(this, tex_bar_bg, bar_scale, glm::vec2(x_offset, 0.0f), AchorMode::CENTER_LEFT);
-    sprite_bar_fg_ = Sprite::createAndAddSpriteChild(this, tex_bar_fg, bar_scale, glm::vec2(x_offset, 0.0f), AchorMode::CENTER_LEFT);
-    sprite_icon_ = Sprite::createAndAddSpriteChild(this, tex_icon, icon_scale, glm::vec2(0.0f), AchorMode::CENTER_LEFT);
+    sprite_icon_ = new Sprite(this, tex_icon, AchorMode::CENTER_LEFT, icon_scale);
+    sprite_bar_bg_ = new Sprite(this, tex_bar_bg, AchorMode::CENTER_LEFT, bar_scale, glm::vec2(sprite_icon_->getSize().x * 0.7f, 0.0f));
+    sprite_bar_fg_ = new Sprite(this, tex_bar_fg, AchorMode::CENTER_LEFT, bar_scale, glm::vec2(sprite_icon_->getSize().x * 0.7f, 0.0f));
 }
 
 UIPlayerSkillBar::UIPlayerSkillBar(Object *parent, const glm::vec2 &position, ResID tex_icon, const glm::vec2 &icon_scale)
@@ -31,8 +30,8 @@ UIPlayerSkillBar::UIPlayerSkillBar(Object *parent, const glm::vec2 &position, Re
     }
     setObjectType(ObjectType::Screen);
     setRenderPosition(position);
-    sprite_icon_bg_ = Sprite::createAndAddSpriteChild(this, tex_icon, icon_scale, glm::vec2(0.0f), AchorMode::CENTER_LEFT);
-    sprite_icon_fg_ = Sprite::createAndAddSpriteChild(this, tex_icon, icon_scale, glm::vec2(0.0f), AchorMode::CENTER_LEFT);
+    sprite_icon_bg_ = new Sprite(this, tex_icon, AchorMode::CENTER_LEFT, icon_scale);
+    sprite_icon_fg_ = new Sprite(this, tex_icon, AchorMode::CENTER_LEFT, icon_scale);
     sprite_icon_bg_->setTextureAlpha(0.5f);
 }
 

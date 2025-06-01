@@ -18,7 +18,7 @@ void EnemySpawner::update(float dt)
                 auto current_scene = game_.getCurrentScene();
                 auto position = game_.getRandomVec2(current_scene->getCameraPosition(), current_scene->getCameraPosition() + game_.getScreenSize());
                 // 特效
-                auto effect = new Effect(current_scene, position, ResID::Tex_1764, 17, 3.0f);
+                auto effect = new Effect(current_scene, position, ResID::Tex_1764, 17, glm::vec2(3.0f));
                 effect->setOnFinished([current_scene, position, this]()     // 局部变量会失效，不能引用捕获
                 {
                     // 敌人

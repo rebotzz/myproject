@@ -6,7 +6,21 @@
 // 精灵图动画
 class SpriteAnim : public Sprite
 {
+private:
+	// 动画帧
+	struct Frame
+	{
+	public:
+		SDL_Texture* tex_ = nullptr;
+		SDL_FRect src_rect_ = { 0 };
+	public:
+		Frame(SDL_Texture* tex, const SDL_FRect& src_rect)
+			:tex_(tex), src_rect_(src_rect){ }
+	};
+	typedef std::vector<Frame> FrameList;
+
 protected:
+    FrameList frames_;
     int total_frame_count_ = 1;
     int frame_idx_ = 0;
     float frame_interval_ = 0.1f;
@@ -15,18 +29,12 @@ protected:
     float timer_ = 0;   // 计时器
 
 public:
-    SpriteAnim(int total_frame_count, float frame_interval, bool is_loop)
-        :total_frame_count_(total_frame_count)
-        ,frame_interval_(frame_interval)
-        ,is_loop_(is_loop)
-    {}
+    SpriteAnim(ObjectScreen* parent, ResID tex_id, int frame_count, AchorMode mode = AchorMode::CENTER, 
+        const glm::vec2& scale = glm::vec2(1), float frame_interval = 0.1f, float is_loop = true);
     virtual ~SpriteAnim(){};
 
     virtual void update(float dt);
     virtual void render();
-
-    static SpriteAnim* createAndAddSpriteAnimChild(ObjectScreen* parent, ResID tex_id, int frame_count, float scale = 1.0, 
-        float frame_interval = 0.1f, float is_loop = true, const glm::vec2 &relative_offset = glm::vec2(0), AchorMode mode = AchorMode::CENTER);
 
     // setters and getters
     float getFrameInterval() const { return frame_interval_; }

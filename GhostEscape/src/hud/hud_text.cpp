@@ -6,7 +6,7 @@ HUDText::HUDText(Object *parent, const glm::vec2 &position, const std::string &t
     :ObjectScreen(parent)
 {
     setRenderPosition(position);
-    sprite_bg_ = Sprite::createAndAddSpriteChild(this, tex_bg, glm::vec2(0), glm::vec2(0), mode);
+    sprite_bg_ = new Sprite(this, tex_bg, mode);
     text_lable_ = new TextLable(this, text, ResID::Font_VonwaonBitmap16px, font_scale);
     setMargin(margin_scale_);
 }
@@ -57,9 +57,11 @@ void HUDText::setSpriteBackground(ResID tex_id)
     if(sprite_bg_) 
     {
         achor_mode = sprite_bg_->getAchorMode();
-        delete sprite_bg_;
+        // 从子节点中移除
+        sprite_bg_->setCanRemove(true); // debug:不直接delete sprite_bg_;
+        sprite_bg_ = nullptr;
     }
-    sprite_bg_ = Sprite::createAndAddSpriteChild(this, tex_id);
-    sprite_bg_->setAchorMode(achor_mode);
+
+    sprite_bg_ = new Sprite(this, tex_id, achor_mode);
     updateBackgroundSpriteSize();
 }

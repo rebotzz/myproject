@@ -1,5 +1,8 @@
 # 我的忽略
 
+thirdparty
+x64
+
 # 幽灵逃生
 GhostEscape/.vscode
 GhostEscape/bin
@@ -12,6 +15,12 @@ SDL_Shooter/.vscode
 SDL_Shooter/build
 SDL_Shooter/out
 SDL_Shooter/Makefile
+
+# 村庄保卫战
+TdGame/TdGame/resources
+TdGame/Demo
+TdGame/TdGame/config
+TdGameBeta
 
 
 # 拼好饭传奇

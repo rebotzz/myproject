@@ -11,7 +11,7 @@ class SpellBullet : public Spell
 
 public:
     SpellBullet(Object* parent, float damage, const glm::vec2& init_position, ResID tex_id, int frame_count, 
-        float scale = 1.0f, float frame_interval = 0.1f);
+        const glm::vec2& scale = glm::vec2(1), float frame_interval = 0.1f);
 
     // setters and getters
     void setDirection(const glm::vec2& direction) { direction_ = direction; }

@@ -1,22 +1,16 @@
 #include "sprite.h"
 #include "../core/object_screen.h"
 
-
-Sprite *Sprite::createAndAddSpriteChild(ObjectScreen *parent, ResID tex_id, const glm::vec2 scale, const glm::vec2 &relative_offset, AchorMode mode)
+Sprite::Sprite(ObjectScreen *parent, ResID tex_id, AchorMode mode, 
+    const glm::vec2& scale,  const glm::vec2& relative_offset)
+    :ObjectAffiliate(parent)
 {
-    auto sprite = new Sprite();
-    sprite->tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
-    SDL_GetTextureSize(sprite->tex_, &sprite->tex_size_.x, &sprite->tex_size_.y);
-    sprite->setAchorModeAndSize(mode, sprite->tex_size_);
-    sprite->setScale(scale);
-    sprite->setRelativeOffset(relative_offset);
-    if(parent)
-    {
-        sprite->parent_ = parent;
-        parent->safeAddChild(sprite);
-        sprite->render_position_ = parent->getRenderPosition() + sprite->offset_;  
-    }
-    return sprite;
+    tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
+    SDL_GetTextureSize(tex_, &tex_size_.x, &tex_size_.y);
+    setAchorModeAndSize(mode, tex_size_);
+    setScale(scale);
+    setRelativeOffset(relative_offset);
+    // render_position_ = parent->getRenderPosition() + offset_;  
 }
 
 void  Sprite::update(float)

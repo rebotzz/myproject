@@ -2,23 +2,22 @@
 #include "../core/object_screen.h"
 
 
-SpriteAnim *SpriteAnim::createAndAddSpriteAnimChild(ObjectScreen* parent, ResID tex_id, int frame_count, float scale,
-    float frame_interval, float is_loop, const glm::vec2 &relative_offset, AchorMode mode)
+SpriteAnim::SpriteAnim(ObjectScreen *parent, ResID tex_id, int frame_count, AchorMode mode, const glm::vec2 &scale, 
+    float frame_interval, float is_loop)
+    :Sprite(parent, tex_id, mode, scale)
+    ,total_frame_count_(frame_count)
+    ,frame_interval_(frame_interval)
+    ,is_loop_(is_loop)
 {
-    auto sprite_anim = new SpriteAnim(frame_count, frame_interval, is_loop);
-    sprite_anim->tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
-    SDL_GetTextureSize(sprite_anim->tex_, &sprite_anim->tex_size_.x, &sprite_anim->tex_size_.y);
-    sprite_anim->tex_size_.x /= frame_count;
-    sprite_anim->setAchorModeAndSize(mode, sprite_anim->tex_size_);
-    sprite_anim->setScale(glm::vec2(scale));
-    sprite_anim->setRelativeOffset(relative_offset);
-    if(parent)
+    // 计算每一帧的尺寸,原图和绘制尺寸
+    glm::vec2 frame_size = {tex_size_.x / static_cast<float>(frame_count), tex_size_.y};
+    setSize(frame_size * scale);
+    for(int i = 0; i < frame_count; ++i)
     {
-        sprite_anim->parent_ = parent;
-        parent->safeAddChild(sprite_anim);
-        sprite_anim->render_position_ = parent->getRenderPosition() + sprite_anim->offset_;
+        frames_.emplace_back(tex_, SDL_FRect{i * frame_size.x, 0, 
+            frame_size.x, tex_size_.y});
     }
-    return sprite_anim;
+    // render_position_ = parent->getRenderPosition() + offset_;
 }
 
 void SpriteAnim::syncFrameTime(SpriteAnim *sprite_anim)
@@ -27,6 +26,8 @@ void SpriteAnim::syncFrameTime(SpriteAnim *sprite_anim)
     timer_ = sprite_anim->timer_;
     is_flip_ = sprite_anim->is_flip_;
 }
+
+
 
 void SpriteAnim::update(float dt)
 {
@@ -49,9 +50,7 @@ void SpriteAnim::update(float dt)
 void SpriteAnim::render()
 {
     assert(tex_ != nullptr && parent_ != nullptr);
-    if(is_finished_ || !is_showing_) return;
-    if(frame_idx_ >= total_frame_count_) return;
-    SDL_FRect src_rect = { frame_idx_ * tex_size_.x, 0, tex_size_.x, tex_size_.y};
+    if(is_finished_ || !is_showing_ || frame_idx_ >= total_frame_count_) return;
     SDL_FRect dst_rect = { render_position_.x, render_position_.y, size_.x, size_.y};
-    game_.renderTexture(tex_, &src_rect, &dst_rect, angle_, is_flip_);
+    game_.renderTexture(frames_[frame_idx_].tex_, &frames_[frame_idx_].src_rect_, &dst_rect, angle_, is_flip_);
 }

@@ -101,7 +101,10 @@ void CollideMgr::update(float dt)
 void CollideMgr::render()
 {
 #ifdef DEBUG_MODE
+#ifdef COLLIDE_MGR_VERSION_QUADTREE_
     if(quad_tree_)
         quad_tree_->render();
-#endif
+#endif  // COLLIDE_MGR_VERSION_QUADTREE_
+#endif  // DEBUG_MODE
+
 }   

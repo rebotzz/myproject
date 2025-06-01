@@ -15,7 +15,8 @@ protected:
     std::function<void()> on_finished_; // 特效结束时执行逻辑
         
 public:
-    Effect(Object* parent, const glm::vec2& position, ResID tex_anim, int total_frame_count, float scale = 1.0f, float frame_interval = 0.1f);
+    Effect(Object* parent, const glm::vec2& position, ResID tex_anim, int frame_count, const glm::vec2& scale = glm::vec2(1), 
+        float frame_interval = 0.1f);
     ~Effect() = default;
 
     virtual void update(float dt);

@@ -20,8 +20,8 @@ Player::Player(Scene* parent, const glm::vec2& position)
     }
     setObjectType(ObjectType::Player);
     // 初始化动画
-    anim_move_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostMove, 8, 2.0f);
-    anim_idle_ = SpriteAnim::createAndAddSpriteAnimChild(this, ResID::Tex_GhostIdle, 8, 2.0f);
+    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostMove, 8, AchorMode::CENTER, glm::vec2(2));
+    anim_idle_ = new SpriteAnim(this, ResID::Tex_GhostIdle, 8, AchorMode::CENTER, glm::vec2(2));
     anim_idle_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));  
     anim_move_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));    
     // 初始化碰撞箱体
@@ -45,8 +45,8 @@ Player::Player(Scene* parent, const glm::vec2& position)
     // 武器, 武器挂载到玩家，跟随玩家；武器生成的法术挂载到场景，不随玩家移动
     weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 1.5f, 100.f);
     // 出生、死亡特效，挂载到场景
-    effect_dead_ = new Effect(parent, position, ResID::Tex_1843, 11, 3.0f, 0.07f);
-    effect_born_ = new Effect(parent, position, ResID::Tex_18432, 11, 3.0f, 0.07f);
+    effect_dead_ = new Effect(parent, position, ResID::Tex_1843, 11, glm::vec2(3.0f), 0.07f);
+    effect_born_ = new Effect(parent, position, ResID::Tex_18432, 11, glm::vec2(3.0f), 0.07f);
     effect_dead_->setActive(false);
     effect_born_->setOnFinished([this](){ setActive(true); });
     setActive(false);   // 出生特效结束才显示玩家

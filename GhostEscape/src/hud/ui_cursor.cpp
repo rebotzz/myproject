@@ -2,8 +2,8 @@
 
 UICursor::UICursor(Object *parent, ResID tex_1, ResID tex_2, AchorMode mode):ObjectScreen(parent)
 {
-    cursor_1_ = Sprite::createAndAddSpriteChild(this, tex_1, glm::vec2(1.5), glm::vec2(0.0f), mode);
-    cursor_2_ = Sprite::createAndAddSpriteChild(this, tex_2, glm::vec2(1.5), glm::vec2(0.0f), mode);
+    cursor_1_ = new Sprite(this, tex_1, mode, glm::vec2(1.5));
+    cursor_2_ = new Sprite(this, tex_2, mode, glm::vec2(1.5));
     current_cursor_ = cursor_1_;
     cursor_2_->setActive(false);
 }

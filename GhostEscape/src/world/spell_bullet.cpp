@@ -3,7 +3,7 @@
 #include "../core/actor.h"
 
 SpellBullet::SpellBullet(Object *parent, float damage, const glm::vec2 &init_position, ResID tex_id, 
-    int frame_count, float scale, float frame_interval)
+    int frame_count, const glm::vec2& scale, float frame_interval)
     :Spell(parent, damage, init_position, CollideShape::Circle, tex_id, frame_count, scale, frame_interval)
 {
     anim_->setLoop(true);

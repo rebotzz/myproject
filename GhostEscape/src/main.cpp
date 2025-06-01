@@ -3,6 +3,7 @@
 
 int main(int, char**)
 {
+
     try
     {
         Game::getInstance().init("幽灵逃生 -by rebotzz", 1280, 720, 60);

@@ -53,7 +53,7 @@ void WeaponThunder::attack(const glm::vec2& position)
     dynamic_cast<Actor*>(parent_)->getStatus()->useMana(mana_cost_);
     game_.playSound(ResID::Sound_BigThunder); 
     auto spell_thunder = new Spell(game_.getCurrentScene(), damage_, position, CollideShape::Circle, 
-        ResID::Tex_ThunderstrikeWBlur, 13, 3.0);
+        ResID::Tex_ThunderstrikeWBlur, 13, glm::vec2(3));
     spell_thunder->getCollideBox()->setHitLayer(CollideLayer::Enemy);
 }
 

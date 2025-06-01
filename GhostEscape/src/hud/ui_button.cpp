@@ -11,9 +11,9 @@ UIButton::UIButton(Object *parent, const glm::vec2 &position, const glm::vec2 &s
     setObjectType(ObjectType::Screen);
     setRenderPosition(position);
 
-    sprite_idle_ = Sprite::createAndAddSpriteChild(this, tex_idle, scale);
-    sprite_hover_ = Sprite::createAndAddSpriteChild(this, tex_hover, scale);
-    sprite_clicked_ = Sprite::createAndAddSpriteChild(this, tex_clicked, scale);
+    sprite_idle_ = new Sprite(this, tex_idle, AchorMode::CENTER, scale);
+    sprite_hover_ = new Sprite(this, tex_hover, AchorMode::CENTER, scale);
+    sprite_clicked_ = new Sprite(this, tex_clicked, AchorMode::CENTER, scale);
     current_sprite_ = sprite_idle_;
     sprite_hover_->setActive(false);
     sprite_clicked_->setActive(false);
@@ -51,8 +51,6 @@ bool UIButton::handleEvent(const SDL_Event& event)
         }
         break;
         case SDL_EVENT_MOUSE_BUTTON_UP:
-        bool is_on_button = game_.isMouseInRect(sprite_idle_->getRenderPosition(), 
-            sprite_idle_->getRenderPosition() + sprite_idle_->getSize());
         if(button_status_ == ButtonStatus::CLICKED && is_on_button)
         {
             if(on_clicked_) on_clicked_();

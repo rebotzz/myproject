@@ -1,7 +1,10 @@
 # 我的忽略
 
-thirdparty
-x64
+**/thirdparty
+**/x64
+**/bin
+**/build
+**/.vs
 
 # 幽灵逃生
 GhostEscape/.vscode

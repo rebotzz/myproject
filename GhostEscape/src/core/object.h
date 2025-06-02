@@ -45,7 +45,7 @@ public:
     void setCanRemove(bool flag) { can_remove_ = flag; }
 
 protected:
-    void removeInvalidObject();
+    void deleteInvalidObject();
 };
 
 #endif // _OBJECT_H_

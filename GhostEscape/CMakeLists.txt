@@ -53,19 +53,23 @@ add_executable(${MyExecutable}
                     src/affiliate/collide_manager.cpp
                     src/affiliate/quad_tree.cpp
                     src/affiliate/affiliate_bar.cpp
+                    src/affiliate/text_lable.cpp
+
+
+                    src/raw/weapon.cpp
+                    src/raw/status.cpp
+                    src/raw/spawner.cpp
+                    src/raw/move_control_keyboardAWSD.cpp
+                    src/raw/move_control.cpp
 
                     src/world/effect.cpp
                     src/world/spell.cpp
                     src/world/spell_bullet.cpp
-                    src/raw/weapon.cpp
-                    src/raw/status.cpp
-                    src/raw/spawner.cpp
 
-                    src/hud/hud_text.cpp
-                    src/hud/text_lable.cpp
-                    src/hud/ui_button.cpp
-                    src/hud/ui_cursor.cpp
-                    src/hud/ui_player_status.cpp
+                    src/screen/hud_text.cpp
+                    src/screen/ui_button.cpp
+                    src/screen/ui_cursor.cpp
+                    src/screen/ui_player_status.cpp
 
                     src/enemy.cpp
                     src/main.cpp

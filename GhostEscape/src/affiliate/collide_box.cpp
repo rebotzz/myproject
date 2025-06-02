@@ -24,15 +24,14 @@ CollideBox::~CollideBox()
 
 void CollideBox::update(float)
 {
-    // 更新位置， 碰撞检测：渲染坐标/世界坐标都行，都偏移了相交判断可以进行
-    auto render_pos = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
-    position_ = game_.getCurrentScene()->screenToWorld(render_pos);
+    // 更新位置
+    position_ = dynamic_cast<ObjectWorld*>(parent_)->getPosition() + offset_;
 }
 
 void CollideBox::render()
 {
 #ifdef DEBUG_MODE
-    auto render_pos = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
+    auto render_pos = game_.getCurrentScene()->worldToScreen(position_);
     SDL_FRect rect = {render_pos.x, render_pos.y, size_.x, size_.y};
     if(CollideShape::Circle == shape_)
     {

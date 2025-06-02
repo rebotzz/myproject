@@ -21,7 +21,8 @@ public:
     virtual void update(float dt) override;
 
     // setters and getters
-    virtual glm::vec2 getPosition() const override { return world_position_; }
+    virtual const glm::vec2& getRenderPosition() override;
+    virtual const glm::vec2& getPosition() const override { return world_position_; }
     virtual void setRenderPosition(const glm::vec2& position) override;  // 同时修改渲染、世界坐标   
     void setPosition(const glm::vec2& position);    
     CollideBox* getCollideBox() const { return collide_box_; }

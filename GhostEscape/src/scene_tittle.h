@@ -2,8 +2,8 @@
 #define _SCENE_TITTLE_H_
 
 #include "core/scene.h"
-#include "hud/ui_button.h"
-#include "hud/hud_text.h"
+#include "screen/ui_button.h"
+#include "screen/hud_text.h"
 
 class SceneTittle : public Scene
 {

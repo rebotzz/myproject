@@ -56,7 +56,7 @@ class Player;
 class EnemySpawner : public Object
 {
 private:
-    glm::ivec2 num_scope_ = glm::ivec2(1, 3);             // 生成数量区间
+    glm::ivec2 num_scope_ = glm::ivec2(1, 3);       // 生成数量区间
     glm::vec2 interval_scope_ = glm::vec2(4, 6);    // 生成间隔时间区间
     float interval_ = 4.f;                          // 生成间隔
     float timer_ = 0.f;                             // 定时器

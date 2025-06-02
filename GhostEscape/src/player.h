@@ -39,7 +39,6 @@ public:
     bool getIsDead() const { return status_->getIsDead(); }
 
 protected:
-    void updateKeyboardControl();
     virtual void move(float dt) override;
     void updateSpriteAnim();
     // 工具函数

@@ -5,16 +5,14 @@ void ObjectWorld::update(float dt)
 {
     ObjectScreen::update(dt);
 
-    // // 更新渲染坐标；世界物体必须挂载到场景，不然没有意义。
-    syncRenderPosition();
-
-    // if(!parent_) return;
-    // auto scene = dynamic_cast<Scene*>(parent_);
-    // // 不能超出世界边界
-    // world_position_ = glm::clamp(world_position_, glm::vec2(0), scene->getWorldSize());
-    // updateRenderPosition(dynamic_cast<Scene*>(parent_)->getCameraPosition());
+    // syncRenderPosition();
 }
 
+const glm::vec2& ObjectWorld::getRenderPosition()
+{
+    render_position_ = game_.getCurrentScene()->worldToScreen(world_position_); // 更新渲染坐标
+    return render_position_;
+}
 
 void ObjectWorld::setRenderPosition(const glm::vec2& position)
 {

@@ -40,7 +40,7 @@ bool Object::handleEvent(const SDL_Event& event)
 void Object::update(float dt)
 {
     // 移除失效子节点
-    removeInvalidObject();
+    deleteInvalidObject();
     // 加入待添加子节点，更新
     if(!children_to_add_.empty())
     {
@@ -72,7 +72,7 @@ void Object::removeChild(Object* object)
     children_to_add_.end());
 }
 
-void Object::removeInvalidObject()
+void Object::deleteInvalidObject()
 {
     children_.erase(std::remove_if(children_.begin(), children_.end(), [](Object* obj)
     {

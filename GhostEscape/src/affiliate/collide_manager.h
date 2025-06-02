@@ -12,6 +12,7 @@ class QuadTree;
 
 
 // (纯功能组件)这里碰撞管理器挂载到场景
+// 四叉树bug暂时无从下手，如果遇到两层for不能解决的，可以考虑使用网格分区
 class CollideMgr : public Object
 {
 private:

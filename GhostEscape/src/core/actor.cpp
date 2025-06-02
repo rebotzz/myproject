@@ -30,3 +30,5 @@ void Actor::updateHealthBar()
     if(!status_ || !health_bar_) return;
     health_bar_->setPercentage(status_->getHP() / status_->getMaxHP());
 }
+
+

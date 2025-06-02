@@ -7,6 +7,7 @@
 
 class Status;
 class AffilateBar;
+class MoveControl;
 
 // 角色
 class Actor : public ObjectWorld
@@ -16,6 +17,7 @@ protected:
     float max_speed_ = 300.0f;
     Status* status_ = nullptr;              // 状态
     AffilateBar* health_bar_ = nullptr;     // 血条
+    MoveControl* move_control_ = nullptr;   // 移动控制
 
 public:
     Actor() = default;
@@ -29,10 +31,16 @@ public:
     float getMaxSpeed() const { return max_speed_; }
     void setMaxSpeed(float val) { max_speed_ = val; }
     Status* getStatus() const { return status_; }
+    void setMoveControl(MoveControl* val) { move_control_ = val; }
+    MoveControl* getMoveControl() const { return move_control_; }
+    void setHealthBar(AffilateBar* val) { health_bar_ = val; }
+    void setVelocity(const glm::vec2& val) { velocity_ = val; }
+    const glm::vec2& getVelocity() const { return velocity_; }
 
 protected:
     virtual void move(float dt);
     void updateHealthBar();
+    void updateMoveControl();
 };
 
 

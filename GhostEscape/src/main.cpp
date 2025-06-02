@@ -1,6 +1,8 @@
 #include "core/game.h"
 #include <iostream>
 
+
+// 游戏开发是一门妥协的艺术。
 int main(int, char**)
 {
 

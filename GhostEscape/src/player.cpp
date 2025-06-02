@@ -5,10 +5,11 @@
 #include "raw/status.h"
 #include "scene_main.h"
 #include "enemy.h"
-#include "hud/ui_player_status.h"
+#include "screen/ui_player_status.h"
 #include "world/effect.h"
 #include "world/spell.h"
 #include "weapon_thunder.h"
+#include "raw/move_control_keyboardAWSD.h"
 
 Player::Player(Scene* parent, const glm::vec2& position)
 {
@@ -54,7 +55,11 @@ Player::Player(Scene* parent, const glm::vec2& position)
     // UI界面 挂载到场景
     UIPlayerStatus::createAndAddUIPlayerStatusChild(parent);
     game_.playSound(ResID::Sound_SillyGhostSound242342);
+
+    // 角色控制
+    setMoveControl(new MoveControlKeyboardArrow(this));
 }
+
 Player::~Player()
 {
 
@@ -82,7 +87,7 @@ void Player::update(float dt)
         setActive(false);
         return;
     }
-    updateKeyboardControl();
+
     updateSpriteAnim();
     syncCamera(dt);
 }
@@ -92,14 +97,6 @@ void Player::render()
     Actor::render();
 }
 
-void Player::updateKeyboardControl()
-{
-    auto keystats = SDL_GetKeyboardState(nullptr);
-    auto direction = glm::normalize(glm::vec2(keystats[SDL_SCANCODE_D] - keystats[SDL_SCANCODE_A], 
-        keystats[SDL_SCANCODE_S] - keystats[SDL_SCANCODE_W]));
-    if(glm::length(direction) > 0.1)
-        velocity_ = direction * max_speed_;
-}
 
 void Player::move(float dt)
 {

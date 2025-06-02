@@ -3,7 +3,7 @@
 
 #include "../core/object_screen.h"
 #include "../affiliate/sprite.h"
-#include "text_lable.h"
+#include "../affiliate/text_lable.h"
 
 // HUD文字   屏幕对象，挂载到场景
 class HUDText : public ObjectScreen

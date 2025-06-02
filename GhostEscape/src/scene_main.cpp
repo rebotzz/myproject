@@ -2,9 +2,9 @@
 #include "player.h"
 #include "enemy.h"
 #include "raw/spawner.h"
-#include "hud/ui_button.h"
+#include "screen/ui_button.h"
 #include "scene_tittle.h"
-#include "hud/ui_cursor.h"
+#include "screen/ui_cursor.h"
 #include "affiliate/collide_manager.h"
 #include "raw/spawner.h"
 

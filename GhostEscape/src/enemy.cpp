@@ -81,6 +81,8 @@ void Enemy::update(float dt)
 
 void Enemy::updateVelocity()
 {
+    if(move_control_) return;   // 手动控制
+
     if(!target_ || !target_->getIsActive()) return;
     if(current_state_ != EnemyState::NORMAL) return;
     auto target_pos = target_->getPosition();

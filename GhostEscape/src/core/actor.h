@@ -31,7 +31,7 @@ public:
     float getMaxSpeed() const { return max_speed_; }
     void setMaxSpeed(float val) { max_speed_ = val; }
     Status* getStatus() const { return status_; }
-    void setMoveControl(MoveControl* val) { move_control_ = val; }
+    void setMoveControl(MoveControl* val);
     MoveControl* getMoveControl() const { return move_control_; }
     void setHealthBar(AffilateBar* val) { health_bar_ = val; }
     void setVelocity(const glm::vec2& val) { velocity_ = val; }
@@ -40,7 +40,8 @@ public:
 protected:
     virtual void move(float dt);
     void updateHealthBar();
-    void updateMoveControl();
+
+    void removeControl();
 };
 
 

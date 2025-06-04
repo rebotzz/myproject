@@ -19,7 +19,7 @@ public:
     // getters and setters
     virtual void setRenderPosition(const glm::vec2& position) { render_position_ = position; }
     virtual const glm::vec2& getRenderPosition() { return render_position_; }
-    virtual const glm::vec2& getPosition() const { return glm::vec2(0); }
+    virtual const glm::vec2& getPosition() const { return render_position_; }
 };
 
 

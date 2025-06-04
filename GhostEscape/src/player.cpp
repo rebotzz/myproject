@@ -73,6 +73,20 @@ Player *Player::createAndAddPlayerChild(Scene *parent, const glm::vec2& position
 
 bool Player::handleEvent(const SDL_Event& event)
 {
+    if(event.type == SDL_EVENT_KEY_UP)
+    {
+        if(event.key.scancode == SDL_SCANCODE_F1)
+        {
+            setMoveControl(new MoveControlKeyboardAWSD(this));
+            return true;
+        }
+        else if(event.key.scancode == SDL_SCANCODE_F2)
+        {
+            setMoveControl(new MoveControlKeyboardArrow(this));
+            return true;
+        }
+    } 
+
     return Actor::handleEvent(event);
 }
 

@@ -1,6 +1,7 @@
 #include "actor.h"
 #include "../affiliate/affiliate_bar.h"
 #include "../affiliate/collide_box.h"
+#include "../raw/move_control.h"
 
 
 void Actor::update(float dt)
@@ -8,6 +9,15 @@ void Actor::update(float dt)
     ObjectWorld::update(dt);
     move(dt);
     updateHealthBar();
+}
+
+void Actor::setMoveControl(MoveControl *val)
+{   
+    if(move_control_)
+    {
+        move_control_->setCanRemove(true);
+    }
+    move_control_ = val;
 }
 
 void Actor::move(float dt)
@@ -31,4 +41,11 @@ void Actor::updateHealthBar()
     health_bar_->setPercentage(status_->getHP() / status_->getMaxHP());
 }
 
-
+void Actor::removeControl()
+{
+    if(move_control_)
+    {
+        move_control_->setCanRemove(true);
+        move_control_ = nullptr;
+    }
+}

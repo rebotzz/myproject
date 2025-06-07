@@ -524,16 +524,16 @@ void Player::update_hit_box_position()
 
 	switch (attack_dir)
 	{
-	case Player::Direction::Up:
+	case Direction::Up:
 		pos_hit_box = { pos_center.x, pos_center.y - size_hit_box.y / 2 };
 		break;
-	case Player::Direction::Down:
+	case Direction::Down:
 		pos_hit_box = { pos_center.x, pos_center.y + size_hit_box.y / 2 };
 		break;
-	case Player::Direction::Left:
+	case Direction::Left:
 		pos_hit_box = { pos_center.x - size_hit_box.x / 2, pos_center.y };
 		break;
-	case Player::Direction::Right:
+	case Direction::Right:
 		pos_hit_box = { pos_center.x + size_hit_box.x / 2, pos_center.y };
 		break;
 	}
@@ -573,13 +573,13 @@ void Player::on_hit_collide()
 		Vector2 pos_spark = get_logic_center();
 		switch (attack_dir)
 		{
-		case Player::Direction::Up: pos_spark.y -= 100;
+		case Direction::Up: pos_spark.y -= 100;
 			break;
-		case Player::Direction::Down:  pos_spark.y += 100;
+		case Direction::Down:  pos_spark.y += 100;
 			break;
-		case Player::Direction::Left:  pos_spark.x -= 100;
+		case Direction::Left:  pos_spark.x -= 100;
 			break;
-		case Player::Direction::Right:  pos_spark.x += 100;
+		case Direction::Right:  pos_spark.x += 100;
 			break;
 		}
 		particle->set_position(pos_spark);
@@ -652,16 +652,16 @@ void Player::create_hit_effect()
 
 	switch (attack_dir)
 	{
-	case Player::Direction::Up:
+	case Direction::Up:
 		pos_particle = { pos_center.x, pos_center.y - size_hit_box.y * 4 / 5};
 		break;
-	case Player::Direction::Down:
+	case Direction::Down:
 		pos_particle = { pos_center.x, pos_center.y + size_hit_box.y * 4 / 5 };
 		break;
-	case Player::Direction::Left:
+	case Direction::Left:
 		pos_particle = { pos_center.x - size_hit_box.x * 4 / 5, pos_center.y };
 		break;
-	case Player::Direction::Right:
+	case Direction::Right:
 		pos_particle = { pos_center.x + size_hit_box.x * 4 / 5, pos_center.y };
 		break;
 	}

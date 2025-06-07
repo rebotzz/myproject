@@ -9,7 +9,6 @@
 
 //#include <iostream>
 
-
 PlayerAttackState::PlayerAttackState()
 {
 	timer.set_one_shot(true);
@@ -284,9 +283,11 @@ void PlayerDeadState::on_enter()
 	AudioManager::instance()->play_audio_ex(_T("player_dead"));
 
 	Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+	Character* enemy = CharacterManager::instance()->get_enemy();
 	player->set_velocity({ 0, 0 });
 	player->on_jump(0.5f);
-	player->enable_displace_ex(player->get_facing_redir(), player->get_stay_air_time());
+	player->enable_displace_ex(player->get_position().x < enemy->get_position().x ? Direction::Left : Direction::Right,
+		player->get_stay_air_time());
 	player->get_hurt_box()->set_enabled(false);
 }
 

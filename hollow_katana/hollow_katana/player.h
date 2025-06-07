@@ -5,12 +5,6 @@
 // ÕÊº“¿‡
 class Player : public Character
 {
-public:
-	enum class Direction
-	{
-		Up, Down, Left, Right
-	};
-
 private:
 	const float SPEED_RUN = 300.0f;
 	const float SPEED_JUMP_MAX = 780.0f;

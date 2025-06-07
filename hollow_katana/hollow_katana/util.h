@@ -3,14 +3,30 @@
 #pragma comment(lib, "MSIMG32.LIB")		// AlphaBlend()
 
 #include <vector>
-#include <graphics.h>	//老版本easyx图形库
-//#include <easyx.h>
+#include <easyx.h>
 #include "camera.h"
-
 
 #include <iostream>
 using std::cout;
 using std::endl;
+
+
+// 虚拟按键码
+constexpr int VK_A = 0x41;
+constexpr int VK_W = 0x57;
+constexpr int VK_S = 0x53;
+constexpr int VK_D = 0x44;
+constexpr int VK_J = 0x4A;
+constexpr int VK_K = 0x4B;
+constexpr int VK_L = 0x4C;
+constexpr int VK_F = 0x46;
+constexpr int VK_G = 0x47;
+constexpr int VK_R = 0x52;
+constexpr int VK_Z = 0x5A;
+constexpr int VK_X = 0x58;
+constexpr int VK_C = 0x43;
+constexpr int VK_V = 0x56;
+
 
 // 临时摄像机方案
 extern Camera* main_camera;
@@ -61,14 +77,14 @@ inline void putimage_alpha(int x, int y, IMAGE* img)
 		GetImageHDC(img), 0, 0, w, h, { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA });
 }
 
-static inline void load_audio(LPCTSTR path, LPCTSTR id)
+inline void load_audio(LPCTSTR path, LPCTSTR id)
 {
 	static TCHAR buff[256] = { 0 };
 	_stprintf_s(buff, _T("open %s alias %s"), path, id);
 	mciSendString(buff, nullptr, 0, nullptr);
 }
 
-static inline void play_audio(LPCTSTR id, bool is_loop = false)
+inline void play_audio(LPCTSTR id, bool is_loop = false)
 {
 	// 为了避免延时,使用异步模式async
 	static TCHAR buff[256] = { 0 };
@@ -76,28 +92,28 @@ static inline void play_audio(LPCTSTR id, bool is_loop = false)
 	mciSendString(buff, nullptr, 0, nullptr);
 }
 
-static inline void stop_audio(LPCTSTR id)
+inline void stop_audio(LPCTSTR id)
 {
 	static TCHAR buff[256] = { 0 };
 	_stprintf_s(buff, _T("stop %s"), id);
 	mciSendString(buff, nullptr, 0, nullptr);
 }
 
-static inline void pause_audio(LPCTSTR id)
+inline void pause_audio(LPCTSTR id)
 {
 	static TCHAR buff[256] = { 0 };
 	_stprintf_s(buff, _T("pause %s"), id);
 	mciSendString(buff, nullptr, 0, nullptr);
 }
 
-static inline void resume_audio(LPCTSTR id)
+inline void resume_audio(LPCTSTR id)
 {
 	static TCHAR buff[256] = { 0 };
 	_stprintf_s(buff, _T("resume %s"), id);
 	mciSendString(buff, nullptr, 0, nullptr);
 }
 
-static inline int random_range(int min_num, int max_num)
+inline int random_range(int min_num, int max_num)
 {
 	return min_num + rand() % (max_num - min_num + 1);
 }

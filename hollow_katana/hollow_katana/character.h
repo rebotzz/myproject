@@ -6,6 +6,7 @@
 #include "animation.h"
 #include "collision_manager.h"
 #include "state_machine.h"
+#include "control.h"
 
 #include <iostream>
 
@@ -46,15 +47,32 @@ protected:
 	AnimationGroup* current_animation = nullptr;						// 当前动画组
 	std::unordered_map<std::string, AnimationGroup> animation_pool;		// 角色动画池
 
+	Timer timer_attack_cd;											// 攻击冷却时间定时器
+	bool is_attacking = false;										// 是否正在攻击
+	bool is_attack_cd_comp = true;									// 攻击冷却时间是否结束
+
 	// 跳跃平台
 	// 平台地面高度,因为某一时刻只会踩在一个平台上;这么看来,角色可以自己创建平台，自己跳跃。而每个角色拥有独立平台地面高度
 	float platform_floor_y = 720.0f;	
 	Timer timer_platform_reset;			// 平台地面高度恢复定时器
 	float prev_frame_pos_y = 0.0f;		// 上一帧角色Y轴坐标位置
 
+	// 角色控制
+	bool is_left_key_down = false;									// 向左移动键是否按下
+	bool is_right_key_down = false;									// 向右移动键是否按下
+	bool is_jump_key_down = false;									// 跳跃键是否按下
+	bool is_roll_key_down = false;									// 翻滚键是否按下
+	bool is_attack_key_down = false;								// 攻击键是否按下
+	bool is_dance_key_down = false;									// 跳舞键是否按下
+
 public:
 	Character();
 	~Character();
+
+	// 核心接口
+	virtual void on_input(const ExMessage& msg) {};
+	virtual void on_update(float delta);
+	virtual void on_render();
 
 	void switch_state(const std::string& id);
 	void make_invulnerable(bool not_blink_ = false, float delta_ratio = 1.0f);
@@ -64,11 +82,6 @@ public:
 	virtual void reset() { hp = hp_max; }
 	virtual void on_hurt() { };
 
-	// 核心接口
-	virtual void on_input(const ExMessage& msg) { };
-	virtual void on_update(float delta);
-	virtual void on_render();
-
 	// getters and setters
 	int get_hp_max() const { return hp_max; }
 	int get_hp() const { return hp; }
@@ -77,15 +90,28 @@ public:
 	void set_facing_left(bool flag) { is_facing_left = flag; }
 	bool get_facing_left() const { return is_facing_left; }
 	void set_invisible(bool flag) { is_invisible = flag; }
-
 	Vector2 get_logic_center() const { return { position.x, position.y - logic_height / 2 }; }
 	void set_position(const Vector2& position) { this->position = position; }
 	const Vector2& get_position() const { return position; }
 	void set_velocity(const Vector2& velocity) { this->velocity = velocity; }
 	const Vector2& get_velocity() const { return velocity; }
-
 	CollisionBox* get_hurt_box() const { return hurt_box; }
 	CollisionBox* get_hit_box() const { return hit_box; }
+
+	void set_hp_max(int val) { hp_max = val; }
+	void set_attacking(bool flag) { is_attacking = flag; }
+	bool get_attacking() const { return is_attacking; }
+	bool can_attack() const { return !is_attacking && is_attack_cd_comp && is_attack_key_down; }
+	bool can_jump() const { return is_on_floor() && is_jump_key_down; }
+
+	// 移动控制
+	virtual void set_left_keydown(bool flag) { is_left_key_down = flag; }
+	virtual void set_right_keydown(bool flag) { is_right_key_down = flag; }
+	virtual void set_jump_keydown(bool flag) { is_jump_key_down = flag; }
+	virtual void set_dash_keydown(bool flag) { is_roll_key_down = flag; }
+	virtual void set_attack_keydown(bool flag) { is_attack_key_down = flag; }
+	virtual void set_skill_keydown(bool flag) { is_dance_key_down = flag; }
+
 
 	// 时间回溯2.0接口
 	HistoryStatus get_current_status() const 

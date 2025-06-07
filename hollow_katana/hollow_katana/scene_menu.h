@@ -83,10 +83,6 @@ public:
 	}
 	virtual void on_input(const ExMessage& msg) override 
 	{
-		static const int VK_W = 0x57;
-		static const int VK_S = 0x53;
-		static const int VK_J = 0x4A;
-
 		switch (msg.message)
 		{
 		case WM_KEYDOWN:

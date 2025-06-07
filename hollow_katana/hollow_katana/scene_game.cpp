@@ -59,7 +59,6 @@ void GameScene::on_input(const ExMessage& msg)
 {
 	CharacterManager::instance()->on_input(msg);
 
-	static const int VK_R = 0x52;
 	switch (msg.message)
 	{
 	case WM_KEYDOWN:

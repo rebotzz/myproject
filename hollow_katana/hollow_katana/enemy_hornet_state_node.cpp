@@ -644,7 +644,6 @@ void EnemyHornetJumpState::on_update(float delta)
 }
 
 
-
 void EnemyHornetRunState::on_enter()
 {
 	CharacterManager::instance()->get_enemy()->set_animation("run");

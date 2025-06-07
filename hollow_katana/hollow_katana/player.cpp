@@ -8,24 +8,7 @@
 #include "particle_manager.h"
 #include "effect.h"
 
-// ĞéÄâ°´¼üÂë
-static const int VK_A = 0x41;
-static const int VK_W = 0x57;
-static const int VK_S = 0x53;
-static const int VK_D = 0x44;
 
-static const int VK_J = 0x4A;
-static const int VK_K = 0x4B;
-static const int VK_L = 0x4C;
-
-static const int VK_F = 0x46;
-static const int VK_G = 0x47;
-static const int VK_R = 0x52;
-
-static const int VK_Z = 0x5A;
-static const int VK_X = 0x58;
-static const int VK_C = 0x43;
-static const int VK_V = 0x56;
 
 Player::Player() :Character()
 {

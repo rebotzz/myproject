@@ -141,6 +141,12 @@
     <ClCompile Include="scene_manager.cpp">
       <Filter>头文件\manager\scene</Filter>
     </ClCompile>
+    <ClCompile Include="state_node.cpp">
+      <Filter>头文件\state_machine</Filter>
+    </ClCompile>
+    <ClCompile Include="control.cpp">
+      <Filter>头文件\character\character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collision_box.h">
@@ -271,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="interact_prop.h">
       <Filter>头文件\property</Filter>
+    </ClInclude>
+    <ClInclude Include="control.h">
+      <Filter>头文件\character\character</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

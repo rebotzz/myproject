@@ -133,6 +133,7 @@
     <ClCompile Include="character.cpp" />
     <ClCompile Include="character_manager.cpp" />
     <ClCompile Include="collision_manager.cpp" />
+    <ClCompile Include="control.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy_dragon_king.cpp" />
     <ClCompile Include="enemy_dragon_king_state_node.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="reverse_time_manager.cpp" />
     <ClCompile Include="scene_game.cpp" />
     <ClCompile Include="scene_manager.cpp" />
+    <ClCompile Include="state_node.cpp" />
     <ClCompile Include="status_bar.cpp" />
     <ClCompile Include="sword.cpp" />
     <ClCompile Include="resources_manager.cpp" />
@@ -163,6 +165,7 @@
     <ClInclude Include="collision_box.h" />
     <ClInclude Include="collision_layer.h" />
     <ClInclude Include="collision_manager.h" />
+    <ClInclude Include="control.h" />
     <ClInclude Include="door.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy_dragon_king.h" />

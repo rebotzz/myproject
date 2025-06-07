@@ -193,8 +193,8 @@ public:
 		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
 		rect_dst.x = (int)position.x - frame.rect_src.w / 2;
 		rect_dst.y = (achor_mode == AchorMode::BottomCentered ?
-			(int)position.y - frame.rect_src.h :
-			(int)position.y - frame.rect_src.h / 2);
+			(int)position.y - rect_dst.h :
+			(int)position.y - rect_dst.h / 2);
 
 		return { frame.img, rect_dst, frame.rect_src };
 	}

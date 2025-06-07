@@ -21,17 +21,6 @@ private:
 	bool is_rolling = false;										// 是否正在翻滚
 	bool is_roll_cd_comp = true;									// 翻滚冷却时间是否结束
 
-	Timer timer_attack_cd;											// 攻击冷却时间定时器
-	bool is_attacking = false;										// 是否正在攻击
-	bool is_attack_cd_comp = true;									// 攻击冷却时间是否结束
-
-	bool is_left_key_down = false;									// 向左移动键是否按下
-	bool is_right_key_down = false;									// 向右移动键是否按下
-	bool is_jump_key_down = false;									// 跳跃键是否按下
-	bool is_roll_key_down = false;									// 翻滚键是否按下
-	bool is_attack_key_down = false;								// 攻击键是否按下
-	bool is_dance_key_down = false;									// 跳舞键是否按下
-
 	Animation animation_vfx_slash_up;								// 攻击刀光特效动画,上
 	Animation animation_vfx_slash_down;								// 攻击刀光特效动画,下
 	Animation animation_vfx_slash_left;								// 攻击刀光特效动画,左
@@ -86,24 +75,18 @@ public:
 	bool get_rolling() const { return is_rolling; }
 	bool can_roll() const { return is_on_floor() && !is_rolling && is_roll_cd_comp && is_roll_key_down; }
 
-	void set_attacking(bool flag) { is_attacking = flag; }
-	bool get_attacking() const { return is_attacking; }
-	bool can_attack() const { return !is_attacking && is_attack_cd_comp && is_attack_key_down; }
-
-	bool can_jump() const { return is_on_floor() && is_jump_key_down; }
 	bool can_dance() const { return is_on_floor() && is_dance_key_down; }
 	int get_move_axis() const { return is_right_key_down - is_left_key_down; }
 	Direction get_attack_dir() const { return attack_dir; }
 
 	// add
+	void reset();
 	float get_total_bullet_time() const { return BULLET_TIME_TOTAL; }
 	float get_current_bullet_time() const { return current_bullet_time; }
 	Direction get_facing_redir() const { return is_facing_left ? Direction::Right : Direction::Left; }
 	float get_stay_air_time() { return 2 * speed_jump / GRAVITY; }
 	void enable_displace_ex(Direction dir, float delta);
 	void update_hit_box_position();
-	void reset();
-	void set_hp_max(int val) { hp_max = val; }
 
 	// 按键预设切换
 	void set_control_preset(bool flag) { enable_control_preset_1 = flag; }

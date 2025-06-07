@@ -85,6 +85,7 @@ public:
 	{
 		static const int VK_W = 0x57;
 		static const int VK_S = 0x53;
+		static const int VK_J = 0x4A;
 
 		switch (msg.message)
 		{
@@ -105,6 +106,7 @@ public:
 				break;
 			case VK_RETURN:
 			case VK_SPACE:
+			case VK_J:
 				switch (choice)
 				{
 				case Choice::Game:

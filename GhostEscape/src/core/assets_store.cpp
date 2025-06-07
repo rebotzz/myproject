@@ -269,6 +269,7 @@ void AssetStore::createFilenameResIDMap(const std::string& resources_dir)
     output << "enum class ResID\n{" << std::endl;
     output << "\tNone," << std::endl;
     output << "\t//图片纹理" << std::endl;
+    output << "None," << std::endl;
     for (auto& s : vs_tex)
         output << "\t" << s.second << "," << std::endl;
     output << "\t//BGM音频" << std::endl;

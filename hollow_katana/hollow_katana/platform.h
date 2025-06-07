@@ -76,8 +76,8 @@ public:
 				}
 				else
 				{
-					// 起跳
-					player->set_platform_floor_y();
+					// 起跳,将角色平台高度回复为默认值
+					//player->set_platform_floor_y();
 				}
 			});
 	}

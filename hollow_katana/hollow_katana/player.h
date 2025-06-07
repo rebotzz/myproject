@@ -20,7 +20,7 @@ private:
 
 	const float BULLET_TIME_TOTAL = 2.0f;							// 子弹时间最大值
 	const float SPEED_DISPLACE_AXIS = 300.0f;						// 特殊位移(水平)速度
-	const float SPEED_DISPLACE_UP = 780.0f;						// 特殊位移(上)速度
+	const float SPEED_DISPLACE_UP = 780.0f;							// 特殊位移(上)速度
 
 private:
 	Timer timer_roll_cd;											// 翻滚冷却时间定时器
@@ -71,8 +71,8 @@ private:
 	Vector2 pos_cursor = { 0, 0 };									// 十字瞄准图标(鼠标)位置
 	IMAGE* img_crosshair = nullptr;									// 十字瞄准图标
 
-private:
-	StatusBar status_bar;
+	StatusBar status_bar;											// 状态栏
+	bool enable_control_preset_1 = true;							// 是否启用按键预设1
 
 public:
 	Player();
@@ -111,19 +111,20 @@ public:
 	void reset();
 	void set_hp_max(int val) { hp_max = val; }
 
+	// 按键预设切换
+	void set_control_preset(bool flag) { enable_control_preset_1 = flag; }
+	bool get_control_preset() { return enable_control_preset_1; }
 
 private:
 	void on_hit_collide();
-	// 击中后坐力
-	void on_recoil(float delta = 0.0f);
-	// 朝攻击方向冲刺一段距离
-	void on_attack_displace_front();
+	void on_recoil(float delta = 0.0f);		// 击中后坐力
+	void on_attack_direction_move();		// 朝攻击方向冲刺一段距离
 	void create_hit_effect();
 	void create_hurt_effect();
 	void create_bullet_time_effect();
 	void create_roll_effect();
-
-private:
 	void update_attack_dir(float mouse_x, float mouse_y);
 	void update_attack_dir();
+	void control_preset_1(const ExMessage& msg);	// 角色控制按键预设1
+	void control_preset_2(const ExMessage& msg);	// 角色控制按键预设2
 };

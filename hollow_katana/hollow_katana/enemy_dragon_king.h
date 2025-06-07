@@ -29,9 +29,9 @@ private:
 	Animation animation_vfx_slash_right;							// 攻击刀光特效动画,右
 	Animation* current_slash_animation = nullptr;					// 当前刀光动画
 
-	Animation animation_fire_dash_left;								// 火焰冲弹
-	Animation animation_fire_dash_right;							// 火焰冲弹
-	Animation* current_fire_dash_animation = nullptr;				// 当前火焰冲弹动画
+	Animation animation_fire_dash_left;								// 火焰冲刺
+	Animation animation_fire_dash_right;							// 火焰冲刺
+	Animation* current_fire_dash_animation = nullptr;				// 当前火焰冲刺动画
 
 	CollisionBox* collision_box_katana = nullptr;					// 攻击刀光碰撞箱体
 	CollisionBox* collision_box_fire_dash = nullptr;				// 火焰冲刺碰撞箱体

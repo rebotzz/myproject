@@ -8,6 +8,24 @@
 #include "particle_manager.h"
 #include "effect.h"
 
+// 虚拟按键码
+static const int VK_A = 0x41;
+static const int VK_W = 0x57;
+static const int VK_S = 0x53;
+static const int VK_D = 0x44;
+
+static const int VK_J = 0x4A;
+static const int VK_K = 0x4B;
+static const int VK_L = 0x4C;
+
+static const int VK_F = 0x46;
+static const int VK_G = 0x47;
+static const int VK_R = 0x52;
+
+static const int VK_Z = 0x5A;
+static const int VK_X = 0x58;
+static const int VK_C = 0x43;
+static const int VK_V = 0x56;
 
 Player::Player() :Character()
 {
@@ -325,120 +343,19 @@ void Player::on_input(const ExMessage& msg)
 	if (hp <= 0)
 		return;
 
-	static const int VK_A = 0x41;
-	static const int VK_W = 0x57;
-	static const int VK_S = 0x53;
-	static const int VK_D = 0x44;
-
-	static const int VK_J = 0x4A;
-	static const int VK_K = 0x4B;
-	static const int VK_L = 0x4C;
-
-	static const int VK_F = 0x46;
-	static const int VK_G = 0x47;
-	static const int VK_R = 0x52;
-
-	static const int VK_Z = 0x5A;
-	static const int VK_X = 0x58;
-	static const int VK_C = 0x43;
-	static const int VK_V = 0x56;
-
-	// Debug: 鼠标点击后,键盘按键松开判断会有遗漏, 解决：主循环peekmessage时if改为while,逐个拉取事件队列,不漏
-	switch (msg.message)
+	if (msg.message == WM_KEYUP && msg.vkcode == VK_F1)
 	{
-	case WM_KEYDOWN:
-		switch (msg.vkcode)
-		{
-		case VK_A:
-		case VK_LEFT:
-			is_left_key_down = true;
-			break;
-		case VK_W:
-		case VK_UP:
-		case VK_SPACE:
-			is_jump_key_down = true;
-			break;
-		case VK_S:
-		case VK_X:
-		case VK_DOWN:
-			is_roll_key_down = true;
-			break;
-		case VK_D:
-		case VK_RIGHT:
-			is_right_key_down = true;
-			break;
-		case VK_R:
-		case VK_V:
-			is_dance_key_down = true;
-			break;
-		case VK_J:
-		case VK_Z:
-			is_attack_key_down = true;
-			update_attack_dir();
-			break;
-		case VK_K:
-		case VK_C:
-			is_bullet_time_key_down = true;
-			break;
-		}
-		break;
-	case WM_KEYUP:
-		switch (msg.vkcode)
-		{
-		case VK_A:
-		case VK_LEFT:
-			is_left_key_down = false;
-			break;
-		case VK_W:
-		case VK_UP:
-		case VK_SPACE:
-			is_jump_key_down = false;
-			break;
-		case VK_S:
-		case VK_X:
-		case VK_DOWN:
-			is_roll_key_down = false;
-			break;
-		case VK_D:
-		case VK_RIGHT:
-			is_right_key_down = false;
-			break;
-		case VK_J:
-		case VK_Z:
-			is_attack_key_down = false;
-			break;
-		case VK_K:
-		case VK_C:
-			is_bullet_time_key_down = false;
-			break;
-		case VK_R:
-		case VK_V:
-			is_dance_key_down = false;
-			break;
-		}
-		break;
-	// 鼠标攻击方案现在还有bug,暂时弃用
-	case WM_LBUTTONDOWN:
-		is_attack_key_down = true;
-		update_attack_dir(msg.x, msg.y);
-		break;
-	case WM_LBUTTONUP:
-		is_attack_key_down = false;
-		break;
-	// 子弹时间键位2
-	case WM_RBUTTONDOWN:
-		if (current_bullet_time > 0)
-			is_bullet_time_key_down = true;
-		break;
-	case WM_RBUTTONUP:
-		is_bullet_time_key_down = false;
-		break;
-	case WM_MOUSEMOVE:
-		pos_cursor.x = (float)(msg.x - img_crosshair->getwidth() / 2);
-		pos_cursor.y = (float)(msg.y - img_crosshair->getheight() / 2);
-		break;
-	default:
-		break;
+		std::cout << "切换按键预设" << std::endl;
+		enable_control_preset_1 = !enable_control_preset_1;
+	}
+
+	if (enable_control_preset_1)
+	{
+		control_preset_1(msg);
+	}
+	else
+	{
+		control_preset_2(msg);
 	}
 }
 
@@ -566,7 +483,7 @@ void Player::on_attack()
 	current_slash_animation->reset();
 
 	// 攻击冲刺位移
-	on_attack_displace_front();
+	on_attack_direction_move();
 }
 
 // [鼠标]攻击方向更新
@@ -705,7 +622,7 @@ void Player::on_recoil(float delta)
 	}
 }
 
-void Player::on_attack_displace_front()
+void Player::on_attack_direction_move()
 {
 	if (is_displace_ex || attack_dir == Direction::Down)
 		return;
@@ -802,4 +719,145 @@ void Player::reset()
 
 	hurt_box->set_enabled(true);
 	hit_box->set_enabled(false);
+}
+
+void Player::control_preset_1(const ExMessage& msg)
+{
+	// Debug: 鼠标点击后,键盘按键松开判断会有遗漏, 解决：主循环peekmessage时if改为while,逐个拉取事件队列,不漏
+	switch (msg.message)
+	{
+	case WM_KEYDOWN:
+		switch (msg.vkcode)
+		{
+		case VK_A:
+			is_left_key_down = true;
+			break;
+		case VK_W:
+			is_jump_key_down = true;
+			break;
+		case VK_S:
+			is_roll_key_down = true;
+			break;
+		case VK_D:
+			is_right_key_down = true;
+			break;
+		case VK_R:
+			is_dance_key_down = true;
+			break;
+		case VK_J:
+			is_attack_key_down = true;
+			update_attack_dir();
+			break;
+		case VK_K:
+			is_bullet_time_key_down = true;
+			break;
+		}
+		break;
+	case WM_KEYUP:
+		switch (msg.vkcode)
+		{
+		case VK_A:
+			is_left_key_down = false;
+			break;
+		case VK_W:
+			is_jump_key_down = false;
+			break;
+		case VK_S:
+			is_roll_key_down = false;
+			break;
+		case VK_D:
+			is_right_key_down = false;
+			break;
+		case VK_J:
+			is_attack_key_down = false;
+			break;
+		case VK_K:
+			is_bullet_time_key_down = false;
+			break;
+		case VK_R:
+			is_dance_key_down = false;
+			break;
+		}
+		break;
+	case WM_LBUTTONDOWN:
+		is_attack_key_down = true;
+		update_attack_dir(msg.x, msg.y);
+		break;
+	case WM_LBUTTONUP:
+		is_attack_key_down = false;
+		break;
+		// 子弹时间键位2
+	case WM_RBUTTONDOWN:
+		if (current_bullet_time > 0)
+			is_bullet_time_key_down = true;
+		break;
+	case WM_RBUTTONUP:
+		is_bullet_time_key_down = false;
+		break;
+	case WM_MOUSEMOVE:
+		pos_cursor.x = (float)(msg.x - img_crosshair->getwidth() / 2);
+		pos_cursor.y = (float)(msg.y - img_crosshair->getheight() / 2);
+		break;
+	default:
+		break;
+	}
+}
+void Player::control_preset_2(const ExMessage& msg)
+{
+	switch (msg.message)
+	{
+	case WM_KEYDOWN:
+		switch (msg.vkcode)
+		{
+		case VK_LEFT:
+			is_left_key_down = true;
+			break;
+		case VK_UP:
+			is_jump_key_down = true;
+			break;
+		case VK_DOWN:
+			is_roll_key_down = true;
+			break;
+		case VK_RIGHT:
+			is_right_key_down = true;
+			break;
+		case VK_Z:
+			is_attack_key_down = true;
+			update_attack_dir();
+			break;
+		case VK_C:
+			is_dance_key_down = true;
+			break;
+		case VK_X:
+			is_bullet_time_key_down = true;
+			break;
+		}
+		break;
+	case WM_KEYUP:
+		switch (msg.vkcode)
+		{
+		case VK_LEFT:
+			is_left_key_down = false;
+			break;
+		case VK_UP:
+			is_jump_key_down = false;
+			break;
+		case VK_DOWN:
+			is_roll_key_down = false;
+			break;
+		case VK_RIGHT:
+			is_right_key_down = false;
+			break;
+		case VK_Z:
+			is_attack_key_down = false;
+			break;
+		case VK_X:
+			is_bullet_time_key_down = false;
+			break;
+		case VK_C:
+			is_dance_key_down = false;
+			break;
+		}
+		break;
+	}
 }

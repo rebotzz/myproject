@@ -2,6 +2,7 @@
 #define _WEAPON_H_
 
 #include "../affiliate/object_affiliate.h"
+#include "../world/spell.h"
 #include <functional>
 
 // 改为继承附属对象，跟随玩家移动   (教程中武器继承自Object，我觉得继承自ObjectAffiliate也行，可以处理武器有动画的情况)
@@ -12,6 +13,7 @@ protected:
     float attack_cd_ = 1.0f;
     float attack_timer_ = 0.0f;
     std::function<void()> attack_callback_; // 攻击执行逻辑
+    ResID sound_id_ = ResID::None;  // 技能音效ID
 
 public:
     Weapon(float damage, float attack_cd):damage_(damage), attack_cd_(attack_cd) {}

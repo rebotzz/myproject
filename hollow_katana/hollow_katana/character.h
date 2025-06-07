@@ -23,7 +23,7 @@ protected:
 protected:																
 	const float FLOOR_Y = 620;											// 地面竖直高度y坐标
 	const float GRAVITY = 980 * 2;										// 重力常数
-	const float TIME_INVULNERABLE = 1.0f;								// 无敌帧时长
+	const float TIME_INVINCIBLE = 1.0f;									// 无敌帧时长
 
 protected:						
 	int hp_max = 1;														// 生命值上限
@@ -37,17 +37,18 @@ protected:
 	CollisionBox* hit_box;												// 攻击碰撞箱
 	CollisionBox* interact_box;											// 交互碰撞箱
 	StateMachine state_machine;											// 状态机
-	Timer timer_invulnerable_status;									// 无敌状态计时器
-	Timer timer_invulnerable_blink;										// 无敌时间闪烁计时器
-	bool is_invulnerable_status = false;								// 是否无敌状态
+	Timer timer_invincible_status;										// 无敌状态计时器
+	Timer timer_invincible_blink;										// 无敌时间闪烁计时器
+	bool is_invincible_status = false;									// 是否无敌状态
 	bool is_blink_invisible = false;									// 是否无敌闪烁的不可见状态
 	bool not_blink = false;												// 不闪烁
 	bool is_invisible = false;											// 是否可见,播放特效,隐藏本体
 	AnimationGroup* current_animation = nullptr;						// 当前动画组
 	std::unordered_map<std::string, AnimationGroup> animation_pool;		// 角色动画池
 
-	// 新增
-	float platform_floor_y = 720.0f;	// 平台地面高度,因为某一时刻只会踩在一个平台上;这么看来,角色可以自己创建平台，自己跳跃
+	// 跳跃平台
+	// 平台地面高度,因为某一时刻只会踩在一个平台上;这么看来,角色可以自己创建平台，自己跳跃。而每个角色拥有独立平台地面高度
+	float platform_floor_y = 720.0f;	
 	Timer timer_platform_reset;			// 平台地面高度恢复定时器
 	float prev_frame_pos_y = 0.0f;		// 上一帧角色Y轴坐标位置
 
@@ -68,6 +69,7 @@ public:
 	virtual void on_update(float delta);
 	virtual void on_render();
 
+	// getters and setters
 	int get_hp_max() const { return hp_max; }
 	int get_hp() const { return hp; }
 	float get_gravity() const { return GRAVITY; }
@@ -85,7 +87,7 @@ public:
 	CollisionBox* get_hurt_box() const { return hurt_box; }
 	CollisionBox* get_hit_box() const { return hit_box; }
 
-	// 时间回溯2.0特供接口
+	// 时间回溯2.0接口
 	HistoryStatus get_current_status() const 
 	{ 
 		return (is_facing_left ? current_animation->left : current_animation->right).get_current_status();

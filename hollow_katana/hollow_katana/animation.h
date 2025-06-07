@@ -39,7 +39,7 @@ private:
 	AchorMode achor_mode = AchorMode::Centered;			// 动画锚点
 
 	// 其余
-	IMAGE current_frame;								// 当前帧图片,用于生成粒子特效
+	IMAGE current_frame;								// 当前帧图片,用于生成特效
 
 public:
 	Animation()
@@ -107,11 +107,11 @@ public:
 		const Frame& frame = frame_list[idx_frame];
 
 		Rect rect_dst;
-		rect_dst.w = frame.rect_src.w, rect_dst.h = frame.rect_src.h;
-		rect_dst.x = (int)position.x - frame.rect_src.w / 2;
+		rect_dst.w = static_cast<int>(frame.rect_src.w), rect_dst.h = static_cast<int>(frame.rect_src.h);
+		rect_dst.x = (int)position.x - rect_dst.w / 2;
 		rect_dst.y = (achor_mode == AchorMode::BottomCentered ?
-			(int)position.y - frame.rect_src.h :
-			(int)position.y - frame.rect_src.h / 2);
+			(int)position.y - rect_dst.h :
+			(int)position.y - rect_dst.h / 2);
 
 		putimage_alpha_ex(frame.img, &rect_dst, &frame.rect_src);
 	}

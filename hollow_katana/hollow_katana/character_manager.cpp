@@ -1,9 +1,9 @@
-#include <stdexcept>
 #include "character_manager.h"
 #include "bullet_time_manager.h"
 #include "particle_manager.h"
 #include "player.h"
 #include "enemy_hornet.h"
+#include <stdexcept>
 
 
 CharacterManager* CharacterManager::manager = nullptr;
@@ -25,8 +25,10 @@ CharacterManager* CharacterManager::instance()
 
 void CharacterManager::on_input(const ExMessage& msg)
 {
-	if(is_enable)
+	if (is_enable)
+	{
 		player->on_input(msg);
+	}
 }
 
 void CharacterManager::on_update(float delta)

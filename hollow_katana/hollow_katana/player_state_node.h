@@ -72,7 +72,7 @@ public:
 class PlayerDanceState : public StateNode
 {
 private:
-	Timer timer;		// 跳舞的隐藏特性：回血
+	Timer timer;		// 跳舞的特性：回血
 public:
 	PlayerDanceState();
 	~PlayerDanceState() = default;

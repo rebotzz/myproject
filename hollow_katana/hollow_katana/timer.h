@@ -20,6 +20,7 @@ public:
 	{
 		pass_time = 0;
 		shotted = false;
+		is_pause = false;
 	}
 
 	void pause()

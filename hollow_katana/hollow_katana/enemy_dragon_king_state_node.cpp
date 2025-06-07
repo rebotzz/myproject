@@ -448,7 +448,7 @@ namespace EnemyDragonKingState
 	{}
 
 
-	// [火焰冲弹]
+	// [火焰冲刺]
 	FireDashState::FireDashState()
 	{
 		timer_over.set_one_shot(true);
@@ -592,11 +592,11 @@ namespace EnemyDragonKingState
 		timer_text2.set_on_timeout([]()
 			{
 				std::shared_ptr<EffectText> text1(new EffectText(
-					_T("醒了吗...?"), 5.0f, RGB(255, 255, 255)));
+					_T("走了，"), 5.0f, RGB(255, 255, 255)));
 				text1->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
 				text1->set_text_offset(0, -20);
 				std::shared_ptr<EffectText> text2(new EffectText(
-					_T("让我们去把这座城烧成灰吧..."), 5.0f, RGB(255, 255, 255)));
+					_T("我们去把这座城烧成灰吧..."), 5.0f, RGB(255, 255, 255)));
 				text2->set_position({ (float)getwidth() / 2, (float)getheight() / 2 });
 				text2->set_text_offset(0, 20);
 				text2->set_enable_background(false);

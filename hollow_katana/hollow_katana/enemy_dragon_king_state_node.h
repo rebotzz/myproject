@@ -7,7 +7,7 @@
 // [龙王]状态节点:
 // 策略: 半血以上[攻击频率低,没有大招] 半血以下[攻击频率高,大招] (加入拼刀机制,0.45s无敌帧)
 // 1.闲置, 2.跳跃, 3.奔跑, 4.下落 
-// 5.准备 6.普通攻击 7.雷闪一刀 8.火焰冲弹 
+// 5.准备 6.普通攻击 7.雷闪一刀 8.火焰冲刺 
 // 9.空中火焰弹 10.死亡
 // 
 // 废弃方案:
@@ -121,7 +121,7 @@ namespace EnemyDragonKingState
 		virtual void on_exit() override;
 	};
 
-	// [火焰冲弹]
+	// [火焰冲刺]
 	class FireDashState : public StateNode
 	{
 	private:

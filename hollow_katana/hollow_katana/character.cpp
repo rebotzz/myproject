@@ -8,15 +8,15 @@ Character::Character()
 	hurt_box = CollisionManager::instance()->create_collision_box();
 	interact_box = CollisionManager::instance()->create_collision_box();
 
-	timer_invulnerable_status.set_one_shot(true);
-	timer_invulnerable_status.set_wait_time(TIME_INVULNERABLE);
-	timer_invulnerable_blink.set_one_shot(false);
-	timer_invulnerable_blink.set_wait_time(0.075f);
-	timer_invulnerable_status.set_on_timeout([&]()
+	timer_invincible_status.set_one_shot(true);
+	timer_invincible_status.set_wait_time(TIME_INVINCIBLE);
+	timer_invincible_blink.set_one_shot(false);
+	timer_invincible_blink.set_wait_time(0.075f);
+	timer_invincible_status.set_on_timeout([&]()
 		{
-			is_invulnerable_status = false;
+			is_invincible_status = false;
 		});
-	timer_invulnerable_blink.set_on_timeout([&]()
+	timer_invincible_blink.set_on_timeout([&]()
 		{
 			is_blink_invisible = !is_blink_invisible;
 		});
@@ -44,10 +44,10 @@ void Character::switch_state(const std::string& id)
 void Character::make_invulnerable(bool not_blink_, float delta_ratio)
 {
 	not_blink = not_blink_;
-	is_invulnerable_status = true;
-	timer_invulnerable_status.set_wait_time(TIME_INVULNERABLE * delta_ratio);
-	timer_invulnerable_status.restart();
-	timer_invulnerable_blink.restart();
+	is_invincible_status = true;
+	timer_invincible_status.set_wait_time(TIME_INVINCIBLE * delta_ratio);
+	timer_invincible_status.restart();
+	timer_invincible_blink.restart();
 }
 
 void Character::set_animation(const std::string& id)
@@ -60,7 +60,7 @@ void Character::set_animation(const std::string& id)
 
 void Character::decrease_hp()
 {
-	if (is_invulnerable_status || hp <= 0)
+	if (is_invincible_status || hp <= 0)
 		return;
 
 	hp -= 1;
@@ -97,9 +97,9 @@ void Character::on_update(float delta)
 	interact_box->set_position(get_logic_center());
 
 	// 更新无敌状态计时器
-	timer_invulnerable_status.on_update(delta);
-	if (is_invulnerable_status && !not_blink)
-		timer_invulnerable_blink.on_update(delta);
+	timer_invincible_status.on_update(delta);
+	if (is_invincible_status && !not_blink)
+		timer_invincible_blink.on_update(delta);
 
 	// 更新角色动画
 	if (!current_animation)
@@ -113,7 +113,7 @@ void Character::on_update(float delta)
 
 void Character::on_render()
 {
-	if (!current_animation || (is_invulnerable_status && is_blink_invisible) || is_invisible)
+	if (!current_animation || (is_invincible_status && is_blink_invisible) || is_invisible)
 		return;
 
 	(is_facing_left ? current_animation->left : current_animation->right).on_render();

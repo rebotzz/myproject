@@ -14,6 +14,9 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<Character>> enemy_list;
 	bool is_enable = false;
 
+	// debug
+	//std::shared_ptr<Character> player_2 = nullptr;	// 改为操控敌人
+
 	// todo: 
 	// 增加敌人列表, 不不不,或许只用一个敌人,然后附属敌人就可以实现
 	// 更新逻辑,清理逻辑都在主敌人中实现

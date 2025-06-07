@@ -12,11 +12,9 @@
 
 
 // v1.3新增:传送门,木头人,平台，开关
-
 // todo: 
 // 1.增加挡板,防止角色飞出屏幕顶部
 // 2.重力更改时,调整动画方向,碰撞箱体方向,锚点位置,或许还有跳跃方向(暂时废弃,或许在别的游戏中实现)
-
 // TODO:场景最好动态加载，用到时候在创建，一股脑全创建容易产生很多碰撞箱 | 或者场景内素材进入加载，退出销毁
 class SceneGameChoice : public Scene
 {
@@ -28,10 +26,10 @@ private:
 	Door* door_hornet = nullptr;							
 	Door* door_dragon_king = nullptr;
 	Woodenman* woodenman = nullptr;
-	std::vector<Platform*> platform_list;
+	std::vector<Platform*> platform_list;			// 跳跃平台
 	bool enabled_platforms = false;
-	InteractProp prop_platform_switch;
-	Timer timer_switch_platforms;
+	InteractProp prop_platform_switch;				// 平台开关
+	Timer timer_platforms_switch;
 
 public:
 	SceneGameChoice()
@@ -43,18 +41,17 @@ public:
 		prop_platform_switch.set_describe(_T("跳跃平台开关"));
 		prop_platform_switch.set_on_interact([&]()
 			{
-				timer_switch_platforms.resume();
-				timer_switch_platforms.restart();
+				timer_platforms_switch.restart();
 			});
 		prop_platform_switch.set_size({ 20, 70 });
 		prop_platform_switch.set_position({ 720, 580 });
 		prop_platform_switch.enable_showing_box(true);
 		prop_platform_switch.set_showing_style(RGB(200, 150, 255), PS_SOLID, 8);
 
-		timer_switch_platforms.set_one_shot(true);
-		timer_switch_platforms.set_wait_time(0.2f);
-		timer_switch_platforms.pause();
-		timer_switch_platforms.set_on_timeout([&]()
+		timer_platforms_switch.set_one_shot(true);
+		timer_platforms_switch.set_wait_time(0.2f);
+		timer_platforms_switch.pause();
+		timer_platforms_switch.set_on_timeout([&]()
 			{
 				enabled_platforms = !enabled_platforms;
 				for (auto platform : platform_list)
@@ -113,7 +110,7 @@ public:
 		for (auto platform : platform_list)
 			platform->set_enabled(enabled_platforms);
 
-		timer_switch_platforms.pause();
+		timer_platforms_switch.pause();
 	}
 	void on_input(const ExMessage& msg)
 	{
@@ -125,11 +122,10 @@ public:
 		door_hornet->on_update(delta);
 		door_dragon_king->on_update(delta);
 
-		timer_switch_platforms.on_update(delta);
+		timer_platforms_switch.on_update(delta);
 	}
 	void on_render() override
 	{
-		//game_scene.on_render();
 		game_scene.render_background();	// 分层渲染，避免图层遮挡
 
 		door_hornet->on_render();
@@ -154,12 +150,5 @@ public:
 		if (woodenman) delete woodenman;
 		for (auto platform : platform_list)
 			if (platform) delete platform;
-
-		//// 关闭道具碰撞检测
-		//door_hornet->set_enabled(false);
-		//door_dragon_king->set_enabled(false);
-		//woodenman->set_enabled(false);
-		//for (auto platform : platform_list)
-		//	platform->set_enabled(false);
 	}
 };

@@ -128,10 +128,8 @@ void SceneManager::switch_scene(std::string id)
 			auto last_cache_id = *iter;
 			if (last_cache_id != cur_scene_id && last_cache_id != prev_scene_id && last_cache_id != id)
 			{
-				scene_pool[last_cache_id]->on_exit();
 				scene_pool.erase(last_cache_id);
 				iter = scene_cache.erase(iter);
-
 				cout << "ÇåÀí³¡¾°»º´æ£º" << last_cache_id << endl;
 			}
 			else

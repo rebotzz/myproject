@@ -9,7 +9,7 @@
 EnemyDragonKing::EnemyDragonKing() :Character()
 {
 	// ½ÇÉ«³õÊ¼»¯
-	hp = hp_max = 15;
+	hp = hp_max = 10;
 	is_facing_left = true;
 	position = { 1050, 500 };
 	logic_height = 90;

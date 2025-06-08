@@ -1,4 +1,5 @@
 #include "character.h"
+#include "resources_manager.h"
 
 extern Camera* main_camera;
 
@@ -32,6 +33,19 @@ Character::Character()
 		});
 
 	state_machine = new StateMachine();
+
+	// 动画
+	animation_vfx_jump.set_interval(0.05f);
+	animation_vfx_jump.set_loop(false);
+	animation_vfx_jump.set_achor_mode(Animation::AchorMode::BottomCentered);
+	animation_vfx_jump.add_frame(ResourcesManager::instance()->find_image("player_vfx_jump"), 5);
+	animation_vfx_jump.set_on_finished([&]() { is_vfx_jump_visiable = false; });
+
+	animation_vfx_land.set_interval(0.1f);
+	animation_vfx_land.set_loop(false);
+	animation_vfx_land.set_achor_mode(Animation::AchorMode::BottomCentered);
+	animation_vfx_land.add_frame(ResourcesManager::instance()->find_image("player_vfx_land"), 2);
+	animation_vfx_land.set_on_finished([&]() { is_vfx_land_visiable = false; });
 }
 
 Character::~Character()
@@ -135,11 +149,21 @@ void Character::on_update(float delta)
 	animation.set_position(position);
 	animation.on_update(delta);
 
+	// 更新特效动画
+	animation_vfx_jump.on_update(delta);
+	animation_vfx_land.on_update(delta);
+
 	timer_platform_reset.on_update(delta);
 }
 
 void Character::on_render()
 {
+	// 跳跃,落地特效
+	if (is_vfx_jump_visiable && hp > 0)
+		animation_vfx_jump.on_render();
+	if (is_vfx_land_visiable)
+		animation_vfx_land.on_render();
+
 	if (!current_animation || (is_invincible_status && is_blink_invisible) || is_invisible)
 		return;
 

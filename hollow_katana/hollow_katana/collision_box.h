@@ -6,6 +6,7 @@
 
 class CollisionManager;
 
+// 碰撞盒子：中心锚点模式
 class CollisionBox : public GameObject
 {
 	friend class CollisionManager;

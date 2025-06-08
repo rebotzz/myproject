@@ -287,18 +287,6 @@ Player::Player() :Character()
 		animation_vfx_slash_down.set_loop(false);
 		animation_vfx_slash_down.set_achor_mode(Animation::AchorMode::Centered);
 		animation_vfx_slash_down.add_frame(ResourcesManager::instance()->find_image("player_vfx_attack_down"), 5);
-
-		animation_vfx_jump.set_interval(0.05f);
-		animation_vfx_jump.set_loop(false);
-		animation_vfx_jump.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_vfx_jump.add_frame(ResourcesManager::instance()->find_image("player_vfx_jump"), 5);
-		animation_vfx_jump.set_on_finished([&]() { is_vfx_jump_visiable = false; });
-
-		animation_vfx_land.set_interval(0.1f);
-		animation_vfx_land.set_loop(false);
-		animation_vfx_land.set_achor_mode(Animation::AchorMode::BottomCentered);
-		animation_vfx_land.add_frame(ResourcesManager::instance()->find_image("player_vfx_land"), 2);
-		animation_vfx_land.set_on_finished([&]() { is_vfx_land_visiable = false; });
 	}
 
 	{
@@ -357,10 +345,6 @@ void Player::on_update(float delta)
 	timer_displace_ex.on_update(delta);
 	timer_delay_decrease_hp.on_update(delta);
 
-	// 更新动画
-	animation_vfx_jump.on_update(delta);
-	animation_vfx_land.on_update(delta);
-
 	if (is_attacking && hp > 0)
 	{
 		timer_attack_cd.on_update(delta);
@@ -390,12 +374,6 @@ void Player::on_update(float delta)
 
 void Player::on_render()
 {
-	// 跳跃,落地特效
-	if (is_vfx_jump_visiable && hp > 0)
-		animation_vfx_jump.on_render();
-	if (is_vfx_land_visiable)
-		animation_vfx_land.on_render();
-
 	// 攻击刀光特效
 	if (is_attacking && hp > 0)
 		current_slash_animation->on_render();

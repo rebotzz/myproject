@@ -344,7 +344,7 @@ void EnemyHornet::on_update(float delta)
 		hit_box->set_enabled(false);
 	}
 
-	interact_box->set_position(position);
+	interact_box->set_position(position - Vector2{0.5f, interact_box->get_size().y * 0.5f});
 
 	if (is_dashing_in_air || is_dashing_on_floor)
 	{

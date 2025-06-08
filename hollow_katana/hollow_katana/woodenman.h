@@ -16,7 +16,7 @@ public:
 		:prop(_T("²âÊÔÄ¾Í·ÈË"))
 	{
 		img = ResourcesManager::instance()->find_image("woodenman");
-		prop.set_on_interact([&]()
+		prop.set_on_interact([&](CollisionBox*)
 			{
 				is_showing_hit = true;
 			});

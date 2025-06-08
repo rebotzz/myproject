@@ -34,7 +34,7 @@ public:
 		desc_box = CollisionManager::instance()->create_collision_box();
 		desc_box->set_enabled(true);
 		desc_box->set_layer_src(CollisionLayer::Interact);
-		desc_box->set_on_collision([&]()
+		desc_box->set_on_collision([&](CollisionBox*)
 			{
 				is_showing_desc = true;
 			});
@@ -86,7 +86,7 @@ public:
 		desc_box->set_size(size);
 	}
 
-	void set_on_interact(const std::function<void()>& callback)
+	void set_on_interact(const std::function<void(CollisionBox*)>& callback)
 	{
 		switch_box->set_on_collision(callback);
 	}

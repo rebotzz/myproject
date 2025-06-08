@@ -22,7 +22,7 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 	hurt_box->set_layer_dst(CollisionLayer::None);
 	hit_box->set_layer_src(CollisionLayer::None);
 	hit_box->set_layer_dst(CollisionLayer::Player);
-	hurt_box->set_on_collision([&] { decrease_hp(); });
+	hurt_box->set_on_collision([&](CollisionBox*) { decrease_hp(); });
 	hit_box->set_enabled(false);	// 关闭龙王接触伤害,就该玩刀
 
 	collision_box_katana = CollisionManager::instance()->create_collision_box();
@@ -171,18 +171,18 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 
 	// 状态机初始化
 	{
-		state_machine.register_state("idle", new EnemyDragonKingState::IdleState);
-		state_machine.register_state("prepare", new EnemyDragonKingState::PrepareState);
-		state_machine.register_state("jump", new EnemyDragonKingState::JumpState);
-		state_machine.register_state("fall", new EnemyDragonKingState::FallState);
-		state_machine.register_state("run", new EnemyDragonKingState::RunState);
-		state_machine.register_state("normal_attack", new EnemyDragonKingState::AttackNormalState);
-		state_machine.register_state("electric", new EnemyDragonKingState::ElectricState);
-		state_machine.register_state("fire_dash", new EnemyDragonKingState::FireDashState);
-		state_machine.register_state("fire_bullet", new EnemyDragonKingState::FireBulletState);
-		state_machine.register_state("dead", new EnemyDragonKingState::DeadState);
+		state_machine->register_state("idle", new EnemyDragonKingState::IdleState);
+		state_machine->register_state("prepare", new EnemyDragonKingState::PrepareState);
+		state_machine->register_state("jump", new EnemyDragonKingState::JumpState);
+		state_machine->register_state("fall", new EnemyDragonKingState::FallState);
+		state_machine->register_state("run", new EnemyDragonKingState::RunState);
+		state_machine->register_state("normal_attack", new EnemyDragonKingState::AttackNormalState);
+		state_machine->register_state("electric", new EnemyDragonKingState::ElectricState);
+		state_machine->register_state("fire_dash", new EnemyDragonKingState::FireDashState);
+		state_machine->register_state("fire_bullet", new EnemyDragonKingState::FireBulletState);
+		state_machine->register_state("dead", new EnemyDragonKingState::DeadState);
 
-		state_machine.set_entry("idle");
+		state_machine->set_entry("idle");
 	}
 }
 

@@ -3,6 +3,7 @@
 #include "resources_manager.h"
 #include "audio_manager.h"
 #include "enemy_hornet_state_node.h"
+#include "control.h"
 
 
 EnemyHornet::EnemyHornet() :Character()
@@ -16,19 +17,23 @@ EnemyHornet::EnemyHornet() :Character()
 	// 碰撞箱初始化		TODO:敌人不同状态动画对应的受击碰撞箱大小不同
 	hurt_box->set_size({ 100, 150 });
 	hit_box->set_size({ 50, 80 });
-
 	hurt_box->set_layer_src(CollisionLayer::Enemy);
 	hurt_box->set_layer_dst(CollisionLayer::None);
 	hit_box->set_layer_src(CollisionLayer::None);
 	hit_box->set_layer_dst(CollisionLayer::Player);
-
-	hurt_box->set_on_collision([&] { decrease_hp(); });
+	hurt_box->set_on_collision([&](CollisionBox*) { decrease_hp(); });
 
 	collision_box_silk = CollisionManager::instance()->create_collision_box();
 	collision_box_silk->set_enabled(false);
 	collision_box_silk->set_size({ 230, 230 });
 	collision_box_silk->set_layer_src(CollisionLayer::None);
 	collision_box_silk->set_layer_dst(CollisionLayer::Player);
+
+	interact_box->set_enabled(true);
+	interact_box->set_size({ 100, 100 });
+	interact_box->set_layer_src(CollisionLayer::None);
+	interact_box->set_layer_dst(CollisionLayer::Interact | CollisionLayer::Scenery);
+	interact_box->set_position(get_logic_center());
 
 	// 角色动画初始化
 	{
@@ -220,22 +225,22 @@ EnemyHornet::EnemyHornet() :Character()
 		animation_dash_on_floor_right.add_frame(ResourcesManager::instance()->find_atlas("enemy_hornet_vfx_dash_on_floor_right"));
 	}
 
-	// 状态机初始化
+	// 状态机初始化：AI控制
 	{
-		state_machine.register_state("idle", new EnemyHornetIdleState);
-		state_machine.register_state("jump", new EnemyHornetJumpState);
-		state_machine.register_state("run", new EnemyHornetRunState);
-		state_machine.register_state("fall", new EnemyHornetFallState);
-		state_machine.register_state("dash_in_air", new EnemyHornetDashInAirState);
-		state_machine.register_state("dash_on_floor", new EnemyHornetDashOnFloorState);
-		state_machine.register_state("aim", new EnemyHornetAimState);
-		state_machine.register_state("squat", new EnemyHornetSquatState);
-		state_machine.register_state("throw_sword", new EnemyHornetThrowSwordState);
-		state_machine.register_state("throw_barbs", new EnemyHornetThrowBarbsState);
-		state_machine.register_state("throw_silk", new EnemyHornetThrowSilkState);
-		state_machine.register_state("dead", new EnemyHornetDeadState);
+		state_machine->register_state("idle", new EnemyHornetIdleState);
+		state_machine->register_state("jump", new EnemyHornetJumpState);
+		state_machine->register_state("run", new EnemyHornetRunState);
+		state_machine->register_state("fall", new EnemyHornetFallState);
+		state_machine->register_state("dash_in_air", new EnemyHornetDashInAirState);
+		state_machine->register_state("dash_on_floor", new EnemyHornetDashOnFloorState);
+		state_machine->register_state("aim", new EnemyHornetAimState);
+		state_machine->register_state("squat", new EnemyHornetSquatState);
+		state_machine->register_state("throw_sword", new EnemyHornetThrowSwordState);
+		state_machine->register_state("throw_barbs", new EnemyHornetThrowBarbsState);
+		state_machine->register_state("throw_silk", new EnemyHornetThrowSilkState);
+		state_machine->register_state("dead", new EnemyHornetDeadState);
 
-		state_machine.set_entry("idle");
+		state_machine->set_entry("idle");
 	}
 }
 
@@ -251,29 +256,74 @@ EnemyHornet::~EnemyHornet()
 	AudioManager::instance()->stop_audio_ex(_T("enemy_run"));
 }
 
-void EnemyHornet::on_hurt()
+// 状态机初始化：手动控制
+void EnemyHornet::switch_to_human_control()
 {
-	switch (random_range(1, 3))
+	cout << "EnemyHornet切换到手动控制" << endl;
+	if (state_machine)
 	{
-	case 1:
-		AudioManager::instance()->play_audio_ex(_T("enemy_hurt_1"));
-		break;
-	case 2:
-		AudioManager::instance()->play_audio_ex(_T("enemy_hurt_2"));
-		break;
-	case 3:
-		AudioManager::instance()->play_audio_ex(_T("enemy_hurt_3"));
-		break;
+		state_machine->clear();
 	}
+	else
+	{
+		state_machine = new StateMachine();
+	}
+	if (nullptr == control)
+	{
+		control = new HornetControl(this);
+	}
+
+	state_machine->register_state("idle", new StateNodeIdle(this));
+	state_machine->register_state("jump", new StateNodeJump(this));
+	state_machine->register_state("run", new StateNodeRun(this));
+	state_machine->register_state("fall", new StateNodeFall(this));
+	state_machine->register_state("attack", new EnemyHornetThrowSwordState);
+	state_machine->register_state("dash_on_floor", new EnemyHornetDashOnFloorState);
+	state_machine->register_state("throw_silk", new EnemyHornetThrowSilkState);
+
+	state_machine->set_entry("idle");
+}
+
+// 状态机初始化：AI控制
+void EnemyHornet::switch_to_auto_control()
+{
+	cout << "EnemyHornet切换到自动控制" << endl;
+	if (state_machine)
+	{
+		state_machine->clear();
+	}
+	else
+	{
+		state_machine = new StateMachine();
+	}
+	if (control)
+	{
+		delete control;
+	}
+
+	state_machine->register_state("idle", new EnemyHornetIdleState);
+	state_machine->register_state("jump", new EnemyHornetJumpState);
+	state_machine->register_state("run", new EnemyHornetRunState);
+	state_machine->register_state("fall", new EnemyHornetFallState);
+	state_machine->register_state("dash_in_air", new EnemyHornetDashInAirState);
+	state_machine->register_state("dash_on_floor", new EnemyHornetDashOnFloorState);
+	state_machine->register_state("aim", new EnemyHornetAimState);
+	state_machine->register_state("squat", new EnemyHornetSquatState);
+	state_machine->register_state("throw_sword", new EnemyHornetThrowSwordState);
+	state_machine->register_state("throw_barbs", new EnemyHornetThrowBarbsState);
+	state_machine->register_state("throw_silk", new EnemyHornetThrowSilkState);
+	state_machine->register_state("dead", new EnemyHornetDeadState);
+
+	state_machine->set_entry("idle");
 }
 
 void EnemyHornet::on_update(float delta)
 {
-	if (velocity.x > 0.0001f)
-		is_facing_left = (velocity.x < 0);
-
 	// 更新基类的物理模拟等逻辑
 	Character::on_update(delta);
+
+	if (velocity.x > 0.001f)
+		is_facing_left = (velocity.x < 0);
 
 	// 更新特效动画和碰撞箱逻辑
 	hit_box->set_position(get_logic_center());
@@ -285,10 +335,16 @@ void EnemyHornet::on_update(float delta)
 		collision_box_silk->set_position(get_logic_center());
 	}
 	else
+	{
 		collision_box_silk->set_enabled(false);
 
+	}
 	if (hp <= 0)
+	{
 		hit_box->set_enabled(false);
+	}
+
+	interact_box->set_position(position);
 
 	if (is_dashing_in_air || is_dashing_on_floor)
 	{
@@ -336,6 +392,22 @@ void EnemyHornet::on_render()
 		animation_silk.on_render();
 }
 
+void EnemyHornet::on_hurt()
+{
+	switch (random_range(1, 3))
+	{
+	case 1:
+		AudioManager::instance()->play_audio_ex(_T("enemy_hurt_1"));
+		break;
+	case 2:
+		AudioManager::instance()->play_audio_ex(_T("enemy_hurt_2"));
+		break;
+	case 3:
+		AudioManager::instance()->play_audio_ex(_T("enemy_hurt_3"));
+		break;
+	}
+}
+
 void EnemyHornet::throw_sword()
 {
 	Sword* sword = new Sword(get_logic_center(), is_facing_left);
@@ -372,3 +444,12 @@ void EnemyHornet::on_throw_silk()
 	main_camera->shake(8, 0.9f);
 }
 
+void EnemyHornet::move(float delta)
+{
+	Character::move(delta);
+
+	if (hp > 0 && !is_dashing_on_floor && !is_dashing_in_air)
+		velocity.x = get_move_axis() * SPEED_RUN;
+	if (get_move_axis() != 0 && !is_dashing_on_floor)
+		is_facing_left = get_move_axis() < 0;
+}

@@ -17,7 +17,7 @@ Barb::Barb(const Vector2& position)
 	collision_box->set_layer_src(CollisionLayer::Enemy);
 	collision_box->set_layer_dst(CollisionLayer::Player);
 	collision_box->set_size({ 25, 25 });
-	collision_box->set_on_collision([&]() { on_break(); });
+	collision_box->set_on_collision([&](CollisionBox*) { on_break(); });
 
 	// 定时器初始化
 	timer_idle.set_one_shot(true);

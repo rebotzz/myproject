@@ -33,38 +33,38 @@ void CollisionManager::destroy_collision_box(CollisionBox* collision_box)
 void CollisionManager::process_collide()
 {
 	// Ë«²ãforÑ­»·¼ì²âÅö×²  src (È¥Åö×²)--> dst
-	for (const auto& collision_box_hit : collision_box_list)
+	for (const auto& hit_box : collision_box_list)
 	{
-		if (!collision_box_hit->enabled || collision_box_hit->layer_dst == CollisionLayer::None)
+		if (!hit_box->enabled || hit_box->layer_dst == CollisionLayer::None)
 			continue;
 
-		for (const auto& collision_box_hurt : collision_box_list)
+		for (const auto& hurt_box : collision_box_list)
 		{
-			if (!collision_box_hurt->enabled || collision_box_hit == collision_box_hurt
-				|| !collision_box_hit->check_collision_layer_dst(collision_box_hurt->layer_src))
+			if (!hurt_box->enabled || hit_box == hurt_box
+				|| !hit_box->check_collision_layer_dst(hurt_box->layer_src))
 				continue;
 
-			bool x_can_collide = (max(collision_box_hit->position.x + collision_box_hit->size.x / 2,
-				collision_box_hurt->position.x + collision_box_hurt->size.x / 2)
-				- min(collision_box_hit->position.x - collision_box_hit->size.x / 2,
-					collision_box_hurt->position.x - collision_box_hurt->size.x / 2)) <= (collision_box_hurt->size.x + collision_box_hit->size.x);
+			bool x_can_collide = (max(hit_box->position.x + hit_box->size.x / 2,
+				hurt_box->position.x + hurt_box->size.x / 2)
+				- min(hit_box->position.x - hit_box->size.x / 2,
+					hurt_box->position.x - hurt_box->size.x / 2)) <= (hurt_box->size.x + hit_box->size.x);
 
-			bool y_can_collide = (max(collision_box_hit->position.y + collision_box_hit->size.y / 2,
-				collision_box_hurt->position.y + collision_box_hurt->size.y / 2)
-				- min(collision_box_hit->position.y - collision_box_hit->size.y / 2,
-					collision_box_hurt->position.y - collision_box_hurt->size.y / 2)) <= (collision_box_hurt->size.y + collision_box_hit->size.y);
+			bool y_can_collide = (max(hit_box->position.y + hit_box->size.y / 2,
+				hurt_box->position.y + hurt_box->size.y / 2)
+				- min(hit_box->position.y - hit_box->size.y / 2,
+					hurt_box->position.y - hurt_box->size.y / 2)) <= (hurt_box->size.y + hit_box->size.y);
 
 			if (x_can_collide && y_can_collide)
 			{
-				collision_box_hit->set_trigger_layer(
-					collision_box_hit->layer_dst & collision_box_hurt->layer_src);
-				collision_box_hurt->set_trigger_layer(
-					collision_box_hit->layer_dst & collision_box_hurt->layer_src);
+				hit_box->set_trigger_layer(
+					hit_box->layer_dst & hurt_box->layer_src);
+				hurt_box->set_trigger_layer(
+					hit_box->layer_dst & hurt_box->layer_src);
 
-				if (collision_box_hit->on_collision)
-					collision_box_hit->on_collision();
-				if (collision_box_hurt->on_collision)
-					collision_box_hurt->on_collision();
+				if (hit_box->on_collision)
+					hit_box->on_collision(hurt_box);
+				if (hurt_box->on_collision)
+					hurt_box->on_collision(hit_box);
 			}
 		}
 	}
@@ -73,6 +73,7 @@ void CollisionManager::process_collide()
 void CollisionManager::on_debug_render()
 {
 	// äÖÈ¾Åö×²¾ØÐÎ
+	setlinestyle(PS_SOLID, 1);
 	for (const auto* collision_box : collision_box_list)
 	{
 		collision_box->enabled ? setlinecolor(RGB(255, 0, 0)) : setlinecolor(RGB(0, 255, 255));

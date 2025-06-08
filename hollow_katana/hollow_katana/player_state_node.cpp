@@ -7,8 +7,6 @@
 #include "effect.h"
 
 
-//#include <iostream>
-
 PlayerAttackState::PlayerAttackState()
 {
 	timer.set_one_shot(true);

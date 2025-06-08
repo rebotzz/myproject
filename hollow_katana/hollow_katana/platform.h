@@ -1,6 +1,7 @@
 #pragma once
 #include "collision_manager.h"
 #include "character_manager.h"
+#include "character.h"
 #include "player.h"
 
 #include <iostream>
@@ -34,22 +35,22 @@ public:
 		collision_box->set_position(position);
 		collision_box->set_size(shape);
 
-		collision_box->set_on_collision([&]()
+		collision_box->set_on_collision([&](CollisionBox* target_box)
 			{
 				// 单向平台碰撞检测: 下落时,y轴向下	
-				Player* player = dynamic_cast<Player*>(CharacterManager::instance()->get_player());
+				Character* character = dynamic_cast<Character*>(target_box->get_parent());
 				if (mode == Mode::Transmit)
 				{
-					player->set_position(target_position);
+					character->set_position(target_position);
 					return;
 				}
 
-				const Vector2& player_velocity = player->get_velocity();
-				const Vector2& player_position = player->get_position();
+				const Vector2& player_velocity = character->get_velocity();
+				const Vector2& player_position = character->get_position();
 				// 条件："站在平台"（略偏下）上时算碰撞
 				//CollisionBox* last_platform = nullptr;
 				//if(last_platform == collision_box)		
-				player->on_platform(true);	// debug:不同平台错位碰撞导致浮空走路-> 临时方案避免临近平台高度过低
+				character->on_platform(true);	// debug:不同平台错位碰撞导致浮空走路-> 临时方案避免临近平台高度过低
 				//last_platform = collision_box;
 
 				if (player_velocity.y >= 0)
@@ -59,18 +60,18 @@ public:
 					if (mode == Mode::Flash)
 					{
 						// 落地检测在character的on_update,所以这里设置平台高度
-						player->set_velocity({ player_velocity.x, 0.0f });
-						player->set_position({ player_position.x, platform_top });
-						player->set_platform_floor_y(platform_top);
+						character->set_velocity({ player_velocity.x, 0.0f });
+						character->set_position({ player_position.x, platform_top });
+						character->set_platform_floor_y(platform_top);
 					}
 					else if (mode == Mode::Normal)
 					{
 						// 条件:玩家上一帧脚底高于平台,避免下落过程中闪现回平台
-						if (player->get_prev_frame_pos_y() <= platform_top)
+						if (character->get_prev_frame_pos_y() <= platform_top)
 						{
-							player->set_velocity({ player_velocity.x, 0.0f });
-							player->set_position({ player_position.x, platform_top });
-							player->set_platform_floor_y(platform_top);
+							character->set_velocity({ player_velocity.x, 0.0f });
+							character->set_position({ player_position.x, platform_top });
+							character->set_platform_floor_y(platform_top);
 						}
 					}
 				}

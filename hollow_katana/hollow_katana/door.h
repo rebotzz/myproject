@@ -17,7 +17,7 @@ public:
 		:dst_scene(destination)
 		,prop(_T("´«ËÍÃÅ"))
 	{
-		prop.set_on_interact([&]()
+		prop.set_on_interact([&](CollisionBox*)
 			{
 				is_enter = true;
 			});

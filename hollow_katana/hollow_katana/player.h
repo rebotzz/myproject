@@ -2,12 +2,14 @@
 #include "character.h"
 #include "status_bar.h"
 
+
 // 玩家类
 class Player : public Character
 {
+	friend class PlayerControlAWSD;
+	friend class PlayerControlArrow;
+
 private:
-	const float SPEED_RUN = 300.0f;
-	const float SPEED_JUMP_MAX = 780.0f;
 	const float SPEED_ROLL = 800.0f;
 	const float ROLL_CD = 0.95f;
 	const float ATTACK_CD = 0.7f;
@@ -28,11 +30,6 @@ private:
 	Direction attack_dir = Direction::Left;							// 攻击朝向
 	Animation* current_slash_animation = nullptr;					// 当前刀光动画
 
-	Animation animation_vfx_jump;									// 跳跃特效动画
-	Animation animation_vfx_land;									// 落地特效动画
-	bool is_vfx_jump_visiable = false;								// 跳跃特效动画是否可见
-	bool is_vfx_land_visiable = false;								// 落地特效动画是否可见
-
 	Timer timer_bullet_time;										// 子弹时间定时器
 	bool is_bullet_time_key_down = false;							// 是否进入子弹时间
 	float current_bullet_time = 2.0f;								// 当前剩余的子弹时间
@@ -46,7 +43,6 @@ private:
 	bool is_sword_hit = false;										// 是否拼刀
 	Timer timer_delay_decrease_hp;									// 延时扣血用于检测是否在拼刀
 	Timer timer_recoiling;											// 武器击中后坐力计时器
-	float speed_jump = 780.0f;										// 跳跃高度控制
 	Timer timer_hit_effect;											// 击中效果定时器
 	bool is_hitting = false;										// 击中效果状态
 	bool is_hit_eff_cd_comp = true;									// 击中效果CD
@@ -55,28 +51,26 @@ private:
 	IMAGE* img_crosshair = nullptr;									// 十字瞄准图标
 
 	StatusBar status_bar;											// 状态栏
-	bool enable_control_preset_1 = true;							// 是否启用按键预设1
+	bool is_control_preset_awsd = true;								// 是否启用按键预设1:AWSD按键
 
 public:
 	Player();
 	~Player();
 
-	virtual void on_hurt() override;
 	virtual void on_input(const ExMessage& msg) override;
 	virtual void on_update(float delta) override;
 	virtual void on_render() override;
 
-	void on_jump(float ratio = 1.0f);
-	void on_land();
+	virtual void on_hurt() override;
 	void on_roll();
 	void on_attack();
+	virtual void move(float delta) override;
 
 	void set_rolling(bool flag) { is_rolling = flag; }
 	bool get_rolling() const { return is_rolling; }
-	bool can_roll() const { return is_on_floor() && !is_rolling && is_roll_cd_comp && is_roll_key_down; }
+	bool can_roll() const { return is_on_floor() && !is_rolling && is_roll_cd_comp && is_dash_key_down; }
 
-	bool can_dance() const { return is_on_floor() && is_dance_key_down; }
-	int get_move_axis() const { return is_right_key_down - is_left_key_down; }
+	bool can_dance() const { return is_on_floor() && is_skill_1_key_down; }
 	Direction get_attack_dir() const { return attack_dir; }
 
 	// add
@@ -89,8 +83,14 @@ public:
 	void update_hit_box_position();
 
 	// 按键预设切换
-	void set_control_preset(bool flag) { enable_control_preset_1 = flag; }
-	bool get_control_preset() { return enable_control_preset_1; }
+	void set_control_preset(bool flag) { is_control_preset_awsd = flag; }
+	bool get_control_preset() { return is_control_preset_awsd; }
+	void set_bullet_time_keydown(bool flag) { is_bullet_time_key_down = flag; }
+	virtual bool can_skill_1() const override { return can_roll(); }
+	virtual bool can_skill_2() const override { return can_dance(); }
+	virtual void release_skill_1() { switch_state("roll"); }
+	virtual void release_skill_2() { switch_state("dance"); }
+
 
 private:
 	void on_hit_collide();
@@ -100,8 +100,8 @@ private:
 	void create_hurt_effect();
 	void create_bullet_time_effect();
 	void create_roll_effect();
-	void update_attack_dir(float mouse_x, float mouse_y);
 	void update_attack_dir();
+	void update_attack_dir(float mouse_x, float mouse_y);
 	void control_preset_1(const ExMessage& msg);	// 角色控制按键预设1
 	void control_preset_2(const ExMessage& msg);	// 角色控制按键预设2
 };

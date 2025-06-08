@@ -1,38 +1,45 @@
 #pragma once
-#include "character.h"
 #include <easyx.h>
 
 // ½ÇÉ«¿ØÖÆ
+class Character;
 class MoveControl;
 class SkillControl;
 
 class Control
 {
 protected:
-	MoveControl* move_control_ = nullptr;
-	SkillControl* skill_control_ = nullptr;
+	Character* parent_ = nullptr;
 public:
-	Control(MoveControl* move_control, SkillControl* skill_control = nullptr)
-		:move_control_(move_control), skill_control_(skill_control)
+	Control(Character* parent)
+		:parent_(parent)
 	{ }
-	virtual ~Control();
 	virtual void on_input(const ExMessage& msg);
 };
 
-class MoveControl
+class PlayerControlAWSD : public Control
 {
-protected:
-	Character* parent_ = nullptr;
 public:
-	MoveControl(Character* parent):parent_(parent){}
-	virtual void on_input(const ExMessage& msg);
+	PlayerControlAWSD(Character* parent)
+		:Control(parent)
+	{}
+	virtual void on_input(const ExMessage& msg) override;
 };
 
-class SkillControl
+class PlayerControlArrow : public Control
 {
-protected:
-	Character* parent_ = nullptr;
 public:
-	SkillControl(Character* parent) :parent_(parent) {}
-	virtual void on_input(const ExMessage& msg);
+	PlayerControlArrow(Character* parent)
+		:Control(parent)
+	{}
+	virtual void on_input(const ExMessage& msg) override;
+};
+
+class HornetControl : public Control
+{
+public:
+	HornetControl(Character* parent)
+		:Control(parent)
+	{ }
+	virtual void on_input(const ExMessage& msg) override;
 };

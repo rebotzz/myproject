@@ -2,10 +2,11 @@
 #include <functional>
 #include "vector2.h"
 #include "collision_layer.h"
+#include "game_object.h"
 
 class CollisionManager;
 
-class CollisionBox
+class CollisionBox : public GameObject
 {
 	friend class CollisionManager;
 private:
@@ -13,7 +14,7 @@ private:
 	Vector2 position;
 	CollisionLayer layer_src = CollisionLayer::None;		// 受击层
 	CollisionLayer layer_dst = CollisionLayer::None;		// 攻击层
-	std::function<void()> on_collision;
+	std::function<void(CollisionBox*)> on_collision;		// 碰撞回调
 	bool enabled = true;
 
 	// 其他
@@ -56,7 +57,7 @@ public:
 		this->layer_dst = layer_dst;
 	}
 
-	void set_on_collision(std::function<void()> on_collision)
+	void set_on_collision(std::function<void(CollisionBox*)> on_collision)
 	{
 		this->on_collision = on_collision;
 	}

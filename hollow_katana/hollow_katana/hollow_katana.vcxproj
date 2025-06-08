@@ -145,6 +145,7 @@
     <ClCompile Include="player_state_node.cpp" />
     <ClCompile Include="reverse_time_manager.cpp" />
     <ClCompile Include="scene_game.cpp" />
+    <ClCompile Include="scene_game_choice.cpp" />
     <ClCompile Include="scene_manager.cpp" />
     <ClCompile Include="state_node.cpp" />
     <ClCompile Include="status_bar.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="enemy_dragon_king_state_node.h" />
     <ClInclude Include="enemy_hornet.h" />
     <ClInclude Include="enemy_hornet_state_node.h" />
+    <ClInclude Include="game_object.h" />
     <ClInclude Include="interact_prop.h" />
     <ClInclude Include="particle_manager.h" />
     <ClInclude Include="platform.h" />

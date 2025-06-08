@@ -14,7 +14,7 @@ FireBullet::FireBullet()
 	collision_box->set_layer_src(CollisionLayer::Rebound);	// 会不会自己碰到自己?
 	collision_box->set_layer_dst(CollisionLayer::Player);
 	collision_box->set_size({ 40, 50 });
-	collision_box->set_on_collision([&]()
+	collision_box->set_on_collision([&](CollisionBox*)
 		{
 			if ((int)(collision_box->get_trigger_layer() & (CollisionLayer::Rebound | CollisionLayer::Sword)))
 			{

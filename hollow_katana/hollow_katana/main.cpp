@@ -41,6 +41,7 @@ int main()
 	steady_clock::time_point last_tick = steady_clock::now();
 	main_camera = SceneManager::instance()->get_camera();
 	SceneManager::instance()->set_entry_scene("menu_scene");	//menu_scene game_scene_choice 
+	bool debug_render = false;
 
 	// 主循环
 	while (!is_quit)
@@ -49,6 +50,10 @@ int main()
 		while (peekmessage(&msg, EX_MOUSE | EX_KEY))
 		{
 			SceneManager::instance()->on_input(msg);
+			if (msg.message == WM_KEYUP && msg.vkcode == VK_ESCAPE)
+			{
+				debug_render = !debug_render;
+			}
 		}
 
 		steady_clock::time_point frame_start = steady_clock::now();
@@ -62,7 +67,7 @@ int main()
 		// 处理绘图
 		cleardevice();
 		SceneManager::instance()->on_render();
-		//CollisionManager::instance()->on_debug_render();
+		if(debug_render) CollisionManager::instance()->on_debug_render();
 		FlushBatchDraw();
 
 		// 动态延时

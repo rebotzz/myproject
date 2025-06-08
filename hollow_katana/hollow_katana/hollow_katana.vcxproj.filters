@@ -147,6 +147,9 @@
     <ClCompile Include="control.cpp">
       <Filter>头文件\character\character</Filter>
     </ClCompile>
+    <ClCompile Include="scene_game_choice.cpp">
+      <Filter>头文件\scenery</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collision_box.h">
@@ -280,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="control.h">
       <Filter>头文件\character\character</Filter>
+    </ClInclude>
+    <ClInclude Include="game_object.h">
+      <Filter>头文件\kits</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

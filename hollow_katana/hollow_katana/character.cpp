@@ -7,6 +7,9 @@ Character::Character()
 	hit_box = CollisionManager::instance()->create_collision_box();
 	hurt_box = CollisionManager::instance()->create_collision_box();
 	interact_box = CollisionManager::instance()->create_collision_box();
+	hit_box->set_parent(this);
+	hurt_box->set_parent(this);
+	interact_box->set_parent(this);
 
 	timer_invincible_status.set_one_shot(true);
 	timer_invincible_status.set_wait_time(TIME_INVINCIBLE);
@@ -27,6 +30,8 @@ Character::Character()
 		{
 			set_platform_floor_y();
 		});
+
+	state_machine = new StateMachine();
 }
 
 Character::~Character()
@@ -34,14 +39,23 @@ Character::~Character()
 	CollisionManager::instance()->destroy_collision_box(hit_box);
 	CollisionManager::instance()->destroy_collision_box(hurt_box);
 	CollisionManager::instance()->destroy_collision_box(interact_box);
+
+	if (control)
+	{
+		delete control;
+	}
+	if (state_machine)
+	{
+		delete state_machine;
+	}
 }
 
 void Character::switch_state(const std::string& id)
 {
-	state_machine.switch_to(id);
+	state_machine->switch_to(id);
 }
 
-void Character::make_invulnerable(bool not_blink_, float delta_ratio)
+void Character::make_invincible(bool not_blink_, float delta_ratio)
 {
 	not_blink = not_blink_;
 	is_invincible_status = true;
@@ -65,23 +79,35 @@ void Character::decrease_hp()
 
 	hp -= 1;
 	if (hp > 0)
-		make_invulnerable();
+		make_invincible();
 	on_hurt();
 }
 
-
-void Character::on_update(float delta)
+void Character::on_input(const ExMessage& msg)
 {
-	// 状态机更新
-	state_machine.on_update(delta);
+	if (control)
+	{
+		control->on_input(msg);
+	}
+}
 
-	// 角色位置更新
+void Character::move(float delta)
+{
 	if (hp < 0)
 		velocity.x = 0;
 	if (enable_gravity)
 		velocity.y += GRAVITY * delta;
 	prev_frame_pos_y = position.y;		// 平台碰撞判定用
 	position += velocity * delta;
+}
+
+void Character::on_update(float delta)
+{
+	// 状态机更新
+	state_machine->on_update(delta);
+
+	// 角色位置更新
+	move(delta);
 
 	if (is_on_floor())
 	{
@@ -96,7 +122,8 @@ void Character::on_update(float delta)
 	hurt_box->set_position(get_logic_center());
 	interact_box->set_position(get_logic_center());
 
-	// 更新无敌状态计时器
+	// 更新计时器：攻击、无敌时间
+	timer_attack_cd.on_update(delta);
 	timer_invincible_status.on_update(delta);
 	if (is_invincible_status && !not_blink)
 		timer_invincible_blink.on_update(delta);
@@ -117,4 +144,20 @@ void Character::on_render()
 		return;
 
 	(is_facing_left ? current_animation->left : current_animation->right).on_render();
+}
+
+void Character::on_jump(float ratio)
+{
+	speed_jump = ratio * SPEED_JUMP_MAX;
+	velocity.y -= speed_jump;
+	is_vfx_jump_visiable = true;
+	animation_vfx_jump.reset();
+	animation_vfx_jump.set_position(position);
+}
+
+void Character::on_land()
+{
+	is_vfx_land_visiable = true;
+	animation_vfx_land.reset();
+	animation_vfx_land.set_position(position);
 }

@@ -41,3 +41,10 @@ void StateMachine::on_update(float delta)
 
 	current_state->on_update(delta);
 }
+
+void StateMachine::clear()
+{
+	state_pool.clear();
+	need_init = true;
+	current_state = nullptr;
+}

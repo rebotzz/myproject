@@ -24,7 +24,7 @@ Player::Player() :Character()
 	hurt_box->set_layer_src(CollisionLayer::Player);
 	hurt_box->set_layer_dst(CollisionLayer::None);
 	hurt_box->set_position(get_logic_center());
-	hurt_box->set_on_collision([&] {
+	hurt_box->set_on_collision([&](CollisionBox*) {
 		// 改用延时扣血,便于检测拼刀无敌状态,或许?
 		timer_delay_decrease_hp.restart();
 		//decrease_hp();
@@ -35,7 +35,7 @@ Player::Player() :Character()
 	hit_box->set_layer_src(CollisionLayer::None);
 	hit_box->set_layer_dst(CollisionLayer::Enemy | CollisionLayer::Rebound | CollisionLayer::Sword);
 	hit_box->set_position(get_logic_center());
-	hit_box->set_on_collision([&](){
+	hit_box->set_on_collision([&](CollisionBox*){
 			// 武器击中后坐力,粒子特效,拼刀
 			on_hit_collide();
 		});
@@ -303,20 +303,23 @@ Player::Player() :Character()
 
 	{
 		// 状态机初始化
-		state_machine.register_state("idle", new PlayerIdleState);
-		state_machine.register_state("jump", new PlayerJumpState);
-		state_machine.register_state("fall", new PlayerFallState);
-		state_machine.register_state("run", new PlayerRunState);
-		state_machine.register_state("roll", new PlayerRollState);
-		state_machine.register_state("dead", new PlayerDeadState);
-		state_machine.register_state("attack", new PlayerAttackState);
-		state_machine.register_state("dance", new PlayerDanceState);
+		state_machine->register_state("idle", new PlayerIdleState);
+		state_machine->register_state("jump", new PlayerJumpState);
+		state_machine->register_state("fall", new PlayerFallState);
+		state_machine->register_state("run", new PlayerRunState);
+		state_machine->register_state("roll", new PlayerRollState);
+		state_machine->register_state("dead", new PlayerDeadState);
+		state_machine->register_state("attack", new PlayerAttackState);
+		state_machine->register_state("dance", new PlayerDanceState);
 
 		// debug: 这里不能switch_to,不然调用的CharacterManager构造时调用Player构造,死循环
-		state_machine.set_entry("idle");
+		state_machine->set_entry("idle");
 	}
 
 	img_crosshair = ResourcesManager::instance()->find_image("ui_crosshair");
+
+	// 角色控制
+	control = new PlayerControlAWSD(this);
 }
 
 Player::~Player() = default;
@@ -326,32 +329,27 @@ void Player::on_input(const ExMessage& msg)
 	if (hp <= 0)
 		return;
 
+	Character::on_input(msg);
+
 	if (msg.message == WM_KEYUP && msg.vkcode == VK_F1)
 	{
 		std::cout << "切换按键预设" << std::endl;
-		enable_control_preset_1 = !enable_control_preset_1;
-	}
-
-	if (enable_control_preset_1)
-	{
-		control_preset_1(msg);
-	}
-	else
-	{
-		control_preset_2(msg);
+		delete control;
+		is_control_preset_awsd = !is_control_preset_awsd;
+		if (is_control_preset_awsd)
+		{
+			control = new PlayerControlAWSD(this);
+		}
+		else
+		{
+			control = new PlayerControlArrow(this);
+		}
 	}
 }
 
 void Player::on_update(float delta)
 {
-	// 角色速度,方向更新
-	if (hp > 0 && !is_rolling)
-		velocity.x = get_move_axis() * SPEED_RUN;
-	if (get_move_axis() != 0 && !is_rolling)
-		is_facing_left = get_move_axis() < 0;
-
 	// 更新定时器
-	timer_attack_cd.on_update(delta);
 	timer_roll_cd.on_update(delta);
 	timer_bullet_time.on_update(delta);
 	timer_hit_effect.on_update(delta);
@@ -412,21 +410,7 @@ void Player::on_render()
 	status_bar.on_render();
 }
 
-void Player::on_jump(float ratio)
-{
-	speed_jump = ratio * SPEED_JUMP_MAX; 
-	velocity.y -= speed_jump;
-	is_vfx_jump_visiable = true;
-	animation_vfx_jump.reset();
-	animation_vfx_jump.set_position(position);
-}
 
-void Player::on_land()
-{
-	is_vfx_land_visiable = true;
-	animation_vfx_land.reset();
-	animation_vfx_land.set_position(position);
-}
 
 void Player::on_roll()
 {
@@ -469,6 +453,16 @@ void Player::on_attack()
 	on_attack_direction_move();
 }
 
+void Player::move(float delta)
+{
+	Character::move(delta);
+
+	if (hp > 0 && !is_rolling)
+		velocity.x = get_move_axis() * SPEED_RUN;
+	if (get_move_axis() != 0 && !is_rolling)
+		is_facing_left = get_move_axis() < 0;
+}
+
 // [鼠标]攻击方向更新
 void Player::update_attack_dir(float mouse_x, float mouse_y)
 {
@@ -496,7 +490,7 @@ void Player::update_attack_dir()
 {
 	attack_dir = (is_facing_left ? Direction::Left : Direction::Right);
 	if (is_jump_key_down) attack_dir = Direction::Up;
-	else if (is_roll_key_down) attack_dir = Direction::Down;
+	else if (is_dash_key_down) attack_dir = Direction::Down;
 }
 
 void Player::update_hit_box_position()
@@ -551,7 +545,7 @@ void Player::on_hit_collide()
 	// 拼刀无敌帧
 	if ((int)(CollisionLayer::Sword & hit_box->get_trigger_layer()))
 	{
-		make_invulnerable(true, 0.45f);
+		make_invincible(true, 0.45f);
 		std::shared_ptr<EffectSwordHit> particle(new EffectSwordHit(is_facing_left));
 		Vector2 pos_spark = get_logic_center();
 		switch (attack_dir)
@@ -690,9 +684,9 @@ void Player::reset()
 	is_left_key_down = false;
 	is_right_key_down = false;
 	is_jump_key_down = false;
-	is_roll_key_down = false;
+	is_dash_key_down = false;
 	is_attack_key_down = false;
-	is_dance_key_down = false;
+	is_skill_1_key_down = false;
 
 	is_facing_left = false;
 	is_attacking = false;
@@ -719,13 +713,13 @@ void Player::control_preset_1(const ExMessage& msg)
 			is_jump_key_down = true;
 			break;
 		case VK_S:
-			is_roll_key_down = true;
+			is_dash_key_down = true;
 			break;
 		case VK_D:
 			is_right_key_down = true;
 			break;
 		case VK_R:
-			is_dance_key_down = true;
+			is_skill_1_key_down = true;
 			break;
 		case VK_J:
 			is_attack_key_down = true;
@@ -746,7 +740,7 @@ void Player::control_preset_1(const ExMessage& msg)
 			is_jump_key_down = false;
 			break;
 		case VK_S:
-			is_roll_key_down = false;
+			is_dash_key_down = false;
 			break;
 		case VK_D:
 			is_right_key_down = false;
@@ -758,7 +752,7 @@ void Player::control_preset_1(const ExMessage& msg)
 			is_bullet_time_key_down = false;
 			break;
 		case VK_R:
-			is_dance_key_down = false;
+			is_skill_1_key_down = false;
 			break;
 		}
 		break;
@@ -799,7 +793,7 @@ void Player::control_preset_2(const ExMessage& msg)
 			is_jump_key_down = true;
 			break;
 		case VK_DOWN:
-			is_roll_key_down = true;
+			is_dash_key_down = true;
 			break;
 		case VK_RIGHT:
 			is_right_key_down = true;
@@ -809,7 +803,7 @@ void Player::control_preset_2(const ExMessage& msg)
 			update_attack_dir();
 			break;
 		case VK_C:
-			is_dance_key_down = true;
+			is_skill_1_key_down = true;
 			break;
 		case VK_X:
 			is_bullet_time_key_down = true;
@@ -826,7 +820,7 @@ void Player::control_preset_2(const ExMessage& msg)
 			is_jump_key_down = false;
 			break;
 		case VK_DOWN:
-			is_roll_key_down = false;
+			is_dash_key_down = false;
 			break;
 		case VK_RIGHT:
 			is_right_key_down = false;
@@ -838,7 +832,7 @@ void Player::control_preset_2(const ExMessage& msg)
 			is_bullet_time_key_down = false;
 			break;
 		case VK_C:
-			is_dance_key_down = false;
+			is_skill_1_key_down = false;
 			break;
 		}
 		break;

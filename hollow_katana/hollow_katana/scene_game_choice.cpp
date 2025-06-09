@@ -11,16 +11,6 @@ SceneGameChoice::SceneGameChoice()
 	// 没有战斗，停止画面记录
 	game_scene.stop_record();
 
-	prop_platform_switch.set_describe(_T("跳跃平台开关"));
-	prop_platform_switch.set_on_interact([&](CollisionBox*)
-		{
-			timer_platforms_switch.restart();
-		});
-	prop_platform_switch.set_size({ 20, 70 });
-	prop_platform_switch.set_position({ 720, 580 });
-	prop_platform_switch.enable_showing_box(true);
-	prop_platform_switch.set_showing_style(RGB(200, 150, 255), PS_SOLID, 8);
-
 	timer_platforms_switch.set_one_shot(true);
 	timer_platforms_switch.set_wait_time(0.2f);
 	timer_platforms_switch.pause();
@@ -29,9 +19,9 @@ SceneGameChoice::SceneGameChoice()
 			enabled_platforms = !enabled_platforms;
 			for (auto platform : platform_list)
 				platform->set_enabled(enabled_platforms);
+
 		});
 }
-
 
 void SceneGameChoice::on_enter()
 {
@@ -54,6 +44,22 @@ void SceneGameChoice::on_enter()
 
 	woodenman = new Woodenman;
 	woodenman->set_position({ 550.0f, 620 - woodenman->get_img_size().y / 2 });
+
+	if (nullptr == prop_platform_switch)
+	{
+		prop_platform_switch = new InteractProp();
+	}
+	prop_platform_switch->set_enabled(true);
+	prop_platform_switch->set_describe(_T("测试开关"));
+	prop_platform_switch->set_on_interact([&](CollisionBox*)
+		{
+			timer_platforms_switch.restart();
+		});
+	prop_platform_switch->set_size({ 20, 70 });
+	prop_platform_switch->set_position({ 720, 580 });
+	prop_platform_switch->enable_showing_box(true);
+	prop_platform_switch->set_showing_style(RGB(200, 150, 255), PS_SOLID, 8);
+
 
 	platform_list.resize(5, nullptr);
 	auto& platform_normal1 = platform_list[0];
@@ -112,7 +118,7 @@ void SceneGameChoice::on_render()
 	woodenman->on_render();
 	for (auto platform : platform_list)
 		platform->on_render();
-	prop_platform_switch.on_render();
+	prop_platform_switch->on_render();
 
 	CharacterManager::instance()->on_render();
 	ParticleManager::instance()->on_render();
@@ -125,6 +131,7 @@ void SceneGameChoice::on_exit()
 	AudioManager::instance()->stop_audio_ex(_T("bgm_0"));
 
 	// 销毁交互道具
+	if (prop_platform_switch) delete prop_platform_switch;
 	if (door_hornet) delete door_hornet;
 	if (door_dragon_king) delete door_dragon_king;
 	if (woodenman) delete woodenman;

@@ -33,56 +33,56 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="resources_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="cursor_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="region_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="buondle.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="takeout_box.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="microwave_oven.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="delivery_driver.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dialogue_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="scene_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="game_system.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="concrete_scene.cpp">
-      <Filter>源文件</Filter>
+      <Filter>头文件\scene</Filter>
     </ClCompile>
     <ClCompile Include="scene.cpp">
-      <Filter>源文件</Filter>
+      <Filter>头文件\scene</Filter>
     </ClCompile>
     <ClCompile Include="bartend_bottle.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="button.cpp">
-      <Filter>源文件</Filter>
+      <Filter>头文件\night_bartend</Filter>
     </ClCompile>
     <ClCompile Include="bartend_material.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="bartend_system.cpp">
-      <Filter>源文件</Filter>
+      <Filter>头文件\night_bartend</Filter>
     </ClCompile>
     <ClCompile Include="bartend_meun.cpp">
-      <Filter>源文件</Filter>
+      <Filter>头文件\night_bartend</Filter>
+    </ClCompile>
+    <ClCompile Include="bartend_system.cpp">
+      <Filter>头文件\night_bartend</Filter>
+    </ClCompile>
+    <ClCompile Include="button.cpp">
+      <Filter>头文件\kits</Filter>
+    </ClCompile>
+    <ClCompile Include="delivery_driver.cpp">
+      <Filter>头文件\day_meal</Filter>
+    </ClCompile>
+    <ClCompile Include="concrete_scene.cpp">
+      <Filter>头文件\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="takeout_box.cpp">
+      <Filter>头文件\day_meal</Filter>
+    </ClCompile>
+    <ClCompile Include="resources_manager.cpp">
+      <Filter>头文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="game_system.cpp">
+      <Filter>头文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogue_manager.cpp">
+      <Filter>头文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="cursor_manager.cpp">
+      <Filter>头文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="region_manager.cpp">
+      <Filter>头文件\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="microwave_oven.cpp">
+      <Filter>头文件\day_meal</Filter>
+    </ClCompile>
+    <ClCompile Include="buondle.cpp">
+      <Filter>头文件\day_meal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -108,9 +108,6 @@
       <Filter>头文件\night_bartend</Filter>
     </ClInclude>
     <ClInclude Include="bartend_system.h">
-      <Filter>头文件\night_bartend</Filter>
-    </ClInclude>
-    <ClInclude Include="bundle.h">
       <Filter>头文件\night_bartend</Filter>
     </ClInclude>
     <ClInclude Include="scene.h">
@@ -151,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="kits.h">
       <Filter>头文件\kits</Filter>
+    </ClInclude>
+    <ClInclude Include="bundle.h">
+      <Filter>头文件\day_meal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

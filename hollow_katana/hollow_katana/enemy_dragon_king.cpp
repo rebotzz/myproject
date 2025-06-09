@@ -25,6 +25,12 @@ EnemyDragonKing::EnemyDragonKing() :Character()
 	hurt_box->set_on_collision([&](CollisionBox*) { decrease_hp(); });
 	hit_box->set_enabled(false);	// 关闭龙王接触伤害,就该玩刀
 
+	interact_box->set_enabled(true);
+	interact_box->set_size({ 70, 100 });
+	interact_box->set_layer_src(CollisionLayer::None);
+	interact_box->set_layer_dst(CollisionLayer::Interact | CollisionLayer::Scenery);
+	interact_box->set_position(get_logic_center());
+
 	collision_box_katana = CollisionManager::instance()->create_collision_box();
 	collision_box_katana->set_enabled(false);
 	collision_box_katana->set_size({ 150,110 });
@@ -230,7 +236,11 @@ void EnemyDragonKing::on_update(float delta)
 		collision_box_fire_dash->set_position(get_logic_center());
 	}
 	else
+	{
 		collision_box_fire_dash->set_enabled(false);
+	}
+
+	interact_box->set_position(get_logic_center());
 
 	for (auto& fire_bullet : fire_bullet_list)
 		fire_bullet->on_update(delta);

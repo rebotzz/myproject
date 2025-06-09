@@ -40,7 +40,6 @@ EffectBlend::EffectBlend()
 void EffectBlend::add_image(IMAGE& image)
 {
 	ResourcesManager::bend_image(&image, &frame, base, blend_ratio);
-
 	animation_vfx.add_frame(&frame, 1);
 }
 

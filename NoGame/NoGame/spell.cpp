@@ -1,0 +1,43 @@
+#include "spell.h"
+#include "../core/scene.h"
+#include "../core/actor.h"
+
+Spell::Spell(Object *parent, float damage, const glm::vec2& target_position, CollideShape shape, ResID tex_id, 
+    int frame_count, const glm::vec2& scale, float frame_interval, AchorMode mode)
+    :ObjectWorld(parent), damage_(damage)
+{
+    setPosition(target_position);
+    anim_ = new SpriteAnim(this, tex_id, frame_count, mode, scale, frame_interval, false);
+    collide_box_ = new CollideBox(this, shape, anim_->getSize(), glm::vec2(0), mode);
+    collide_box_->setHitLayer(CollideLayer::Enemy); // 法术默认攻击敌人对象
+    collide_box_->setOnCollideCallback([this](CollideBox * target_box)
+    {
+        auto target = target_box->getParent();
+        dynamic_cast<Actor*>(target)->takeDamage(damage_);
+    });
+}
+
+void Spell::update(float dt)
+{
+    ObjectWorld::update(dt);
+    move(dt);
+    checkAndRemove();
+}
+
+void Spell::setHitCollideLayer(CollideLayer layer)
+{
+    collide_box_->setHitLayer(layer);
+}
+
+void Spell::setHurtCollideLayer(CollideLayer layer)
+{
+    collide_box_->setHurtLayer(layer);
+}
+
+void Spell::checkAndRemove()
+{
+    if(anim_ && anim_->getIsFinished())
+    {
+        setCanRemove(true);
+    }
+}

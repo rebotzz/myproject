@@ -10,10 +10,9 @@ class Player : public Character
 	friend class PlayerControlArrow;
 
 private:
-	const float SPEED_ROLL = 800.0f;
-	const float ROLL_CD = 0.95f;
-	const float ATTACK_CD = 0.7f;
-
+	const float SPEED_ROLL = 800.0f;								// 翻滚速度
+	const float ROLL_CD = 0.95f;									// 翻滚CD
+	const float ATTACK_CD = 0.7f;									// 攻击CD
 	const float BULLET_TIME_TOTAL = 2.0f;							// 子弹时间最大值
 	const float SPEED_DISPLACE_AXIS = 300.0f;						// 特殊位移(水平)速度
 	const float SPEED_DISPLACE_UP = 780.0f;							// 特殊位移(上)速度
@@ -66,17 +65,15 @@ public:
 	void on_attack();
 	virtual void move(float delta) override;
 
+	// get与set方法
+	void reset();
+	bool can_roll() const { return is_on_floor() && !is_rolling && is_roll_cd_comp && is_dash_key_down; }
+	bool can_dance() const { return is_on_floor() && is_skill_1_key_down; }
 	void set_rolling(bool flag) { is_rolling = flag; }
 	bool get_rolling() const { return is_rolling; }
-	bool can_roll() const { return is_on_floor() && !is_rolling && is_roll_cd_comp && is_dash_key_down; }
-
-	bool can_dance() const { return is_on_floor() && is_skill_1_key_down; }
-	Direction get_attack_dir() const { return attack_dir; }
-
-	// add
-	void reset();
 	float get_total_bullet_time() const { return BULLET_TIME_TOTAL; }
 	float get_current_bullet_time() const { return current_bullet_time; }
+	Direction get_attack_dir() const { return attack_dir; }
 	Direction get_facing_redir() const { return is_facing_left ? Direction::Right : Direction::Left; }
 	float get_stay_air_time() { return 2 * speed_jump / GRAVITY; }
 	void enable_displace_ex(Direction dir, float delta);
@@ -91,17 +88,14 @@ public:
 	virtual void release_skill_1() { switch_state("roll"); }
 	virtual void release_skill_2() { switch_state("dance"); }
 
-
 private:
-	void on_hit_collide();
+	void on_hit_collide();					// 攻击命中回调逻辑
 	void on_recoil(float delta = 0.0f);		// 击中后坐力
 	void on_attack_direction_move();		// 朝攻击方向冲刺一段距离
-	void create_hit_effect();
-	void create_hurt_effect();
-	void create_bullet_time_effect();
-	void create_roll_effect();
+	void create_hit_effect();				// 攻击特效
+	void create_hurt_effect();				// 受击特效
+	void create_bullet_time_effect();		// 子弹时间残影特效
+	void create_roll_effect();				// 翻滚特效
 	void update_attack_dir();
 	void update_attack_dir(float mouse_x, float mouse_y);
-	void control_preset_1(const ExMessage& msg);	// 角色控制按键预设1
-	void control_preset_2(const ExMessage& msg);	// 角色控制按键预设2
 };

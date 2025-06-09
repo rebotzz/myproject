@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\engine">
+      <UniqueIdentifier>{3c3279d3-918e-4e30-9ad5-b996cca543e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine\core">
+      <UniqueIdentifier>{838ad606-e10b-4768-8041-f7ef0e01e842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine\affiliate">
+      <UniqueIdentifier>{39e0be21-c9ce-4e94-9071-e7e89385aa7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine\raw">
+      <UniqueIdentifier>{70b20ae5-7a05-4e62-8827-53b355e62bba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine\world">
+      <UniqueIdentifier>{f23de6c8-8092-4455-b5a6-82d90d8164b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine\screen">
+      <UniqueIdentifier>{c516aca9-317f-42e4-b018-04433df1dbe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\no_game">
+      <UniqueIdentifier>{21c0ddf4-cd58-48f9-b915-30126772859d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ghost_escape">
+      <UniqueIdentifier>{af699dac-6d4a-4777-9376-8b2ecefa6cfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\hollow_katana">
+      <UniqueIdentifier>{2b0668d9-4db9-4aca-9a02-c95c74b61e3f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="spawner.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="spell_bullet.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="actor.cpp">
+      <Filter>头文件\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>头文件\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="object_affiliate.cpp">
+      <Filter>头文件\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="object_world.cpp">
+      <Filter>头文件\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>头文件\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="affiliate_bar.cpp">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClCompile>
+    <ClCompile Include="assets_store.cpp">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClCompile>
+    <ClCompile Include="collide_box.cpp">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClCompile>
+    <ClCompile Include="collide_manager.cpp">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClCompile>
+    <ClCompile Include="effect.cpp">
+      <Filter>头文件\engine\raw</Filter>
+    </ClCompile>
+    <ClCompile Include="hud_text.cpp">
+      <Filter>头文件\engine\screen</Filter>
+    </ClCompile>
+    <ClCompile Include="move_control.cpp">
+      <Filter>头文件\engine\raw</Filter>
+    </ClCompile>
+    <ClCompile Include="move_control_keyboardAWSD.cpp">
+      <Filter>头文件\engine\raw</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>头文件\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="weapon.cpp">
+      <Filter>头文件\engine\raw</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_button.cpp">
+      <Filter>头文件\engine\screen</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_cursor.cpp">
+      <Filter>头文件\engine\screen</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_player_status.cpp">
+      <Filter>头文件\engine\screen</Filter>
+    </ClCompile>
+    <ClCompile Include="text_lable.cpp">
+      <Filter>头文件\engine\screen</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite_anim.cpp">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClCompile>
+    <ClCompile Include="spell.cpp">
+      <Filter>头文件\engine\raw</Filter>
+    </ClCompile>
+    <ClCompile Include="status.cpp">
+      <Filter>头文件\engine\raw</Filter>
+    </ClCompile>
+    <ClCompile Include="quad_tree.cpp">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="spawner.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="spell_bullet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="spell_creator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="actor.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="object_affiliate.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="object_screen.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="object_world.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="observer.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="affiliate_bar.h">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClInclude>
+    <ClInclude Include="assets_store.h">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClInclude>
+    <ClInclude Include="collide_box.h">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClInclude>
+    <ClInclude Include="collide_manager.h">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClInclude>
+    <ClInclude Include="defs.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>头文件\engine\raw</Filter>
+    </ClInclude>
+    <ClInclude Include="hud_text.h">
+      <Filter>头文件\engine\screen</Filter>
+    </ClInclude>
+    <ClInclude Include="move_control.h">
+      <Filter>头文件\engine\raw</Filter>
+    </ClInclude>
+    <ClInclude Include="move_control_keyboardAWSD.h">
+      <Filter>头文件\engine\raw</Filter>
+    </ClInclude>
+    <ClInclude Include="singleton.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="weapon.h">
+      <Filter>头文件\engine\raw</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_player_status.h">
+      <Filter>头文件\engine\screen</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_button.h">
+      <Filter>头文件\engine\screen</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_cursor.h">
+      <Filter>头文件\engine\screen</Filter>
+    </ClInclude>
+    <ClInclude Include="text_lable.h">
+      <Filter>头文件\engine\screen</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite.h">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite_anim.h">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClInclude>
+    <ClInclude Include="spell.h">
+      <Filter>头文件\engine\raw</Filter>
+    </ClInclude>
+    <ClInclude Include="status.h">
+      <Filter>头文件\engine\raw</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>头文件\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="quad_tree.h">
+      <Filter>头文件\engine\affiliate</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

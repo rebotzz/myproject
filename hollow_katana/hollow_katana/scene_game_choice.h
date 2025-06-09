@@ -10,7 +10,7 @@
 
 
 
-// v1.3新增:传送门,木头人,平台，开关
+// v1.3新增:传送门,木头人,平台，开关，可控制Boss
 // todo: 
 // 1.增加挡板,防止角色飞出屏幕顶部
 // 2.重力更改时,调整动画方向,碰撞箱体方向,锚点位置,或许还有跳跃方向(暂时废弃,或许在别的游戏中实现)
@@ -27,8 +27,9 @@ private:
 	Woodenman* woodenman = nullptr;
 	std::vector<Platform*> platform_list;			// 跳跃平台
 	bool enabled_platforms = false;
-	InteractProp prop_platform_switch;				// 平台开关
+	InteractProp* prop_platform_switch = nullptr;	// 平台开关
 	Timer timer_platforms_switch;
+	//bool is_enable_hornet = false;				// 是否创建大黄蜂	
 
 public:
 	SceneGameChoice();

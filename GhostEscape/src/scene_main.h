@@ -33,6 +33,7 @@ public:
 
     // getters and setters
     Player* getPlayer() const { return player_; }
+    
 
 protected:
     void updateWhenGameOver(float dt);

@@ -8,13 +8,11 @@ class Timer : public Object         // 创建的时候，默认为 !active
 {
 protected:
     float timer_ = 0;               // 当前计时值
-    float interval_ = 3.0f;         // 计时间隔
+    float interval_;                // 计时间隔
     bool time_out_ = false;         // 是否已超时
 protected:
-    Timer() = default;
 public:
-    static Timer* addTimerChild(Object* parent, float interval = 3.0f);
-
+    Timer(Object* parent, float interval);
     virtual void update(float dt) override;
 
     void start() { is_active_ = true; }     // 开始计时
@@ -29,14 +27,13 @@ public:
     void setInterval(float interval) { interval_ = interval; }
 };
 
-Timer* Timer::addTimerChild(Object* parent, float interval)
+Timer::Timer(Object* parent, float interval)
+    :Object(parent)
 {
-    Timer* timer = new Timer();
-    timer->setInterval(interval);
-    if (parent) parent->addChild(timer);
-    timer->setActive(false);        // 创建时默认不激活
-    return timer;
+    setInterval(interval);
+    setActive(true);        // 创建时默认激活
 }
+
 
 void Timer::update(float dt)
 {

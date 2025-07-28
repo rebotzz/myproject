@@ -20,11 +20,12 @@ void EnemySpawner::update(float dt)
                 auto position = game_.getRandomVec2(current_scene->getCameraPosition(), current_scene->getCameraPosition() + game_.getScreenSize());
                 // 特效
                 auto effect = new Effect(current_scene, position, ResID::Tex_1764, 17, glm::vec2(3.0f));
-                effect->setOnFinished([current_scene, position, this]()     // 局部变量会失效，不能引用捕获
+                auto target = target_;
+                effect->setOnFinished([current_scene, position, target]()     // 局部变量会失效，不能引用捕获
                 {
                     // 敌人
                     auto enemy = new Enemy(current_scene, position);
-                    enemy->setTarget(target_);
+                    enemy->setTarget(target);
                 });
                 game_.playSound(ResID::Sound_SillyGhostSound242342);
             }

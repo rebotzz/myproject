@@ -13,9 +13,7 @@ protected:
     bool is_move_down_ = false;
 public:
     MoveControl(Actor* parent):Object(parent) {}
-
     virtual void update(float) override;
-
 
     // getters and setters
     bool getMoveLeft() const { return is_move_left_; }

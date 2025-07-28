@@ -62,15 +62,8 @@ Enemy::~Enemy()
 {
 }
 
-Enemy *Enemy::createAndAddEnemyChild(Object *parent, const glm::vec2 &position)
-{
-    auto enemy = new Enemy(parent, position);
-    return enemy;
-}
-
 void Enemy::update(float dt)
 {
-    velocity_ *= 0.9f;
     Actor::update(dt);
     updateVelocity();
 

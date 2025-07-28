@@ -37,11 +37,12 @@ public:
     void setVelocity(const glm::vec2& val) { velocity_ = val; }
     const glm::vec2& getVelocity() const { return velocity_; }
 
+    void removeControl();
+
 protected:
     virtual void move(float dt);
     void updateHealthBar();
 
-    void removeControl();
 };
 
 

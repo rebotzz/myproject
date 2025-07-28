@@ -25,7 +25,7 @@ protected:
     std::vector<glm::vec2> bg_stars, mid_stars, fg_stars;  // 星星坐标
     bool init_stars = false;
 
-    // 摄像机缩放系数TODO，SDL的设置逻辑分辨率窗口缩放也有类似效果，但是不够方便；位置、尺寸都要修改。
+    // TODO:摄像机缩放系数，SDL的设置逻辑分辨率窗口缩放也有类似效果，但是不够方便；位置、尺寸都要修改。
     // 或许需要单独一个摄像机类，由摄像机类绘制，计算缩放后的位置、尺寸。
     float camera_zoom_ = 1.0f;
 

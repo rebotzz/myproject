@@ -9,6 +9,8 @@ class SpriteAnim;
 class WeaponThunder;
 class Scene;
 class Effect;
+class Timer;
+
 
 // 角色
 class Player : public Actor
@@ -21,6 +23,14 @@ protected:
     Effect* effect_dead_ = nullptr;             // 特效
     Effect* effect_born_ = nullptr;
     int score_ = 0;     // 得分，暂时放在玩家类，应该放在状态类吗？还是场景类？
+
+    // 自动逃跑
+    Actor* nearest_enemy = nullptr;             // 最近敌人
+    Timer* decide_timer = nullptr;              // 控制改变方向的频率
+    float decide_interval = 0.5f;
+
+    // 与敌人交换控制
+    Actor* control_enemy = nullptr;
 
 public:
     Player(Scene* parent, const glm::vec2& position);
@@ -39,8 +49,11 @@ public:
     bool getIsDead() const { return status_->getIsDead(); }
 
 protected:
-    virtual void move(float dt) override;
     void updateSpriteAnim();
+    void autoEscape();
+    void switchControlWithEnemy(Actor* enemy);
+    Actor* findNearestEnemy();
+    bool checkEnemyInScene(Actor* enemy);
     // 工具函数
     void syncCamera(float dt);  // 相机跟随，放在玩家类比场景类更合理
 };

@@ -10,6 +10,7 @@
 #include "world/spell.h"
 #include "weapon_thunder.h"
 #include "raw/move_control_keyboardAWSD.h"
+#include "raw/timer.h"
 
 Player::Player(Scene* parent, const glm::vec2& position)
 {
@@ -57,7 +58,10 @@ Player::Player(Scene* parent, const glm::vec2& position)
     game_.playSound(ResID::Sound_SillyGhostSound242342);
 
     // 角色控制
-    setMoveControl(new MoveControlKeyboardArrow(this));
+    setMoveControl(new MoveControlKeyboardAWSD(this));
+
+    // 自动逃跑
+    decide_timer = new Timer(this, 0.5f);
 }
 
 Player::~Player()
@@ -85,6 +89,23 @@ bool Player::handleEvent(const SDL_Event& event)
             setMoveControl(new MoveControlKeyboardArrow(this));
             return true;
         }
+        else if(event.key.scancode == SDL_SCANCODE_Q)
+        {
+            if(getMoveControl())
+            {
+                findNearestEnemy();
+                switchControlWithEnemy(nearest_enemy);
+            }
+            else
+            {
+                if(checkEnemyInScene(control_enemy))
+                {
+                    control_enemy->removeControl();
+                }
+                control_enemy = nullptr;
+                setMoveControl(new MoveControlKeyboardAWSD(this));
+            }
+        }
     } 
 
     return Actor::handleEvent(event);
@@ -92,8 +113,11 @@ bool Player::handleEvent(const SDL_Event& event)
 
 void Player::update(float dt) 
 {
-    velocity_ *= 0.9f;
     Actor::update(dt);
+    if(!move_control_)
+    {
+        autoEscape();
+    }
     if(status_->getIsDead())
     {
         effect_dead_->setActive(true);
@@ -109,15 +133,6 @@ void Player::update(float dt)
 void Player::render() 
 {
     Actor::render();
-}
-
-
-void Player::move(float dt)
-{
-    // 限制玩家位置
-    auto position = glm::clamp(world_position_ + velocity_ * dt, anim_move_->getSize() * 0.2f, 
-        dynamic_cast<Scene*>(parent_)->getWorldSize() - anim_move_->getSize() * 0.2f);
-    setPosition(position);
 }
 
 void Player::updateSpriteAnim()
@@ -161,6 +176,87 @@ void Player::updateSpriteAnim()
         anim_move_->setShowing(true);
     }
 
+}
+
+void Player::autoEscape()
+{
+    // 玩家自动逃跑
+    // 控制决策频率，找到场景中最近敌人
+    if(decide_timer->timeOut())
+    {
+        findNearestEnemy();
+    }
+    // 变更速度方向，逃避
+    if(!nearest_enemy) return;
+    auto dir = getPosition() - nearest_enemy->getPosition();
+    if(glm::length(dir) > 0.1f)
+    {
+        setVelocity(glm::normalize(dir) * getMaxSpeed());
+    }
+    // 地图死角判断
+    auto scene = dynamic_cast<Scene*>(parent_);
+    auto corners = {glm::vec2(0.0f), glm::vec2(0.0f, scene->getWorldSize().y), 
+        glm::vec2(scene->getWorldSize().x, 0.0f), scene->getWorldSize()};
+    bool in_corner = false;
+    float distance = -1.0f;
+    for(auto& corner : corners)
+    {
+        distance = glm::length(getPosition() - corner);
+        if(distance > 0.1f && distance < (collide_box_->getSize().x + collide_box_->getSize().y) * 0.7)
+        {
+            setVelocity(glm::normalize(getPosition() - corner) * getMaxSpeed());
+            break;
+        }
+    }
+    if(in_corner)
+    {
+        decide_timer->setInterval(decide_interval * 3.0f);
+    }
+    else if(distance > (collide_box_->getSize().x + collide_box_->getSize().y) * 10.0f)
+    {
+        decide_timer->setInterval(decide_interval);
+    }
+
+}
+
+void Player::switchControlWithEnemy(Actor *enemy)
+{
+    if(!enemy) return;
+    enemy->setMoveControl(new MoveControlKeyboardAWSD(enemy));
+    control_enemy = enemy;
+    removeControl();
+}
+
+Actor *Player::findNearestEnemy()
+{
+    // 更新敌人，防止失效
+    auto scene = dynamic_cast<Scene*>(parent_);
+    auto& scene_objects = scene->getWorldObjects();
+    if(!checkEnemyInScene(nearest_enemy))
+    {
+        nearest_enemy = nullptr;
+    }
+    for(Object* obj : scene_objects)
+    {
+        if(obj->getObjectType() == ObjectType::Enemy)
+        {
+            auto enemy = dynamic_cast<Actor*>(obj);
+            if(nullptr == nearest_enemy || 
+                glm::length(enemy->getPosition() - getPosition()) < glm::length(nearest_enemy->getPosition() - getPosition()))
+            {
+                nearest_enemy = enemy;
+            }
+        }
+    }
+
+    return nearest_enemy;
+}
+
+bool Player::checkEnemyInScene(Actor *enemy)
+{
+    auto scene = dynamic_cast<Scene*>(parent_);
+    auto& scene_objects = scene->getWorldObjects();
+    return std::find(scene_objects.begin(), scene_objects.end(), nearest_enemy) != scene_objects.end();
 }
 
 void Player::syncCamera(float dt)

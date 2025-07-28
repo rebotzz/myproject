@@ -6,7 +6,8 @@
 
 void Actor::update(float dt)
 {
-    ObjectWorld::update(dt);
+    velocity_ *= 0.9f;
+    ObjectWorld::update(dt);    // 更新速度等
     move(dt);
     updateHealthBar();
 }

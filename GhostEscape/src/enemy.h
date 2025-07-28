@@ -26,7 +26,6 @@ private:
 public:
     Enemy(Object *parent, const glm::vec2 &position);
     ~Enemy();
-    static Enemy* createAndAddEnemyChild(Object* parent, const glm::vec2& position);
 
     virtual void update(float dt);
 

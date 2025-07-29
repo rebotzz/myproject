@@ -24,6 +24,12 @@ void Spell::update(float dt)
     checkAndRemove();
 }
 
+Spell* Spell::clone() const
+{
+    return new Spell(game_.getCurrentScene(), damage_, getPosition(), collide_box_->getCollideShape(), 
+        anim_->getTexID(), anim_->getFrameCount(), anim_->getScale(), anim_->getFrameInterval(), anim_->getAchorMode());
+}
+
 void Spell::setHitCollideLayer(CollideLayer layer)
 {
     collide_box_->setHitLayer(layer);

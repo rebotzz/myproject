@@ -19,6 +19,7 @@ public:
     virtual ~ObjectWorld() {};
 
     virtual void update(float dt) override;
+    virtual ObjectWorld* clone() const { return nullptr; }  // 原型模式继承接口
 
     // setters and getters
     virtual const glm::vec2& getRenderPosition() override;

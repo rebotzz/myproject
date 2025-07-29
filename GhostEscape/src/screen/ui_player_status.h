@@ -6,6 +6,7 @@
 
 class Scene;
 class HUDText;
+class Weapon;
 
 // 作为玩家状态栏的组件
 class UIPlayerBar : public ObjectScreen
@@ -30,13 +31,16 @@ class UIPlayerSkillBar : public ObjectScreen
 protected:
     Sprite* sprite_icon_bg_ = nullptr;    
     Sprite* sprite_icon_fg_ = nullptr;    
-
+    Weapon* weapon_ = nullptr;
+    
 public:
-    UIPlayerSkillBar(Object* parent, const glm::vec2& position, ResID tex_icon, const glm::vec2& icon_scale = glm::vec2(1.0f));
+    UIPlayerSkillBar(Object* parent, Weapon* weapon, const glm::vec2& position, ResID tex_icon, const glm::vec2& icon_scale = glm::vec2(1.0f));
     ~UIPlayerSkillBar() = default;
 
+    void update(float) override;
     // setters and getters
     void setPercentage(const glm::vec2& percentage) { sprite_icon_fg_->setRenderPercentage(percentage); }
+    void setWeapon(Weapon* weapon) { weapon_ = weapon; }
 };
 
 // 玩家UI界面   挂载到场景
@@ -45,13 +49,13 @@ class UIPlayerStatus : public ObjectScreen
 protected:
     UIPlayerBar* ui_hp_bar_ = nullptr;      // 血条
     UIPlayerBar* ui_mana_bar_ = nullptr;    // 蓝条
-    UIPlayerSkillBar* ui_skill_bar_ = nullptr;  // 技能条
+    UIPlayerSkillBar* ui_skill_bar1_ = nullptr;  // 技能条1
+    UIPlayerSkillBar* ui_skill_bar2_ = nullptr;  // 技能条2
     HUDText* hud_text_ = nullptr;       // 得分
 
 public:
-    UIPlayerStatus(Scene* parent);
+    UIPlayerStatus(Scene* parent, Weapon* weapon1, Weapon* weapon2);
     ~UIPlayerStatus() = default;
-    static UIPlayerStatus* createAndAddUIPlayerStatusChild(Scene* parent);
 
     virtual void update(float dt);
     virtual void render();

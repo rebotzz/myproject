@@ -8,6 +8,7 @@ enum class ResID
 	Tex_1764,
 	Tex_1843,
 	Tex_18432,
+	Tex_FireExplosion,
 	Tex_ThunderstrikeWBlur,
 	Tex_GhostDeadSheet,
 	Tex_GhostHurtSheet,
@@ -42,6 +43,7 @@ enum class ResID
 	Tex_BluePotion,
 	Tex_Circle,
 	Tex_ElectricIcon,
+	Tex_FireIcon,
 	Tex_GreenPotion,
 	Tex_PointerCShaded,
 	Tex_RedPotion,
@@ -52,6 +54,7 @@ enum class ResID
 	//音效
 	Sound_BigThunder,
 	Sound_FemaleScream0289290,
+	Sound_FireMagic,
 	Sound_HitFlesh02266309,
 	Sound_SillyGhostSound242342,
 	Sound_UIButton08,

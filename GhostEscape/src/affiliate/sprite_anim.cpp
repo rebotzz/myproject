@@ -8,6 +8,7 @@ SpriteAnim::SpriteAnim(ObjectScreen *parent, ResID tex_id, int frame_count, Acho
     ,total_frame_count_(frame_count)
     ,frame_interval_(frame_interval)
     ,is_loop_(is_loop)
+    ,tex_id_(tex_id)
 {
     // 计算每一帧的尺寸,原图和绘制尺寸
     glm::vec2 frame_size = {tex_size_.x / static_cast<float>(frame_count), tex_size_.y};

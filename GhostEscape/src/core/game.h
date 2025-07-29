@@ -51,6 +51,7 @@ private:
     void loadGame();
     void changeScene(Scene* scene);// 不安全，可能会出现delete this，类调用的函数delete自生，如果接下来还有逻辑，可能出错
     void checkChangeScene();
+    void handleEvent();
 
 public:
     void init(const std::string& tittle, int window_w, int window_h, int fps);

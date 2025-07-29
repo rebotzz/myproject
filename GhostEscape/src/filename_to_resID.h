@@ -10,6 +10,7 @@ std::unordered_map<std::string, ResID> filename_resID =
 	{"1764",	 ResID::Tex_1764},
 	{"184_3",	 ResID::Tex_1843},
 	{"184_3_2",	 ResID::Tex_18432},
+	{"Fire_Explosion",	 ResID::Tex_FireExplosion},
 	{"Thunderstrike_w_blur",	 ResID::Tex_ThunderstrikeWBlur},
 	{"ghostDead_Sheet",	 ResID::Tex_GhostDeadSheet},
 	{"ghostHurt_Sheet",	 ResID::Tex_GhostHurtSheet},
@@ -44,6 +45,7 @@ std::unordered_map<std::string, ResID> filename_resID =
 	{"Blue_Potion",	 ResID::Tex_BluePotion},
 	{"circle",	 ResID::Tex_Circle},
 	{"Electric_Icon",	 ResID::Tex_ElectricIcon},
+	{"Fire-Icon",	 ResID::Tex_FireIcon},
 	{"Green_Potion",	 ResID::Tex_GreenPotion},
 	{"pointer_c_shaded",	 ResID::Tex_PointerCShaded},
 	{"Red_Potion",	 ResID::Tex_RedPotion},
@@ -54,6 +56,7 @@ std::unordered_map<std::string, ResID> filename_resID =
 
 	{"big_thunder",	  ResID::Sound_BigThunder},
 	{"female_scream_02_89290",	  ResID::Sound_FemaleScream0289290},
+	{"fire_magic",	  ResID::Sound_FireMagic},
 	{"hit_flesh_02_266309",	  ResID::Sound_HitFlesh02266309},
 	{"silly_ghost_sound_242342",	  ResID::Sound_SillyGhostSound242342},
 	{"UI_button08",	  ResID::Sound_UIButton08},

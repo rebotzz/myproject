@@ -12,14 +12,9 @@
 #include "raw/move_control_keyboardAWSD.h"
 #include "raw/timer.h"
 
-Player::Player(Scene* parent, const glm::vec2& position)
+Player::Player(Scene* parent, const glm::vec2& position):Actor(parent)
 {
     setPosition(position);
-    if(parent) 
-    {
-        parent->safeAddChild(this);
-        setParent(parent);
-    }
     setObjectType(ObjectType::Player);
     // 初始化动画
     anim_move_ = new SpriteAnim(this, ResID::Tex_GhostMove, 8, AchorMode::CENTER, glm::vec2(2));
@@ -46,6 +41,8 @@ Player::Player(Scene* parent, const glm::vec2& position)
     status_->setOnHurtCallback([this](){ game_.playSound(ResID::Sound_FemaleScream0289290); });
     // 武器, 武器挂载到玩家，跟随玩家；武器生成的法术挂载到场景，不随玩家移动
     weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 1.5f, 100.f);
+
+
     // 出生、死亡特效，挂载到场景
     effect_dead_ = new Effect(parent, position, ResID::Tex_1843, 11, glm::vec2(3.0f), 0.07f);
     effect_born_ = new Effect(parent, position, ResID::Tex_18432, 11, glm::vec2(3.0f), 0.07f);
@@ -54,7 +51,7 @@ Player::Player(Scene* parent, const glm::vec2& position)
     setActive(false);   // 出生特效结束才显示玩家
 
     // UI界面 挂载到场景
-    UIPlayerStatus::createAndAddUIPlayerStatusChild(parent);
+    new UIPlayerStatus(parent, weapon_thunder_, weapon_fire_);
     game_.playSound(ResID::Sound_SillyGhostSound242342);
 
     // 角色控制
@@ -67,12 +64,6 @@ Player::Player(Scene* parent, const glm::vec2& position)
 Player::~Player()
 {
 
-}
-
-Player *Player::createAndAddPlayerChild(Scene *parent, const glm::vec2& position)
-{
-    auto player = new Player(parent, position);
-    return player;
 }
 
 bool Player::handleEvent(const SDL_Event& event)
@@ -256,7 +247,7 @@ bool Player::checkEnemyInScene(Actor *enemy)
 {
     auto scene = dynamic_cast<Scene*>(parent_);
     auto& scene_objects = scene->getWorldObjects();
-    return std::find(scene_objects.begin(), scene_objects.end(), nearest_enemy) != scene_objects.end();
+    return std::find(scene_objects.begin(), scene_objects.end(), enemy) != scene_objects.end();
 }
 
 void Player::syncCamera(float dt)

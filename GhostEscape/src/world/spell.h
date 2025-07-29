@@ -19,8 +19,9 @@ public:
     Spell(Object* parent, float damage, const glm::vec2& target_position, CollideShape shape, ResID tex_id, 
         int frame_count, const glm::vec2& scale = glm::vec2(1), float frame_interval = 0.1f, AchorMode mode = AchorMode::CENTER);
     ~Spell() = default;
- 
+
     virtual void update(float dt);
+    virtual Spell* clone() const override;      // 原型模式
 
     // getters and setters
     CollideBox* getCollideBox() const { return collide_box_; }

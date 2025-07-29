@@ -37,7 +37,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     status_ = Status::createAndAddStatusChild(this, 120.0f, 0.0f, 100.0f, 1.4f);
     status_->setOnHurtCallback([this](){ game_.playSound(ResID::Sound_HitFlesh02266309); });
     // 武器
-    weapon_ = new Weapon(this, 10.f, 5.f);
+    weapon_ = new Weapon(this, 10.f, 5.f, 0.0f);
     weapon_->setAttackCallback([&]()
     {
         // 发射子弹
@@ -48,7 +48,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
         auto bullet = new SpellBullet(parent_, 10.f, world_position_, ResID::Tex_Laser3, 1, glm::vec2(0.5f));
         bullet->setDirection(direction);
         bullet->setMaxSpeed(500.f);
-        float deg = glm::degrees(std::atan2(direction.y, direction.x)); // glm::angle的角度没有方向
+        float deg = glm::degrees(std::atan2(direction.y, direction.x)); // debug:用glm::angle的角度没有方向
         bullet->getSpriteAnim()->setAngle(deg);
         bullet->setHitCollideLayer(CollideLayer::Player);
     });

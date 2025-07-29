@@ -4,18 +4,28 @@
 #include <fstream>
 #include <memory>
 
-void Game::handleEvent(const SDL_Event& event)
+void Game::handleEvent()
 {
-    // SDL_Event event;
-    // while(SDL_PollEvent(&event))
-    // {
+    SDL_Event event;
+    while(SDL_PollEvent(&event))
+    {
         switch(event.type)
         {
             case SDL_EVENT_QUIT: is_running_ = false; break;
             case SDL_EVENT_WINDOW_RESIZED: updateWindowScale(); break;
             default: current_scene_->handleEvent(event); break;
         }
-    // }
+    }
+}
+// 为了方便SDL_AppEvent调用
+void Game::handleEvent(const SDL_Event& event)  
+{
+    switch(event.type)
+    {
+        case SDL_EVENT_QUIT: is_running_ = false; break;
+        case SDL_EVENT_WINDOW_RESIZED: updateWindowScale(); break;
+        default: current_scene_->handleEvent(event); break;
+    }
 }
 
 void Game::update(float delta_time)
@@ -42,7 +52,7 @@ float Game::controlFrameDelta()
         SDL_DelayNS(frame_interval_ - delta_time_);
         delta_time_ = frame_interval_;
     }
-    return static_cast<float>(delta_time_ / 1e9);
+    return static_cast<float>(delta_time_ / 1);
 }
 
 void Game::updateWindowScale()
@@ -87,17 +97,17 @@ void Game::loadGame()
 
 void Game::run()
 {
-    // while(is_running_)
-    // {
-    //     // 事件处理
-    //     handleEvent();
-    //     // 更新数据
-    //     update(static_cast<float>(delta_time_ / 1e9));
-    //     // 渲染画面
-    //     render();
-    //     // 帧率控制
-    //     controlFrameDelta();
-    // }
+    while(is_running_)
+    {
+        // 事件处理
+        handleEvent();
+        // 更新数据
+        update(static_cast<float>(delta_time_ / 1e9));
+        // 渲染画面
+        render();
+        // 帧率控制
+        controlFrameDelta();
+    }
 }
 
 void Game::clean()

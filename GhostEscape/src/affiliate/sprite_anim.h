@@ -27,6 +27,7 @@ protected:
     bool is_loop_ = true;
     bool is_finished_ = false;
     float timer_ = 0;   // 计时器
+    ResID tex_id_ = ResID::None;        // 为了方便原型模式复制
 
 public:
     SpriteAnim(ObjectScreen* parent, ResID tex_id, int frame_count, AchorMode mode = AchorMode::CENTER, 
@@ -45,6 +46,8 @@ public:
     int getFrameIdx() const { return frame_idx_; }
     void syncFrameTime(SpriteAnim* sprite_anim);
     void restart() { frame_idx_ = 0; timer_ = 0; }
+    ResID getTexID() const { return tex_id_; }
+    int getFrameCount() const { return total_frame_count_; }
 };
 
 

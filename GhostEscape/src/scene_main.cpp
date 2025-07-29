@@ -53,8 +53,7 @@ void SceneMain::init()
 
     // 引入碰撞管理器后，玩家等持有碰撞盒的对象需要在碰撞管理器之后初始化
     // 初始化玩家
-    player_ = Player::createAndAddPlayerChild(this, world_size_ * 0.5f);
-
+    player_ = new Player(this, world_size_ * 0.5f);
     // 初始化敌人生成器
     new EnemySpawner(this, player_, glm::ivec2{3, 6}, glm::vec2(5, 7));
 }

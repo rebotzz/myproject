@@ -55,7 +55,6 @@ add_executable(${MyExecutable}
                     src/affiliate/affiliate_bar.cpp
                     src/affiliate/text_lable.cpp
 
-
                     src/raw/weapon.cpp
                     src/raw/status.cpp
                     src/raw/spawner.cpp

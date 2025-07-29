@@ -46,16 +46,17 @@ private:
 private:
     Game() = default;
     ~Game() = default;
-    void handleEvent();
-    void update(float delta_time);
-    void render();
-    void controlFrameDelta();
     void updateWindowScale();     // 更新因为屏幕缩放导致鼠标错位问题
     void saveGame();
     void loadGame();
+    void changeScene(Scene* scene);// 不安全，可能会出现delete this，类调用的函数delete自生，如果接下来还有逻辑，可能出错
+    void checkChangeScene();
 
 public:
     void init(const std::string& tittle, int window_w, int window_h, int fps);
+    void handleEvent(const SDL_Event& event);
+    void update(float delta_time);
+    void render();
     void run();
     void clean();
     
@@ -75,13 +76,13 @@ public:
         { return TTF_CreateText(text_engine_, font, text.c_str(), text_length); }
 
     // 工具函数
-    void changeScene(Scene* scene);        // 不安全，可能会出现delete this，类调用的函数delete自生，如果接下来还有逻辑，可能出错
     void safeChangeScene(Scene* scene) { scene_to_change_ = scene; }
     Scene* getCurrentScene() const { return current_scene_; }
     float getRandom(float begin, float end) { return std::uniform_real_distribution<float>(begin, end)(random_gen_); }
     int getRandom(int begin, int end) { return std::uniform_int_distribution<int>(begin, end)(random_gen_); }
     glm::vec2 getRandomVec2(const glm::vec2& begin, const glm::vec2& end);
     bool isMouseInRect(const glm::vec2& top_left, const glm::vec2& botton_right);
+    float controlFrameDelta();
 
     // 游戏逻辑
     void quit() { is_running_ = false; }
@@ -104,6 +105,8 @@ public:
     void setRenderColor(SDL_FColor color = {1.0f, 1.0f, 1.0f, 1.0f}) { SDL_SetRenderDrawColorFloat(renderer_, color.r, color.g, color.b, color.a); }
     SDL_MouseButtonFlags getMouseState(glm::vec2& mouse_position);
     void setSDL_RenderScale(float scale) { SDL_SetRenderScale(renderer_, scale, scale); }
+    bool getIsRunning() const { return is_running_; }
+    bool getFPS() const { return FPS_; }
 };
 
 #endif // _GAME_H_

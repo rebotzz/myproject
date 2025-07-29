@@ -4,22 +4,23 @@
 #include <fstream>
 #include <memory>
 
-void Game::handleEvent()
+void Game::handleEvent(const SDL_Event& event)
 {
-    SDL_Event event;
-    while(SDL_PollEvent(&event))
-    {
+    // SDL_Event event;
+    // while(SDL_PollEvent(&event))
+    // {
         switch(event.type)
         {
             case SDL_EVENT_QUIT: is_running_ = false; break;
             case SDL_EVENT_WINDOW_RESIZED: updateWindowScale(); break;
             default: current_scene_->handleEvent(event); break;
         }
-    }
+    // }
 }
 
 void Game::update(float delta_time)
 {
+    checkChangeScene();
     current_scene_->update(delta_time);
 }
 
@@ -31,7 +32,7 @@ void Game::render()
     SDL_RenderPresent(renderer_);
 }
 
-void Game::controlFrameDelta()
+float Game::controlFrameDelta()
 {
     uint64_t cur_frame_time = SDL_GetTicksNS();
     delta_time_ = (cur_frame_time - last_frame_time_);
@@ -41,6 +42,7 @@ void Game::controlFrameDelta()
         SDL_DelayNS(frame_interval_ - delta_time_);
         delta_time_ = frame_interval_;
     }
+    return static_cast<float>(delta_time_ / 1e9);
 }
 
 void Game::updateWindowScale()
@@ -85,23 +87,17 @@ void Game::loadGame()
 
 void Game::run()
 {
-    while(is_running_)
-    {
-        if(scene_to_change_)
-        {
-            changeScene(scene_to_change_);
-            scene_to_change_ = nullptr;
-        }
-
-        // 事件处理
-        handleEvent();
-        // 更新数据
-        update(static_cast<float>(delta_time_ / 1e9));
-        // 渲染画面
-        render();
-        // 帧率控制
-        controlFrameDelta();
-    }
+    // while(is_running_)
+    // {
+    //     // 事件处理
+    //     handleEvent();
+    //     // 更新数据
+    //     update(static_cast<float>(delta_time_ / 1e9));
+    //     // 渲染画面
+    //     render();
+    //     // 帧率控制
+    //     controlFrameDelta();
+    // }
 }
 
 void Game::clean()
@@ -247,6 +243,15 @@ void Game::changeScene(Scene *scene)
     }
     current_scene_ = scene;
     current_scene_->init();
+}
+
+void Game::checkChangeScene()
+{
+    if(scene_to_change_)
+    {
+        changeScene(scene_to_change_);
+        scene_to_change_ = nullptr;
+    }
 }
 
 glm::vec2 Game::getRandomVec2(const glm::vec2 &begin, const glm::vec2 &end)

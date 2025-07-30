@@ -38,6 +38,7 @@ public:
     ~UIPlayerSkillBar() = default;
 
     void update(float) override;
+
     // setters and getters
     void setPercentage(const glm::vec2& percentage) { sprite_icon_fg_->setRenderPercentage(percentage); }
     void setWeapon(Weapon* weapon) { weapon_ = weapon; }

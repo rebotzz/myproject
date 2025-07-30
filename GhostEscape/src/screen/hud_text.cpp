@@ -31,10 +31,10 @@ void HUDText::setText(const std::string &text)
 
 void HUDText::setMargin(const glm::vec2 margin_scale)
 {
-    auto boundary = text_lable_->getSize() * margin_scale;
+    auto boundary = text_lable_->getScaledSize() * margin_scale;
     if(boundary.x > max_margin_size_.x || boundary.y > max_margin_size_.y)
     {
-        margin_scale_ = max_margin_size_ / text_lable_->getSize();
+        margin_scale_ = max_margin_size_ / text_lable_->getScaledSize();
     }
     else
     {
@@ -46,9 +46,9 @@ void HUDText::setMargin(const glm::vec2 margin_scale)
 void HUDText::updateBackgroundSpriteSize()
 {
     // 确保无论是中心锚点还是左右锚点，文本都在背景图中间，偏移是整体的
-    auto boundary = text_lable_->getSize() * margin_scale_;
-    sprite_bg_->setSize(text_lable_->getSize() + boundary);
-    text_lable_->setRenderCenterPosition(sprite_bg_->getRenderPosition() + sprite_bg_->getSize() / 2.0f);
+    auto boundary = text_lable_->getScaledSize() * margin_scale_;
+    sprite_bg_->setSize(text_lable_->getScaledSize() + boundary);
+    text_lable_->setRenderCenterPosition(sprite_bg_->getRenderPosition() + sprite_bg_->getScaledSize() / 2.0f);
 }
 
 void HUDText::setSpriteBackground(ResID tex_id)

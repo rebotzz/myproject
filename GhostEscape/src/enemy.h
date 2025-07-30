@@ -37,7 +37,6 @@ protected:
     void updateVelocity();
     void updateState();
     void checkAndRemove();
-    void attack();
 };
 
 

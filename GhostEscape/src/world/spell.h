@@ -29,6 +29,7 @@ public:
     float getDamage() const { return damage_; }
     void setHitCollideLayer(CollideLayer layer);
     void setHurtCollideLayer(CollideLayer layer);
+    virtual void setActive(bool flag) override;
 
 protected:
     // 数据更新

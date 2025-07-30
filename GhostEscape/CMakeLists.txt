@@ -75,7 +75,6 @@ add_executable(${MyExecutable}
                     src/player.cpp
                     src/scene_main.cpp
                     src/scene_tittle.cpp
-                    src/weapon_thunder.cpp
 )
 
 

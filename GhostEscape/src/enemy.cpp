@@ -12,18 +12,18 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
 {
     // 基础设置
     setPosition(position);
-    setMaxSpeed(100.f);
+    setMaxSpeed(130.f);
     setObjectType(ObjectType::Enemy);
     // 初始化动画
-    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostSheet, 4, AchorMode::CENTER, glm::vec2(2));
-    anim_hurt_ = new SpriteAnim(this, ResID::Tex_GhostHurtSheet, 4, AchorMode::CENTER, glm::vec2(2));
-    anim_dead_ = new SpriteAnim(this, ResID::Tex_GhostDeadSheet, 8, AchorMode::CENTER, glm::vec2(2));
+    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostSheet, 4, AchorMode::CENTER, glm::vec2(1.5));
+    anim_hurt_ = new SpriteAnim(this, ResID::Tex_GhostHurtSheet, 4, AchorMode::CENTER, glm::vec2(1.5));
+    anim_dead_ = new SpriteAnim(this, ResID::Tex_GhostDeadSheet, 8, AchorMode::CENTER, glm::vec2(1.5));
     anim_dead_->setLoop(false);
     anim_hurt_->setActive(false);
     anim_dead_->setActive(false);
     current_anim_ = anim_move_;
-    // 碰撞盒子
-    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);
+    // 碰撞盒子         
+    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getScaledSize() * 0.8f);  
     collide_box_->setHitLayer(CollideLayer::Player);
     collide_box_->setHurtLayer(CollideLayer::Enemy);
     collide_box_->setOnCollideCallback([this](CollideBox * target_box)
@@ -36,26 +36,34 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     // 状态
     status_ = Status::createAndAddStatusChild(this, 120.0f, 0.0f, 100.0f, 1.4f);
     status_->setOnHurtCallback([this](){ game_.playSound(ResID::Sound_HitFlesh02266309); });
-    // 武器
+    // 武器,敌人残血时开启远程攻击
     weapon_ = new Weapon(this, 10.f, 5.f, 0.0f);
-    weapon_->setAttackCallback([&]()
+    weapon_->setSoundID(ResID::Sound_XsLaser);
+    weapon_->setActive(false);
+    weapon_->setAutoAttack(true);
+    static SpellBullet* spell_bullet = nullptr;
+    if(!spell_bullet)
     {
-        // 发射子弹
+        // todo: 这个原型怎么删除呢？如果每个敌人都生成一个原型，太浪费了
+        spell_bullet = new SpellBullet(nullptr, 10.f, world_position_, ResID::Tex_Laser3, 1, glm::vec2(0.5f));
+        spell_bullet->setMaxSpeed(500.f);
+        spell_bullet->setDirection(glm::vec2(1,0));
+        spell_bullet->setHitCollideLayer(CollideLayer::Player);
+        spell_bullet->setActive(false);
+    }
+    weapon_->setSpellProtype(spell_bullet);
+    weapon_->setAutoAttackCallback([&]()
+    {
+        // 瞄准玩家，发射子弹
         if(!target_ || target_->getIsDead() || !target_->getIsActive()) return;
         auto target_pos = target_->getPosition();
-        auto direction = glm::normalize(target_pos - getPosition());
-        if(glm::length(direction) > 2.0f) direction = glm::vec2(1, 0);
-        auto bullet = new SpellBullet(parent_, 10.f, world_position_, ResID::Tex_Laser3, 1, glm::vec2(0.5f));
-        bullet->setDirection(direction);
-        bullet->setMaxSpeed(500.f);
-        float deg = glm::degrees(std::atan2(direction.y, direction.x)); // debug:用glm::angle的角度没有方向
-        bullet->getSpriteAnim()->setAngle(deg);
-        bullet->setHitCollideLayer(CollideLayer::Player);
+        auto direction = glm::length(target_pos - getPosition()) > 0.1f ? glm::normalize(target_pos - getPosition()) : glm::vec2(1, 0);
+        auto spell = weapon_->attack(getPosition());
+        dynamic_cast<SpellBullet*>(spell)->setDirection(direction);
     });
-    weapon_->setActive(false);
 
     // 血条  最后添加，最上层最后绘制
-    health_bar_ = new AffilateBar(this, glm::vec2(anim_move_->getSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getSize().y / 2.0f));
+    health_bar_ = new AffilateBar(this, glm::vec2(anim_move_->getScaledSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getScaledSize().y / 2.0f));
 }
 
 Enemy::~Enemy()
@@ -68,7 +76,6 @@ void Enemy::update(float dt)
     updateVelocity();
 
     updateState();
-    attack();
     checkAndRemove();
 }
 
@@ -130,10 +137,4 @@ void Enemy::checkAndRemove()
         setCanRemove(true);
         dynamic_cast<SceneMain*>(parent_)->getPlayer()->addScore(10);
     }
-}
-
-void Enemy::attack()
-{
-    if(weapon_->canAttack())
-        weapon_->attack(getPosition());
 }

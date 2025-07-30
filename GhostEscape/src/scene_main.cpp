@@ -7,6 +7,7 @@
 #include "screen/ui_cursor.h"
 #include "affiliate/collide_manager.h"
 #include "raw/spawner.h"
+#include "screen/ui_player_status.h"
 
 SceneMain::SceneMain()
 {
@@ -56,6 +57,9 @@ void SceneMain::init()
     player_ = new Player(this, world_size_ * 0.5f);
     // 初始化敌人生成器
     new EnemySpawner(this, player_, glm::ivec2{3, 6}, glm::vec2(5, 7));
+
+    // UI界面 挂载到场景
+    new UIPlayerStatus(this, player_->getWeapon1(), player_->getWeapon2());
 }
 void SceneMain::clean()
 {
@@ -117,8 +121,9 @@ void SceneMain::renderBackgroundGrid()
 
 void SceneMain::checkSlowdown(float& dt)
 {
+    // 游戏减速：鼠标中键按下
     glm::vec2 mouse_pos;
-    if(game_.getMouseState(mouse_pos) & SDL_BUTTON_RMASK)
+    if(game_.getMouseState(mouse_pos) & SDL_BUTTON_MMASK)
     {
         dt *= 0.4f;
     }

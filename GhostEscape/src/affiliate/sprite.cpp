@@ -2,14 +2,12 @@
 #include "../core/object_screen.h"
 
 Sprite::Sprite(ObjectScreen *parent, ResID tex_id, AchorMode mode, 
-    const glm::vec2& scale,  const glm::vec2& relative_offset)
-    :ObjectAffiliate(parent)
+    const glm::vec2& scale)
+    :ObjectAffiliate(parent, mode, scale)
 {
     tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
     SDL_GetTextureSize(tex_, &tex_size_.x, &tex_size_.y);
-    setAchorModeAndSize(mode, tex_size_);
-    setScale(scale);
-    setRelativeOffset(relative_offset);
+    setSize(tex_size_);
     // render_position_ = parent->getRenderPosition() + offset_;  
 }
 
@@ -28,9 +26,9 @@ void Sprite::render()
         tex_size_.x * render_percentage_.x, 
         tex_size_.y * render_percentage_.y};
     SDL_FRect dst_rect = {render_position_.x, 
-        render_position_.y + size_.y * (1.0f - render_percentage_.y), 
-        size_.x * render_percentage_.x, 
-        size_.y * render_percentage_.y};
+        render_position_.y + getScaledSize().y * (1.0f - render_percentage_.y), 
+        getScaledSize().x * render_percentage_.x, 
+        getScaledSize().y * render_percentage_.y};
     SDL_SetTextureAlphaModFloat(tex_, alpha_);
     game_.renderTexture(tex_, &src_rect, &dst_rect, angle_, is_flip_);
     SDL_SetTextureAlphaModFloat(tex_, 1.0f);

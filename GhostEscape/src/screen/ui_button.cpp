@@ -29,7 +29,7 @@ bool UIButton::handleEvent(const SDL_Event& event)
 { 
     if(ObjectScreen::handleEvent(event)) return true;
 
-    bool is_on_button = game_.isMouseInRect(sprite_idle_->getRenderPosition(), sprite_idle_->getRenderPosition() + sprite_idle_->getSize());
+    bool is_on_button = game_.isMouseInRect(sprite_idle_->getRenderPosition(), sprite_idle_->getRenderPosition() + sprite_idle_->getScaledSize());
     glm::vec2 mouse_pos;
     bool is_mouse_left_down = game_.getMouseState(mouse_pos) & SDL_BUTTON_LMASK;
     switch(event.type)

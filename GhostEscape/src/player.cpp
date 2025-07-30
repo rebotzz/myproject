@@ -5,24 +5,24 @@
 #include "raw/status.h"
 #include "scene_main.h"
 #include "enemy.h"
-#include "screen/ui_player_status.h"
 #include "world/effect.h"
 #include "world/spell.h"
-#include "weapon_thunder.h"
+#include "raw/weapon.h"
 #include "raw/move_control_keyboardAWSD.h"
 #include "raw/timer.h"
 
 Player::Player(Scene* parent, const glm::vec2& position):Actor(parent)
 {
+    setEnableSyncCamera(true);
     setPosition(position);
     setObjectType(ObjectType::Player);
     // 初始化动画
-    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostMove, 8, AchorMode::CENTER, glm::vec2(2));
-    anim_idle_ = new SpriteAnim(this, ResID::Tex_GhostIdle, 8, AchorMode::CENTER, glm::vec2(2));
+    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostMove, 8, AchorMode::CENTER, glm::vec2(1.5));
+    anim_idle_ = new SpriteAnim(this, ResID::Tex_GhostIdle, 8, AchorMode::CENTER, glm::vec2(1.5));
     anim_idle_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));  
     anim_move_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));    
     // 初始化碰撞箱体
-    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
+    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getScaledSize() * 0.5f);
     collide_box_->setHurtLayer(CollideLayer::Player);
     collide_box_->setOnCollideCallback([this](CollideBox * target_box)
     {
@@ -40,18 +40,30 @@ Player::Player(Scene* parent, const glm::vec2& position):Actor(parent)
     status_ = Status::createAndAddStatusChild(this, 200.0f, 400.0f, 50.f, 1.5f);
     status_->setOnHurtCallback([this](){ game_.playSound(ResID::Sound_FemaleScream0289290); });
     // 武器, 武器挂载到玩家，跟随玩家；武器生成的法术挂载到场景，不随玩家移动
-    weapon_thunder_ = WeaponThunder::createAndAddWeaponThunderChild(this, 50.0f, 1.5f, 100.f);
+    weapon_thunder_ = new Weapon(this, 50.0f, 1.5f, 100.f);
+    weapon_thunder_->setSoundID(ResID::Sound_BigThunder);
+    auto spell_thunder = new Spell(game_.getCurrentScene(), weapon_thunder_->getDamage(), position, CollideShape::Circle, 
+        ResID::Tex_ThunderstrikeWBlur, 13, glm::vec2(1.8f));
+    spell_thunder->getCollideBox()->setHitLayer(CollideLayer::Enemy);
+    spell_thunder->setActive(false);
+    weapon_thunder_->setSpellProtype(spell_thunder);
 
+    weapon_fire_ = new Weapon(this, 100.0f, 2.0f, 150.f);
+    weapon_fire_->setSoundID(ResID::Sound_FireMagic);
+    auto spell_fire = new Spell(game_.getCurrentScene(), weapon_fire_->getDamage(), position, CollideShape::Circle, 
+        ResID::Tex_FireExplosion, 18, glm::vec2(2.5));
+    spell_fire->getCollideBox()->setHitLayer(CollideLayer::Enemy);
+    spell_fire->setActive(false);
+    weapon_fire_->setSpellProtype(spell_fire);
+    weapon_fire_->setAttackKey(SDL_BUTTON_RIGHT);
 
     // 出生、死亡特效，挂载到场景
-    effect_dead_ = new Effect(parent, position, ResID::Tex_1843, 11, glm::vec2(3.0f), 0.07f);
-    effect_born_ = new Effect(parent, position, ResID::Tex_18432, 11, glm::vec2(3.0f), 0.07f);
+    effect_dead_ = new Effect(parent, position, ResID::Tex_1843, 11, glm::vec2(1.5f), 0.07f);
+    effect_born_ = new Effect(parent, position, ResID::Tex_18432, 11, glm::vec2(1.5f), 0.07f);
     effect_dead_->setActive(false);
     effect_born_->setOnFinished([this](){ setActive(true); });
     setActive(false);   // 出生特效结束才显示玩家
 
-    // UI界面 挂载到场景
-    new UIPlayerStatus(parent, weapon_thunder_, weapon_fire_);
     game_.playSound(ResID::Sound_SillyGhostSound242342);
 
     // 角色控制
@@ -86,14 +98,23 @@ bool Player::handleEvent(const SDL_Event& event)
             {
                 findNearestEnemy();
                 switchControlWithEnemy(nearest_enemy);
+                if(control_enemy)
+                {
+                    setEnableSyncCamera(false);
+                    control_enemy->setMaxSpeed(300.f);
+                    control_enemy->setEnableSyncCamera(true);
+                }
             }
             else
             {
                 if(checkEnemyInScene(control_enemy))
                 {
                     control_enemy->removeControl();
+                    control_enemy->setEnableSyncCamera(false);
+                    control_enemy->setMaxSpeed(150.f);
                 }
                 control_enemy = nullptr;
+                setEnableSyncCamera(true);
                 setMoveControl(new MoveControlKeyboardAWSD(this));
             }
         }
@@ -118,7 +139,6 @@ void Player::update(float dt)
     }
 
     updateSpriteAnim();
-    syncCamera(dt);
 }
 
 void Player::render() 
@@ -193,7 +213,7 @@ void Player::autoEscape()
     for(auto& corner : corners)
     {
         distance = glm::length(getPosition() - corner);
-        if(distance > 0.1f && distance < (collide_box_->getSize().x + collide_box_->getSize().y) * 0.7)
+        if(distance > 0.1f && distance < (collide_box_->getScaledSize().x + collide_box_->getScaledSize().y) * 0.7)
         {
             setVelocity(glm::normalize(getPosition() - corner) * getMaxSpeed());
             break;
@@ -203,7 +223,7 @@ void Player::autoEscape()
     {
         decide_timer->setInterval(decide_interval * 3.0f);
     }
-    else if(distance > (collide_box_->getSize().x + collide_box_->getSize().y) * 10.0f)
+    else if(distance > (collide_box_->getScaledSize().x + collide_box_->getScaledSize().y) * 10.0f)
     {
         decide_timer->setInterval(decide_interval);
     }
@@ -250,8 +270,3 @@ bool Player::checkEnemyInScene(Actor *enemy)
     return std::find(scene_objects.begin(), scene_objects.end(), enemy) != scene_objects.end();
 }
 
-void Player::syncCamera(float dt)
-{
-    auto camera_pos = getPosition() - game_.getScreenSize() * 0.5f; // 不需要+anim_move_->getSize() * 0.5f，玩家默认中心锚点
-    game_.getCurrentScene()->cameraFollow(dt, camera_pos);
-}

@@ -16,8 +16,8 @@ void AffilateBar::render()
     if(percentage_ > 0.7f) color = color_high_;
     else if(percentage_ > 0.4f) color = color_middle_;
     else color = color_low_;
-    game_.renderFillRect(render_pos, {size_.x * percentage_, size_.y}, color);
-    game_.renderBoundary(render_pos, render_pos + size_, 3);
+    game_.renderFillRect(render_pos, {getScaledSize().x * percentage_, getScaledSize().y}, color);
+    game_.renderBoundary(render_pos, render_pos + getScaledSize(), 3);
 }
 
 void AffilateBar::setPercentage(float val)

@@ -22,7 +22,7 @@ protected:
 
 public:
     Sprite(ObjectScreen* parent, ResID tex_id, AchorMode mode = AchorMode::CENTER, 
-        const glm::vec2& scale = glm::vec2(1),  const glm::vec2& relative_offset = glm::vec2(0));
+        const glm::vec2& scale = glm::vec2(1));
 
     virtual void update(float) override;
     virtual void render() override;

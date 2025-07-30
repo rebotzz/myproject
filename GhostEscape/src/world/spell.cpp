@@ -8,7 +8,7 @@ Spell::Spell(Object *parent, float damage, const glm::vec2& target_position, Col
 {
     setPosition(target_position);
     anim_ = new SpriteAnim(this, tex_id, frame_count, mode, scale, frame_interval, false);
-    collide_box_ = new CollideBox(this, shape, anim_->getSize(), glm::vec2(0), mode);
+    collide_box_ = new CollideBox(this, shape, anim_->getScaledSize(), glm::vec2(0), mode);
     collide_box_->setHitLayer(CollideLayer::Enemy); // 法术默认攻击敌人对象
     collide_box_->setOnCollideCallback([this](CollideBox * target_box)
     {
@@ -46,4 +46,10 @@ void Spell::checkAndRemove()
     {
         setCanRemove(true);
     }
+}
+
+void Spell::setActive(bool flag)
+{
+    ObjectWorld::setActive(flag);
+    collide_box_->setActive(flag);
 }

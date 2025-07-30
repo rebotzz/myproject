@@ -37,7 +37,7 @@ public:
     // setters and getters
     void setParent(Object* parent) { parent_ = parent; }
     Object* getParent() const { return parent_; }
-    void setActive(bool flag) { is_active_ = flag; }
+    virtual void setActive(bool flag) { is_active_ = flag; }
     bool getIsActive() const { return is_active_; }
     void setObjectType(ObjectType type) { type_ = type; }
     ObjectType getObjectType() const { return type_; }

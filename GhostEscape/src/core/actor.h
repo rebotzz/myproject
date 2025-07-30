@@ -18,6 +18,7 @@ protected:
     Status* status_ = nullptr;              // 状态
     AffilateBar* health_bar_ = nullptr;     // 血条
     MoveControl* move_control_ = nullptr;   // 移动控制
+    bool is_sync_camera = false;
 
 public:
     Actor() = default;
@@ -26,6 +27,13 @@ public:
 
     virtual void update(float dt) override;
     virtual void takeDamage(float damage) { status_->takeDamage(damage); };
+    virtual void render() override 
+    {
+        // debug:
+        ObjectWorld::render();
+        game_.renderRect(SDL_FRect{render_position_.x, render_position_.y, 4,4}, {1,1,0,1});
+    }
+
 
     // getters and setters
     float getMaxSpeed() const { return max_speed_; }
@@ -36,13 +44,13 @@ public:
     void setHealthBar(AffilateBar* val) { health_bar_ = val; }
     void setVelocity(const glm::vec2& val) { velocity_ = val; }
     const glm::vec2& getVelocity() const { return velocity_; }
-
     void removeControl();
+    void setEnableSyncCamera(bool flag) { is_sync_camera = flag; }
 
 protected:
     virtual void move(float dt);
     void updateHealthBar();
-
+    void syncCamera(float dt);
 };
 
 

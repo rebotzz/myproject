@@ -1,5 +1,6 @@
 #include "sprite_anim.h"
 #include "../core/object_screen.h"
+#include "../core/object_world.h"
 
 
 SpriteAnim::SpriteAnim(ObjectScreen *parent, ResID tex_id, int frame_count, AchorMode mode, const glm::vec2 &scale, 
@@ -52,6 +53,11 @@ void SpriteAnim::render()
 {
     assert(tex_ != nullptr && parent_ != nullptr);
     if(is_finished_ || !is_showing_ || frame_idx_ >= total_frame_count_) return;
-    SDL_FRect dst_rect = { render_position_.x, render_position_.y, size_.x, size_.y};
+    SDL_FRect dst_rect = { render_position_.x, render_position_.y, getScaledSize().x, getScaledSize().y};
     game_.renderTexture(frames_[frame_idx_].tex_, &frames_[frame_idx_].src_rect_, &dst_rect, angle_, is_flip_);
+
+    // debug:
+    game_.renderRect(SDL_FRect{render_position_.x, render_position_.y, 4,4}, {1,0,0,1});
+    game_.renderRect(SDL_FRect{render_position_.x, render_position_.y, getScaledSize().x, getScaledSize().y}, {1,0,0,1});
+
 }

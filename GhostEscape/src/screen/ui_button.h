@@ -32,7 +32,7 @@ public:
     // setters andd getters
     void setOnClickCallback(const std::function<void()>& callback) { on_clicked_ = callback; }
     void setSize(const glm::vec2& size);
-    const glm::vec2& getSize() { return sprite_idle_->getSize(); }
+    glm::vec2 getSize() { return sprite_idle_->getScaledSize(); }
 
 protected:
     void updateButton();

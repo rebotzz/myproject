@@ -41,16 +41,13 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     weapon_->setSoundID(ResID::Sound_XsLaser);
     weapon_->setActive(false);
     weapon_->setAutoAttack(true);
-    static SpellBullet* spell_bullet = nullptr;
-    if(!spell_bullet)
-    {
-        // todo: 这个原型怎么删除呢？如果每个敌人都生成一个原型，太浪费了
-        spell_bullet = new SpellBullet(nullptr, 10.f, world_position_, ResID::Tex_Laser3, 1, glm::vec2(0.5f));
-        spell_bullet->setMaxSpeed(500.f);
-        spell_bullet->setDirection(glm::vec2(1,0));
-        spell_bullet->setHitCollideLayer(CollideLayer::Player);
-        spell_bullet->setActive(false);
-    }
+    SpellBullet* spell_bullet = nullptr;
+    // 如果每个敌人都生成一个原型，太浪费了. 如果static又不好删除,之后改为工厂模式
+    spell_bullet = new SpellBullet(this, 10.f, world_position_, ResID::Tex_Laser3, 1, glm::vec2(0.5f));
+    spell_bullet->setMaxSpeed(500.f);
+    spell_bullet->setDirection(glm::vec2(1,0));
+    spell_bullet->setHitCollideLayer(CollideLayer::Player);
+    spell_bullet->setActive(false);
     weapon_->setSpellProtype(spell_bullet);
     weapon_->setAutoAttackCallback([&]()
     {

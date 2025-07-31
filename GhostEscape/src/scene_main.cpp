@@ -96,8 +96,8 @@ void SceneMain::updateWhenGameOver(float dt)
         {
             button_pause_->setActive(false);
             setPauseTime(true);
-            button_restart_->setSize(button_restart_->getSize() * 3.0f);
-            button_back_->setSize(button_back_->getSize() * 3.0f);
+            button_restart_->setSize(button_restart_->getSize() * 2.0f);
+            button_back_->setSize(button_back_->getSize() * 2.0f);
             button_restart_->setRenderPosition(game_.getScreenSize() / 2.0f - glm::vec2(button_back_->getSize().x * 0.7f, 0.0f));
             button_back_->setRenderPosition(game_.getScreenSize() / 2.0f + glm::vec2(button_back_->getSize().x * 0.7f, 0.0f));
         }

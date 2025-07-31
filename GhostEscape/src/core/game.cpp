@@ -1,6 +1,7 @@
 #include "game.h"
 #include "../scene_main.h"
 #include "../scene_tittle.h"
+#include "../affiliate/sprite.h"
 #include <fstream>
 #include <memory>
 
@@ -139,6 +140,44 @@ void Game::renderTTF_Text(TTF_Text *text, glm::vec2 pos, SDL_FColor color)
     setRenderColor(color);
     TTF_DrawRendererText(text, pos.x, pos.y);
     setRenderColor({1.0f, 1.0f, 1.0f, 1.0f});
+}
+
+void Game::renderTexture(Texture texture, const glm::vec2 &position, const glm::vec2 &size, const glm::vec2 &mask)
+{
+    SDL_FRect src_rect = {
+        texture.src_rect.x,
+        texture.src_rect.y + texture.src_rect.h * (1 - mask.y),
+        texture.src_rect.w * mask.x,
+        texture.src_rect.h * mask.y
+    };
+    SDL_FRect dst_rect = {
+        position.x,
+        position.y + size.y * (1 - mask.y),
+        size.x * mask.x,
+        size.y * mask.y
+    };
+    SDL_RenderTextureRotated(renderer_, texture.texture, &src_rect, &dst_rect, texture.angle, nullptr, texture.is_flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+}
+
+void Game::renderTexture(SDL_Texture* tex, SDL_FRect *src_rect, SDL_FRect *dst_rect, const glm::vec2 &mask)
+{
+    // renderTexture(tex, src_rect, dst_rect, 0.0, false, mask);
+    SDL_RenderTexture(renderer_, tex, src_rect, dst_rect);
+}
+
+void Game::renderTexture(SDL_Texture *tex, SDL_FRect *src_rect, SDL_FRect *dst_rect, double angle, bool flip, const glm::vec2 &mask)
+{
+    SDL_FRect masked_src_rect = {
+        0.0f, 
+        src_rect->y * (1.0f - mask.y), 
+        src_rect->w * mask.x, 
+        src_rect->h * mask.y};
+    SDL_FRect masked_dst_rect = {
+        dst_rect->x, 
+        dst_rect->y * (1.0f - mask.y), 
+        dst_rect->w * mask.x, 
+        dst_rect->h * mask.y};
+    SDL_RenderTextureRotated(renderer_, tex, &masked_src_rect, &masked_dst_rect, angle, nullptr, flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
 }
 
 void Game::init(const std::string &tittle, int window_w, int window_h, int fps)

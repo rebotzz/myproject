@@ -36,6 +36,7 @@ void UICursor::update(float dt)
     {
         current_cursor_->setActive(true);
         old_cursor->setActive(false);
-        current_cursor_->setRenderPosition(old_cursor->getRenderPosition());
+        // TODO
+        // current_cursor_->setRenderPosition(old_cursor->getRenderPosition());
     }
 }

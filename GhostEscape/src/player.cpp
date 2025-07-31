@@ -17,12 +17,12 @@ Player::Player(Scene* parent, const glm::vec2& position):Actor(parent)
     setPosition(position);
     setObjectType(ObjectType::Player);
     // 初始化动画
-    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostMove, 8, AchorMode::CENTER, glm::vec2(1.5));
-    anim_idle_ = new SpriteAnim(this, ResID::Tex_GhostIdle, 8, AchorMode::CENTER, glm::vec2(1.5));
-    anim_idle_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));  
-    anim_move_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));    
+    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostMove, 8, AchorMode::CENTER, glm::vec2(2.0));
+    anim_idle_ = new SpriteAnim(this, ResID::Tex_GhostIdle, 8, AchorMode::CENTER, glm::vec2(2.0));
+    // anim_idle_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));     // TODO
+    // anim_move_->setRenderPosition(game_.getCurrentScene()->worldToScreen(position));    
     // 初始化碰撞箱体
-    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getScaledSize() * 0.5f);
+    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getSize() * 0.5f);
     collide_box_->setHurtLayer(CollideLayer::Player);
     collide_box_->setOnCollideCallback([this](CollideBox * target_box)
     {
@@ -43,15 +43,15 @@ Player::Player(Scene* parent, const glm::vec2& position):Actor(parent)
     weapon_thunder_ = new Weapon(this, 50.0f, 1.5f, 100.f);
     weapon_thunder_->setSoundID(ResID::Sound_BigThunder);
     auto spell_thunder = new Spell(game_.getCurrentScene(), weapon_thunder_->getDamage(), position, CollideShape::Circle, 
-        ResID::Tex_ThunderstrikeWBlur, 13, glm::vec2(1.8f));
+        ResID::Tex_ThunderstrikeWBlur, 13, glm::vec2(3.8f));
     spell_thunder->getCollideBox()->setHitLayer(CollideLayer::Enemy);
     spell_thunder->setActive(false);
     weapon_thunder_->setSpellProtype(spell_thunder);
 
-    weapon_fire_ = new Weapon(this, 100.0f, 2.0f, 150.f);
+    weapon_fire_ = new Weapon(this, 100.0f, 2.0f, 200.f);
     weapon_fire_->setSoundID(ResID::Sound_FireMagic);
     auto spell_fire = new Spell(game_.getCurrentScene(), weapon_fire_->getDamage(), position, CollideShape::Circle, 
-        ResID::Tex_FireExplosion, 18, glm::vec2(2.5));
+        ResID::Tex_FireExplosion, 18, glm::vec2(7.5));
     spell_fire->getCollideBox()->setHitLayer(CollideLayer::Enemy);
     spell_fire->setActive(false);
     weapon_fire_->setSpellProtype(spell_fire);
@@ -166,26 +166,27 @@ void Player::updateSpriteAnim()
         anim_move_->setActive(false);
         anim_idle_->setActive(true);
         anim_move_->syncFrameTime(anim_idle_);
-        anim_move_->setRenderPosition(anim_idle_->getRenderPosition());
+        // anim_move_->setRenderPosition(anim_idle_->getRenderPosition());  // todo
     }
     else
     {
         anim_move_->setActive(true);
         anim_idle_->setActive(false);
         anim_idle_->syncFrameTime(anim_move_);
-        anim_idle_->setRenderPosition(anim_move_->getRenderPosition());
+        // anim_idle_->setRenderPosition(anim_move_->getRenderPosition());
     }
 
-    if(status_->getIsInvincible() && (static_cast<int>(status_->getInvincibleProgress() * 10.0f) % 3 < 1))
-    {
-        anim_idle_->setShowing(!anim_idle_->getShowing());
-        anim_move_->setShowing(!anim_move_->getShowing());
-    }
-    if(!status_->getIsInvincible())
-    {
-        anim_idle_->setShowing(true);
-        anim_move_->setShowing(true);
-    }
+    // TODO
+    // if(status_->getIsInvincible() && (static_cast<int>(status_->getInvincibleProgress() * 10.0f) % 3 < 1))
+    // {
+    //     anim_idle_->setActive(!anim_idle_->getIsActive());
+    //     anim_move_->setActive(!anim_move_->getIsActive());
+    // }
+    // if(!status_->getIsInvincible())
+    // {
+    //     anim_idle_->setActive(true);
+    //     anim_move_->setActive(true);
+    // }
 
 }
 
@@ -213,7 +214,7 @@ void Player::autoEscape()
     for(auto& corner : corners)
     {
         distance = glm::length(getPosition() - corner);
-        if(distance > 0.1f && distance < (collide_box_->getScaledSize().x + collide_box_->getScaledSize().y) * 0.7)
+        if(distance > 0.1f && distance < (collide_box_->getSize().x + collide_box_->getSize().y) * 0.7)
         {
             setVelocity(glm::normalize(getPosition() - corner) * getMaxSpeed());
             break;
@@ -223,7 +224,7 @@ void Player::autoEscape()
     {
         decide_timer->setInterval(decide_interval * 3.0f);
     }
-    else if(distance > (collide_box_->getScaledSize().x + collide_box_->getScaledSize().y) * 10.0f)
+    else if(distance > (collide_box_->getSize().x + collide_box_->getSize().y) * 10.0f)
     {
         decide_timer->setInterval(decide_interval);
     }

@@ -15,7 +15,7 @@ void Effect::update(float dt)
 {
     ObjectWorld::update(dt);
 
-    if(anim_->getIsFinished())
+    if(anim_->getFinish())
     {
         setCanRemove(true);
         if(on_finished_) on_finished_();

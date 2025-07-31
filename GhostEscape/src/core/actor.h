@@ -27,13 +27,6 @@ public:
 
     virtual void update(float dt) override;
     virtual void takeDamage(float damage) { status_->takeDamage(damage); };
-    virtual void render() override 
-    {
-        // debug:
-        ObjectWorld::render();
-        game_.renderRect(SDL_FRect{render_position_.x, render_position_.y, 4,4}, {1,1,0,1});
-    }
-
 
     // getters and setters
     float getMaxSpeed() const { return max_speed_; }

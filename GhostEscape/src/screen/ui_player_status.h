@@ -22,7 +22,7 @@ public:
     ~UIPlayerBar() = default;
 
     // setters and getters
-    void setPercentage(const glm::vec2& percentage) { sprite_bar_fg_->setRenderPercentage(percentage); }
+    void setPercentage(const glm::vec2& percentage) { sprite_bar_fg_->setPercentage(percentage); }
 };
 
 // 作为玩家状态栏的组件
@@ -37,10 +37,8 @@ public:
     UIPlayerSkillBar(Object* parent, Weapon* weapon, const glm::vec2& position, ResID tex_icon, const glm::vec2& icon_scale = glm::vec2(1.0f));
     ~UIPlayerSkillBar() = default;
 
-    void update(float) override;
-
     // setters and getters
-    void setPercentage(const glm::vec2& percentage) { sprite_icon_fg_->setRenderPercentage(percentage); }
+    void updateBar();
     void setWeapon(Weapon* weapon) { weapon_ = weapon; }
 };
 

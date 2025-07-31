@@ -36,7 +36,7 @@ bool QuadTreeNode::hasIntersection(const SDL_FRect &rect, const CollideBox *box)
     if(CollideShape::Rectangle == box->getCollideShape())
     {
         auto top_left = box->getPosition() + box->getOffset();
-        auto size = box->getScaledSize();
+        auto size = box->getSize();
         SDL_FRect rect_box = {top_left.x, top_left.y, size.x, size.y};
         if(SDL_HasRectIntersectionFloat(&rect_box, &rect))
             intersect = true;
@@ -44,7 +44,7 @@ bool QuadTreeNode::hasIntersection(const SDL_FRect &rect, const CollideBox *box)
     else if(CollideShape::Circle == box->getCollideShape())
     {
         if(CollideBox::hasIntersectionRectAndCircle(glm::vec2(rect.x, rect.y), {rect.w, rect.h}, 
-        box->getPosition(), box->getScaledSize().x))
+        box->getPosition(), box->getSize().x))
         {
             intersect = true;
         }
@@ -356,7 +356,7 @@ void QuadTree::_render(QuadTreeNode* node)
     for(auto box : node->colliders_)
     {
         auto pos_box = Game::getInstance().getCurrentScene()->worldToScreen(box->getPosition());
-        SDL_FRect box_rect = {pos_box.x, pos_box.y, box->getScaledSize().x, box->getScaledSize().y};
+        SDL_FRect box_rect = {pos_box.x, pos_box.y, box->getSize().x, box->getSize().y};
         Game::getInstance().renderRect(box_rect, box_color);
     }
     for(int i = 0; i < sizeof(node->next_) / sizeof(QuadTreeNode*); ++i)

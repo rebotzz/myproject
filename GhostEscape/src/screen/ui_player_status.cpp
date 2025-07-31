@@ -17,11 +17,14 @@ UIPlayerBar::UIPlayerBar(Object *parent, const glm::vec2 &position, ResID tex_ic
     }
     setObjectType(ObjectType::Screen);
     setRenderPosition(position);
-    sprite_icon_ = new Sprite(this, tex_icon, AchorMode::CENTER_LEFT, icon_scale);
+    float icon_w = 0;
+    SDL_GetTextureSize(game_.getAssetStore().getTexture(tex_icon), &icon_w, nullptr);
+    float bar_offset_x = icon_w * icon_scale.x * 0.7f;
     sprite_bar_bg_ = new Sprite(this, tex_bar_bg, AchorMode::CENTER_LEFT, bar_scale);
-    sprite_bar_bg_->setRelativeOffset(glm::vec2(sprite_icon_->getScaledSize().x * 0.7f, 0.0f));
+    sprite_bar_bg_->setRelativeOffset(glm::vec2(bar_offset_x, 0.0f));
     sprite_bar_fg_ = new Sprite(this, tex_bar_fg, AchorMode::CENTER_LEFT, bar_scale);
-    sprite_bar_fg_->setRelativeOffset(glm::vec2(sprite_icon_->getScaledSize().x * 0.7f, 0.0f));
+    sprite_bar_fg_->setRelativeOffset(glm::vec2(bar_offset_x, 0.0f));
+    sprite_icon_ = new Sprite(this, tex_icon, AchorMode::CENTER_LEFT, icon_scale);
 
 }
 
@@ -39,13 +42,16 @@ UIPlayerSkillBar::UIPlayerSkillBar(Object *parent, Weapon* weapon, const glm::ve
     sprite_icon_bg_ = new Sprite(this, tex_icon, AchorMode::CENTER_LEFT, icon_scale);
     sprite_icon_fg_ = new Sprite(this, tex_icon, AchorMode::CENTER_LEFT, icon_scale);
     sprite_icon_bg_->setTextureAlpha(0.5f);
+
+    // debug:如果在update中更新进度条，但是(觉得没必要)没有调用基类的update，那么会导致组件无法从缓冲区添加挂载
 }
 
-void UIPlayerSkillBar::update(float)
+void UIPlayerSkillBar::updateBar()
 {
-    // if(!weapon_) return;
-    setPercentage(glm::vec2(1.0f, weapon_->getAttackCDPercentage())); 
+    sprite_icon_fg_->setPercentage({1, weapon_->getAttackCDPercentage()});
 }
+
+
 
 UIPlayerStatus::UIPlayerStatus(Scene* parent, Weapon* weapon1, Weapon* weapon2):ObjectScreen(parent)
 {
@@ -80,6 +86,8 @@ void UIPlayerStatus::updateBar()
     auto status = player->getStatus();
     ui_hp_bar_->setPercentage(glm::vec2(status->getHP() / status->getMaxHP(), 1.0f));
     ui_mana_bar_->setPercentage(glm::vec2(status->getMana() / status->getMaxMana(), 1.0f));
+    ui_skill_bar1_->updateBar();    
+    ui_skill_bar2_->updateBar();
 }
 
 void UIPlayerStatus::updateScore()

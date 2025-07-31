@@ -9,32 +9,24 @@ SpriteAnim::SpriteAnim(ObjectScreen *parent, ResID tex_id, int frame_count, Acho
     ,total_frame_count_(frame_count)
     ,frame_interval_(frame_interval)
     ,is_loop_(is_loop)
-    ,tex_id_(tex_id)
 {
     // 计算每一帧的尺寸,原图和绘制尺寸
-    glm::vec2 frame_size = {tex_size_.x / static_cast<float>(frame_count), tex_size_.y};
-    setSize(frame_size * scale);
-    for(int i = 0; i < frame_count; ++i)
-    {
-        frames_.emplace_back(tex_, SDL_FRect{i * frame_size.x, 0, 
-            frame_size.x, tex_size_.y});
-    }
-    // render_position_ = parent->getRenderPosition() + offset_;
+    texture_.src_rect.w /= static_cast<float>(frame_count);
+    setSize(glm::vec2(texture_.src_rect.w, texture_.src_rect.h) * scale);
 }
 
 void SpriteAnim::syncFrameTime(SpriteAnim *sprite_anim)
 {
     frame_idx_ = sprite_anim->frame_idx_;
     timer_ = sprite_anim->timer_;
-    is_flip_ = sprite_anim->is_flip_;
+    texture_.is_flip = sprite_anim->texture_.is_flip;
 }
 
 
 
 void SpriteAnim::update(float dt)
 {
-    if(is_finished_) return;
-    Sprite::update(dt); 
+    if(is_finish_) return;
 
     timer_ += dt;
     if(timer_ >= frame_interval_)
@@ -44,20 +36,15 @@ void SpriteAnim::update(float dt)
         if(frame_idx_ >= total_frame_count_)
         {
             if(is_loop_) frame_idx_ = 0;
-            else is_finished_ = true;
+            else is_finish_ = true;
         }
     }
+
+    texture_.src_rect.x = texture_.src_rect.w * frame_idx_;
 }
 
-void SpriteAnim::render()
+void SpriteAnim::reset()
 {
-    assert(tex_ != nullptr && parent_ != nullptr);
-    if(is_finished_ || !is_showing_ || frame_idx_ >= total_frame_count_) return;
-    SDL_FRect dst_rect = { render_position_.x, render_position_.y, getScaledSize().x, getScaledSize().y};
-    game_.renderTexture(frames_[frame_idx_].tex_, &frames_[frame_idx_].src_rect_, &dst_rect, angle_, is_flip_);
-
-    // debug:
-    game_.renderRect(SDL_FRect{render_position_.x, render_position_.y, 4,4}, {1,0,0,1});
-    game_.renderRect(SDL_FRect{render_position_.x, render_position_.y, getScaledSize().x, getScaledSize().y}, {1,0,0,1});
-
+    timer_ = 0;
+    frame_idx_ = 0;
 }

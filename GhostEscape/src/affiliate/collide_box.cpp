@@ -32,16 +32,16 @@ void CollideBox::render()
 {
 #ifdef DEBUG_MODE
     auto render_pos = game_.getCurrentScene()->worldToScreen(position_);
-    SDL_FRect rect = {render_pos.x, render_pos.y, getScaledSize().x, getScaledSize().y};
+    SDL_FRect rect = {render_pos.x, render_pos.y, getSize().x, getSize().y};
     if(CollideShape::Circle == shape_)
     {
         static SDL_Texture* tex_circle = game_.getAssetStore().getTexture(ResID::Tex_Circle);
         SDL_SetTextureAlphaModFloat(tex_circle, 0.5f);
-        game_.renderTexture(ResID::Tex_Circle, nullptr, &rect);
+        game_.renderTexture(tex_circle, nullptr, &rect);
     }
     else if(CollideShape::Rectangle == shape_)
     {
-        game_.renderFillRect(render_pos, getScaledSize(), {0.f, 1.f, 0.f, 0.4f});
+        game_.renderFillRect(render_pos, getSize(), {0.f, 1.f, 0.f, 0.4f});
     }
 #endif
 }
@@ -54,14 +54,14 @@ bool CollideBox::checkCollision(CollideBox *target)
     if(shape_ == CollideShape::Circle && target->getCollideShape() == CollideShape::Circle)
     {
         float distance = glm::length(position_ - target->getPosition());
-        if(distance <= (getScaledSize().x / 2 + target->getScaledSize().x / 2)) 
+        if(distance <= (getSize().x / 2 + target->getSize().x / 2)) 
             is_collide = true;
     }
     else if(shape_ == CollideShape::Rectangle && target->getCollideShape() == CollideShape::Rectangle)
     {
-        SDL_FRect rect_1 = { position_.x, position_.y, position_.x + getScaledSize().x, position_.y + getScaledSize().y };
+        SDL_FRect rect_1 = { position_.x, position_.y, position_.x + getSize().x, position_.y + getSize().y };
         SDL_FRect rect_2 = { target->getPosition().x,  target->getPosition().y, 
-             target->getPosition().x + target->getScaledSize().x,  target->getPosition().y + target->getScaledSize().y };
+             target->getPosition().x + target->getSize().x,  target->getPosition().y + target->getSize().y };
         if(SDL_HasRectIntersectionFloat(&rect_1, &rect_2)) 
             is_collide = true;
     }
@@ -73,16 +73,16 @@ bool CollideBox::checkCollision(CollideBox *target)
         if(CollideShape::Rectangle == shape_)
         {
             rect_pos = position_ + offset_;
-            rect_size = getScaledSize();
+            rect_size = getSize();
             circle_pos = target->getPosition();
-            circle_size = target->getScaledSize().x;
+            circle_size = target->getSize().x;
         }
         else
         {
             rect_pos = target->getPosition() + target->getOffset();
-            rect_size = target->getScaledSize();
+            rect_size = target->getSize();
             circle_pos = position_;
-            circle_size = getScaledSize().x;
+            circle_size = getSize().x;
         }
         if(hasIntersectionRectAndCircle(rect_pos, rect_size, circle_pos, circle_size))
             is_collide = true;

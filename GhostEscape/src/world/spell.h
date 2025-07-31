@@ -14,6 +14,10 @@ protected:
     SpriteAnim* anim_ = nullptr;
     float damage_ = 20.0f;
 
+    // 方便原型模式clone
+    ResID tex_id_;      
+    glm::vec2 scale_;
+
 public:
     // 父节点是具体场景
     Spell(Object* parent, float damage, const glm::vec2& target_position, CollideShape shape, ResID tex_id, 

@@ -19,13 +19,12 @@ public:
         AchorMode mode = AchorMode::CENTER);
     static HUDText* createAndAddHUDTextChild(Object* parent, const glm::vec2& position, const std::string& text, 
         int font_scale, ResID tex_bg, AchorMode mode = AchorMode::CENTER);
-    
-    virtual void render() override;
-    
+
     // setters and getters
     void setText(const std::string& text);
     void setMargin(const glm::vec2 margin_scale);
     void setSpriteBackground(ResID tex_id);
+
 
 protected:
     void updateBackgroundSpriteSize();

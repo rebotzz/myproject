@@ -16,6 +16,7 @@
 
 class Scene;
 class CollideMgr;
+struct Texture;
 
 class Game : public Singleton<Game>
 {
@@ -63,12 +64,10 @@ public:
     
     // 渲染函数
     void renderTTF_Text(TTF_Text* text, glm::vec2 pos, SDL_FColor color = {1.0f, 1.0f, 1.0f, 1.0f});
-    void renderTexture(ResID res_id, SDL_FRect* src_rect, SDL_FRect* dst_rect) 
-        { SDL_RenderTexture(renderer_, asset_store_.getTexture(res_id), src_rect, dst_rect); }
-    void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect) 
-        { SDL_RenderTexture(renderer_, tex, src_rect, dst_rect); }
-    void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect, double angle, bool flip) 
-        { SDL_RenderTextureRotated(renderer_, tex, src_rect, dst_rect, angle, nullptr, flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE); }
+    void renderTexture(Texture texture, const glm::vec2 &position, const glm::vec2 &size, const glm::vec2 &mask = glm::vec2(1,1));
+    void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect, const glm::vec2& mask = glm::vec2(1,1));
+    void renderTexture(SDL_Texture* tex, SDL_FRect* src_rect, SDL_FRect* dst_rect, double angle, bool flip, 
+        const glm::vec2& mask = glm::vec2(1,1));
     void renderGrid(glm::vec2 start, glm::vec2 end, float grid_w, float grid_h, SDL_FColor color = {1,1,1,1});
     void renderBoundary(glm::vec2 start, glm::vec2 end, int width, SDL_FColor color = {1,1,1,1});
     void renderRect(const SDL_FRect& rect, SDL_FColor color = {1,1,1,1});

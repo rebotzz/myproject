@@ -15,13 +15,14 @@ SpellBullet::SpellBullet(Object *parent, float damage, const glm::vec2 &init_pos
         setCanRemove(true); // debug:这里应该是移除，而不仅仅是不激活
     });
     collide_box_->setHitLayer(CollideLayer::Player);
-    collide_box_->setSize(collide_box_->getScaledSize() * 0.5f);
+    collide_box_->setSize(collide_box_->getSize() * 0.5f);
 }
+
 
 SpellBullet *SpellBullet::clone() const
 {
-    auto spell_bullet = new SpellBullet(game_.getCurrentScene(), damage_, getPosition(), anim_->getTexID(),
-     anim_->getFrameCount(), anim_->getScale(), anim_->getFrameInterval());
+    auto spell_bullet = new SpellBullet(game_.getCurrentScene(), damage_, getPosition(), 
+        tex_id_, anim_->getFrameCount(), scale_, anim_->getFrameInterval());
     spell_bullet->setMaxSpeed(max_speed_);
     spell_bullet->setDirection(direction_);
     return spell_bullet;
@@ -42,7 +43,7 @@ void SpellBullet::move(float dt)
 void SpellBullet::checkAndRemove()
 {
     // 超出屏幕失效
-    if(dynamic_cast<Scene*>(parent_)->checkBeyoundScreen(getPosition(), anim_->getScaledSize()))
+    if(dynamic_cast<Scene*>(parent_)->checkBeyoundScreen(getPosition(), anim_->getSize()))
     {
         setCanRemove(true);
     }

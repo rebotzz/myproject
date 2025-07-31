@@ -29,7 +29,7 @@ bool UIButton::handleEvent(const SDL_Event& event)
 { 
     if(ObjectScreen::handleEvent(event)) return true;
 
-    bool is_on_button = game_.isMouseInRect(sprite_idle_->getRenderPosition(), sprite_idle_->getRenderPosition() + sprite_idle_->getScaledSize());
+    bool is_on_button = game_.isMouseInRect(sprite_idle_->getLeftTopPosition(), sprite_idle_->getLeftTopPosition() + sprite_idle_->getSize());
     glm::vec2 mouse_pos;
     bool is_mouse_left_down = game_.getMouseState(mouse_pos) & SDL_BUTTON_LMASK;
     switch(event.type)
@@ -83,7 +83,8 @@ void UIButton::updateButton()
     {
         old_sprite->setActive(false);
         current_sprite_->setActive(true);
-        current_sprite_->setRenderPosition(old_sprite->getRenderPosition());
+        // TODO
+        // current_sprite_->setRenderPosition(old_sprite->getRenderPosition());
 
         if(current_sprite_ != sprite_clicked_ && button_status_ != ButtonStatus::CLICKED)
             game_.playSound(ResID::Sound_UIButton12);

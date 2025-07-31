@@ -1,42 +1,36 @@
 #include "sprite.h"
 #include "../core/object_screen.h"
 
-Sprite::Sprite(ObjectScreen *parent, ResID tex_id, AchorMode mode, 
-    const glm::vec2& scale)
-    :ObjectAffiliate(parent, mode, scale)
+Texture::Texture(ResID id)
 {
-    tex_ = Game::getInstance().getAssetStore().getTexture(tex_id);
-    SDL_GetTextureSize(tex_, &tex_size_.x, &tex_size_.y);
-    setSize(tex_size_);
-    // render_position_ = parent->getRenderPosition() + offset_;  
+    texture = Game::getInstance().getAssetStore().getTexture(id);
+    SDL_GetTextureSize(texture, &src_rect.w, &src_rect.h);
 }
 
-void  Sprite::update(float)
+Sprite::Sprite(ObjectScreen *parent, ResID tex_id, AchorMode mode, 
+    const glm::vec2& scale)
+    :ObjectAffiliate(parent, mode)
+    ,texture_(tex_id)
 {
-    // 更新渲染坐标
-    render_position_ = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;    
+    setSize(glm::vec2(texture_.src_rect.w, texture_.src_rect.h) * scale);
 }
 
 void Sprite::render()
 {
-    assert(tex_ != nullptr && parent_ != nullptr);
-    if(!is_showing_) return;
-    SDL_FRect src_rect = {0.0f, 
-        tex_size_.y * (1.0f - render_percentage_.y), 
-        tex_size_.x * render_percentage_.x, 
-        tex_size_.y * render_percentage_.y};
-    SDL_FRect dst_rect = {render_position_.x, 
-        render_position_.y + getScaledSize().y * (1.0f - render_percentage_.y), 
-        getScaledSize().x * render_percentage_.x, 
-        getScaledSize().y * render_percentage_.y};
-    SDL_SetTextureAlphaModFloat(tex_, alpha_);
-    game_.renderTexture(tex_, &src_rect, &dst_rect, angle_, is_flip_);
-    SDL_SetTextureAlphaModFloat(tex_, 1.0f);
+    SDL_SetTextureAlphaModFloat(texture_.texture, alpha_);
+    auto pos = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
+    game_.renderTexture(texture_, pos, getSize(), percentage_);
+    SDL_SetTextureAlphaModFloat(texture_.texture, 1.0f);
 }
 
-void Sprite::setSize(const glm::vec2& size)
+void Sprite::setTexture(const Texture &texture)
 {
-    ObjectAffiliate::setSize(size);
-    // 更新渲染坐标
-    render_position_ = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;    
+    texture_ = texture;
+    size_ = glm::vec2(texture.src_rect.w, texture.src_rect.h);
+}
+
+glm::vec2 Sprite::getLeftTopPosition() const
+{
+    auto pos = dynamic_cast<ObjectScreen*>(parent_)->getRenderPosition() + offset_;
+    return pos;
 }

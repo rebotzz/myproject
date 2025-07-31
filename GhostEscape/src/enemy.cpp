@@ -15,15 +15,15 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     setMaxSpeed(130.f);
     setObjectType(ObjectType::Enemy);
     // 初始化动画
-    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostSheet, 4, AchorMode::CENTER, glm::vec2(1.5));
-    anim_hurt_ = new SpriteAnim(this, ResID::Tex_GhostHurtSheet, 4, AchorMode::CENTER, glm::vec2(1.5));
-    anim_dead_ = new SpriteAnim(this, ResID::Tex_GhostDeadSheet, 8, AchorMode::CENTER, glm::vec2(1.5));
+    anim_move_ = new SpriteAnim(this, ResID::Tex_GhostSheet, 4, AchorMode::CENTER, glm::vec2(2.0));
+    anim_hurt_ = new SpriteAnim(this, ResID::Tex_GhostHurtSheet, 4, AchorMode::CENTER, glm::vec2(2.0));
+    anim_dead_ = new SpriteAnim(this, ResID::Tex_GhostDeadSheet, 8, AchorMode::CENTER, glm::vec2(2.0));
     anim_dead_->setLoop(false);
     anim_hurt_->setActive(false);
     anim_dead_->setActive(false);
     current_anim_ = anim_move_;
     // 碰撞盒子         
-    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getScaledSize() * 0.8f);  
+    collide_box_ = new CollideBox(this, CollideShape::Circle, anim_move_->getSize() * 0.8f);  
     collide_box_->setHitLayer(CollideLayer::Player);
     collide_box_->setHurtLayer(CollideLayer::Enemy);
     collide_box_->setOnCollideCallback([this](CollideBox * target_box)
@@ -60,7 +60,7 @@ Enemy::Enemy(Object *parent, const glm::vec2 &position):Actor(parent)
     });
 
     // 血条  最后添加，最上层最后绘制
-    health_bar_ = new AffilateBar(this, glm::vec2(anim_move_->getScaledSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getScaledSize().y / 2.0f));
+    health_bar_ = new AffilateBar(this, glm::vec2(anim_move_->getSize().x * 0.8f, 10.0f), glm::vec2(0.0, anim_move_->getSize().y / 2.0f));
 }
 
 Enemy::~Enemy()
@@ -110,7 +110,8 @@ void Enemy::updateState()
             old_anim->setActive(false);
             current_anim_->restart();
             current_anim_->setActive(true);
-            current_anim_->setRenderPosition(old_anim->getRenderPosition());    // 同步动画位置
+            // TODO:
+            // current_anim_->setRenderPosition(old_anim->getRenderPosition());    // 同步动画位置
         }
     }
 
@@ -129,7 +130,7 @@ void Enemy::updateState()
 void Enemy::checkAndRemove()
 {
     // 死亡动画结束，场景需要移除敌人
-    if(anim_dead_->getIsFinished()) 
+    if(anim_dead_->getFinish()) 
     {
         setCanRemove(true);
         dynamic_cast<SceneMain*>(parent_)->getPlayer()->addScore(10);

@@ -31,7 +31,7 @@ void Actor::move(float dt)
     glm::vec2 margin_bottom_right = glm::vec2(0);
     if (collide_box_){
         margin_top_left = collide_box_->getOffset();
-        margin_bottom_right = collide_box_->getOffset() + collide_box_->getScaledSize();
+        margin_bottom_right = collide_box_->getOffset() + collide_box_->getSize();
     }
     auto limited_position = glm::clamp(position, glm::vec2(0) - margin_top_left, game_.getCurrentScene()->getWorldSize() - margin_bottom_right);
     setPosition(limited_position);
